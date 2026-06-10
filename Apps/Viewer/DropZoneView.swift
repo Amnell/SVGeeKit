@@ -10,6 +10,7 @@ struct DropZoneView: View {
     @State private var loadTask: Task<Void, Never>?
     @AppStorage("viewer.showLiveCanvas") private var showLiveCanvas: Bool = true
     @AppStorage("viewer.showRaster") private var showRaster: Bool = true
+    @AppStorage("viewer.showSource") private var showSource: Bool = false
 
     private enum LoadState {
         case empty
@@ -53,6 +54,9 @@ struct DropZoneView: View {
             Toggle("Raster", isOn: $showRaster)
                 .toggleStyle(.button)
                 .help("Show the rasterized PNG tile")
+            Toggle("Source", isOn: $showSource)
+                .toggleStyle(.button)
+                .help("Show the raw SVG source text")
             if case .loaded = state {
                 Button("Clear") { reset() }
             }
@@ -79,7 +83,8 @@ struct DropZoneView: View {
                 document: document,
                 source: source,
                 showLiveCanvas: $showLiveCanvas,
-                showRaster: $showRaster
+                showRaster: $showRaster,
+                showSource: $showSource
             )
         }
     }
@@ -166,6 +171,7 @@ private struct LoadedSVGView: View {
     let source: String
     @Binding var showLiveCanvas: Bool
     @Binding var showRaster: Bool
+    @Binding var showSource: Bool
 
     @State private var rasterScale: CGFloat = 1
     @State private var rasterImage: NSImage?
@@ -180,7 +186,9 @@ private struct LoadedSVGView: View {
             VStack(alignment: .leading, spacing: 16) {
                 intrinsicChips
                 tiles
-                sourceSection
+                if showSource {
+                    sourceSection
+                }
             }
             .padding(.bottom, 16)
         }
