@@ -35,6 +35,7 @@ public enum SVGElement: Equatable, Sendable {
     case line(SVGLine)
     case polyline(SVGPolyline)
     case polygon(SVGPolygon)
+    case text(SVGText)
 }
 
 public struct SVGRect: Equatable, Sendable {
@@ -143,6 +144,69 @@ public struct SVGPolygon: Equatable, Sendable {
         transform: SVGTransform = .identity
     ) {
         self.points = points
+        self.paint = paint
+        self.transform = transform
+    }
+}
+
+public enum SVGTextAnchor: String, Sendable, Equatable {
+    case start, middle, end
+}
+
+public enum SVGFontWeight: Sendable, Equatable, Hashable {
+    case normal
+    case bold
+    case numeric(Int)
+
+    public static func parse(_ raw: String) -> SVGFontWeight? {
+        switch raw.lowercased() {
+        case "normal": return .normal
+        case "bold": return .bold
+        default:
+            if let n = Int(raw) { return .numeric(n) }
+            return nil
+        }
+    }
+}
+
+/// Text presentation properties inherited through the element tree.
+public struct SVGFont: Equatable, Sendable {
+    /// Comma-separated font-family list as authored in SVG (e.g. "Arial, sans-serif").
+    public var family: String?
+    public var size: CGFloat
+    public var weight: SVGFontWeight
+    public var anchor: SVGTextAnchor
+
+    public init(
+        family: String? = nil,
+        size: CGFloat = 16,
+        weight: SVGFontWeight = .normal,
+        anchor: SVGTextAnchor = .start
+    ) {
+        self.family = family
+        self.size = size
+        self.weight = weight
+        self.anchor = anchor
+    }
+}
+
+public struct SVGText: Equatable, Sendable {
+    public var origin: CGPoint
+    public var string: String
+    public var font: SVGFont
+    public var paint: SVGPaintProperties
+    public var transform: SVGTransform
+
+    public init(
+        origin: CGPoint,
+        string: String,
+        font: SVGFont = SVGFont(),
+        paint: SVGPaintProperties = .init(),
+        transform: SVGTransform = .identity
+    ) {
+        self.origin = origin
+        self.string = string
+        self.font = font
         self.paint = paint
         self.transform = transform
     }

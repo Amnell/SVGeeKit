@@ -50,6 +50,11 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
     private var groupStack: [SVGGroup] = []
     /// Inherited paint properties for cascading down the tree.
     private var paintStack: [SVGPaintProperties] = [SVGPaintProperties()]
+    /// Inherited font / text-anchor properties (cascade through <g> and <text>).
+    private var fontStack: [SVGFont] = [SVGFont()]
+    /// Partially-built <text> elements. Character data is appended to the top
+    /// while a text capture is active (including text inside nested <tspan>).
+    private var textStack: [SVGText] = []
 
     func parser(
         _ parser: XMLParser,
@@ -61,6 +66,10 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
         let inheritedPaint = paintStack.last ?? SVGPaintProperties()
         let elementPaint = mergePaint(into: inheritedPaint, from: attributeDict, parser: parser)
         paintStack.append(elementPaint)
+
+        let inheritedFont = fontStack.last ?? SVGFont()
+        let elementFont = mergeFont(into: inheritedFont, from: attributeDict)
+        fontStack.append(elementFont)
 
         switch elementName {
         case "svg":
@@ -80,9 +89,23 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
             handlePolyline(attributes: attributeDict, paint: elementPaint, parser: parser)
         case "polygon":
             handlePolygon(attributes: attributeDict, paint: elementPaint, parser: parser)
+        case "text":
+            handleTextStart(
+                attributes: attributeDict, paint: elementPaint, font: elementFont, parser: parser
+            )
+        case "tspan":
+            // No standalone positioning today: tspan content is appended to the
+            // active <text> via foundCharacters. Drop the call here so the
+            // tspan's character data isn't double-counted in didEnd handling.
+            break
         default:
             break
         }
+    }
+
+    func parser(_ parser: XMLParser, foundCharacters string: String) {
+        guard !textStack.isEmpty else { return }
+        textStack[textStack.count - 1].string.append(string)
     }
 
     func parser(
@@ -92,6 +115,7 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
         qualifiedName qName: String?
     ) {
         paintStack.removeLast()
+        fontStack.removeLast()
 
         switch elementName {
         case "svg":
@@ -100,6 +124,10 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
         case "g":
             guard let finished = groupStack.popLast() else { return }
             appendChild(.group(finished))
+        case "text":
+            guard var finished = textStack.popLast() else { return }
+            finished.string = SAXDelegate.collapseTextWhitespace(finished.string)
+            appendChild(.text(finished))
         default:
             break
         }
@@ -219,6 +247,24 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
         appendChild(.polygon(polygon))
     }
 
+    private func handleTextStart(
+        attributes: [String: String],
+        paint: SVGPaintProperties,
+        font: SVGFont,
+        parser: XMLParser
+    ) {
+        let x = attributes["x"].flatMap { AttributeParsers.length($0)?.resolved() } ?? 0
+        let y = attributes["y"].flatMap { AttributeParsers.length($0)?.resolved() } ?? 0
+        let text = SVGText(
+            origin: CGPoint(x: x, y: y),
+            string: "",
+            font: font,
+            paint: paint,
+            transform: transform(from: attributes, parser: parser) ?? .identity
+        )
+        textStack.append(text)
+    }
+
     // MARK: - Helpers
 
     private func appendChild(_ element: SVGElement) {
@@ -288,5 +334,42 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
         default:
             break
         }
+    }
+
+    private func mergeFont(into inherited: SVGFont, from attributes: [String: String]) -> SVGFont {
+        var f = inherited
+        if let style = attributes["style"] {
+            for pair in style.split(separator: ";") {
+                let parts = pair.split(separator: ":", maxSplits: 1).map { $0.trimmingCharacters(in: .whitespaces) }
+                guard parts.count == 2 else { continue }
+                applyFontProperty(name: parts[0], value: parts[1], into: &f)
+            }
+        }
+        for (key, value) in attributes {
+            applyFontProperty(name: key, value: value, into: &f)
+        }
+        return f
+    }
+
+    private func applyFontProperty(name: String, value: String, into f: inout SVGFont) {
+        switch name {
+        case "font-family":
+            f.family = value.trimmingCharacters(in: .whitespaces)
+        case "font-size":
+            if let len = AttributeParsers.length(value) { f.size = len.resolved() }
+        case "font-weight":
+            if let w = SVGFontWeight.parse(value) { f.weight = w }
+        case "text-anchor":
+            if value == "inherit" { return }
+            if let a = SVGTextAnchor(rawValue: value) { f.anchor = a }
+        default:
+            break
+        }
+    }
+
+    /// SVG's xml:space="default" behaviour: collapse runs of whitespace and
+    /// trim leading/trailing. We don't implement xml:space="preserve" yet.
+    static func collapseTextWhitespace(_ raw: String) -> String {
+        raw.split(whereSeparator: { $0.isWhitespace }).joined(separator: " ")
     }
 }

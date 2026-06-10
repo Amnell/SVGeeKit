@@ -132,4 +132,61 @@ struct SVGParserTests {
         #expect(p.points.count == 3)
         #expect(p.points.last == CGPoint(x: 5, y: 10))
     }
+
+    @Test func parsesTextWithCascadedFont() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="200" height="100">
+          <g font-family="Helvetica, sans-serif" font-size="20">
+            <text x="10" y="40" text-anchor="middle" fill="red">Hi</text>
+          </g>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .group(let g) = doc.root.children.first,
+              case .text(let t) = g.children.first else {
+            Issue.record("expected <g><text>"); return
+        }
+        #expect(t.origin == CGPoint(x: 10, y: 40))
+        #expect(t.string == "Hi")
+        #expect(t.font.family == "Helvetica, sans-serif")
+        #expect(t.font.size == 20)
+        #expect(t.font.anchor == .middle)
+        if case .color(let c) = t.paint.fill {
+            #expect(c.red == 1 && c.green == 0 && c.blue == 0)
+        } else {
+            Issue.record("expected red fill")
+        }
+    }
+
+    @Test func collapsesWhitespaceAndFlattensTspan() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+          <text x="0" y="20">
+            Hello  <tspan>brave</tspan>  world
+          </text>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .text(let t) = doc.root.children.first else {
+            Issue.record("expected text"); return
+        }
+        #expect(t.string == "Hello brave world")
+    }
+
+    @Test func textIgnoresTitleAndDescContent() throws {
+        // Ensures the text-capture machinery doesn't accidentally suck in
+        // non-text content like <title>'s string.
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+          <title>doc title</title>
+          <desc>doc desc</desc>
+          <text x="0" y="10">visible</text>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .text(let t) = doc.root.children.last else {
+            Issue.record("expected text"); return
+        }
+        #expect(t.string == "visible")
+    }
 }

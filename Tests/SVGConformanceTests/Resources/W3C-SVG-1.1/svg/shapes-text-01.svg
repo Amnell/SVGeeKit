@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="360" viewBox="0 0 480 360">
+  <title>shapes-text-01</title>
+  <desc>Text rendering: text-anchor variants, font sizes, fills, strokes, and group-cascaded font properties.</desc>
+  <rect x="0" y="0" width="480" height="360" fill="white"/>
+  <g font-family="Helvetica, sans-serif" font-size="24" fill="black">
+    <text x="20" y="50">start (default)</text>
+    <text x="240" y="50" text-anchor="middle">middle anchor</text>
+    <text x="460" y="50" text-anchor="end">end anchor</text>
+  </g>
+  <g font-family="Helvetica, sans-serif" font-size="32">
+    <text x="20" y="120" fill="red">size 32 red</text>
+    <text x="20" y="170" fill="blue" font-weight="bold">bold blue</text>
+  </g>
+  <g font-family="Helvetica, sans-serif" font-size="40">
+    <text x="240" y="230" text-anchor="middle" fill="none" stroke="black" stroke-width="1">stroked only</text>
+  </g>
+  <g font-family="Helvetica, sans-serif" font-size="28">
+    <text x="240" y="290" text-anchor="middle" fill="green" stroke="black" stroke-width="0.5">filled + stroked</text>
+  </g>
+  <text x="240" y="340" font-family="Helvetica, sans-serif" font-size="20" text-anchor="middle" fill="black">$Revision: 1.0 $</text>
+</svg>

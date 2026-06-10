@@ -525,15 +525,17 @@
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-coord-01-t\/actual.png",
-    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
-    "status" : "missingBaseline",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/coords-coord-01-t\/baseline.png",
+    "detail" : "baseline created",
+    "status" : "passed",
     "tag" : "coords",
     "testId" : "coords-coord-01-t"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-coord-02-t\/actual.png",
-    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
-    "status" : "missingBaseline",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/coords-coord-02-t\/baseline.png",
+    "detail" : "baseline created",
+    "status" : "passed",
     "tag" : "coords",
     "testId" : "coords-coord-02-t"
   },
@@ -574,22 +576,25 @@
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-trans-02-t\/actual.png",
-    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
-    "status" : "missingBaseline",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/coords-trans-02-t\/baseline.png",
+    "detail" : "baseline created",
+    "status" : "passed",
     "tag" : "coords",
     "testId" : "coords-trans-02-t"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-trans-03-t\/actual.png",
-    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
-    "status" : "missingBaseline",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/coords-trans-03-t\/baseline.png",
+    "detail" : "baseline created",
+    "status" : "passed",
     "tag" : "coords",
     "testId" : "coords-trans-03-t"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-trans-04-t\/actual.png",
-    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
-    "status" : "missingBaseline",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/coords-trans-04-t\/baseline.png",
+    "detail" : "baseline created",
+    "status" : "passed",
     "tag" : "coords",
     "testId" : "coords-trans-04-t"
   },
@@ -609,15 +614,17 @@
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-trans-07-t\/actual.png",
-    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
-    "status" : "missingBaseline",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/coords-trans-07-t\/baseline.png",
+    "detail" : "baseline created",
+    "status" : "passed",
     "tag" : "coords",
     "testId" : "coords-trans-07-t"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-trans-08-t\/actual.png",
-    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
-    "status" : "missingBaseline",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/coords-trans-08-t\/baseline.png",
+    "detail" : "baseline created",
+    "status" : "passed",
     "tag" : "coords",
     "testId" : "coords-trans-08-t"
   },
@@ -2145,13 +2152,6 @@
     "testId" : "script-specify-02-f"
   },
   {
-    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-circle-01-t\/actual.png",
-    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
-    "status" : "missingBaseline",
-    "tag" : "shapes",
-    "testId" : "shapes-circle-01-t"
-  },
-  {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-circle-01\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-circle-01\/baseline.png",
     "diffMaxChannel" : 1,
@@ -2161,18 +2161,18 @@
     "testId" : "shapes-circle-01"
   },
   {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-circle-01-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "shapes",
+    "testId" : "shapes-circle-01-t"
+  },
+  {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-circle-02-t\/actual.png",
     "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
     "status" : "missingBaseline",
     "tag" : "shapes",
     "testId" : "shapes-circle-02-t"
-  },
-  {
-    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-ellipse-01-t\/actual.png",
-    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
-    "status" : "missingBaseline",
-    "tag" : "shapes",
-    "testId" : "shapes-ellipse-01-t"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-ellipse-01\/actual.png",
@@ -2182,6 +2182,13 @@
     "status" : "passed",
     "tag" : "shapes",
     "testId" : "shapes-ellipse-01"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-ellipse-01-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "shapes",
+    "testId" : "shapes-ellipse-01-t"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-ellipse-02-t\/actual.png",
@@ -2219,13 +2226,6 @@
     "testId" : "shapes-intro-02-f"
   },
   {
-    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-line-01-t\/actual.png",
-    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
-    "status" : "missingBaseline",
-    "tag" : "shapes",
-    "testId" : "shapes-line-01-t"
-  },
-  {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-line-01\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-line-01\/baseline.png",
     "diffMaxChannel" : 1,
@@ -2235,18 +2235,18 @@
     "testId" : "shapes-line-01"
   },
   {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-line-01-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "shapes",
+    "testId" : "shapes-line-01-t"
+  },
+  {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-line-02-f\/actual.png",
     "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
     "status" : "missingBaseline",
     "tag" : "shapes",
     "testId" : "shapes-line-02-f"
-  },
-  {
-    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-polygon-01-t\/actual.png",
-    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
-    "status" : "missingBaseline",
-    "tag" : "shapes",
-    "testId" : "shapes-polygon-01-t"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-polygon-01\/actual.png",
@@ -2256,6 +2256,13 @@
     "status" : "passed",
     "tag" : "shapes",
     "testId" : "shapes-polygon-01"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-polygon-01-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "shapes",
+    "testId" : "shapes-polygon-01-t"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-polygon-02-t\/actual.png",
@@ -2272,13 +2279,6 @@
     "testId" : "shapes-polygon-03-t"
   },
   {
-    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-polyline-01-t\/actual.png",
-    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
-    "status" : "missingBaseline",
-    "tag" : "shapes",
-    "testId" : "shapes-polyline-01-t"
-  },
-  {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-polyline-01\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-polyline-01\/baseline.png",
     "diffMaxChannel" : 0,
@@ -2286,6 +2286,13 @@
     "status" : "passed",
     "tag" : "shapes",
     "testId" : "shapes-polyline-01"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-polyline-01-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "shapes",
+    "testId" : "shapes-polyline-01-t"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-polyline-02-t\/actual.png",

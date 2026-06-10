@@ -29,6 +29,20 @@ public enum SVGRenderCommand: Equatable, Sendable {
         lineJoin: SVGLineJoin,
         miterLimit: CGFloat
     )
+
+    /// Draw text. The renderer is responsible for font lookup, metrics, and
+    /// baseline placement at `origin` honoring `font.anchor` for horizontal
+    /// alignment. Y is the alphabetic baseline (SVG semantics).
+    case drawText(
+        string: String,
+        origin: CGPoint,
+        font: SVGFont,
+        fill: SVGPaint,
+        fillOpacity: CGFloat,
+        stroke: SVGPaint,
+        strokeOpacity: CGFloat,
+        strokeWidth: CGFloat
+    )
 }
 
 /// A renderer consumes a render-command stream and draws it into its backend.
@@ -83,6 +97,8 @@ public enum SVGRenderTree {
             lower(polyline: p, into: &commands)
         case .polygon(let p):
             lower(polygon: p, into: &commands)
+        case .text(let t):
+            lower(text: t, into: &commands)
         }
     }
 
@@ -144,6 +160,35 @@ public enum SVGRenderTree {
     private static func lower(polygon: SVGPolygon, into commands: inout [SVGRenderCommand]) {
         guard let path = polylinePath(points: polygon.points, closed: true) else { return }
         emitPaintedPath(path, paint: polygon.paint, transform: polygon.transform, into: &commands)
+    }
+
+    private static func lower(text: SVGText, into commands: inout [SVGRenderCommand]) {
+        guard !text.string.isEmpty else { return }
+
+        let needsState = text.transform.matrix != .identity || text.paint.opacity < 1
+        if needsState { commands.append(.pushState) }
+        if text.transform.matrix != .identity {
+            commands.append(.concatenate(text.transform))
+        }
+        if text.paint.opacity < 1 {
+            commands.append(.beginOpacityLayer(text.paint.opacity))
+        }
+
+        // SVG default for <text> is fill=black, stroke=none. Element paint
+        // already carries that cascade, so we just pass it through.
+        commands.append(.drawText(
+            string: text.string,
+            origin: text.origin,
+            font: text.font,
+            fill: text.paint.fill,
+            fillOpacity: text.paint.fillOpacity,
+            stroke: text.paint.stroke,
+            strokeOpacity: text.paint.strokeOpacity,
+            strokeWidth: text.paint.strokeWidth
+        ))
+
+        if text.paint.opacity < 1 { commands.append(.endOpacityLayer) }
+        if needsState { commands.append(.popState) }
     }
 
     private static func polylinePath(points: [CGPoint], closed: Bool) -> CGPath? {
