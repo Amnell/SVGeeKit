@@ -344,16 +344,28 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
     ) -> SVGPaintProperties {
         var p = inherited
 
-        // Inline `style="key:value;..."` first so presentation attributes win.
+        // Collect (name, value) declarations from `style="..."` first then
+        // attributes, so style is the lower-priority source like SVG 1.1
+        // presentation attributes.
+        var declarations: [(String, String)] = []
         if let style = attributes["style"] {
             for pair in style.split(separator: ";") {
                 let parts = pair.split(separator: ":", maxSplits: 1).map { $0.trimmingCharacters(in: .whitespaces) }
                 guard parts.count == 2 else { continue }
-                applyPaintProperty(name: parts[0], value: parts[1], into: &p, parser: parser)
+                declarations.append((parts[0], parts[1]))
             }
         }
-        for (key, value) in attributes {
-            applyPaintProperty(name: key, value: value, into: &p, parser: parser)
+        for (key, value) in attributes where key != "style" {
+            declarations.append((key, value))
+        }
+
+        // Two passes: `color` first (so `fill="currentColor"` can resolve
+        // against it on the same element), then everything else.
+        for (name, value) in declarations where name == "color" {
+            applyPaintProperty(name: name, value: value, into: &p, parser: parser)
+        }
+        for (name, value) in declarations where name != "color" {
+            applyPaintProperty(name: name, value: value, into: &p, parser: parser)
         }
         return p
     }
@@ -366,17 +378,17 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
     ) {
         switch name {
         case "fill":
-            if let paint = AttributeParsers.color(value) { p.fill = paint }
+            if let paint = resolvePaint(value, currentColor: p.color) { p.fill = paint }
         case "fill-opacity":
-            if let d = Double(value) { p.fillOpacity = CGFloat(d) }
+            if let d = Double(value) { p.fillOpacity = CGFloat(min(1, max(0, d))) }
         case "fill-rule":
             if let rule = SVGFillRule(rawValue: value.trimmingCharacters(in: .whitespaces)) {
                 p.fillRule = rule
             }
         case "stroke":
-            if let paint = AttributeParsers.color(value) { p.stroke = paint }
+            if let paint = resolvePaint(value, currentColor: p.color) { p.stroke = paint }
         case "stroke-opacity":
-            if let d = Double(value) { p.strokeOpacity = CGFloat(d) }
+            if let d = Double(value) { p.strokeOpacity = CGFloat(min(1, max(0, d))) }
         case "stroke-width":
             if let len = AttributeParsers.length(value) { p.strokeWidth = len.resolved() }
         case "stroke-linecap":
@@ -385,11 +397,35 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
             if let join = SVGLineJoin(rawValue: value) { p.lineJoin = join }
         case "stroke-miterlimit":
             if let d = Double(value) { p.miterLimit = CGFloat(d) }
+        case "stroke-dasharray":
+            p.strokeDashArray = parseDashArray(value)
+        case "stroke-dashoffset":
+            if let len = AttributeParsers.length(value) { p.strokeDashOffset = len.resolved() }
         case "opacity":
-            if let d = Double(value) { p.opacity = CGFloat(d) }
+            if let d = Double(value) { p.opacity = CGFloat(min(1, max(0, d))) }
+        case "color":
+            let trimmed = value.trimmingCharacters(in: .whitespaces)
+            if trimmed.lowercased() == "currentcolor" { return } // no-op
+            if case .color(let c) = AttributeParsers.color(trimmed) ?? .none {
+                p.color = c
+            }
+        case "visibility":
+            if let v = SVGVisibility(rawValue: value.trimmingCharacters(in: .whitespaces).lowercased()) {
+                p.visibility = v
+            }
         default:
             break
         }
+    }
+
+    /// Resolves a paint value, expanding the `currentColor` keyword against
+    /// the cascaded `color` property (SVG 1.1 §13.2).
+    private func resolvePaint(_ raw: String, currentColor: SVGColor) -> SVGPaint? {
+        let trimmed = raw.trimmingCharacters(in: .whitespaces)
+        if trimmed.caseInsensitiveCompare("currentColor") == .orderedSame {
+            return .color(currentColor)
+        }
+        return AttributeParsers.color(trimmed)
     }
 
     private func mergeFont(into inherited: SVGFont, from attributes: [String: String]) -> SVGFont {
@@ -427,5 +463,24 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
     /// trim leading/trailing. We don't implement xml:space="preserve" yet.
     static func collapseTextWhitespace(_ raw: String) -> String {
         raw.split(whereSeparator: { $0.isWhitespace }).joined(separator: " ")
+    }
+
+    /// Parse `stroke-dasharray` per SVG 1.1: "none" → empty; comma/whitespace
+    /// list of lengths. Odd-length lists are repeated by the renderer per spec
+    /// (CG already cycles whatever pattern we hand it, so we mirror once).
+    private func parseDashArray(_ raw: String) -> [CGFloat] {
+        let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmed.isEmpty || trimmed == "none" { return [] }
+        let parts = trimmed.split { $0 == " " || $0 == "," || $0 == "\t" || $0 == "\n" }
+        var out: [CGFloat] = []
+        out.reserveCapacity(parts.count)
+        for p in parts {
+            guard let len = AttributeParsers.length(String(p)) else { return [] }
+            let v = len.resolved()
+            if v < 0 { return [] }
+            out.append(v)
+        }
+        if out.count % 2 == 1 { out.append(contentsOf: out) }
+        return out
     }
 }

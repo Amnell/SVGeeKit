@@ -27,7 +27,9 @@ public enum SVGRenderCommand: Equatable, Sendable {
         width: CGFloat,
         lineCap: SVGLineCap,
         lineJoin: SVGLineJoin,
-        miterLimit: CGFloat
+        miterLimit: CGFloat,
+        dashArray: [CGFloat],
+        dashPhase: CGFloat
     )
 
     /// Draw text. The renderer is responsible for font lookup, metrics, and
@@ -186,6 +188,7 @@ public enum SVGRenderTree {
 
     private static func lower(text: SVGText, into commands: inout [SVGRenderCommand]) {
         guard !text.string.isEmpty else { return }
+        guard text.paint.visibility == .visible else { return }
 
         let needsState = text.transform.matrix != .identity || text.paint.opacity < 1
         if needsState { commands.append(.pushState) }
@@ -230,6 +233,7 @@ public enum SVGRenderTree {
         transform: SVGTransform,
         into commands: inout [SVGRenderCommand]
     ) {
+        guard paint.visibility == .visible else { return }
         let needsState = transform.matrix != .identity || paint.opacity < 1
         if needsState { commands.append(.pushState) }
         if transform.matrix != .identity {
@@ -255,11 +259,103 @@ public enum SVGRenderTree {
                 width: paint.strokeWidth,
                 lineCap: paint.lineCap,
                 lineJoin: paint.lineJoin,
-                miterLimit: paint.miterLimit
+                miterLimit: paint.miterLimit,
+                dashArray: paint.strokeDashArray,
+                dashPhase: paint.strokeDashOffset
             ))
+            emitZeroLengthCapStamps(path: path, paint: paint, into: &commands)
         }
 
         if paint.opacity < 1 { commands.append(.endOpacityLayer) }
         if needsState { commands.append(.popState) }
+    }
+
+    /// SVG 1.1 §11.4: a zero-length subpath must render as a stamp of the
+    /// stroke-linecap shape (circle for `round`, square for `square`).
+    /// CoreGraphics renders the round case correctly but drops the square
+    /// case, so we synthesize a fill rect at each zero-length subpath origin
+    /// when the cap is `square`.
+    private static func emitZeroLengthCapStamps(
+        path: CGPath,
+        paint: SVGPaintProperties,
+        into commands: inout [SVGRenderCommand]
+    ) {
+        guard paint.lineCap == .square, paint.strokeWidth > 0 else { return }
+        let origins = zeroLengthSubpathOrigins(in: path)
+        guard !origins.isEmpty else { return }
+        let half = paint.strokeWidth / 2
+        for p in origins {
+            let rect = CGRect(
+                x: p.x - half, y: p.y - half,
+                width: paint.strokeWidth, height: paint.strokeWidth
+            )
+            commands.append(.fillPath(
+                CGPath(rect: rect, transform: nil),
+                paint: paint.stroke,
+                opacity: paint.strokeOpacity,
+                evenOdd: false
+            ))
+        }
+    }
+
+    /// Walks subpaths and returns the origin of each one whose drawing
+    /// elements never leave the start point.
+    private static func zeroLengthSubpathOrigins(in path: CGPath) -> [CGPoint] {
+        var origins: [CGPoint] = []
+        var subpathStart: CGPoint? = nil
+        var subpathHasMovement = false
+        var currentPoint: CGPoint? = nil
+
+        func closeOutSubpath() {
+            if let start = subpathStart, !subpathHasMovement {
+                origins.append(start)
+            }
+            subpathStart = nil
+            subpathHasMovement = false
+        }
+
+        path.applyWithBlock { ptr in
+            let element = ptr.pointee
+            switch element.type {
+            case .moveToPoint:
+                closeOutSubpath()
+                let p = element.points[0]
+                subpathStart = p
+                currentPoint = p
+            case .addLineToPoint:
+                let p = element.points[0]
+                if let cur = currentPoint, !pointsApproximatelyEqual(cur, p) {
+                    subpathHasMovement = true
+                }
+                currentPoint = p
+            case .addQuadCurveToPoint:
+                let end = element.points[1]
+                if let cur = currentPoint, !pointsApproximatelyEqual(cur, end) {
+                    subpathHasMovement = true
+                }
+                currentPoint = end
+            case .addCurveToPoint:
+                let end = element.points[2]
+                if let cur = currentPoint, !pointsApproximatelyEqual(cur, end) {
+                    subpathHasMovement = true
+                }
+                currentPoint = end
+            case .closeSubpath:
+                if let cur = currentPoint, let start = subpathStart,
+                   !pointsApproximatelyEqual(cur, start) {
+                    subpathHasMovement = true
+                }
+                currentPoint = subpathStart
+            @unknown default:
+                break
+            }
+        }
+        closeOutSubpath()
+        return origins
+    }
+
+    private static func pointsApproximatelyEqual(_ a: CGPoint, _ b: CGPoint) -> Bool {
+        let eps: CGFloat = 1e-9
+        return abs(a.x - b.x) < eps && abs(a.y - b.y) < eps
     }
 }

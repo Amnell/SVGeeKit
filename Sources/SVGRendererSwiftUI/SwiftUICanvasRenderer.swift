@@ -47,13 +47,15 @@ public struct SwiftUICanvasRenderer {
                 let path = Path(cgPath)
                 context.fill(path, with: shading, style: FillStyle(eoFill: evenOdd))
 
-            case .strokePath(let cgPath, let paint, let opacity, let width, let cap, let join, let miterLimit):
+            case .strokePath(let cgPath, let paint, let opacity, let width, let cap, let join, let miterLimit, let dashArray, let dashPhase):
                 guard let shading = shading(for: paint, opacity: opacity) else { continue }
                 let style = StrokeStyle(
                     lineWidth: width,
                     lineCap: lineCap(cap),
                     lineJoin: lineJoin(join),
-                    miterLimit: miterLimit
+                    miterLimit: miterLimit,
+                    dash: dashArray,
+                    dashPhase: dashPhase
                 )
                 context.stroke(Path(cgPath), with: shading, style: style)
 

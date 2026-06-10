@@ -15,6 +15,17 @@
     "coords-dom-01-f": { "skip": "script-driven DOM mutation; out of scope" },
     "coords-dom-02-f": { "skip": "script-driven DOM mutation; out of scope" },
     "coords-dom-03-f": { "skip": "script-driven DOM mutation; out of scope" },
-    "coords-dom-04-f": { "skip": "script-driven DOM mutation; out of scope" }
+    "coords-dom-04-f": { "skip": "script-driven DOM mutation; out of scope" },
+    "painting-control-05-f": { "skip": "requires <mask>/<clipPath>; masking out of scope" },
+    "painting-render-01-b": { "skip": "requires <linearGradient>; deferred to pservers-grad" },
+    "painting-render-02-b": { "skip": "requires color-interpolation=linearRGB; color-space switching out of scope" },
+    "painting-marker-01-f": { "skip": "<marker> element not supported" },
+    "painting-marker-02-f": { "skip": "<marker> element not supported" },
+    "painting-marker-03-f": { "skip": "<marker> element not supported" },
+    "painting-marker-04-f": { "skip": "<marker> element not supported" },
+    "painting-marker-05-f": { "skip": "<marker> element not supported" },
+    "painting-marker-06-f": { "skip": "<marker> element not supported" },
+    "painting-marker-07-f": { "skip": "<marker> element not supported" },
+    "painting-marker-properties-01-f": { "skip": "<marker> element not supported" }
   }
 }

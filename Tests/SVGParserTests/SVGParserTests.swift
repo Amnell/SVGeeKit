@@ -282,4 +282,94 @@ struct SVGParserTests {
         let diag = (480.0 * 480.0 + 360.0 * 360.0).squareRoot() / 2.0.squareRoot()
         #expect(abs(c.radius - CGFloat(diag) / 2) < 0.01)
     }
+
+    @Test func parsesStrokeDashAttributes() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+          <line x1="0" y1="0" x2="100" y2="0" stroke="black"
+                stroke-dasharray="10, 5 20" stroke-dashoffset="3"/>
+          <line x1="0" y1="0" x2="100" y2="0" stroke="black"
+                stroke-dasharray="none"/>
+          <line x1="0" y1="0" x2="100" y2="0" stroke="black"
+                stroke-dasharray="10 -5"/>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .line(let a) = doc.root.children[0],
+              case .line(let b) = doc.root.children[1],
+              case .line(let c) = doc.root.children[2] else {
+            Issue.record("expected three lines"); return
+        }
+        // Odd-length lists are duplicated per SVG 1.1.
+        #expect(a.paint.strokeDashArray == [10, 5, 20, 10, 5, 20])
+        #expect(a.paint.strokeDashOffset == 3)
+        #expect(b.paint.strokeDashArray.isEmpty)
+        // Negative values invalidate the whole list.
+        #expect(c.paint.strokeDashArray.isEmpty)
+    }
+
+    @Test func parsesNamedColorPalette() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+          <rect fill="darkblue"/>
+          <rect fill="LIGHTGREEN"/>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .rect(let a) = doc.root.children[0],
+              case .rect(let b) = doc.root.children[1] else {
+            Issue.record("expected two rects"); return
+        }
+        guard case .color(let ca) = a.paint.fill, case .color(let cb) = b.paint.fill else {
+            Issue.record("expected color fills"); return
+        }
+        #expect(abs(ca.red - 0) < 0.01 && abs(ca.green - 0) < 0.01 && abs(ca.blue - 139.0/255) < 0.01)
+        #expect(abs(cb.red - 144.0/255) < 0.01 && abs(cb.green - 238.0/255) < 0.01 && abs(cb.blue - 144.0/255) < 0.01)
+    }
+
+    @Test func resolvesCurrentColorAgainstColorCascade() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+          <g color="green">
+            <rect id="a" fill="currentColor"/>
+            <rect id="b" color="blue" fill="currentColor"/>
+          </g>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .group(let g) = doc.root.children[0],
+              case .rect(let a) = g.children[0],
+              case .rect(let b) = g.children[1] else {
+            Issue.record("expected group with two rects"); return
+        }
+        guard case .color(let ca) = a.paint.fill, case .color(let cb) = b.paint.fill else {
+            Issue.record("expected resolved color fills"); return
+        }
+        // green = #008000
+        #expect(abs(ca.red) < 0.01 && abs(ca.green - 128.0/255) < 0.01 && abs(ca.blue) < 0.01)
+        // blue = #0000ff
+        #expect(abs(cb.red) < 0.01 && abs(cb.green) < 0.01 && abs(cb.blue - 1) < 0.01)
+    }
+
+    @Test func cascadesVisibilityAndHonorsChildOverride() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+          <rect id="shown"/>
+          <g visibility="hidden">
+            <rect id="hidden"/>
+            <rect id="revealed" visibility="visible"/>
+          </g>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .rect(let shown) = doc.root.children[0],
+              case .group(let g) = doc.root.children[1],
+              case .rect(let hidden) = g.children[0],
+              case .rect(let revealed) = g.children[1] else {
+            Issue.record("expected shown rect and hidden group with two rects"); return
+        }
+        #expect(shown.paint.visibility == .visible)
+        #expect(hidden.paint.visibility == .hidden)
+        #expect(revealed.paint.visibility == .visible)
+    }
 }

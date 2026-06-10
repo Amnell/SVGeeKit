@@ -36,6 +36,10 @@ public enum SVGFillRule: String, Sendable, Equatable {
     case nonzero, evenodd
 }
 
+public enum SVGVisibility: String, Sendable, Equatable {
+    case visible, hidden, collapse
+}
+
 /// Painting properties shared by shapes. Mirrors the SVG painting chapter.
 public struct SVGPaintProperties: Equatable, Sendable {
     public var fill: SVGPaint
@@ -47,7 +51,11 @@ public struct SVGPaintProperties: Equatable, Sendable {
     public var lineCap: SVGLineCap
     public var lineJoin: SVGLineJoin
     public var miterLimit: CGFloat
+    public var strokeDashArray: [CGFloat]
+    public var strokeDashOffset: CGFloat
     public var opacity: CGFloat
+    public var color: SVGColor
+    public var visibility: SVGVisibility
 
     public init(
         fill: SVGPaint = .color(.black),
@@ -59,7 +67,11 @@ public struct SVGPaintProperties: Equatable, Sendable {
         lineCap: SVGLineCap = .butt,
         lineJoin: SVGLineJoin = .miter,
         miterLimit: CGFloat = 4,
-        opacity: CGFloat = 1
+        strokeDashArray: [CGFloat] = [],
+        strokeDashOffset: CGFloat = 0,
+        opacity: CGFloat = 1,
+        color: SVGColor = .black,
+        visibility: SVGVisibility = .visible
     ) {
         self.fill = fill
         self.fillOpacity = fillOpacity
@@ -70,6 +82,10 @@ public struct SVGPaintProperties: Equatable, Sendable {
         self.lineCap = lineCap
         self.lineJoin = lineJoin
         self.miterLimit = miterLimit
+        self.strokeDashArray = strokeDashArray
+        self.strokeDashOffset = strokeDashOffset
         self.opacity = opacity
+        self.color = color
+        self.visibility = visibility
     }
 }
