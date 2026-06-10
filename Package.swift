@@ -36,6 +36,11 @@ let package = Package(
             dependencies: ["SVGKit", "SVGConformance"],
             path: "Apps/Viewer"
         ),
+        .executableTarget(
+            name: "Benchmarks",
+            dependencies: ["SVGKit", "SVGConformance"],
+            path: "Apps/Benchmarks"
+        ),
         .testTarget(name: "SVGCoreTests", dependencies: ["SVGCore"]),
         .testTarget(name: "SVGParserTests", dependencies: ["SVGParser"]),
         .testTarget(

@@ -34,6 +34,22 @@ See [docs/architecture.md](docs/architecture.md) for the module contract.
 
 The runner emits `docs/conformance/conformance-report.json` for every test run.
 
+## Benchmarks
+
+A standalone executable times the parse / lower / rasterize phases on either the vendored W3C corpus or any SVG files you point it at:
+
+```sh
+swift run -c release Benchmarks                       # full W3C SVG 1.1 corpus
+swift run -c release Benchmarks -n 10 -f paths-data   # 10 iterations, filtered
+swift run -c release Benchmarks --no-rasterize        # CPU phases only
+swift run -c release Benchmarks ~/Desktop/logo.svg    # one file
+swift run -c release Benchmarks samples/              # walk a directory
+swift run -c release Benchmarks 'corpus/**/*.svg'     # quoted glob pattern
+swift run -c release Benchmarks --help
+```
+
+Output is a per-phase table (n / mean / median / p95 / max) plus the top-N slowest files.
+
 ## Contributing
 
 Coding agents and human contributors should both read [AGENTS.md](AGENTS.md) and the recipe in [docs/adding-a-feature.md](docs/adding-a-feature.md) before touching code. The library is designed to be extended one SVG feature at a time without breaking previously-passing snapshots.
