@@ -123,7 +123,7 @@ private struct ImageTile: View {
         VStack(alignment: .leading, spacing: 6) {
             Text(title).font(.headline)
             ZStack {
-                CheckerboardBackground()
+                Color.white
                 if let url, let image = NSImage(contentsOf: url) {
                     Image(nsImage: image)
                         .resizable()
@@ -161,7 +161,7 @@ private struct ReferenceTile: View {
                 }
             }
             ZStack {
-                CheckerboardBackground()
+                Color.white
                 if let url = row.referenceURL, let image = NSImage(contentsOf: url) {
                     Image(nsImage: image)
                         .resizable()

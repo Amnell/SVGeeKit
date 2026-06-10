@@ -571,8 +571,9 @@
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-trans-01-b\/actual.png",
-    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
-    "status" : "missingBaseline",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/coords-trans-01-b\/baseline.png",
+    "detail" : "baseline created",
+    "status" : "passed",
     "tag" : "coords",
     "testId" : "coords-trans-01-b"
   },
@@ -1473,8 +1474,9 @@
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-control-01-f\/actual.png",
-    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
-    "status" : "missingBaseline",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/painting-control-01-f\/baseline.png",
+    "detail" : "baseline created",
+    "status" : "passed",
     "tag" : "painting",
     "testId" : "painting-control-01-f"
   },
@@ -1515,8 +1517,9 @@
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-fill-01-t\/actual.png",
-    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
-    "status" : "missingBaseline",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/painting-fill-01-t\/baseline.png",
+    "detail" : "baseline created",
+    "status" : "passed",
     "tag" : "painting",
     "testId" : "painting-fill-01-t"
   },
@@ -1536,8 +1539,9 @@
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-fill-04-t\/actual.png",
-    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
-    "status" : "missingBaseline",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/painting-fill-04-t\/baseline.png",
+    "detail" : "baseline created",
+    "status" : "passed",
     "tag" : "painting",
     "testId" : "painting-fill-04-t"
   },
@@ -3386,8 +3390,9 @@
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/types-basic-01-f\/actual.png",
-    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
-    "status" : "missingBaseline",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/types-basic-01-f\/baseline.png",
+    "detail" : "baseline created",
+    "status" : "passed",
     "tag" : "other",
     "testId" : "types-basic-01-f"
   },
