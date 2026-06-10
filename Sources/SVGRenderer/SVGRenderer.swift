@@ -244,7 +244,7 @@ public enum SVGRenderTree {
                 path,
                 paint: paint.fill,
                 opacity: paint.fillOpacity,
-                evenOdd: false
+                evenOdd: paint.fillRule == .evenodd
             ))
         }
         if case .none = paint.stroke {} else {

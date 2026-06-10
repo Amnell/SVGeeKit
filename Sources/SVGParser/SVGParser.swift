@@ -331,6 +331,10 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
             if let paint = AttributeParsers.color(value) { p.fill = paint }
         case "fill-opacity":
             if let d = Double(value) { p.fillOpacity = CGFloat(d) }
+        case "fill-rule":
+            if let rule = SVGFillRule(rawValue: value.trimmingCharacters(in: .whitespaces)) {
+                p.fillRule = rule
+            }
         case "stroke":
             if let paint = AttributeParsers.color(value) { p.stroke = paint }
         case "stroke-opacity":

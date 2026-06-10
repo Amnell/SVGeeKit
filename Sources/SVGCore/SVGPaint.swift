@@ -32,10 +32,15 @@ public enum SVGLineJoin: String, Sendable, Equatable {
     case miter, round, bevel
 }
 
+public enum SVGFillRule: String, Sendable, Equatable {
+    case nonzero, evenodd
+}
+
 /// Painting properties shared by shapes. Mirrors the SVG painting chapter.
 public struct SVGPaintProperties: Equatable, Sendable {
     public var fill: SVGPaint
     public var fillOpacity: CGFloat
+    public var fillRule: SVGFillRule
     public var stroke: SVGPaint
     public var strokeOpacity: CGFloat
     public var strokeWidth: CGFloat
@@ -47,6 +52,7 @@ public struct SVGPaintProperties: Equatable, Sendable {
     public init(
         fill: SVGPaint = .color(.black),
         fillOpacity: CGFloat = 1,
+        fillRule: SVGFillRule = .nonzero,
         stroke: SVGPaint = .none,
         strokeOpacity: CGFloat = 1,
         strokeWidth: CGFloat = 1,
@@ -57,6 +63,7 @@ public struct SVGPaintProperties: Equatable, Sendable {
     ) {
         self.fill = fill
         self.fillOpacity = fillOpacity
+        self.fillRule = fillRule
         self.stroke = stroke
         self.strokeOpacity = strokeOpacity
         self.strokeWidth = strokeWidth

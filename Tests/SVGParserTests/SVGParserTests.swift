@@ -243,4 +243,20 @@ struct SVGParserTests {
             #expect(abs(end.x - 100) < 0.01 && abs(end.y) < 0.01)
         } else { Issue.record("arc should decompose to cubics") }
     }
+
+    @Test func parsesFillRuleEvenOdd() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10">
+          <path d="M 0 0 L 10 0 L 10 10 Z" fill="red" fill-rule="evenodd"/>
+          <path d="M 0 0 L 10 0 L 10 10 Z" fill="red"/>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .path(let evenOdd) = doc.root.children[0],
+              case .path(let nonzero) = doc.root.children[1] else {
+            Issue.record("expected two paths"); return
+        }
+        #expect(evenOdd.paint.fillRule == .evenodd)
+        #expect(nonzero.paint.fillRule == .nonzero)
+    }
 }
