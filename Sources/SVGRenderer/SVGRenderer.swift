@@ -59,6 +59,7 @@ public enum SVGRenderTree {
     /// Lower a parsed document into a flat command stream.
     public static func lower(_ document: SVGDocument) -> [SVGRenderCommand] {
         var commands: [SVGRenderCommand] = []
+        let ctx = Context(paintServers: document.paintServers)
         commands.append(.pushState)
         if let viewBox = document.viewBox, let size = document.intrinsicSize {
             let sx = size.width / viewBox.width
@@ -67,46 +68,50 @@ public enum SVGRenderTree {
             t = t.translatedBy(x: -viewBox.origin.x, y: -viewBox.origin.y)
             commands.append(.concatenate(SVGTransform(t)))
         }
-        lower(group: document.root, into: &commands)
+        lower(group: document.root, ctx: ctx, into: &commands)
         commands.append(.popState)
         return commands
     }
 
-    private static func lower(group: SVGGroup, into commands: inout [SVGRenderCommand]) {
+    fileprivate struct Context {
+        let paintServers: [String: SVGPaintServer]
+    }
+
+    private static func lower(group: SVGGroup, ctx: Context, into commands: inout [SVGRenderCommand]) {
         commands.append(.pushState)
         if group.transform.matrix != .identity {
             commands.append(.concatenate(group.transform))
         }
         for child in group.children {
-            lower(element: child, into: &commands)
+            lower(element: child, ctx: ctx, into: &commands)
         }
         commands.append(.popState)
     }
 
-    private static func lower(element: SVGElement, into commands: inout [SVGRenderCommand]) {
+    private static func lower(element: SVGElement, ctx: Context, into commands: inout [SVGRenderCommand]) {
         switch element {
         case .group(let g):
-            lower(group: g, into: &commands)
+            lower(group: g, ctx: ctx, into: &commands)
         case .rect(let r):
-            lower(rect: r, into: &commands)
+            lower(rect: r, ctx: ctx, into: &commands)
         case .circle(let c):
-            lower(circle: c, into: &commands)
+            lower(circle: c, ctx: ctx, into: &commands)
         case .ellipse(let e):
-            lower(ellipse: e, into: &commands)
+            lower(ellipse: e, ctx: ctx, into: &commands)
         case .line(let l):
-            lower(line: l, into: &commands)
+            lower(line: l, ctx: ctx, into: &commands)
         case .polyline(let p):
-            lower(polyline: p, into: &commands)
+            lower(polyline: p, ctx: ctx, into: &commands)
         case .polygon(let p):
-            lower(polygon: p, into: &commands)
+            lower(polygon: p, ctx: ctx, into: &commands)
         case .path(let p):
-            lower(path: p, into: &commands)
+            lower(path: p, ctx: ctx, into: &commands)
         case .text(let t):
             lower(text: t, into: &commands)
         }
     }
 
-    private static func lower(rect: SVGRect, into commands: inout [SVGRenderCommand]) {
+    private static func lower(rect: SVGRect, ctx: Context, into commands: inout [SVGRenderCommand]) {
         let cgRect = CGRect(origin: rect.origin, size: rect.size)
         let path: CGPath = {
             if rect.cornerRadii == .zero {
@@ -119,10 +124,10 @@ public enum SVGRenderTree {
                 transform: nil
             )
         }()
-        emitPaintedPath(path, paint: rect.paint, transform: rect.transform, into: &commands)
+        emitPaintedPath(path, paint: rect.paint, transform: rect.transform, ctx: ctx, into: &commands)
     }
 
-    private static func lower(circle: SVGCircle, into commands: inout [SVGRenderCommand]) {
+    private static func lower(circle: SVGCircle, ctx: Context, into commands: inout [SVGRenderCommand]) {
         guard circle.radius > 0 else { return }
         let bounds = CGRect(
             x: circle.center.x - circle.radius,
@@ -131,10 +136,10 @@ public enum SVGRenderTree {
             height: circle.radius * 2
         )
         let path = CGPath(ellipseIn: bounds, transform: nil)
-        emitPaintedPath(path, paint: circle.paint, transform: circle.transform, into: &commands)
+        emitPaintedPath(path, paint: circle.paint, transform: circle.transform, ctx: ctx, into: &commands)
     }
 
-    private static func lower(ellipse: SVGEllipse, into commands: inout [SVGRenderCommand]) {
+    private static func lower(ellipse: SVGEllipse, ctx: Context, into commands: inout [SVGRenderCommand]) {
         guard ellipse.radii.width > 0, ellipse.radii.height > 0 else { return }
         let bounds = CGRect(
             x: ellipse.center.x - ellipse.radii.width,
@@ -143,30 +148,30 @@ public enum SVGRenderTree {
             height: ellipse.radii.height * 2
         )
         let path = CGPath(ellipseIn: bounds, transform: nil)
-        emitPaintedPath(path, paint: ellipse.paint, transform: ellipse.transform, into: &commands)
+        emitPaintedPath(path, paint: ellipse.paint, transform: ellipse.transform, ctx: ctx, into: &commands)
     }
 
-    private static func lower(line: SVGLine, into commands: inout [SVGRenderCommand]) {
+    private static func lower(line: SVGLine, ctx: Context, into commands: inout [SVGRenderCommand]) {
         let mutable = CGMutablePath()
         mutable.move(to: line.start)
         mutable.addLine(to: line.end)
         // `<line>` has no fillable area; suppress fill regardless of cascade.
         var paint = line.paint
         paint.fill = .none
-        emitPaintedPath(mutable, paint: paint, transform: line.transform, into: &commands)
+        emitPaintedPath(mutable, paint: paint, transform: line.transform, ctx: ctx, into: &commands)
     }
 
-    private static func lower(polyline: SVGPolyline, into commands: inout [SVGRenderCommand]) {
+    private static func lower(polyline: SVGPolyline, ctx: Context, into commands: inout [SVGRenderCommand]) {
         guard let path = polylinePath(points: polyline.points, closed: false) else { return }
-        emitPaintedPath(path, paint: polyline.paint, transform: polyline.transform, into: &commands)
+        emitPaintedPath(path, paint: polyline.paint, transform: polyline.transform, ctx: ctx, into: &commands)
     }
 
-    private static func lower(polygon: SVGPolygon, into commands: inout [SVGRenderCommand]) {
+    private static func lower(polygon: SVGPolygon, ctx: Context, into commands: inout [SVGRenderCommand]) {
         guard let path = polylinePath(points: polygon.points, closed: true) else { return }
-        emitPaintedPath(path, paint: polygon.paint, transform: polygon.transform, into: &commands)
+        emitPaintedPath(path, paint: polygon.paint, transform: polygon.transform, ctx: ctx, into: &commands)
     }
 
-    private static func lower(path svgPath: SVGPath, into commands: inout [SVGRenderCommand]) {
+    private static func lower(path svgPath: SVGPath, ctx: Context, into commands: inout [SVGRenderCommand]) {
         let cg = CGMutablePath()
         for cmd in svgPath.commands {
             switch cmd {
@@ -183,7 +188,7 @@ public enum SVGRenderTree {
             }
         }
         guard !cg.isEmpty else { return }
-        emitPaintedPath(cg, paint: svgPath.paint, transform: svgPath.transform, into: &commands)
+        emitPaintedPath(cg, paint: svgPath.paint, transform: svgPath.transform, ctx: ctx, into: &commands)
     }
 
     private static func lower(text: SVGText, into commands: inout [SVGRenderCommand]) {
@@ -231,6 +236,7 @@ public enum SVGRenderTree {
         _ path: CGPath,
         paint: SVGPaintProperties,
         transform: SVGTransform,
+        ctx: Context,
         into commands: inout [SVGRenderCommand]
     ) {
         guard paint.visibility == .visible else { return }
@@ -243,18 +249,22 @@ public enum SVGRenderTree {
             commands.append(.beginOpacityLayer(paint.opacity))
         }
 
-        if case .none = paint.fill {} else {
+        let bbox = path.boundingBoxOfPath
+        let resolvedFill = resolvePaint(paint.fill, bbox: bbox, ctx: ctx)
+        let resolvedStroke = resolvePaint(paint.stroke, bbox: bbox, ctx: ctx)
+
+        if case .none = resolvedFill {} else {
             commands.append(.fillPath(
                 path,
-                paint: paint.fill,
+                paint: resolvedFill,
                 opacity: paint.fillOpacity,
                 evenOdd: paint.fillRule == .evenodd
             ))
         }
-        if case .none = paint.stroke {} else {
+        if case .none = resolvedStroke {} else {
             commands.append(.strokePath(
                 path,
-                paint: paint.stroke,
+                paint: resolvedStroke,
                 opacity: paint.strokeOpacity,
                 width: paint.strokeWidth,
                 lineCap: paint.lineCap,
@@ -263,11 +273,35 @@ public enum SVGRenderTree {
                 dashArray: paint.strokeDashArray,
                 dashPhase: paint.strokeDashOffset
             ))
-            emitZeroLengthCapStamps(path: path, paint: paint, into: &commands)
+            var stampPaint = paint
+            stampPaint.stroke = resolvedStroke
+            emitZeroLengthCapStamps(path: path, paint: stampPaint, into: &commands)
         }
 
         if paint.opacity < 1 { commands.append(.endOpacityLayer) }
         if needsState { commands.append(.popState) }
+    }
+
+    /// Convert `.paintServer` references into concrete paint cases with the
+    /// gradient endpoints baked into user space against `bbox`. Returns the
+    /// input unchanged for colors and `.none`; returns `.none` for dangling
+    /// or stop-less references.
+    private static func resolvePaint(_ paint: SVGPaint, bbox: CGRect, ctx: Context) -> SVGPaint {
+        guard case .paintServer(let id) = paint else { return paint }
+        guard let server = ctx.paintServers[id] else { return .none }
+        switch server {
+        case .linearGradient(let g):
+            guard !g.stops.isEmpty else { return .none }
+            var concrete = g
+            if g.units == .objectBoundingBox {
+                concrete.x1 = bbox.minX + g.x1 * bbox.width
+                concrete.y1 = bbox.minY + g.y1 * bbox.height
+                concrete.x2 = bbox.minX + g.x2 * bbox.width
+                concrete.y2 = bbox.minY + g.y2 * bbox.height
+                concrete.units = .userSpaceOnUse
+            }
+            return .linearGradient(concrete)
+        }
     }
 
     /// SVG 1.1 §11.4: a zero-length subpath must render as a stamp of the

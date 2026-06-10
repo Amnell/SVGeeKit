@@ -88,6 +88,38 @@ public struct SwiftUICanvasRenderer {
                 opacity: Double(c.alpha * opacity)
             )
             return .color(color)
+        case .paintServer:
+            // Unresolved server reference (lowering left it as-is, e.g. on
+            // text where bbox isn't known). Treat as no paint.
+            return nil
+        case .linearGradient(let g):
+            guard !g.stops.isEmpty else { return nil }
+            let stops = g.stops
+                .sorted { $0.offset < $1.offset }
+                .map { stop in
+                    Gradient.Stop(
+                        color: Color(
+                            .sRGB,
+                            red: Double(stop.color.red),
+                            green: Double(stop.color.green),
+                            blue: Double(stop.color.blue),
+                            opacity: Double(stop.color.alpha * opacity)
+                        ),
+                        location: stop.offset
+                    )
+                }
+            let options: GraphicsContext.GradientOptions
+            switch g.spreadMethod {
+            case .pad: options = []
+            case .repeat: options = .repeat
+            case .reflect: options = .mirror
+            }
+            return .linearGradient(
+                Gradient(stops: stops),
+                startPoint: CGPoint(x: g.x1, y: g.y1),
+                endPoint: CGPoint(x: g.x2, y: g.y2),
+                options: options
+            )
         }
     }
 
@@ -180,7 +212,8 @@ public struct SwiftUICanvasRenderer {
 
     private func cgColor(for paint: SVGPaint, opacity: CGFloat) -> CGColor {
         switch paint {
-        case .none:
+        case .none, .paintServer, .linearGradient:
+            // Gradients on text aren't supported yet — caller will skip.
             return CGColor(red: 0, green: 0, blue: 0, alpha: 0)
         case .color(let c):
             return CGColor(

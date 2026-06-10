@@ -372,4 +372,41 @@ struct SVGParserTests {
         #expect(hidden.paint.visibility == .hidden)
         #expect(revealed.paint.visibility == .visible)
     }
+
+    @Test func parsesLinearGradientWithXlinkHrefStopInheritance() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="50">
+          <defs>
+            <linearGradient id="A">
+              <stop offset="0" stop-color="blue"/>
+              <stop offset="1" stop-color="lime"/>
+            </linearGradient>
+            <linearGradient id="B" x1="0" y1="0" x2="1" y2="0" xlink:href="#A"/>
+          </defs>
+          <rect width="50" height="20" fill="url(#A)"/>
+          <rect y="25" width="50" height="20" fill="url(#B)"/>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+
+        guard case .linearGradient(let a) = doc.paintServers["A"] else {
+            Issue.record("expected linearGradient A"); return
+        }
+        guard case .linearGradient(let b) = doc.paintServers["B"] else {
+            Issue.record("expected linearGradient B (resolved via xlink:href)"); return
+        }
+        #expect(a.stops.count == 2)
+        #expect(a.units == .objectBoundingBox)
+        // B inherits stops from A since it defines none of its own.
+        #expect(b.stops.count == 2)
+        #expect(b.stops.map(\.offset) == a.stops.map(\.offset))
+
+        // Rects carry parse-time `.paintServer` references; lowering resolves them.
+        guard case .rect(let r1) = doc.root.children[0],
+              case .rect(let r2) = doc.root.children[1] else {
+            Issue.record("expected two rects"); return
+        }
+        #expect(r1.paint.fill == .paintServer(id: "A"))
+        #expect(r2.paint.fill == .paintServer(id: "B"))
+    }
 }

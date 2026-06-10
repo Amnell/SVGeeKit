@@ -6,11 +6,18 @@ public struct SVGDocument: Equatable, Sendable {
     public var viewBox: CGRect?
     public var intrinsicSize: CGSize?
     public var root: SVGGroup
+    public var paintServers: [String: SVGPaintServer]
 
-    public init(viewBox: CGRect? = nil, intrinsicSize: CGSize? = nil, root: SVGGroup = SVGGroup()) {
+    public init(
+        viewBox: CGRect? = nil,
+        intrinsicSize: CGSize? = nil,
+        root: SVGGroup = SVGGroup(),
+        paintServers: [String: SVGPaintServer] = [:]
+    ) {
         self.viewBox = viewBox
         self.intrinsicSize = intrinsicSize
         self.root = root
+        self.paintServers = paintServers
     }
 }
 

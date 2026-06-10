@@ -18,10 +18,14 @@ public struct SVGColor: Equatable, Sendable {
     public static let white = SVGColor(red: 1, green: 1, blue: 1)
 }
 
-/// Paint sources supported today. Gradients/patterns added in Phase 3.5.
+/// Paint sources supported today. `paintServer` is a parse-time reference
+/// to an `SVGDocument.paintServers` entry; lowering resolves it into a
+/// concrete case (e.g. `.linearGradient`) before reaching the backend.
 public enum SVGPaint: Equatable, Sendable {
     case none
     case color(SVGColor)
+    case paintServer(id: String)
+    case linearGradient(SVGLinearGradient)
 }
 
 public enum SVGLineCap: String, Sendable, Equatable {

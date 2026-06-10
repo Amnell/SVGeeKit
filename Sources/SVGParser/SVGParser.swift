@@ -30,9 +30,11 @@ public struct SVGParser {
             }
         }
         if let error = delegate.error { throw error }
-        guard let document = delegate.document else {
+        guard var document = delegate.document else {
             throw SVGParseError(kind: .missingRoot, line: nil, column: nil)
         }
+        delegate.resolveGradientHrefs()
+        document.paintServers = delegate.paintServers
         return document
     }
 
@@ -61,6 +63,27 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
     /// Partially-built <text> elements. Character data is appended to the top
     /// while a text capture is active (including text inside nested <tspan>).
     private var textStack: [SVGText] = []
+
+    /// Partial linearGradient definitions currently open. Top receives `<stop>`s.
+    private var gradientStack: [PartialGradient] = []
+    /// Completed paint servers keyed by id.
+    fileprivate var paintServers: [String: SVGPaintServer] = [:]
+    /// xlink:href deferrals: gradients that referenced another paint server.
+    /// Resolved in a final pass once the whole document has been parsed.
+    private var gradientHrefs: [(id: String, href: String)] = []
+
+    struct PartialGradient {
+        var id: String?
+        var href: String?
+        var x1: CGFloat?
+        var y1: CGFloat?
+        var x2: CGFloat?
+        var y2: CGFloat?
+        var units: SVGGradientUnits?
+        var spreadMethod: SVGGradientSpread?
+        var transform: SVGTransform?
+        var stops: [SVGGradientStop] = []
+    }
 
     func parser(
         _ parser: XMLParser,
@@ -106,6 +129,10 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
             // active <text> via foundCharacters. Drop the call here so the
             // tspan's character data isn't double-counted in didEnd handling.
             break
+        case "linearGradient":
+            handleLinearGradientStart(attributes: attributeDict)
+        case "stop":
+            handleStop(attributes: attributeDict, currentColor: elementPaint.color)
         default:
             break
         }
@@ -136,6 +163,8 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
             guard var finished = textStack.popLast() else { return }
             finished.string = SAXDelegate.collapseTextWhitespace(finished.string)
             appendChild(.text(finished))
+        case "linearGradient":
+            finalizeLinearGradient()
         default:
             break
         }
@@ -173,7 +202,6 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
         document = SVGDocument(viewBox: viewBox, intrinsicSize: intrinsic, root: SVGGroup())
         groupStack.append(SVGGroup())
     }
-
     /// Resolves a length attribute against the current viewport. Percentages on
     /// the x/y axes use the viewport's width/height; "length" axis percentages
     /// use the SVG 1.1 normalized diagonal sqrt((w² + h²) / 2). em/ex resolve
@@ -418,12 +446,22 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
         }
     }
 
-    /// Resolves a paint value, expanding the `currentColor` keyword against
-    /// the cascaded `color` property (SVG 1.1 §13.2).
+    /// Resolves a paint value, expanding `currentColor` and `url(#id)`
+    /// references (SVG 1.1 §13.2 / §12.2). Server lookup is deferred to
+    /// render-tree lowering; here we just record the reference id.
     private func resolvePaint(_ raw: String, currentColor: SVGColor) -> SVGPaint? {
         let trimmed = raw.trimmingCharacters(in: .whitespaces)
         if trimmed.caseInsensitiveCompare("currentColor") == .orderedSame {
             return .color(currentColor)
+        }
+        if trimmed.lowercased().hasPrefix("url(") {
+            let body = trimmed.dropFirst(4)
+            guard let close = body.firstIndex(of: ")") else { return nil }
+            var ref = String(body[..<close]).trimmingCharacters(in: .whitespaces)
+            ref = ref.trimmingCharacters(in: CharacterSet(charactersIn: "'\""))
+            if ref.hasPrefix("#") { ref = String(ref.dropFirst()) }
+            guard !ref.isEmpty else { return nil }
+            return .paintServer(id: ref)
         }
         return AttributeParsers.color(trimmed)
     }
@@ -463,6 +501,115 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
     /// trim leading/trailing. We don't implement xml:space="preserve" yet.
     static func collapseTextWhitespace(_ raw: String) -> String {
         raw.split(whereSeparator: { $0.isWhitespace }).joined(separator: " ")
+    }
+
+    // MARK: - Paint servers
+
+    fileprivate func handleLinearGradientStart(attributes: [String: String]) {
+        var p = PartialGradient()
+        p.id = attributes["id"]
+        p.href = attributes["xlink:href"] ?? attributes["href"]
+        p.x1 = attributes["x1"].flatMap { AttributeParsers.length($0)?.resolved() }
+        p.y1 = attributes["y1"].flatMap { AttributeParsers.length($0)?.resolved() }
+        p.x2 = attributes["x2"].flatMap { AttributeParsers.length($0)?.resolved() }
+        p.y2 = attributes["y2"].flatMap { AttributeParsers.length($0)?.resolved() }
+        if let u = attributes["gradientUnits"]?.trimmingCharacters(in: .whitespaces),
+           let units = SVGGradientUnits(rawValue: u) {
+            p.units = units
+        }
+        if let s = attributes["spreadMethod"]?.trimmingCharacters(in: .whitespaces),
+           let spread = SVGGradientSpread(rawValue: s) {
+            p.spreadMethod = spread
+        }
+        if let raw = attributes["gradientTransform"],
+           let t = AttributeParsers.transform(raw) {
+            p.transform = t
+        }
+        gradientStack.append(p)
+    }
+
+    fileprivate func handleStop(attributes: [String: String], currentColor: SVGColor) {
+        guard !gradientStack.isEmpty else { return }
+
+        // style="..." wins over presentation attributes (CSS specificity).
+        var props: [String: String] = attributes
+        if let style = attributes["style"] {
+            for pair in style.split(separator: ";") {
+                let parts = pair.split(separator: ":", maxSplits: 1)
+                    .map { $0.trimmingCharacters(in: .whitespaces) }
+                guard parts.count == 2 else { continue }
+                props[parts[0]] = parts[1]
+            }
+        }
+
+        let offset: CGFloat = {
+            guard let raw = props["offset"]?.trimmingCharacters(in: .whitespaces) else { return 0 }
+            if raw.hasSuffix("%"), let d = Double(raw.dropLast()) { return CGFloat(d / 100) }
+            return CGFloat(Double(raw) ?? 0)
+        }()
+        var color = SVGColor(red: 0, green: 0, blue: 0)
+        if let raw = props["stop-color"]?.trimmingCharacters(in: .whitespaces) {
+            if raw.caseInsensitiveCompare("currentColor") == .orderedSame {
+                color = currentColor
+            } else if case .color(let c) = AttributeParsers.color(raw) ?? .none {
+                color = c
+            }
+        }
+        if let raw = props["stop-opacity"], let d = Double(raw) {
+            color.alpha *= CGFloat(min(1, max(0, d)))
+        }
+        gradientStack[gradientStack.count - 1].stops.append(
+            SVGGradientStop(offset: max(0, min(1, offset)), color: color)
+        )
+    }
+
+    fileprivate func finalizeLinearGradient() {
+        guard let p = gradientStack.popLast(), let id = p.id else { return }
+        let gradient = SVGLinearGradient(
+            x1: p.x1 ?? 0,
+            y1: p.y1 ?? 0,
+            x2: p.x2 ?? 1,
+            y2: p.y2 ?? 0,
+            units: p.units ?? .objectBoundingBox,
+            spreadMethod: p.spreadMethod ?? .pad,
+            stops: p.stops,
+            transform: p.transform ?? .identity
+        )
+        paintServers[id] = .linearGradient(gradient)
+        if var href = p.href {
+            if href.hasPrefix("#") { href = String(href.dropFirst()) }
+            gradientHrefs.append((id: id, href: href))
+        }
+    }
+
+    /// Resolve gradient `xlink:href` chains and merge attributes / stops
+    /// per SVG 1.1 §13.2.2: child's own values win; parent supplies the rest.
+    fileprivate func resolveGradientHrefs() {
+        // Repeat-until-stable to handle chains parent←child←grandchild.
+        var changed = true
+        var iterations = 0
+        while changed && iterations < 16 {
+            changed = false
+            iterations += 1
+            for (id, href) in gradientHrefs {
+                guard case .linearGradient(let child) = paintServers[id],
+                      case .linearGradient(let parent) = paintServers[href] else { continue }
+                let merged = SVGLinearGradient(
+                    x1: child.x1,
+                    y1: child.y1,
+                    x2: child.x2,
+                    y2: child.y2,
+                    units: child.units,
+                    spreadMethod: child.spreadMethod,
+                    stops: child.stops.isEmpty ? parent.stops : child.stops,
+                    transform: child.transform
+                )
+                if merged != child {
+                    paintServers[id] = .linearGradient(merged)
+                    changed = true
+                }
+            }
+        }
     }
 
     /// Parse `stroke-dasharray` per SVG 1.1: "none" → empty; comma/whitespace
