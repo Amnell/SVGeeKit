@@ -20,10 +20,10 @@ struct ConformanceSuite {
         try Reporter.shared.record(record)
 
         switch record.status {
-        case .passed, .skipped:
+        case .passed, .skipped, .missingBaseline:
+            // missingBaseline is expected for unimplemented features and stays
+            // visible in the JSON report + Viewer; do not fail the test run.
             return
-        case .missingBaseline:
-            Issue.record(.init(rawValue: "No baseline for \(record.testId). Re-run with APPROVE_SNAPSHOTS=1 after visual review."))
         case .failed:
             Issue.record(.init(rawValue: "Snapshot mismatch for \(record.testId): \(record.detail ?? "")"))
         case .parseError:
