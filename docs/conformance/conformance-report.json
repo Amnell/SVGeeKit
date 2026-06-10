@@ -1,0 +1,11 @@
+[
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-rect-basic-01\/actual.png",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-rect-basic-01\/baseline.png",
+    "diffMaxChannel" : 1,
+    "mismatchedFraction" : 0,
+    "status" : "passed",
+    "tag" : "shapes",
+    "testId" : "shapes-rect-basic-01"
+  }
+]
