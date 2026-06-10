@@ -7,9 +7,13 @@ struct DropZoneView: View {
     @State private var state: LoadState = .empty
     @State private var isTargeted: Bool = false
     @State private var sourceURL: URL?
+    @State private var loadTask: Task<Void, Never>?
+    @AppStorage("viewer.showLiveCanvas") private var showLiveCanvas: Bool = true
+    @AppStorage("viewer.showRaster") private var showRaster: Bool = true
 
     private enum LoadState {
         case empty
+        case loading(URL)
         case loaded(SVGDocument, source: String)
         case failed(String)
     }
@@ -43,6 +47,12 @@ struct DropZoneView: View {
                     .truncationMode(.middle)
             }
             Spacer()
+            Toggle("Live", isOn: $showLiveCanvas)
+                .toggleStyle(.button)
+                .help("Show the live SwiftUI Canvas tile")
+            Toggle("Raster", isOn: $showRaster)
+                .toggleStyle(.button)
+                .help("Show the rasterized PNG tile")
             if case .loaded = state {
                 Button("Clear") { reset() }
             }
@@ -54,6 +64,10 @@ struct DropZoneView: View {
         switch state {
         case .empty:
             DropPrompt(isTargeted: isTargeted) { openPanel() }
+        case .loading:
+            ProgressView("Parsing…")
+                .progressViewStyle(.circular)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
         case .failed(let message):
             ContentUnavailableView(
                 "Failed to load SVG",
@@ -61,7 +75,12 @@ struct DropZoneView: View {
                 description: Text(message)
             )
         case .loaded(let document, let source):
-            LoadedSVGView(document: document, source: source)
+            LoadedSVGView(
+                document: document,
+                source: source,
+                showLiveCanvas: $showLiveCanvas,
+                showRaster: $showRaster
+            )
         }
     }
 
@@ -76,19 +95,34 @@ struct DropZoneView: View {
     }
 
     private func load(url: URL) {
-        do {
-            let data = try Data(contentsOf: url)
-            let document = try SVGParser().parse(data: data)
-            let source = String(data: data, encoding: .utf8) ?? ""
-            sourceURL = url
-            state = .loaded(document, source: source)
-        } catch {
-            sourceURL = url
-            state = .failed(String(describing: error))
+        loadTask?.cancel()
+        sourceURL = url
+        state = .loading(url)
+        loadTask = Task {
+            // Read + parse off the main actor; only the result hop is on-main.
+            let result: Result<(SVGDocument, String), Error> = await Task.detached(priority: .userInitiated) {
+                do {
+                    let data = try Data(contentsOf: url)
+                    let document = try SVGParser().parse(data: data)
+                    let source = String(data: data, encoding: .utf8) ?? ""
+                    return .success((document, source))
+                } catch {
+                    return .failure(error)
+                }
+            }.value
+            if Task.isCancelled { return }
+            switch result {
+            case .success(let (document, source)):
+                state = .loaded(document, source: source)
+            case .failure(let error):
+                state = .failed(String(describing: error))
+            }
         }
     }
 
     private func reset() {
+        loadTask?.cancel()
+        loadTask = nil
         state = .empty
         sourceURL = nil
     }
@@ -130,6 +164,8 @@ private struct DropPrompt: View {
 private struct LoadedSVGView: View {
     let document: SVGDocument
     let source: String
+    @Binding var showLiveCanvas: Bool
+    @Binding var showRaster: Bool
 
     @State private var rasterScale: CGFloat = 1
     @State private var rasterImage: NSImage?
@@ -149,6 +185,7 @@ private struct LoadedSVGView: View {
             .padding(.bottom, 16)
         }
         .task(id: source) {
+            guard showRaster else { return }
             await refreshRaster()
         }
     }
@@ -168,39 +205,56 @@ private struct LoadedSVGView: View {
             }
             .pickerStyle(.segmented)
             .frame(width: 180)
+            .disabled(!showRaster)
             .onChange(of: rasterScale) { _, _ in
+                guard showRaster else { return }
                 Task { await refreshRaster() }
             }
         }
     }
 
     private var tiles: some View {
-        let columns = [GridItem(.flexible()), GridItem(.flexible())]
+        let visibleCount = (showLiveCanvas ? 1 : 0) + (showRaster ? 1 : 0)
+        let columns: [GridItem] = visibleCount >= 2
+            ? [GridItem(.flexible()), GridItem(.flexible())]
+            : [GridItem(.flexible())]
         return LazyVGrid(columns: columns, spacing: 16) {
-            VStack(alignment: .leading, spacing: 6) {
-                Text("SVGImageView (live SwiftUI Canvas)").font(.headline)
-                CheckerboardTile {
-                    SVGImageView(document: document)
-                        .frame(width: intrinsic.width, height: intrinsic.height)
-                }
-            }
-            VStack(alignment: .leading, spacing: 6) {
-                Text("Static PNG (SVGRasterizer)").font(.headline)
-                CheckerboardTile {
-                    if let rasterImage {
-                        Image(nsImage: rasterImage)
-                            .resizable()
-                            .interpolation(.none)
-                            .scaledToFit()
-                    } else if let rasterError {
-                        Text(rasterError)
-                            .foregroundStyle(.red)
-                            .font(.callout)
-                            .padding(8)
-                    } else {
-                        ProgressView()
+            if showLiveCanvas {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("SVGImageView (live SwiftUI Canvas)").font(.headline)
+                    CheckerboardTile {
+                        SVGImageView(document: document)
+                            .frame(width: intrinsic.width, height: intrinsic.height)
                     }
                 }
+            }
+            if showRaster {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Static PNG (SVGRasterizer)").font(.headline)
+                    CheckerboardTile {
+                        if let rasterImage {
+                            Image(nsImage: rasterImage)
+                                .resizable()
+                                .interpolation(.none)
+                                .scaledToFit()
+                        } else if let rasterError {
+                            Text(rasterError)
+                                .foregroundStyle(.red)
+                                .font(.callout)
+                                .padding(8)
+                        } else {
+                            ProgressView()
+                        }
+                    }
+                }
+            }
+        }
+        .onChange(of: showRaster) { _, newValue in
+            if newValue {
+                Task { await refreshRaster() }
+            } else {
+                rasterImage = nil
+                rasterError = nil
             }
         }
     }

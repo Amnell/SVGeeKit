@@ -41,6 +41,23 @@ public struct SVGParser {
     public func parse(string: String) throws -> SVGDocument {
         try parse(data: Data(string.utf8))
     }
+
+    /// Async convenience: runs the synchronous `parse(data:)` on a detached
+    /// task at `userInitiated` priority so callers on the main actor don't
+    /// block their thread on large SVG files.
+    public static func parse(data: Data) async throws -> SVGDocument {
+        try await Task.detached(priority: .userInitiated) {
+            try SVGParser().parse(data: data)
+        }.value
+    }
+
+    /// Async convenience that reads `url` and parses, both off the main actor.
+    public static func parse(url: URL) async throws -> SVGDocument {
+        try await Task.detached(priority: .userInitiated) {
+            let data = try Data(contentsOf: url)
+            return try SVGParser().parse(data: data)
+        }.value
+    }
 }
 
 private final class SAXDelegate: NSObject, XMLParserDelegate {
