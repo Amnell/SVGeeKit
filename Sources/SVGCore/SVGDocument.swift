@@ -35,7 +35,34 @@ public enum SVGElement: Equatable, Sendable {
     case line(SVGLine)
     case polyline(SVGPolyline)
     case polygon(SVGPolygon)
+    case path(SVGPath)
     case text(SVGText)
+}
+
+/// Normalized path-data segments. The parser resolves `d=` (relative,
+/// shorthand, arc commands) into this absolute-coordinate form.
+public enum SVGPathCommand: Equatable, Sendable {
+    case moveTo(CGPoint)
+    case lineTo(CGPoint)
+    case quadTo(control: CGPoint, end: CGPoint)
+    case cubicTo(control1: CGPoint, control2: CGPoint, end: CGPoint)
+    case close
+}
+
+public struct SVGPath: Equatable, Sendable {
+    public var commands: [SVGPathCommand]
+    public var paint: SVGPaintProperties
+    public var transform: SVGTransform
+
+    public init(
+        commands: [SVGPathCommand],
+        paint: SVGPaintProperties = .init(),
+        transform: SVGTransform = .identity
+    ) {
+        self.commands = commands
+        self.paint = paint
+        self.transform = transform
+    }
 }
 
 public struct SVGRect: Equatable, Sendable {

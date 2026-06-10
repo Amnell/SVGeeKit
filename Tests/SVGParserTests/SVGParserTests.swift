@@ -189,4 +189,58 @@ struct SVGParserTests {
         }
         #expect(t.string == "visible")
     }
+
+    @Test func parsesPathAbsoluteAndRelativeCommands() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10">
+          <path d="M 10 20 L 30 40 H 50 V 60 Z" fill="red"/>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .path(let p) = doc.root.children.first else {
+            Issue.record("expected path"); return
+        }
+        #expect(p.commands == [
+            .moveTo(CGPoint(x: 10, y: 20)),
+            .lineTo(CGPoint(x: 30, y: 40)),
+            .lineTo(CGPoint(x: 50, y: 40)),
+            .lineTo(CGPoint(x: 50, y: 60)),
+            .close
+        ])
+        if case .color(let c) = p.paint.fill {
+            #expect(c.red == 1 && c.green == 0 && c.blue == 0)
+        } else { Issue.record("expected red fill") }
+    }
+
+    @Test func parsesPathRelativeAndImplicitLineto() throws {
+        // "m 10 10 20 20" -> moveTo(10,10) then implicit lineTo (10+20, 10+20)
+        let commands = PathDataParser.parse("m 10 10 20 20")
+        #expect(commands == [
+            .moveTo(CGPoint(x: 10, y: 10)),
+            .lineTo(CGPoint(x: 30, y: 30))
+        ])
+    }
+
+    @Test func parsesPathCubicAndSmoothReflection() throws {
+        // C produces cubic with absC2 = (40,40); S should reflect that around the
+        // current point (50,50) → absC1 = (60,60).
+        let cmds = PathDataParser.parse("M 0 0 C 10 10 40 40 50 50 S 70 30 80 20")
+        #expect(cmds?.count == 3)
+        guard let cmds, case .cubicTo(let c1, _, let end) = cmds[2] else {
+            Issue.record("expected cubic from S"); return
+        }
+        #expect(c1 == CGPoint(x: 60, y: 60))
+        #expect(end == CGPoint(x: 80, y: 20))
+    }
+
+    @Test func parsesPathArcDecomposesToCubics() throws {
+        // A 50 50 0 0 1 100 0 from (0,0): half-circle right.
+        // Expect several cubic segments, ending at (100, 0).
+        let cmds = PathDataParser.parse("M 0 0 A 50 50 0 0 1 100 0")
+        guard let cmds else { Issue.record("expected commands"); return }
+        #expect(cmds.first == .moveTo(.zero))
+        if case .cubicTo(_, _, let end) = cmds.last {
+            #expect(abs(end.x - 100) < 0.01 && abs(end.y) < 0.01)
+        } else { Issue.record("arc should decompose to cubics") }
+    }
 }

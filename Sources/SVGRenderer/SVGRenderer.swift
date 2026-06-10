@@ -97,6 +97,8 @@ public enum SVGRenderTree {
             lower(polyline: p, into: &commands)
         case .polygon(let p):
             lower(polygon: p, into: &commands)
+        case .path(let p):
+            lower(path: p, into: &commands)
         case .text(let t):
             lower(text: t, into: &commands)
         }
@@ -160,6 +162,26 @@ public enum SVGRenderTree {
     private static func lower(polygon: SVGPolygon, into commands: inout [SVGRenderCommand]) {
         guard let path = polylinePath(points: polygon.points, closed: true) else { return }
         emitPaintedPath(path, paint: polygon.paint, transform: polygon.transform, into: &commands)
+    }
+
+    private static func lower(path svgPath: SVGPath, into commands: inout [SVGRenderCommand]) {
+        let cg = CGMutablePath()
+        for cmd in svgPath.commands {
+            switch cmd {
+            case .moveTo(let p):
+                cg.move(to: p)
+            case .lineTo(let p):
+                cg.addLine(to: p)
+            case .quadTo(let c, let end):
+                cg.addQuadCurve(to: end, control: c)
+            case .cubicTo(let c1, let c2, let end):
+                cg.addCurve(to: end, control1: c1, control2: c2)
+            case .close:
+                cg.closeSubpath()
+            }
+        }
+        guard !cg.isEmpty else { return }
+        emitPaintedPath(cg, paint: svgPath.paint, transform: svgPath.transform, into: &commands)
     }
 
     private static func lower(text: SVGText, into commands: inout [SVGRenderCommand]) {

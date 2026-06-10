@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="360" viewBox="0 0 480 360">
+  <title>shapes-path-01</title>
+  <desc>Path rendering: M/L/H/V/Z lines, C/S cubic Beziers, Q/T quadratics, A arcs, and relative variants.</desc>
+  <rect x="0" y="0" width="480" height="360" fill="white"/>
+
+  <!-- Row 1: closed polygon via M/L/Z, filled + stroked. -->
+  <path d="M 30 30 L 90 30 L 90 90 L 30 90 Z"
+        fill="#aaddff" stroke="navy" stroke-width="3"/>
+
+  <!-- Row 1: triangle via H/V shorthand. -->
+  <path d="M 130 30 H 190 V 90 Z"
+        fill="#aaffaa" stroke="green" stroke-width="2"/>
+
+  <!-- Row 1: cubic Bezier "wave". -->
+  <path d="M 230 60 C 250 10, 290 10, 310 60 S 350 110, 390 60"
+        fill="none" stroke="red" stroke-width="3"/>
+
+  <!-- Row 2: quadratic Bezier arch. -->
+  <path d="M 30 200 Q 90 120, 150 200 T 270 200"
+        fill="none" stroke="purple" stroke-width="3"/>
+
+  <!-- Row 2: filled blob using relative cubics. -->
+  <path d="M 320 180 c 0 -40, 60 -40, 60 0 c 0 40, -60 40, -60 0 z"
+        fill="orange" stroke="black" stroke-width="1"/>
+
+  <!-- Row 3: arc — half circle right. -->
+  <path d="M 30 290 A 40 40 0 0 1 110 290"
+        fill="none" stroke="teal" stroke-width="3"/>
+
+  <!-- Row 3: arc — large sweep with rotation. -->
+  <path d="M 150 310 A 50 25 30 1 1 250 310"
+        fill="none" stroke="magenta" stroke-width="3"/>
+
+  <!-- Row 3: filled pac-man via arc + lines. -->
+  <path d="M 360 290 L 360 240 A 50 50 0 1 1 395 333 Z"
+        fill="yellow" stroke="black" stroke-width="2"/>
+
+  <text x="240" y="345" font-family="Helvetica, sans-serif" font-size="14"
+        text-anchor="middle" fill="black">shapes-path-01</text>
+</svg>

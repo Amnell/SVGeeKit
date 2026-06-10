@@ -89,6 +89,8 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
             handlePolyline(attributes: attributeDict, paint: elementPaint, parser: parser)
         case "polygon":
             handlePolygon(attributes: attributeDict, paint: elementPaint, parser: parser)
+        case "path":
+            handlePath(attributes: attributeDict, paint: elementPaint, parser: parser)
         case "text":
             handleTextStart(
                 attributes: attributeDict, paint: elementPaint, font: elementFont, parser: parser
@@ -245,6 +247,18 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
             transform: transform(from: attributes, parser: parser) ?? .identity
         )
         appendChild(.polygon(polygon))
+    }
+
+    private func handlePath(attributes: [String: String], paint: SVGPaintProperties, parser: XMLParser) {
+        guard let raw = attributes["d"],
+              let commands = PathDataParser.parse(raw),
+              !commands.isEmpty else { return }
+        let path = SVGPath(
+            commands: commands,
+            paint: paint,
+            transform: transform(from: attributes, parser: parser) ?? .identity
+        )
+        appendChild(.path(path))
     }
 
     private func handleTextStart(
