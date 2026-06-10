@@ -176,10 +176,12 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
 
     /// Resolves a length attribute against the current viewport. Percentages on
     /// the x/y axes use the viewport's width/height; "length" axis percentages
-    /// use the SVG 1.1 normalized diagonal sqrt((w² + h²) / 2).
+    /// use the SVG 1.1 normalized diagonal sqrt((w² + h²) / 2). em/ex resolve
+    /// against the current font-size (ex ≈ 0.5em per SVG 1.1 fallback).
     private func resolveLength(_ raw: String?, axis: Axis, default fallback: CGFloat = 0) -> CGFloat {
         guard let raw, let len = AttributeParsers.length(raw) else { return fallback }
-        if len.unit == .percent {
+        switch len.unit {
+        case .percent:
             let basis: CGFloat
             switch axis {
             case .x: basis = viewport.width
@@ -189,8 +191,13 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
                 basis = (w == 0 && h == 0) ? 0 : sqrt((w * w + h * h) / 2)
             }
             return len.value * basis / 100
+        case .em:
+            return len.value * (fontStack.last?.size ?? 16)
+        case .ex:
+            return len.value * (fontStack.last?.size ?? 16) * 0.5
+        default:
+            return len.resolved()
         }
-        return len.resolved()
     }
 
     private func handleRect(attributes: [String: String], paint: SVGPaintProperties, parser: XMLParser) {
