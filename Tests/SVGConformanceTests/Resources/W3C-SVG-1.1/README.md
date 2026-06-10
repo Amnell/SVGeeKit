@@ -5,33 +5,54 @@ Test Suite (16 August 2011):
 
 ```
 W3C-SVG-1.1/
-  svg/          # Test source files (.svg) — what we render
-  png/          # Reference PNGs from the W3C suite (optional, human reference only)
-  overrides.json  # Per-test feature-tag and skip overrides
+  svg/            # Test source files (.svg) — what we render
+  png/            # Reference PNGs from the W3C suite — shown side-by-side in the Viewer
+  images/         # Raster assets referenced by some tests via <image>
+  resources/      # Shared SVG/CSS/font assets referenced by some tests
+  overrides.json  # Tag/skip configuration (see below)
 ```
 
 ## Provenance
 
-- Upstream: https://www.w3.org/Graphics/SVG/Test/20110816/
-- License: W3C Software and Document License (https://www.w3.org/Consortium/Legal/2015/copyright-software-and-document)
+- Upstream: <https://www.w3.org/Graphics/SVG/Test/20110816/>
+- Archive: <https://www.w3.org/Graphics/SVG/Test/20110816/archives/W3C_SVG_11_TestSuite.tar.gz>
+- Vendored snapshot: full `svg/`, `png/`, `images/`, and `resources/` directories
+  from the upstream archive (W3C-published 2011-08-09). The `harness/` and
+  `svgweb/` directories from the archive are intentionally omitted — they are an
+  HTML test runner that we don't need.
+- License: W3C Software and Document License
+  (<https://www.w3.org/Consortium/Legal/2015/copyright-software-and-document>) —
+  redistribution permitted, copyright headers inside each file are preserved.
 
-The full test suite is *not* committed in this initial scaffold — only a small
-in-house sample (`shapes-rect-basic-01.svg`) is present to exercise the
-conformance harness. To vendor the full upstream suite:
+The `svg/` directory also contains a small set of in-house fixtures
+(`shapes-rect-basic-01.svg`, `shapes-circle-01.svg`, …). Their IDs are chosen
+not to collide with the W3C suffix convention (`-01-b`, `-01-t`, `-01-f`), so
+they coexist cleanly with the vendored files and provide a stable green
+baseline while we extend SVG coverage.
 
-1. Download the archive linked from the W3C page above.
-2. Copy the contents of its `svg/` and `png/` directories here.
-3. Commit, preserving the W3C copyright headers inside each file.
+## Tag derivation and skip configuration
 
-## How tags are derived
+`SVGFeatureTag.fromW3CFilename` reads the leading chapter prefix from each
+filename (e.g. `paths-data-01-t.svg` → `paths`).
 
-`SVGFeatureTag.fromW3CFilename` reads the leading chapter prefix from the
-filename (e.g. `paths-data-01-t.svg` → `paths`). Override entries in
-`overrides.json` can re-tag or skip a specific test:
+`overrides.json` is loaded in one of two shapes:
 
 ```json
 {
-  "filters-blend-01-b": { "skip": "feFilter not implemented yet" },
-  "interact-events-01-t": { "tag": "interact" }
+  "skipReason": "feature family not yet supported",
+  "skipTags": ["filters", "text", "fonts", "animate", "script", "interact", "masking", "linking", "extend"],
+  "tests": {
+    "filters-blend-01-b": { "skip": "explicit per-test note" },
+    "interact-events-01-t": { "tag": "interact" }
+  }
 }
 ```
+
+- `skipTags` skips every test whose derived feature tag is in the list.
+- `skipReason` is the default reason shown when a test is skipped via a tag.
+- `tests` holds per-ID overrides; an entry with `skip` always wins over tag
+  rules. An entry with `tag` re-tags a test that the filename heuristic would
+  otherwise mis-classify.
+
+A bare `[String: SVGTestOverride]` map is still accepted for backwards
+compatibility with the original minimal scaffold.

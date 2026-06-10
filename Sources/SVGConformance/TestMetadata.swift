@@ -5,43 +5,53 @@ import Foundation
 /// Mirrors what's useful to a human reviewer when comparing the SVGeeKit
 /// render against the W3C reference image:
 /// - `<title>` and `<desc>` from the SVG root,
-/// - the W3C-specific `<SVGTestCase>` / `<OperatorScript>` block describing
-///   what the test is verifying (owner, reviewer, status, paragraphs of
-///   operator instructions).
+/// - the W3C-specific `<d:SVGTestCase>` wrapper carrying author / reviewer /
+///   status attributes,
+/// - the three xhtml-paragraph sections inside that wrapper:
+///   `<d:testDescription>`, `<d:operatorScript>`, `<d:passCriteria>`.
 ///
 /// Pure data, no I/O beyond the static `extract(from:)` factory.
 public struct SVGTestMetadata: Sendable, Equatable {
     public var title: String?
     public var description: String?
-    public var owner: String?
+    public var author: String?
     public var reviewer: String?
     public var status: String?
     public var version: String?
-    public var operatorParagraphs: [String]
+    public var testDescriptionParagraphs: [String]
+    public var operatorScriptParagraphs: [String]
+    public var passCriteriaParagraphs: [String]
 
-    public static let empty = SVGTestMetadata(operatorParagraphs: [])
+    public static let empty = SVGTestMetadata()
 
     public init(
         title: String? = nil,
         description: String? = nil,
-        owner: String? = nil,
+        author: String? = nil,
         reviewer: String? = nil,
         status: String? = nil,
         version: String? = nil,
-        operatorParagraphs: [String] = []
+        testDescriptionParagraphs: [String] = [],
+        operatorScriptParagraphs: [String] = [],
+        passCriteriaParagraphs: [String] = []
     ) {
         self.title = title
         self.description = description
-        self.owner = owner
+        self.author = author
         self.reviewer = reviewer
         self.status = status
         self.version = version
-        self.operatorParagraphs = operatorParagraphs
+        self.testDescriptionParagraphs = testDescriptionParagraphs
+        self.operatorScriptParagraphs = operatorScriptParagraphs
+        self.passCriteriaParagraphs = passCriteriaParagraphs
     }
 
     public var isEmpty: Bool {
-        title == nil && description == nil && owner == nil && reviewer == nil
-            && status == nil && operatorParagraphs.isEmpty
+        title == nil && description == nil && author == nil && reviewer == nil
+            && status == nil && version == nil
+            && testDescriptionParagraphs.isEmpty
+            && operatorScriptParagraphs.isEmpty
+            && passCriteriaParagraphs.isEmpty
     }
 }
 
@@ -66,28 +76,54 @@ public extension SVGTestMetadata {
 
 private final class MetadataDelegate: NSObject, XMLParserDelegate {
 
+    private enum Section { case testDescription, operatorScript, passCriteria }
+
     private var title: String?
     private var desc: String?
-    private var owner: String?
+    private var author: String?
     private var reviewer: String?
     private var status: String?
     private var version: String?
-    private var paragraphs: [String] = []
+    private var testDescriptionParagraphs: [String] = []
+    private var operatorScriptParagraphs: [String] = []
+    private var passCriteriaParagraphs: [String] = []
 
-    private enum Capture { case title, desc, paragraph }
-    private var capture: Capture?
+    /// Which W3C section we're currently inside (paragraphs are routed here).
+    private var currentSection: Section?
+    /// Depth inside the current `<p>` element. Treat nested `<p>` text as
+    /// belonging to the outermost one (no W3C test uses nesting in practice).
+    private var paragraphDepth = 0
+    /// Generic root-level capture for `<title>` / `<desc>`.
+    private var rootCapture: RootCapture?
     private var buffer = ""
+
+    private enum RootCapture { case title, desc }
 
     func build() -> SVGTestMetadata {
         SVGTestMetadata(
-            title: title?.normalizedWhitespace,
+            title: title?.normalizedWhitespace.flatMap(Self.cleanedRCSKeyword),
             description: desc?.normalizedWhitespace,
-            owner: owner,
-            reviewer: reviewer,
-            status: status,
-            version: version,
-            operatorParagraphs: paragraphs.compactMap { $0.normalizedWhitespace }
+            author: author?.normalizedWhitespace,
+            reviewer: reviewer?.normalizedWhitespace,
+            status: status?.normalizedWhitespace,
+            version: version?.normalizedWhitespace.flatMap(Self.cleanedRCSKeyword),
+            testDescriptionParagraphs: testDescriptionParagraphs.compactMap(\.normalizedWhitespace),
+            operatorScriptParagraphs: operatorScriptParagraphs.compactMap(\.normalizedWhitespace),
+            passCriteriaParagraphs: passCriteriaParagraphs.compactMap(\.normalizedWhitespace)
         )
+    }
+
+    /// Strip CVS/RCS keyword wrappers like `$RCSfile: foo.svg,v $` or
+    /// `$Revision: 1.7 $`. Returns `nil` when the value reduces to nothing useful.
+    private static func cleanedRCSKeyword(_ value: String) -> String? {
+        // Match `$Keyword: actual value $` and pull the inner value.
+        if value.hasPrefix("$"), value.hasSuffix("$"),
+           let colon = value.firstIndex(of: ":") {
+            let inner = value[value.index(after: colon)..<value.index(before: value.endIndex)]
+            let trimmed = inner.trimmingCharacters(in: .whitespaces)
+            return trimmed.isEmpty ? nil : trimmed
+        }
+        return value
     }
 
     func parser(
@@ -101,34 +137,40 @@ private final class MetadataDelegate: NSObject, XMLParserDelegate {
         let local = localName(elementName)
         switch local {
         case "title":
-            startCapture(.title)
+            if rootCapture == nil && currentSection == nil { startRootCapture(.title) }
         case "desc":
-            if desc == nil { startCapture(.desc) }
+            if desc == nil && currentSection == nil { startRootCapture(.desc) }
         case "SVGTestCase":
-            // Some suites carry attributes on the wrapper itself.
-            owner = owner ?? attributeDict["owner"]
+            // W3C uses `author`; some legacy in-house variants used `owner`.
+            author = author ?? attributeDict["author"] ?? attributeDict["owner"]
             reviewer = reviewer ?? attributeDict["reviewer"]
             status = status ?? attributeDict["status"]
             version = version ?? attributeDict["version"]
-            if let attrDesc = attributeDict["desc"], desc == nil {
-                desc = attrDesc
+        case "testDescription":
+            currentSection = .testDescription
+        case "operatorScript", "OperatorScript":
+            currentSection = .operatorScript
+            // Some legacy files carry attrs here instead of on SVGTestCase.
+            author = author ?? attributeDict["author"] ?? attributeDict["owner"]
+            reviewer = reviewer ?? attributeDict["reviewer"]
+            status = status ?? attributeDict["status"]
+            version = version ?? attributeDict["version"]
+        case "passCriteria":
+            currentSection = .passCriteria
+        case "p", "Paragraph":
+            if currentSection != nil {
+                if paragraphDepth == 0 { buffer.removeAll(keepingCapacity: true) }
+                paragraphDepth += 1
             }
-        case "OperatorScript":
-            // Some files put the rich metadata on OperatorScript instead.
-            owner = owner ?? attributeDict["owner"]
-            reviewer = reviewer ?? attributeDict["reviewer"]
-            status = status ?? attributeDict["status"]
-            version = version ?? attributeDict["version"]
-        case "Paragraph":
-            startCapture(.paragraph)
         default:
             break
         }
     }
 
     func parser(_ parser: XMLParser, foundCharacters string: String) {
-        guard capture != nil else { return }
-        buffer.append(string)
+        if rootCapture != nil || paragraphDepth > 0 {
+            buffer.append(string)
+        }
     }
 
     func parser(
@@ -137,33 +179,46 @@ private final class MetadataDelegate: NSObject, XMLParserDelegate {
         namespaceURI: String?,
         qualifiedName qName: String?
     ) {
-        guard let active = capture else { return }
         let local = localName(elementName)
-        let matches: Bool = {
-            switch active {
-            case .title: return local == "title"
-            case .desc: return local == "desc"
-            case .paragraph: return local == "Paragraph"
+
+        // Root-level title / desc.
+        if let active = rootCapture {
+            let matches = (active == .title && local == "title")
+                || (active == .desc && local == "desc")
+            if matches {
+                let text = buffer
+                buffer.removeAll(keepingCapacity: true)
+                rootCapture = nil
+                switch active {
+                case .title: if title == nil { title = text }
+                case .desc: if desc == nil { desc = text }
+                }
+                return
             }
-        }()
-        guard matches else { return }
+        }
 
-        let text = buffer
-        buffer.removeAll(keepingCapacity: true)
-        capture = nil
-
-        switch active {
-        case .title:
-            if title == nil { title = text }
-        case .desc:
-            if desc == nil { desc = text }
-        case .paragraph:
-            paragraphs.append(text)
+        switch local {
+        case "p", "Paragraph":
+            guard paragraphDepth > 0 else { return }
+            paragraphDepth -= 1
+            guard paragraphDepth == 0, let section = currentSection else { return }
+            let text = buffer
+            buffer.removeAll(keepingCapacity: true)
+            switch section {
+            case .testDescription: testDescriptionParagraphs.append(text)
+            case .operatorScript: operatorScriptParagraphs.append(text)
+            case .passCriteria: passCriteriaParagraphs.append(text)
+            }
+        case "testDescription", "operatorScript", "OperatorScript", "passCriteria":
+            currentSection = nil
+            paragraphDepth = 0
+        default:
+            break
         }
     }
 
-    private func startCapture(_ which: Capture) {
-        capture = which
+    private func startRootCapture(_ which: RootCapture) {
+        rootCapture = which
         buffer.removeAll(keepingCapacity: true)
     }
 

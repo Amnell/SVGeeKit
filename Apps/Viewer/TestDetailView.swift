@@ -67,16 +67,25 @@ struct TestDetailView: View {
     private var metadataSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Test description").font(.headline)
-            VStack(alignment: .leading, spacing: 6) {
+            VStack(alignment: .leading, spacing: 10) {
                 if let title = row.metadata.title, title != row.id {
                     Text(title).font(.subheadline.weight(.semibold))
                 }
                 if let desc = row.metadata.description {
                     Text(desc).font(.callout)
                 }
-                ForEach(Array(row.metadata.operatorParagraphs.enumerated()), id: \.offset) { _, paragraph in
-                    Text(paragraph).font(.callout)
-                }
+                MetadataParagraphBlock(
+                    title: "Test description",
+                    paragraphs: row.metadata.testDescriptionParagraphs
+                )
+                MetadataParagraphBlock(
+                    title: "Pass criteria",
+                    paragraphs: row.metadata.passCriteriaParagraphs
+                )
+                MetadataParagraphBlock(
+                    title: "Operator script",
+                    paragraphs: row.metadata.operatorScriptParagraphs
+                )
                 MetadataChips(metadata: row.metadata)
             }
             .padding(10)
@@ -183,6 +192,26 @@ private struct ReferenceTile: View {
     }
 }
 
+private struct MetadataParagraphBlock: View {
+    let title: String
+    let paragraphs: [String]
+
+    var body: some View {
+        if !paragraphs.isEmpty {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title.uppercased())
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                ForEach(Array(paragraphs.enumerated()), id: \.offset) { _, paragraph in
+                    Text(paragraph)
+                        .font(.callout)
+                        .textSelection(.enabled)
+                }
+            }
+        }
+    }
+}
+
 private struct MetadataChips: View {
     let metadata: SVGTestMetadata
 
@@ -205,7 +234,7 @@ private struct MetadataChips: View {
 
     private var chipItems: [(label: String, value: String)] {
         var items: [(String, String)] = []
-        if let owner = metadata.owner { items.append(("owner", owner)) }
+        if let author = metadata.author { items.append(("author", author)) }
         if let reviewer = metadata.reviewer { items.append(("reviewer", reviewer)) }
         if let status = metadata.status { items.append(("status", status)) }
         return items

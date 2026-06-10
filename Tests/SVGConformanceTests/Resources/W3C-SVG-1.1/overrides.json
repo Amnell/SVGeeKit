@@ -1,2 +1,15 @@
 {
+  "skipReason": "feature family not yet supported by SVGeeKit",
+  "skipTags": [
+    "filters",
+    "text",
+    "fonts",
+    "animate",
+    "script",
+    "interact",
+    "masking",
+    "linking",
+    "extend"
+  ],
+  "tests": {}
 }

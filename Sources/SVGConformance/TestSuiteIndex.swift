@@ -16,6 +16,14 @@ public struct SVGTestOverride: Codable, Sendable {
     public var skip: String?
 }
 
+/// Top-level shape of `overrides.json`. The file may be either this object
+/// or a flat `[String: SVGTestOverride]` map (legacy / minimal cases).
+public struct SVGOverridesFile: Codable, Sendable {
+    public var skipTags: [String]?
+    public var skipReason: String?
+    public var tests: [String: SVGTestOverride]?
+}
+
 /// Indexes the vendored W3C SVG 1.1 test suite that ships under
 /// `Tests/Resources/W3C-SVG-1.1/`.
 public struct SVGTestSuiteIndex {
@@ -37,10 +45,7 @@ public struct SVGTestSuiteIndex {
             return
         }
 
-        let overrides: [String: SVGTestOverride] = {
-            guard let data = try? Data(contentsOf: overridesURL) else { return [:] }
-            return (try? JSONDecoder().decode([String: SVGTestOverride].self, from: data)) ?? [:]
-        }()
+        let (perTestOverrides, skipTags, defaultSkipReason) = Self.loadOverrides(overridesURL)
 
         let svgs = try fileManager
             .contentsOfDirectory(at: svgDir, includingPropertiesForKeys: nil)
@@ -50,21 +55,59 @@ public struct SVGTestSuiteIndex {
         self.cases = svgs.map { url in
             let filename = url.lastPathComponent
             let id = (filename as NSString).deletingPathExtension
-            let overrideEntry = overrides[id]
+            let overrideEntry = perTestOverrides[id]
             let tag: SVGFeatureTag = {
                 if let raw = overrideEntry?.tag, let t = SVGFeatureTag(rawValue: raw) { return t }
                 return SVGFeatureTag.fromW3CFilename(filename)
             }()
             let png = pngDir.appendingPathComponent("\(id).png")
             let pngExists = fileManager.fileExists(atPath: png.path)
+
+            let (skipped, reason) = Self.skipDecision(
+                explicit: overrideEntry?.skip,
+                tag: tag,
+                skipTags: skipTags,
+                defaultReason: defaultSkipReason
+            )
+
             return SVGTestCase(
                 id: id,
                 svgURL: url,
                 referencePNGURL: pngExists ? png : nil,
                 tag: tag,
-                isSkipped: overrideEntry?.skip != nil,
-                skipReason: overrideEntry?.skip
+                isSkipped: skipped,
+                skipReason: reason
             )
         }
+    }
+
+    private static func loadOverrides(
+        _ url: URL
+    ) -> (perTest: [String: SVGTestOverride], skipTags: Set<SVGFeatureTag>, defaultReason: String?) {
+        guard let data = try? Data(contentsOf: url) else {
+            return ([:], [], nil)
+        }
+        let decoder = JSONDecoder()
+        // Preferred shape: structured object with `skipTags` / `tests`.
+        if let file = try? decoder.decode(SVGOverridesFile.self, from: data) {
+            let tagSet = Set((file.skipTags ?? []).compactMap { SVGFeatureTag(rawValue: $0) })
+            return (file.tests ?? [:], tagSet, file.skipReason)
+        }
+        // Legacy shape: flat per-test map.
+        let flat = (try? decoder.decode([String: SVGTestOverride].self, from: data)) ?? [:]
+        return (flat, [], nil)
+    }
+
+    private static func skipDecision(
+        explicit: String?,
+        tag: SVGFeatureTag,
+        skipTags: Set<SVGFeatureTag>,
+        defaultReason: String?
+    ) -> (Bool, String?) {
+        if let explicit { return (true, explicit) }
+        if skipTags.contains(tag) {
+            return (true, defaultReason ?? "feature family not yet supported")
+        }
+        return (false, nil)
     }
 }

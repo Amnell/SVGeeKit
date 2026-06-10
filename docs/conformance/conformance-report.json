@@ -1,30 +1,2252 @@
 [
   {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-dom-01-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-dom-02-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-02-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-03-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-04-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-05-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-06-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-07-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-08-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-09-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-10-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-11-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-12-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-13-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-14-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-15-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-17-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-19-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-20-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-21-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-22-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-23-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-24-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-25-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-26-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-27-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-28-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-29-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-30-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-31-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-32-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-33-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-34-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-35-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-36-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-37-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-38-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-39-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-40-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-41-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-44-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-46-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-52-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-53-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-60-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-61-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-62-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-63-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-64-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-65-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-66-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-67-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-68-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-69-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-70-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-77-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-78-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-80-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-81-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-82-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-83-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-84-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-85-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-86-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-87-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-88-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-89-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-90-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-91-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-elem-92-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-interact-events-01-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-interact-pevents-01-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-interact-pevents-02-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-interact-pevents-03-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-interact-pevents-04-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-pservers-grad-01-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-script-elem-01-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "animate",
+    "testId" : "animate-struct-dom-01-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/color-prof-01-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "color",
+    "testId" : "color-prof-01-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/color-prop-01-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "color",
+    "testId" : "color-prop-01-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/color-prop-02-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "color",
+    "testId" : "color-prop-02-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/color-prop-03-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "color",
+    "testId" : "color-prop-03-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/color-prop-04-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "color",
+    "testId" : "color-prop-04-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/color-prop-05-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "color",
+    "testId" : "color-prop-05-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/conform-viewers-02-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "other",
+    "testId" : "conform-viewers-02-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/conform-viewers-03-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "other",
+    "testId" : "conform-viewers-03-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-coord-01-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "coords",
+    "testId" : "coords-coord-01-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-coord-02-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "coords",
+    "testId" : "coords-coord-02-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-dom-01-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "coords",
+    "testId" : "coords-dom-01-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-dom-02-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "coords",
+    "testId" : "coords-dom-02-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-dom-03-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "coords",
+    "testId" : "coords-dom-03-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-dom-04-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "coords",
+    "testId" : "coords-dom-04-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-trans-01-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "coords",
+    "testId" : "coords-trans-01-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-trans-02-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "coords",
+    "testId" : "coords-trans-02-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-trans-03-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "coords",
+    "testId" : "coords-trans-03-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-trans-04-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "coords",
+    "testId" : "coords-trans-04-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-trans-05-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "coords",
+    "testId" : "coords-trans-05-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-trans-06-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "coords",
+    "testId" : "coords-trans-06-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-trans-07-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "coords",
+    "testId" : "coords-trans-07-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-trans-08-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "coords",
+    "testId" : "coords-trans-08-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-trans-09-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "coords",
+    "testId" : "coords-trans-09-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-trans-10-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "coords",
+    "testId" : "coords-trans-10-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-trans-11-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "coords",
+    "testId" : "coords-trans-11-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-trans-12-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "coords",
+    "testId" : "coords-trans-12-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-trans-13-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "coords",
+    "testId" : "coords-trans-13-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-trans-14-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "coords",
+    "testId" : "coords-trans-14-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-transformattr-01-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "coords",
+    "testId" : "coords-transformattr-01-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-transformattr-02-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "coords",
+    "testId" : "coords-transformattr-02-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-transformattr-03-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "coords",
+    "testId" : "coords-transformattr-03-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-transformattr-04-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "coords",
+    "testId" : "coords-transformattr-04-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-transformattr-05-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "coords",
+    "testId" : "coords-transformattr-05-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-units-01-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "coords",
+    "testId" : "coords-units-01-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-units-02-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "coords",
+    "testId" : "coords-units-02-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-units-03-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "coords",
+    "testId" : "coords-units-03-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-viewattr-01-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "coords",
+    "testId" : "coords-viewattr-01-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-viewattr-02-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "coords",
+    "testId" : "coords-viewattr-02-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-viewattr-03-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "coords",
+    "testId" : "coords-viewattr-03-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-viewattr-04-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "coords",
+    "testId" : "coords-viewattr-04-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "extend",
+    "testId" : "extend-namespace-01-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "filters",
+    "testId" : "filters-background-01-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "filters",
+    "testId" : "filters-blend-01-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "filters",
+    "testId" : "filters-color-01-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "filters",
+    "testId" : "filters-color-02-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "filters",
+    "testId" : "filters-composite-02-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "filters",
+    "testId" : "filters-composite-03-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "filters",
+    "testId" : "filters-composite-04-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "filters",
+    "testId" : "filters-composite-05-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "filters",
+    "testId" : "filters-comptran-01-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "filters",
+    "testId" : "filters-conv-01-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "filters",
+    "testId" : "filters-conv-02-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "filters",
+    "testId" : "filters-conv-03-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "filters",
+    "testId" : "filters-conv-04-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "filters",
+    "testId" : "filters-conv-05-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "filters",
+    "testId" : "filters-diffuse-01-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "filters",
+    "testId" : "filters-displace-01-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "filters",
+    "testId" : "filters-displace-02-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "filters",
+    "testId" : "filters-example-01-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "filters",
+    "testId" : "filters-felem-01-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "filters",
+    "testId" : "filters-felem-02-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "filters",
+    "testId" : "filters-gauss-01-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "filters",
+    "testId" : "filters-gauss-02-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "filters",
+    "testId" : "filters-gauss-03-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "filters",
+    "testId" : "filters-image-01-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "filters",
+    "testId" : "filters-image-02-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "filters",
+    "testId" : "filters-image-03-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "filters",
+    "testId" : "filters-image-04-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "filters",
+    "testId" : "filters-image-05-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "filters",
+    "testId" : "filters-light-01-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "filters",
+    "testId" : "filters-light-02-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "filters",
+    "testId" : "filters-light-03-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "filters",
+    "testId" : "filters-light-04-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "filters",
+    "testId" : "filters-light-05-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "filters",
+    "testId" : "filters-morph-01-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "filters",
+    "testId" : "filters-offset-01-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "filters",
+    "testId" : "filters-offset-02-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "filters",
+    "testId" : "filters-overview-01-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "filters",
+    "testId" : "filters-overview-02-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "filters",
+    "testId" : "filters-overview-03-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "filters",
+    "testId" : "filters-specular-01-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "filters",
+    "testId" : "filters-tile-01-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "filters",
+    "testId" : "filters-turb-01-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "filters",
+    "testId" : "filters-turb-02-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "fonts",
+    "testId" : "fonts-desc-01-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "fonts",
+    "testId" : "fonts-desc-02-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "fonts",
+    "testId" : "fonts-desc-03-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "fonts",
+    "testId" : "fonts-desc-04-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "fonts",
+    "testId" : "fonts-desc-05-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "fonts",
+    "testId" : "fonts-elem-01-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "fonts",
+    "testId" : "fonts-elem-02-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "fonts",
+    "testId" : "fonts-elem-03-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "fonts",
+    "testId" : "fonts-elem-04-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "fonts",
+    "testId" : "fonts-elem-05-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "fonts",
+    "testId" : "fonts-elem-06-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "fonts",
+    "testId" : "fonts-elem-07-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "fonts",
+    "testId" : "fonts-glyph-02-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "fonts",
+    "testId" : "fonts-glyph-03-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "fonts",
+    "testId" : "fonts-glyph-04-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "fonts",
+    "testId" : "fonts-kern-01-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "fonts",
+    "testId" : "fonts-overview-201-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/imp-path-01-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "other",
+    "testId" : "imp-path-01-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "interact",
+    "testId" : "interact-cursor-01-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "interact",
+    "testId" : "interact-dom-01-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "interact",
+    "testId" : "interact-events-01-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "interact",
+    "testId" : "interact-events-02-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "interact",
+    "testId" : "interact-events-202-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "interact",
+    "testId" : "interact-events-203-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "interact",
+    "testId" : "interact-order-01-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "interact",
+    "testId" : "interact-order-02-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "interact",
+    "testId" : "interact-order-03-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "interact",
+    "testId" : "interact-pevents-01-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "interact",
+    "testId" : "interact-pevents-03-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "interact",
+    "testId" : "interact-pevents-04-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "interact",
+    "testId" : "interact-pevents-05-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "interact",
+    "testId" : "interact-pevents-07-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "interact",
+    "testId" : "interact-pevents-08-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "interact",
+    "testId" : "interact-pevents-09-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "interact",
+    "testId" : "interact-pevents-10-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "interact",
+    "testId" : "interact-pointer-01-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "interact",
+    "testId" : "interact-pointer-02-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "interact",
+    "testId" : "interact-pointer-03-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "interact",
+    "testId" : "interact-pointer-04-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "interact",
+    "testId" : "interact-zoom-01-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "interact",
+    "testId" : "interact-zoom-02-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "interact",
+    "testId" : "interact-zoom-03-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "linking",
+    "testId" : "linking-a-01-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "linking",
+    "testId" : "linking-a-03-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "linking",
+    "testId" : "linking-a-04-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "linking",
+    "testId" : "linking-a-05-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "linking",
+    "testId" : "linking-a-07-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "linking",
+    "testId" : "linking-a-08-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "linking",
+    "testId" : "linking-a-09-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "linking",
+    "testId" : "linking-a-10-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "linking",
+    "testId" : "linking-frag-01-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "linking",
+    "testId" : "linking-uri-01-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "linking",
+    "testId" : "linking-uri-02-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "linking",
+    "testId" : "linking-uri-03-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "masking",
+    "testId" : "masking-filter-01-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "masking",
+    "testId" : "masking-intro-01-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "masking",
+    "testId" : "masking-mask-01-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "masking",
+    "testId" : "masking-mask-02-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "masking",
+    "testId" : "masking-opacity-01-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "masking",
+    "testId" : "masking-path-01-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "masking",
+    "testId" : "masking-path-02-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "masking",
+    "testId" : "masking-path-03-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "masking",
+    "testId" : "masking-path-04-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "masking",
+    "testId" : "masking-path-05-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "masking",
+    "testId" : "masking-path-06-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "masking",
+    "testId" : "masking-path-07-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "masking",
+    "testId" : "masking-path-08-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "masking",
+    "testId" : "masking-path-09-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "masking",
+    "testId" : "masking-path-10-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "masking",
+    "testId" : "masking-path-11-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "masking",
+    "testId" : "masking-path-12-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "masking",
+    "testId" : "masking-path-13-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "masking",
+    "testId" : "masking-path-14-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/metadata-example-01-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "metadata",
+    "testId" : "metadata-example-01-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-control-01-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "painting",
+    "testId" : "painting-control-01-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-control-02-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "painting",
+    "testId" : "painting-control-02-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-control-03-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "painting",
+    "testId" : "painting-control-03-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-control-04-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "painting",
+    "testId" : "painting-control-04-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-control-05-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "painting",
+    "testId" : "painting-control-05-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-control-06-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "painting",
+    "testId" : "painting-control-06-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-fill-01-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "painting",
+    "testId" : "painting-fill-01-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-fill-02-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "painting",
+    "testId" : "painting-fill-02-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-fill-03-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "painting",
+    "testId" : "painting-fill-03-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-fill-04-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "painting",
+    "testId" : "painting-fill-04-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-fill-05-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "painting",
+    "testId" : "painting-fill-05-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-marker-01-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "painting",
+    "testId" : "painting-marker-01-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-marker-02-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "painting",
+    "testId" : "painting-marker-02-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-marker-03-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "painting",
+    "testId" : "painting-marker-03-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-marker-04-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "painting",
+    "testId" : "painting-marker-04-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-marker-05-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "painting",
+    "testId" : "painting-marker-05-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-marker-06-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "painting",
+    "testId" : "painting-marker-06-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-marker-07-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "painting",
+    "testId" : "painting-marker-07-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-marker-properties-01-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "painting",
+    "testId" : "painting-marker-properties-01-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-render-01-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "painting",
+    "testId" : "painting-render-01-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-render-02-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "painting",
+    "testId" : "painting-render-02-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-stroke-01-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "painting",
+    "testId" : "painting-stroke-01-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-stroke-02-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "painting",
+    "testId" : "painting-stroke-02-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-stroke-03-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "painting",
+    "testId" : "painting-stroke-03-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-stroke-04-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "painting",
+    "testId" : "painting-stroke-04-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-stroke-05-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "painting",
+    "testId" : "painting-stroke-05-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-stroke-06-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "painting",
+    "testId" : "painting-stroke-06-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-stroke-07-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "painting",
+    "testId" : "painting-stroke-07-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-stroke-08-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "painting",
+    "testId" : "painting-stroke-08-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-stroke-09-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "painting",
+    "testId" : "painting-stroke-09-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-stroke-10-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "painting",
+    "testId" : "painting-stroke-10-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/paths-data-01-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "paths",
+    "testId" : "paths-data-01-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/paths-data-02-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "paths",
+    "testId" : "paths-data-02-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/paths-data-03-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "paths",
+    "testId" : "paths-data-03-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/paths-data-04-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "paths",
+    "testId" : "paths-data-04-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/paths-data-05-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "paths",
+    "testId" : "paths-data-05-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/paths-data-06-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "paths",
+    "testId" : "paths-data-06-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/paths-data-07-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "paths",
+    "testId" : "paths-data-07-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/paths-data-08-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "paths",
+    "testId" : "paths-data-08-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/paths-data-09-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "paths",
+    "testId" : "paths-data-09-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/paths-data-10-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "paths",
+    "testId" : "paths-data-10-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/paths-data-12-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "paths",
+    "testId" : "paths-data-12-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/paths-data-13-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "paths",
+    "testId" : "paths-data-13-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/paths-data-14-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "paths",
+    "testId" : "paths-data-14-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/paths-data-15-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "paths",
+    "testId" : "paths-data-15-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/paths-data-16-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "paths",
+    "testId" : "paths-data-16-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/paths-data-17-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "paths",
+    "testId" : "paths-data-17-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/paths-data-18-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "paths",
+    "testId" : "paths-data-18-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/paths-data-19-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "paths",
+    "testId" : "paths-data-19-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/paths-data-20-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "paths",
+    "testId" : "paths-data-20-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/paths-dom-01-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "paths",
+    "testId" : "paths-dom-01-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/paths-dom-02-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "paths",
+    "testId" : "paths-dom-02-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-01-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "pservers",
+    "testId" : "pservers-grad-01-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-02-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "pservers",
+    "testId" : "pservers-grad-02-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-03-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "pservers",
+    "testId" : "pservers-grad-03-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-04-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "pservers",
+    "testId" : "pservers-grad-04-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-05-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "pservers",
+    "testId" : "pservers-grad-05-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-06-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "pservers",
+    "testId" : "pservers-grad-06-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-07-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "pservers",
+    "testId" : "pservers-grad-07-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-08-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "pservers",
+    "testId" : "pservers-grad-08-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-09-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "pservers",
+    "testId" : "pservers-grad-09-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-10-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "pservers",
+    "testId" : "pservers-grad-10-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-11-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "pservers",
+    "testId" : "pservers-grad-11-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-12-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "pservers",
+    "testId" : "pservers-grad-12-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-13-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "pservers",
+    "testId" : "pservers-grad-13-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-14-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "pservers",
+    "testId" : "pservers-grad-14-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-15-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "pservers",
+    "testId" : "pservers-grad-15-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-16-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "pservers",
+    "testId" : "pservers-grad-16-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-17-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "pservers",
+    "testId" : "pservers-grad-17-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-18-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "pservers",
+    "testId" : "pservers-grad-18-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-20-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "pservers",
+    "testId" : "pservers-grad-20-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-21-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "pservers",
+    "testId" : "pservers-grad-21-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-22-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "pservers",
+    "testId" : "pservers-grad-22-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-23-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "pservers",
+    "testId" : "pservers-grad-23-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-24-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "pservers",
+    "testId" : "pservers-grad-24-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-stops-01-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "pservers",
+    "testId" : "pservers-grad-stops-01-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-pattern-01-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "pservers",
+    "testId" : "pservers-pattern-01-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-pattern-02-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "pservers",
+    "testId" : "pservers-pattern-02-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-pattern-03-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "pservers",
+    "testId" : "pservers-pattern-03-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-pattern-04-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "pservers",
+    "testId" : "pservers-pattern-04-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-pattern-05-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "pservers",
+    "testId" : "pservers-pattern-05-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-pattern-06-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "pservers",
+    "testId" : "pservers-pattern-06-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-pattern-07-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "pservers",
+    "testId" : "pservers-pattern-07-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-pattern-08-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "pservers",
+    "testId" : "pservers-pattern-08-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-pattern-09-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "pservers",
+    "testId" : "pservers-pattern-09-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/render-elems-01-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "render",
+    "testId" : "render-elems-01-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/render-elems-02-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "render",
+    "testId" : "render-elems-02-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/render-elems-03-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "render",
+    "testId" : "render-elems-03-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/render-elems-06-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "render",
+    "testId" : "render-elems-06-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/render-elems-07-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "render",
+    "testId" : "render-elems-07-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/render-elems-08-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "render",
+    "testId" : "render-elems-08-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/render-groups-01-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "render",
+    "testId" : "render-groups-01-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/render-groups-03-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "render",
+    "testId" : "render-groups-03-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "script",
+    "testId" : "script-handle-01-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "script",
+    "testId" : "script-handle-02-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "script",
+    "testId" : "script-handle-03-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "script",
+    "testId" : "script-handle-04-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "script",
+    "testId" : "script-specify-01-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "script",
+    "testId" : "script-specify-02-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-circle-01-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "shapes",
+    "testId" : "shapes-circle-01-t"
+  },
+  {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-circle-01\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-circle-01\/baseline.png",
-    "diffMaxChannel" : 0,
+    "diffMaxChannel" : 1,
     "mismatchedFraction" : 0,
     "status" : "passed",
     "tag" : "shapes",
     "testId" : "shapes-circle-01"
   },
   {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-circle-02-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "shapes",
+    "testId" : "shapes-circle-02-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-ellipse-01-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "shapes",
+    "testId" : "shapes-ellipse-01-t"
+  },
+  {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-ellipse-01\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-ellipse-01\/baseline.png",
-    "diffMaxChannel" : 0,
+    "diffMaxChannel" : 1,
     "mismatchedFraction" : 0,
     "status" : "passed",
     "tag" : "shapes",
     "testId" : "shapes-ellipse-01"
   },
   {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-ellipse-02-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "shapes",
+    "testId" : "shapes-ellipse-02-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-ellipse-03-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "shapes",
+    "testId" : "shapes-ellipse-03-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-grammar-01-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "shapes",
+    "testId" : "shapes-grammar-01-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-intro-01-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "shapes",
+    "testId" : "shapes-intro-01-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-intro-02-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "shapes",
+    "testId" : "shapes-intro-02-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-line-01-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "shapes",
+    "testId" : "shapes-line-01-t"
+  },
+  {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-line-01\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-line-01\/baseline.png",
-    "diffMaxChannel" : 0,
+    "diffMaxChannel" : 1,
     "mismatchedFraction" : 0,
     "status" : "passed",
     "tag" : "shapes",
     "testId" : "shapes-line-01"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-line-02-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "shapes",
+    "testId" : "shapes-line-02-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-polygon-01-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "shapes",
+    "testId" : "shapes-polygon-01-t"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-polygon-01\/actual.png",
@@ -36,6 +2258,27 @@
     "testId" : "shapes-polygon-01"
   },
   {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-polygon-02-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "shapes",
+    "testId" : "shapes-polygon-02-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-polygon-03-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "shapes",
+    "testId" : "shapes-polygon-03-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-polyline-01-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "shapes",
+    "testId" : "shapes-polyline-01-t"
+  },
+  {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-polyline-01\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-polyline-01\/baseline.png",
     "diffMaxChannel" : 0,
@@ -45,6 +2288,62 @@
     "testId" : "shapes-polyline-01"
   },
   {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-polyline-02-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "shapes",
+    "testId" : "shapes-polyline-02-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-rect-01-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "shapes",
+    "testId" : "shapes-rect-01-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-rect-02-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "shapes",
+    "testId" : "shapes-rect-02-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-rect-03-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "shapes",
+    "testId" : "shapes-rect-03-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-rect-04-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "shapes",
+    "testId" : "shapes-rect-04-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-rect-05-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "shapes",
+    "testId" : "shapes-rect-05-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-rect-06-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "shapes",
+    "testId" : "shapes-rect-06-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-rect-07-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "shapes",
+    "testId" : "shapes-rect-07-f"
+  },
+  {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-rect-basic-01\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-rect-basic-01\/baseline.png",
     "diffMaxChannel" : 1,
@@ -52,5 +2351,1119 @@
     "status" : "passed",
     "tag" : "shapes",
     "testId" : "shapes-rect-basic-01"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-cond-01-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-cond-01-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-cond-02-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-cond-02-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-cond-03-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-cond-03-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-cond-overview-02-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-cond-overview-02-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-cond-overview-03-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-cond-overview-03-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-cond-overview-04-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-cond-overview-04-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-cond-overview-05-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-cond-overview-05-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-defs-01-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-defs-01-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-01-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-dom-01-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-02-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-dom-02-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-03-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-dom-03-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-04-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-dom-04-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-05-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-dom-05-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-06-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-dom-06-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-07-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-dom-07-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-08-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-dom-08-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-11-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-dom-11-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-12-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-dom-12-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-13-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-dom-13-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-14-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-dom-14-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-15-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-dom-15-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-16-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-dom-16-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-17-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-dom-17-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-18-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-dom-18-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-19-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-dom-19-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-20-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-dom-20-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-frag-01-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-frag-01-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-frag-02-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-frag-02-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-frag-03-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-frag-03-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-frag-04-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-frag-04-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-frag-05-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-frag-05-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-frag-06-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-frag-06-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-group-01-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-group-01-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-group-02-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-group-02-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-group-03-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-group-03-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-01-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-image-01-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-02-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-image-02-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-03-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-image-03-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-04-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-image-04-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-05-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-image-05-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-06-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-image-06-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-07-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-image-07-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-08-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-image-08-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-09-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-image-09-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-10-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-image-10-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-11-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-image-11-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-12-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-image-12-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-13-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-image-13-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-14-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-image-14-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-15-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-image-15-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-16-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-image-16-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-17-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-image-17-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-18-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-image-18-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-19-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-image-19-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-svg-01-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-svg-01-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-svg-02-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-svg-02-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-svg-03-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-svg-03-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-symbol-01-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-symbol-01-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-use-01-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-use-01-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-use-03-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-use-03-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-use-04-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-use-04-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-use-05-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-use-05-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-use-06-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-use-06-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-use-07-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-use-07-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-use-08-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-use-08-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-use-09-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-use-09-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-use-10-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-use-10-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-use-11-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-use-11-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-use-12-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-use-12-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-use-13-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-use-13-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-use-14-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-use-14-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-use-15-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "struct",
+    "testId" : "struct-use-15-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-class-01-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "styling",
+    "testId" : "styling-class-01-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-css-01-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "styling",
+    "testId" : "styling-css-01-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-css-02-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "styling",
+    "testId" : "styling-css-02-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-css-03-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "styling",
+    "testId" : "styling-css-03-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-css-04-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "styling",
+    "testId" : "styling-css-04-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-css-05-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "styling",
+    "testId" : "styling-css-05-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-css-06-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "styling",
+    "testId" : "styling-css-06-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-css-07-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "styling",
+    "testId" : "styling-css-07-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-css-08-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "styling",
+    "testId" : "styling-css-08-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-css-09-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "styling",
+    "testId" : "styling-css-09-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-css-10-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "styling",
+    "testId" : "styling-css-10-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-elem-01-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "styling",
+    "testId" : "styling-elem-01-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-inherit-01-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "styling",
+    "testId" : "styling-inherit-01-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-pres-01-t\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "styling",
+    "testId" : "styling-pres-01-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-pres-02-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "styling",
+    "testId" : "styling-pres-02-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-pres-03-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "styling",
+    "testId" : "styling-pres-03-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-pres-04-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "styling",
+    "testId" : "styling-pres-04-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-pres-05-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "styling",
+    "testId" : "styling-pres-05-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/svgdom-over-01-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "other",
+    "testId" : "svgdom-over-01-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-align-01-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-align-02-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-align-03-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-align-04-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-align-05-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-align-06-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-align-07-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-align-08-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-altglyph-01-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-altglyph-02-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-altglyph-03-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-bidi-01-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-deco-01-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-dom-01-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-dom-02-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-dom-03-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-dom-04-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-dom-05-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-fonts-01-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-fonts-02-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-fonts-03-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-fonts-04-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-fonts-05-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-fonts-202-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-fonts-203-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-fonts-204-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-intro-01-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-intro-02-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-intro-03-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-intro-04-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-intro-05-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-intro-06-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-intro-07-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-intro-09-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-intro-10-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-intro-11-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-intro-12-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-path-01-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-path-02-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-spacing-01-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-text-01-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-text-03-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-text-04-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-text-05-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-text-06-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-text-07-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-text-08-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-text-09-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-text-10-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-text-11-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-text-12-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-tref-01-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-tref-02-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-tref-03-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-tselect-01-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-tselect-02-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-tselect-03-f"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-tspan-01-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-tspan-02-b"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-ws-01-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-ws-02-t"
+  },
+  {
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
+    "tag" : "text",
+    "testId" : "text-ws-03-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/types-basic-01-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "other",
+    "testId" : "types-basic-01-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/types-basic-02-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "other",
+    "testId" : "types-basic-02-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/types-dom-01-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "other",
+    "testId" : "types-dom-01-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/types-dom-02-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "other",
+    "testId" : "types-dom-02-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/types-dom-03-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "other",
+    "testId" : "types-dom-03-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/types-dom-04-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "other",
+    "testId" : "types-dom-04-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/types-dom-05-b\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "other",
+    "testId" : "types-dom-05-b"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/types-dom-06-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "other",
+    "testId" : "types-dom-06-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/types-dom-07-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "other",
+    "testId" : "types-dom-07-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/types-dom-08-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "other",
+    "testId" : "types-dom-08-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/types-dom-svgfittoviewbox-01-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "other",
+    "testId" : "types-dom-svgfittoviewbox-01-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/types-dom-svglengthlist-01-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "other",
+    "testId" : "types-dom-svglengthlist-01-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/types-dom-svgnumberlist-01-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "other",
+    "testId" : "types-dom-svgnumberlist-01-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/types-dom-svgstringlist-01-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "other",
+    "testId" : "types-dom-svgstringlist-01-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/types-dom-svgtransformable-01-f\/actual.png",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
+    "tag" : "other",
+    "testId" : "types-dom-svgtransformable-01-f"
   }
 ]
