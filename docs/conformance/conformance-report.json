@@ -542,30 +542,26 @@
     "testId" : "coords-coord-02-t"
   },
   {
-    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-dom-01-f\/actual.png",
-    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
-    "status" : "missingBaseline",
+    "detail" : "script-driven DOM mutation; out of scope",
+    "status" : "skipped",
     "tag" : "coords",
     "testId" : "coords-dom-01-f"
   },
   {
-    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-dom-02-f\/actual.png",
-    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
-    "status" : "missingBaseline",
+    "detail" : "script-driven DOM mutation; out of scope",
+    "status" : "skipped",
     "tag" : "coords",
     "testId" : "coords-dom-02-f"
   },
   {
-    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-dom-03-f\/actual.png",
-    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
-    "status" : "missingBaseline",
+    "detail" : "script-driven DOM mutation; out of scope",
+    "status" : "skipped",
     "tag" : "coords",
     "testId" : "coords-dom-03-f"
   },
   {
-    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-dom-04-f\/actual.png",
-    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
-    "status" : "missingBaseline",
+    "detail" : "script-driven DOM mutation; out of scope",
+    "status" : "skipped",
     "tag" : "coords",
     "testId" : "coords-dom-04-f"
   },

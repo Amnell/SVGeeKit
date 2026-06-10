@@ -11,5 +11,10 @@
     "linking",
     "extend"
   ],
-  "tests": {}
+  "tests": {
+    "coords-dom-01-f": { "skip": "script-driven DOM mutation; out of scope" },
+    "coords-dom-02-f": { "skip": "script-driven DOM mutation; out of scope" },
+    "coords-dom-03-f": { "skip": "script-driven DOM mutation; out of scope" },
+    "coords-dom-04-f": { "skip": "script-driven DOM mutation; out of scope" }
+  }
 }
