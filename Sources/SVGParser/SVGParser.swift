@@ -43,8 +43,14 @@ public struct SVGParser {
 
 private final class SAXDelegate: NSObject, XMLParserDelegate {
 
+    enum Axis { case x, y, length }
+
     var document: SVGDocument?
     var error: SVGParseError?
+
+    /// Viewport (in user-space units) used to resolve `%` lengths. Set when
+    /// the root `<svg>` is opened: prefers viewBox, then width/height.
+    private var viewport: CGSize = .zero
 
     /// Stack of partially-built groups. Top of stack receives new children.
     private var groupStack: [SVGGroup] = []
@@ -158,17 +164,42 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
             return nil
         }()
 
+        if let vb = viewBox {
+            viewport = vb.size
+        } else if let w = width, let h = height {
+            viewport = CGSize(width: w, height: h)
+        }
+
         document = SVGDocument(viewBox: viewBox, intrinsicSize: intrinsic, root: SVGGroup())
         groupStack.append(SVGGroup())
     }
 
+    /// Resolves a length attribute against the current viewport. Percentages on
+    /// the x/y axes use the viewport's width/height; "length" axis percentages
+    /// use the SVG 1.1 normalized diagonal sqrt((w² + h²) / 2).
+    private func resolveLength(_ raw: String?, axis: Axis, default fallback: CGFloat = 0) -> CGFloat {
+        guard let raw, let len = AttributeParsers.length(raw) else { return fallback }
+        if len.unit == .percent {
+            let basis: CGFloat
+            switch axis {
+            case .x: basis = viewport.width
+            case .y: basis = viewport.height
+            case .length:
+                let w = viewport.width, h = viewport.height
+                basis = (w == 0 && h == 0) ? 0 : sqrt((w * w + h * h) / 2)
+            }
+            return len.value * basis / 100
+        }
+        return len.resolved()
+    }
+
     private func handleRect(attributes: [String: String], paint: SVGPaintProperties, parser: XMLParser) {
-        let x = attributes["x"].flatMap { AttributeParsers.length($0)?.resolved() } ?? 0
-        let y = attributes["y"].flatMap { AttributeParsers.length($0)?.resolved() } ?? 0
-        let w = attributes["width"].flatMap { AttributeParsers.length($0)?.resolved() } ?? 0
-        let h = attributes["height"].flatMap { AttributeParsers.length($0)?.resolved() } ?? 0
-        let rx = attributes["rx"].flatMap { AttributeParsers.length($0)?.resolved() }
-        let ry = attributes["ry"].flatMap { AttributeParsers.length($0)?.resolved() }
+        let x = resolveLength(attributes["x"], axis: .x)
+        let y = resolveLength(attributes["y"], axis: .y)
+        let w = resolveLength(attributes["width"], axis: .x)
+        let h = resolveLength(attributes["height"], axis: .y)
+        let rx = attributes["rx"].map { resolveLength($0, axis: .x) }
+        let ry = attributes["ry"].map { resolveLength($0, axis: .y) }
 
         let radii: CGSize
         switch (rx, ry) {
@@ -189,9 +220,9 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
     }
 
     private func handleCircle(attributes: [String: String], paint: SVGPaintProperties, parser: XMLParser) {
-        let cx = attributes["cx"].flatMap { AttributeParsers.length($0)?.resolved() } ?? 0
-        let cy = attributes["cy"].flatMap { AttributeParsers.length($0)?.resolved() } ?? 0
-        let r = attributes["r"].flatMap { AttributeParsers.length($0)?.resolved() } ?? 0
+        let cx = resolveLength(attributes["cx"], axis: .x)
+        let cy = resolveLength(attributes["cy"], axis: .y)
+        let r = resolveLength(attributes["r"], axis: .length)
         let circle = SVGCircle(
             center: CGPoint(x: cx, y: cy),
             radius: r,
@@ -202,10 +233,10 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
     }
 
     private func handleEllipse(attributes: [String: String], paint: SVGPaintProperties, parser: XMLParser) {
-        let cx = attributes["cx"].flatMap { AttributeParsers.length($0)?.resolved() } ?? 0
-        let cy = attributes["cy"].flatMap { AttributeParsers.length($0)?.resolved() } ?? 0
-        let rx = attributes["rx"].flatMap { AttributeParsers.length($0)?.resolved() } ?? 0
-        let ry = attributes["ry"].flatMap { AttributeParsers.length($0)?.resolved() } ?? 0
+        let cx = resolveLength(attributes["cx"], axis: .x)
+        let cy = resolveLength(attributes["cy"], axis: .y)
+        let rx = resolveLength(attributes["rx"], axis: .x)
+        let ry = resolveLength(attributes["ry"], axis: .y)
         let ellipse = SVGEllipse(
             center: CGPoint(x: cx, y: cy),
             radii: CGSize(width: rx, height: ry),
@@ -216,10 +247,10 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
     }
 
     private func handleLine(attributes: [String: String], paint: SVGPaintProperties, parser: XMLParser) {
-        let x1 = attributes["x1"].flatMap { AttributeParsers.length($0)?.resolved() } ?? 0
-        let y1 = attributes["y1"].flatMap { AttributeParsers.length($0)?.resolved() } ?? 0
-        let x2 = attributes["x2"].flatMap { AttributeParsers.length($0)?.resolved() } ?? 0
-        let y2 = attributes["y2"].flatMap { AttributeParsers.length($0)?.resolved() } ?? 0
+        let x1 = resolveLength(attributes["x1"], axis: .x)
+        let y1 = resolveLength(attributes["y1"], axis: .y)
+        let x2 = resolveLength(attributes["x2"], axis: .x)
+        let y2 = resolveLength(attributes["y2"], axis: .y)
         let line = SVGLine(
             start: CGPoint(x: x1, y: y1),
             end: CGPoint(x: x2, y: y2),
@@ -267,8 +298,8 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
         font: SVGFont,
         parser: XMLParser
     ) {
-        let x = attributes["x"].flatMap { AttributeParsers.length($0)?.resolved() } ?? 0
-        let y = attributes["y"].flatMap { AttributeParsers.length($0)?.resolved() } ?? 0
+        let x = resolveLength(attributes["x"], axis: .x)
+        let y = resolveLength(attributes["y"], axis: .y)
         let text = SVGText(
             origin: CGPoint(x: x, y: y),
             string: "",

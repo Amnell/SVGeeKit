@@ -259,4 +259,27 @@ struct SVGParserTests {
         #expect(evenOdd.paint.fillRule == .evenodd)
         #expect(nonzero.paint.fillRule == .nonzero)
     }
+
+    @Test func resolvesPercentLengthsAgainstViewport() throws {
+        // viewBox 480x360 -> 50% x = 240, 50% y = 180, 50% length-axis = ~212.13
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 360">
+          <rect x="50%" y="50%" width="50%" height="50%"/>
+          <circle cx="50%" cy="50%" r="50%"/>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .rect(let r) = doc.root.children[0],
+              case .circle(let c) = doc.root.children[1] else {
+            Issue.record("expected rect + circle"); return
+        }
+        #expect(abs(r.origin.x - 240) < 0.01)
+        #expect(abs(r.origin.y - 180) < 0.01)
+        #expect(abs(r.size.width - 240) < 0.01)
+        #expect(abs(r.size.height - 180) < 0.01)
+        #expect(abs(c.center.x - 240) < 0.01)
+        #expect(abs(c.center.y - 180) < 0.01)
+        let diag = (480.0 * 480.0 + 360.0 * 360.0).squareRoot() / 2.0.squareRoot()
+        #expect(abs(c.radius - CGFloat(diag) / 2) < 0.01)
+    }
 }
