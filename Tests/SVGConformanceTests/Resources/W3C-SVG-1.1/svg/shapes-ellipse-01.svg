@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="480" height="360" viewBox="0 0 480 360">
+  <title>shapes-ellipse-01</title>
+  <desc>Ellipses with distinct rx and ry, including a degenerate-into-circle case, a translucent overlay and a rotated stroke-only ellipse.</desc>
   <rect x="0" y="0" width="480" height="360" fill="white"/>
   <ellipse cx="120" cy="100" rx="100" ry="60" fill="red"/>
   <ellipse cx="340" cy="100" rx="100" ry="60" fill="green" stroke="black" stroke-width="6"/>

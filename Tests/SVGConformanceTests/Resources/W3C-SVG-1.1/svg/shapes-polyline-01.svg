@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="480" height="360" viewBox="0 0 480 360">
+  <title>shapes-polyline-01</title>
+  <desc>Polylines with miter and round line joins, mixed whitespace/comma separators, and a dashed line (dasharray currently unsupported — will become an intentional baseline change when added).</desc>
   <rect x="0" y="0" width="480" height="360" fill="white"/>
   <polyline points="40,40 120,160 200,40 280,160 360,40 440,160" fill="none" stroke="black" stroke-width="4"/>
   <polyline points="40 200 120 320 200 200 280 320 360 200 440 320" fill="none" stroke="red" stroke-width="6" stroke-linejoin="round"/>

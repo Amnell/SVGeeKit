@@ -10,6 +10,9 @@ struct TestDetailView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 header
+                if !row.metadata.isEmpty {
+                    metadataSection
+                }
                 tilesGrid
                 sourceSection
             }
@@ -56,9 +59,31 @@ struct TestDetailView: View {
                       placeholder: "No render")
             ImageTile(title: "Approved baseline", url: row.baselineURL,
                       placeholder: "No baseline")
-            ImageTile(title: "W3C reference", url: row.referenceURL,
-                      placeholder: "Not vendored")
+            ReferenceTile(row: row)
             DiffTile(row: row)
+        }
+    }
+
+    private var metadataSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Test description").font(.headline)
+            VStack(alignment: .leading, spacing: 6) {
+                if let title = row.metadata.title, title != row.id {
+                    Text(title).font(.subheadline.weight(.semibold))
+                }
+                if let desc = row.metadata.description {
+                    Text(desc).font(.callout)
+                }
+                ForEach(Array(row.metadata.operatorParagraphs.enumerated()), id: \.offset) { _, paragraph in
+                    Text(paragraph).font(.callout)
+                }
+                MetadataChips(metadata: row.metadata)
+            }
+            .padding(10)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color(nsColor: .textBackgroundColor),
+                        in: RoundedRectangle(cornerRadius: 6))
+            .overlay(RoundedRectangle(cornerRadius: 6).stroke(.separator))
         }
     }
 
@@ -105,6 +130,85 @@ private struct ImageTile: View {
             .overlay(RoundedRectangle(cornerRadius: 6).stroke(.separator))
             .clipShape(RoundedRectangle(cornerRadius: 6))
         }
+    }
+}
+
+private struct ReferenceTile: View {
+    let row: TestRow
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 6) {
+                Text("W3C reference").font(.headline)
+                Spacer()
+                if row.referenceURL != nil {
+                    Button {
+                        NSWorkspace.shared.activateFileViewerSelecting([row.expectedReferenceURL])
+                    } label: {
+                        Image(systemName: "folder")
+                    }
+                    .buttonStyle(.borderless)
+                    .help("Reveal in Finder")
+                }
+            }
+            ZStack {
+                CheckerboardBackground()
+                if let url = row.referenceURL, let image = NSImage(contentsOf: url) {
+                    Image(nsImage: image)
+                        .resizable()
+                        .interpolation(.none)
+                        .scaledToFit()
+                } else {
+                    VStack(spacing: 6) {
+                        Text("Not vendored")
+                            .foregroundStyle(.secondary)
+                        Text("Drop the reference PNG at:")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        Text(row.expectedReferenceURL.path)
+                            .font(.caption.monospaced())
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
+                            .textSelection(.enabled)
+                            .lineLimit(3)
+                            .truncationMode(.middle)
+                    }
+                    .padding(8)
+                }
+            }
+            .frame(maxWidth: .infinity, minHeight: 220)
+            .overlay(RoundedRectangle(cornerRadius: 6).stroke(.separator))
+            .clipShape(RoundedRectangle(cornerRadius: 6))
+        }
+    }
+}
+
+private struct MetadataChips: View {
+    let metadata: SVGTestMetadata
+
+    var body: some View {
+        let items = chipItems
+        if !items.isEmpty {
+            HStack(spacing: 6) {
+                ForEach(items, id: \.label) { item in
+                    Text("\(item.label): \(item.value)")
+                        .font(.caption.monospaced())
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(
+                            Capsule().fill(Color.secondary.opacity(0.15))
+                        )
+                }
+            }
+        }
+    }
+
+    private var chipItems: [(label: String, value: String)] {
+        var items: [(String, String)] = []
+        if let owner = metadata.owner { items.append(("owner", owner)) }
+        if let reviewer = metadata.reviewer { items.append(("reviewer", reviewer)) }
+        if let status = metadata.status { items.append(("status", status)) }
+        return items
     }
 }
 

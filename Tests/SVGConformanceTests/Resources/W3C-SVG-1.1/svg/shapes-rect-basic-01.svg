@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="480" height="360" viewBox="0 0 480 360">
+  <title>shapes-rect-basic-01</title>
+  <desc>Six rectangles exercising fill, stroke, rounded corners, opacity, group transforms, and a per-element rotate transform.</desc>
   <rect x="0" y="0" width="480" height="360" fill="white"/>
   <rect x="40" y="40" width="120" height="80" fill="red"/>
   <rect x="200" y="40" width="120" height="80" fill="green" stroke="black" stroke-width="4"/>

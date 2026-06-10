@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="480" height="360" viewBox="0 0 480 360">
+  <title>shapes-polygon-01</title>
+  <desc>Triangle, rectangle-as-polygon, pentagon (translucent), open stroked triangle with round joins, and a hexagon with fill and stroke.</desc>
   <rect x="0" y="0" width="480" height="360" fill="white"/>
   <polygon points="100,40 160,160 40,160" fill="red"/>
   <polygon points="240,40 360,40 360,160 240,160" fill="green" stroke="black" stroke-width="4"/>

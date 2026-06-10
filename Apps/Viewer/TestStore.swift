@@ -11,7 +11,9 @@ struct TestRow: Identifiable {
     let baselineURL: URL?
     let actualURL: URL?
     let referenceURL: URL?
+    let expectedReferenceURL: URL
     let svgSource: String
+    let metadata: SVGTestMetadata
 
     var status: SVGConformanceStatus { record.status }
     var tag: String { record.tag }
@@ -120,7 +122,12 @@ final class TestStore {
             .appendingPathComponent("actual.png")
         let baselineExists = FileManager.default.fileExists(atPath: baselineURL.path)
         let actualExists = FileManager.default.fileExists(atPath: actualURL.path)
-        let svgSource = (try? String(contentsOf: testCase.svgURL, encoding: .utf8)) ?? ""
+        let svgData = (try? Data(contentsOf: testCase.svgURL)) ?? Data()
+        let svgSource = String(data: svgData, encoding: .utf8) ?? ""
+        let metadata = SVGTestMetadata.extract(from: svgData)
+        let expectedReference = RepoLayout.suiteRoot
+            .appendingPathComponent("png", isDirectory: true)
+            .appendingPathComponent("\(testCase.id).png")
 
         return TestRow(
             id: testCase.id,
@@ -129,7 +136,9 @@ final class TestStore {
             baselineURL: baselineExists ? baselineURL : nil,
             actualURL: actualExists ? actualURL : nil,
             referenceURL: testCase.referencePNGURL,
-            svgSource: svgSource
+            expectedReferenceURL: expectedReference,
+            svgSource: svgSource,
+            metadata: metadata
         )
     }
 }
