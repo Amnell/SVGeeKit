@@ -44,6 +44,19 @@ enum AttributeParsers {
         return CGRect(x: nums[0], y: nums[1], width: nums[2], height: nums[3])
     }
 
+    /// Parses the `points` attribute on `<polyline>` / `<polygon>` into x,y pairs.
+    /// Trailing odd values are dropped to match permissive UA behavior.
+    static func points(_ s: String) -> [CGPoint]? {
+        guard let nums = numberList(s) else { return nil }
+        let pairCount = nums.count / 2
+        var out: [CGPoint] = []
+        out.reserveCapacity(pairCount)
+        for i in 0..<pairCount {
+            out.append(CGPoint(x: nums[2 * i], y: nums[2 * i + 1]))
+        }
+        return out
+    }
+
     /// Parses an SVG color value. Supports the named-color subset most tests
     /// need, plus #rgb/#rrggbb and rgb(r,g,b). Extends easily.
     static func color(_ raw: String) -> SVGPaint? {

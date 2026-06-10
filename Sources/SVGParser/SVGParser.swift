@@ -70,6 +70,16 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
             groupStack.append(SVGGroup(transform: transform))
         case "rect":
             handleRect(attributes: attributeDict, paint: elementPaint, parser: parser)
+        case "circle":
+            handleCircle(attributes: attributeDict, paint: elementPaint, parser: parser)
+        case "ellipse":
+            handleEllipse(attributes: attributeDict, paint: elementPaint, parser: parser)
+        case "line":
+            handleLine(attributes: attributeDict, paint: elementPaint, parser: parser)
+        case "polyline":
+            handlePolyline(attributes: attributeDict, paint: elementPaint, parser: parser)
+        case "polygon":
+            handlePolygon(attributes: attributeDict, paint: elementPaint, parser: parser)
         default:
             break
         }
@@ -146,6 +156,67 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
             transform: transform(from: attributes, parser: parser) ?? .identity
         )
         appendChild(.rect(rect))
+    }
+
+    private func handleCircle(attributes: [String: String], paint: SVGPaintProperties, parser: XMLParser) {
+        let cx = attributes["cx"].flatMap { AttributeParsers.length($0)?.resolved() } ?? 0
+        let cy = attributes["cy"].flatMap { AttributeParsers.length($0)?.resolved() } ?? 0
+        let r = attributes["r"].flatMap { AttributeParsers.length($0)?.resolved() } ?? 0
+        let circle = SVGCircle(
+            center: CGPoint(x: cx, y: cy),
+            radius: r,
+            paint: paint,
+            transform: transform(from: attributes, parser: parser) ?? .identity
+        )
+        appendChild(.circle(circle))
+    }
+
+    private func handleEllipse(attributes: [String: String], paint: SVGPaintProperties, parser: XMLParser) {
+        let cx = attributes["cx"].flatMap { AttributeParsers.length($0)?.resolved() } ?? 0
+        let cy = attributes["cy"].flatMap { AttributeParsers.length($0)?.resolved() } ?? 0
+        let rx = attributes["rx"].flatMap { AttributeParsers.length($0)?.resolved() } ?? 0
+        let ry = attributes["ry"].flatMap { AttributeParsers.length($0)?.resolved() } ?? 0
+        let ellipse = SVGEllipse(
+            center: CGPoint(x: cx, y: cy),
+            radii: CGSize(width: rx, height: ry),
+            paint: paint,
+            transform: transform(from: attributes, parser: parser) ?? .identity
+        )
+        appendChild(.ellipse(ellipse))
+    }
+
+    private func handleLine(attributes: [String: String], paint: SVGPaintProperties, parser: XMLParser) {
+        let x1 = attributes["x1"].flatMap { AttributeParsers.length($0)?.resolved() } ?? 0
+        let y1 = attributes["y1"].flatMap { AttributeParsers.length($0)?.resolved() } ?? 0
+        let x2 = attributes["x2"].flatMap { AttributeParsers.length($0)?.resolved() } ?? 0
+        let y2 = attributes["y2"].flatMap { AttributeParsers.length($0)?.resolved() } ?? 0
+        let line = SVGLine(
+            start: CGPoint(x: x1, y: y1),
+            end: CGPoint(x: x2, y: y2),
+            paint: paint,
+            transform: transform(from: attributes, parser: parser) ?? .identity
+        )
+        appendChild(.line(line))
+    }
+
+    private func handlePolyline(attributes: [String: String], paint: SVGPaintProperties, parser: XMLParser) {
+        let pts = attributes["points"].flatMap { AttributeParsers.points($0) } ?? []
+        let polyline = SVGPolyline(
+            points: pts,
+            paint: paint,
+            transform: transform(from: attributes, parser: parser) ?? .identity
+        )
+        appendChild(.polyline(polyline))
+    }
+
+    private func handlePolygon(attributes: [String: String], paint: SVGPaintProperties, parser: XMLParser) {
+        let pts = attributes["points"].flatMap { AttributeParsers.points($0) } ?? []
+        let polygon = SVGPolygon(
+            points: pts,
+            paint: paint,
+            transform: transform(from: attributes, parser: parser) ?? .identity
+        )
+        appendChild(.polygon(polygon))
     }
 
     // MARK: - Helpers

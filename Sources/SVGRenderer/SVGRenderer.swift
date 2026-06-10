@@ -73,6 +73,16 @@ public enum SVGRenderTree {
             lower(group: g, into: &commands)
         case .rect(let r):
             lower(rect: r, into: &commands)
+        case .circle(let c):
+            lower(circle: c, into: &commands)
+        case .ellipse(let e):
+            lower(ellipse: e, into: &commands)
+        case .line(let l):
+            lower(line: l, into: &commands)
+        case .polyline(let p):
+            lower(polyline: p, into: &commands)
+        case .polygon(let p):
+            lower(polygon: p, into: &commands)
         }
     }
 
@@ -89,37 +99,100 @@ public enum SVGRenderTree {
                 transform: nil
             )
         }()
+        emitPaintedPath(path, paint: rect.paint, transform: rect.transform, into: &commands)
+    }
 
-        let needsState = rect.transform.matrix != .identity || rect.paint.opacity < 1
+    private static func lower(circle: SVGCircle, into commands: inout [SVGRenderCommand]) {
+        guard circle.radius > 0 else { return }
+        let bounds = CGRect(
+            x: circle.center.x - circle.radius,
+            y: circle.center.y - circle.radius,
+            width: circle.radius * 2,
+            height: circle.radius * 2
+        )
+        let path = CGPath(ellipseIn: bounds, transform: nil)
+        emitPaintedPath(path, paint: circle.paint, transform: circle.transform, into: &commands)
+    }
+
+    private static func lower(ellipse: SVGEllipse, into commands: inout [SVGRenderCommand]) {
+        guard ellipse.radii.width > 0, ellipse.radii.height > 0 else { return }
+        let bounds = CGRect(
+            x: ellipse.center.x - ellipse.radii.width,
+            y: ellipse.center.y - ellipse.radii.height,
+            width: ellipse.radii.width * 2,
+            height: ellipse.radii.height * 2
+        )
+        let path = CGPath(ellipseIn: bounds, transform: nil)
+        emitPaintedPath(path, paint: ellipse.paint, transform: ellipse.transform, into: &commands)
+    }
+
+    private static func lower(line: SVGLine, into commands: inout [SVGRenderCommand]) {
+        let mutable = CGMutablePath()
+        mutable.move(to: line.start)
+        mutable.addLine(to: line.end)
+        // `<line>` has no fillable area; suppress fill regardless of cascade.
+        var paint = line.paint
+        paint.fill = .none
+        emitPaintedPath(mutable, paint: paint, transform: line.transform, into: &commands)
+    }
+
+    private static func lower(polyline: SVGPolyline, into commands: inout [SVGRenderCommand]) {
+        guard let path = polylinePath(points: polyline.points, closed: false) else { return }
+        emitPaintedPath(path, paint: polyline.paint, transform: polyline.transform, into: &commands)
+    }
+
+    private static func lower(polygon: SVGPolygon, into commands: inout [SVGRenderCommand]) {
+        guard let path = polylinePath(points: polygon.points, closed: true) else { return }
+        emitPaintedPath(path, paint: polygon.paint, transform: polygon.transform, into: &commands)
+    }
+
+    private static func polylinePath(points: [CGPoint], closed: Bool) -> CGPath? {
+        guard let first = points.first else { return nil }
+        let path = CGMutablePath()
+        path.move(to: first)
+        for p in points.dropFirst() {
+            path.addLine(to: p)
+        }
+        if closed { path.closeSubpath() }
+        return path
+    }
+
+    private static func emitPaintedPath(
+        _ path: CGPath,
+        paint: SVGPaintProperties,
+        transform: SVGTransform,
+        into commands: inout [SVGRenderCommand]
+    ) {
+        let needsState = transform.matrix != .identity || paint.opacity < 1
         if needsState { commands.append(.pushState) }
-        if rect.transform.matrix != .identity {
-            commands.append(.concatenate(rect.transform))
+        if transform.matrix != .identity {
+            commands.append(.concatenate(transform))
         }
-        if rect.paint.opacity < 1 {
-            commands.append(.beginOpacityLayer(rect.paint.opacity))
+        if paint.opacity < 1 {
+            commands.append(.beginOpacityLayer(paint.opacity))
         }
 
-        if case .none = rect.paint.fill {} else {
+        if case .none = paint.fill {} else {
             commands.append(.fillPath(
                 path,
-                paint: rect.paint.fill,
-                opacity: rect.paint.fillOpacity,
+                paint: paint.fill,
+                opacity: paint.fillOpacity,
                 evenOdd: false
             ))
         }
-        if case .none = rect.paint.stroke {} else {
+        if case .none = paint.stroke {} else {
             commands.append(.strokePath(
                 path,
-                paint: rect.paint.stroke,
-                opacity: rect.paint.strokeOpacity,
-                width: rect.paint.strokeWidth,
-                lineCap: rect.paint.lineCap,
-                lineJoin: rect.paint.lineJoin,
-                miterLimit: rect.paint.miterLimit
+                paint: paint.stroke,
+                opacity: paint.strokeOpacity,
+                width: paint.strokeWidth,
+                lineCap: paint.lineCap,
+                lineJoin: paint.lineJoin,
+                miterLimit: paint.miterLimit
             ))
         }
 
-        if rect.paint.opacity < 1 { commands.append(.endOpacityLayer) }
+        if paint.opacity < 1 { commands.append(.endOpacityLayer) }
         if needsState { commands.append(.popState) }
     }
 }

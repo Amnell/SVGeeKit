@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="360" viewBox="0 0 480 360">
+  <rect x="0" y="0" width="480" height="360" fill="white"/>
+  <ellipse cx="120" cy="100" rx="100" ry="60" fill="red"/>
+  <ellipse cx="340" cy="100" rx="100" ry="60" fill="green" stroke="black" stroke-width="6"/>
+  <ellipse cx="120" cy="260" rx="80" ry="80" fill="blue" opacity="0.5"/>
+  <ellipse cx="340" cy="260" rx="100" ry="40" fill="none" stroke="purple" stroke-width="8" transform="rotate(20 340 260)"/>
+</svg>
