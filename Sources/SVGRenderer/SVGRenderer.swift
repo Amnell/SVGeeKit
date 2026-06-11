@@ -48,6 +48,12 @@ public enum SVGRenderCommand: Equatable, Sendable {
 
     /// Clip subsequent drawing to `path`. Must be bracketed by pushState/popState.
     case clipToPath(CGPath, evenOdd: Bool)
+
+    /// Composite `content` through a luminance mask built from `mask`.
+    /// The mask's per-pixel luminance × alpha becomes the alpha applied to the
+    /// content. `region`, when present, clips the mask to that rectangle so
+    /// content outside it is fully masked out (SVG `maskUnits` region).
+    case maskedContent(mask: [SVGRenderCommand], region: CGRect?, content: [SVGRenderCommand])
 }
 
 /// A renderer consumes a render-command stream and draws it into its backend.
@@ -83,21 +89,67 @@ public enum SVGRenderTree {
     }
 
     private static func lower(group: SVGGroup, ctx: Context, into commands: inout [SVGRenderCommand]) {
-        // An empty mask suppresses the entire group per SVG 1.1 §14.4.
-        if let ref = group.maskRef, let m = ctx.masks[ref], m.children.isEmpty { return }
+        var inner: [SVGRenderCommand] = []
         let hasClip = group.clipPathRef != nil
         let needsState = hasClip || group.transform.matrix != .identity
-        if needsState { commands.append(.pushState) }
+        if needsState { inner.append(.pushState) }
         if let clipRef = group.clipPathRef, let clipDef = ctx.clipPaths[clipRef] {
-            commands.append(.clipToPath(lowerToClipPath(clipDef, ctx: ctx), evenOdd: false))
+            inner.append(.clipToPath(lowerToClipPath(clipDef, ctx: ctx), evenOdd: false))
         }
         if group.transform.matrix != .identity {
-            commands.append(.concatenate(group.transform))
+            inner.append(.concatenate(group.transform))
         }
         for child in group.children {
-            lower(element: child, ctx: ctx, into: &commands)
+            lower(element: child, ctx: ctx, into: &inner)
         }
-        if needsState { commands.append(.popState) }
+        if needsState { inner.append(.popState) }
+
+        // An empty mask suppresses the group (applyMask returns nil); a present
+        // mask wraps the lowered children in a `.maskedContent` command.
+        guard let wrapped = applyMask(group.maskRef, bbox: .null, content: inner, ctx: ctx) else { return }
+        commands.append(contentsOf: wrapped)
+    }
+
+    /// Wrap `content` in a `.maskedContent` command when `ref` resolves to a
+    /// non-empty mask. Returns `content` unchanged when there is no mask, and
+    /// `nil` when the mask is empty (the caller must suppress the element per
+    /// SVG 1.1 §14.4).
+    private static func applyMask(
+        _ ref: String?,
+        bbox: CGRect,
+        content: [SVGRenderCommand],
+        ctx: Context
+    ) -> [SVGRenderCommand]? {
+        guard let ref, let mask = ctx.masks[ref] else { return content }
+        if mask.children.isEmpty { return nil }
+        var maskCommands: [SVGRenderCommand] = []
+        for child in mask.children {
+            lower(element: child, ctx: ctx, into: &maskCommands)
+        }
+        return [.maskedContent(mask: maskCommands, region: maskRegion(mask, bbox: bbox), content: content)]
+    }
+
+    /// Resolve the mask region rectangle in user space, or `nil` for no clip.
+    private static func maskRegion(_ mask: SVGMask, bbox: CGRect) -> CGRect? {
+        switch mask.maskUnits {
+        case .userSpaceOnUse:
+            guard let x = mask.x, let y = mask.y, let w = mask.width, let h = mask.height else {
+                return nil
+            }
+            return CGRect(x: x, y: y, width: w, height: h)
+        case .objectBoundingBox:
+            guard !bbox.isNull, !bbox.isEmpty else { return nil }
+            let x = mask.x ?? -0.1
+            let y = mask.y ?? -0.1
+            let w = mask.width ?? 1.2
+            let h = mask.height ?? 1.2
+            return CGRect(
+                x: bbox.minX + x * bbox.width,
+                y: bbox.minY + y * bbox.height,
+                width: w * bbox.width,
+                height: h * bbox.height
+            )
+        }
     }
 
     private static func lower(element: SVGElement, ctx: Context, into commands: inout [SVGRenderCommand]) {
@@ -119,7 +171,7 @@ public enum SVGRenderTree {
         case .path(let p):
             lower(path: p, ctx: ctx, into: &commands)
         case .text(let t):
-            lower(text: t, into: &commands)
+            lower(text: t, ctx: ctx, into: &commands)
         }
     }
 
@@ -203,22 +255,23 @@ public enum SVGRenderTree {
         emitPaintedPath(cg, paint: svgPath.paint, transform: svgPath.transform, ctx: ctx, into: &commands)
     }
 
-    private static func lower(text: SVGText, into commands: inout [SVGRenderCommand]) {
+    private static func lower(text: SVGText, ctx: Context, into commands: inout [SVGRenderCommand]) {
         guard !text.string.isEmpty else { return }
         guard text.paint.visibility == .visible else { return }
 
+        var inner: [SVGRenderCommand] = []
         let needsState = text.transform.matrix != .identity || text.paint.opacity < 1
-        if needsState { commands.append(.pushState) }
+        if needsState { inner.append(.pushState) }
         if text.transform.matrix != .identity {
-            commands.append(.concatenate(text.transform))
+            inner.append(.concatenate(text.transform))
         }
         if text.paint.opacity < 1 {
-            commands.append(.beginOpacityLayer(text.paint.opacity))
+            inner.append(.beginOpacityLayer(text.paint.opacity))
         }
 
         // SVG default for <text> is fill=black, stroke=none. Element paint
         // already carries that cascade, so we just pass it through.
-        commands.append(.drawText(
+        inner.append(.drawText(
             string: text.string,
             origin: text.origin,
             font: text.font,
@@ -229,8 +282,13 @@ public enum SVGRenderTree {
             strokeWidth: text.paint.strokeWidth
         ))
 
-        if text.paint.opacity < 1 { commands.append(.endOpacityLayer) }
-        if needsState { commands.append(.popState) }
+        if text.paint.opacity < 1 { inner.append(.endOpacityLayer) }
+        if needsState { inner.append(.popState) }
+
+        // An empty mask suppresses the text (applyMask returns nil); a present
+        // mask wraps the drawn glyphs in a `.maskedContent` command.
+        guard let wrapped = applyMask(text.paint.maskRef, bbox: .null, content: inner, ctx: ctx) else { return }
+        commands.append(contentsOf: wrapped)
     }
 
     /// Build a `CGPath` from all shape children of a `<clipPath>` definition.
@@ -308,27 +366,27 @@ public enum SVGRenderTree {
         into commands: inout [SVGRenderCommand]
     ) {
         guard paint.visibility == .visible else { return }
-        // An empty mask suppresses the element per SVG 1.1 §14.4.
-        if let ref = paint.maskRef, let m = ctx.masks[ref], m.children.isEmpty { return }
+        let bbox = path.boundingBoxOfPath
+
+        var painted: [SVGRenderCommand] = []
         let hasClip = paint.clipPathRef != nil
         let needsState = hasClip || transform.matrix != .identity || paint.opacity < 1
-        if needsState { commands.append(.pushState) }
+        if needsState { painted.append(.pushState) }
         if let clipRef = paint.clipPathRef, let clipDef = ctx.clipPaths[clipRef] {
-            commands.append(.clipToPath(lowerToClipPath(clipDef, ctx: ctx), evenOdd: false))
+            painted.append(.clipToPath(lowerToClipPath(clipDef, ctx: ctx), evenOdd: false))
         }
         if transform.matrix != .identity {
-            commands.append(.concatenate(transform))
+            painted.append(.concatenate(transform))
         }
         if paint.opacity < 1 {
-            commands.append(.beginOpacityLayer(paint.opacity))
+            painted.append(.beginOpacityLayer(paint.opacity))
         }
 
-        let bbox = path.boundingBoxOfPath
         let resolvedFill = resolvePaint(paint.fill, bbox: bbox, ctx: ctx)
         let resolvedStroke = resolvePaint(paint.stroke, bbox: bbox, ctx: ctx)
 
         if case .none = resolvedFill {} else {
-            commands.append(.fillPath(
+            painted.append(.fillPath(
                 path,
                 paint: resolvedFill,
                 opacity: paint.fillOpacity,
@@ -336,7 +394,7 @@ public enum SVGRenderTree {
             ))
         }
         if case .none = resolvedStroke {} else {
-            commands.append(.strokePath(
+            painted.append(.strokePath(
                 path,
                 paint: resolvedStroke,
                 opacity: paint.strokeOpacity,
@@ -349,11 +407,16 @@ public enum SVGRenderTree {
             ))
             var stampPaint = paint
             stampPaint.stroke = resolvedStroke
-            emitZeroLengthCapStamps(path: path, paint: stampPaint, into: &commands)
+            emitZeroLengthCapStamps(path: path, paint: stampPaint, into: &painted)
         }
 
-        if paint.opacity < 1 { commands.append(.endOpacityLayer) }
-        if needsState { commands.append(.popState) }
+        if paint.opacity < 1 { painted.append(.endOpacityLayer) }
+        if needsState { painted.append(.popState) }
+
+        // An empty mask suppresses the element (applyMask returns nil) per
+        // SVG 1.1 §14.4; a present mask wraps the painted commands.
+        guard let wrapped = applyMask(paint.maskRef, bbox: bbox, content: painted, ctx: ctx) else { return }
+        commands.append(contentsOf: wrapped)
     }
 
     /// Convert `.paintServer` references into concrete paint cases with the

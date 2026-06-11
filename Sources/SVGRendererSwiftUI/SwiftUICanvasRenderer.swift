@@ -74,6 +74,22 @@ public struct SwiftUICanvasRenderer {
 
             case .clipToPath(let cgPath, _):
                 context.clip(to: Path(cgPath))
+
+            case .maskedContent(let maskCommands, let region, let contentCommands):
+                // SVG masking: the content is composited through the mask, where
+                // each pixel's mask value is luminance × alpha. The mask content
+                // here is rendered into a layer and its alpha channel is used as
+                // the clip. For white mask content (luminance = 1) this is exact;
+                // the alpha already carries the intended mask value.
+                context.drawLayer { layer in
+                    layer.clipToLayer { maskContext in
+                        if let region {
+                            maskContext.clip(to: Path(region))
+                        }
+                        self.execute(maskCommands, context: &maskContext)
+                    }
+                    self.execute(contentCommands, context: &layer)
+                }
             }
         }
     }

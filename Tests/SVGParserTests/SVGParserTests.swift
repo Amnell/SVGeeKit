@@ -460,4 +460,31 @@ struct SVGParserTests {
         }
         #expect(g.clipPathRef == "clip2")
     }
+
+    @Test func parsesMaskRegionAndAppliesRef() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="480" height="360">
+          <mask id="mask1" maskUnits="userSpaceOnUse" x="60" y="50" width="100" height="60">
+            <rect x="60" y="50" width="100" height="60" fill="white"/>
+          </mask>
+          <rect x="60" y="50" width="100" height="60" fill="lime" mask="url(#mask1)"/>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+
+        guard let mask = doc.masks["mask1"] else {
+            Issue.record("expected mask mask1"); return
+        }
+        #expect(mask.maskUnits == .userSpaceOnUse)
+        #expect(mask.x == 60)
+        #expect(mask.y == 50)
+        #expect(mask.width == 100)
+        #expect(mask.height == 60)
+        #expect(mask.children.count == 1)
+
+        guard case .rect(let masked) = doc.root.children.first else {
+            Issue.record("expected masked rect"); return
+        }
+        #expect(masked.paint.maskRef == "mask1")
+    }
 }

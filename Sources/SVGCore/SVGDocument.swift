@@ -66,9 +66,39 @@ public struct SVGClipPath: Equatable, Sendable {
 /// An alpha mask definition (`<mask>`). Children define the mask image.
 /// An empty mask (no children) suppresses rendering of the referencing element.
 public struct SVGMask: Equatable, Sendable {
+    public enum Units: String, Equatable, Sendable {
+        case userSpaceOnUse
+        case objectBoundingBox
+    }
+
+    /// Coordinate system for the `x`/`y`/`width`/`height` region. Per SVG 1.1
+    /// the default is `objectBoundingBox`.
+    public var maskUnits: Units
+    /// Coordinate system for the mask's content.
+    public var maskContentUnits: Units
+    /// Mask region in the units given by `maskUnits`. `nil` means the SVG 1.1
+    /// default (`-10%`, `-10%`, `120%`, `120%` of the bounding box).
+    public var x: CGFloat?
+    public var y: CGFloat?
+    public var width: CGFloat?
+    public var height: CGFloat?
     public var children: [SVGElement]
 
-    public init(children: [SVGElement] = []) {
+    public init(
+        maskUnits: Units = .objectBoundingBox,
+        maskContentUnits: Units = .userSpaceOnUse,
+        x: CGFloat? = nil,
+        y: CGFloat? = nil,
+        width: CGFloat? = nil,
+        height: CGFloat? = nil,
+        children: [SVGElement] = []
+    ) {
+        self.maskUnits = maskUnits
+        self.maskContentUnits = maskContentUnits
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
         self.children = children
     }
 }

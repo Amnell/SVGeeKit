@@ -123,6 +123,12 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
 
     struct PartialMask {
         var id: String?
+        var maskUnits: SVGMask.Units = .objectBoundingBox
+        var maskContentUnits: SVGMask.Units = .userSpaceOnUse
+        var x: CGFloat?
+        var y: CGFloat?
+        var width: CGFloat?
+        var height: CGFloat?
         var children: [SVGElement] = []
     }
 
@@ -633,12 +639,31 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
     private func handleMaskStart(attributes: [String: String]) {
         var partial = PartialMask()
         partial.id = attributes["id"]
+        if let raw = attributes["maskUnits"], let u = SVGMask.Units(rawValue: raw) {
+            partial.maskUnits = u
+        }
+        if let raw = attributes["maskContentUnits"], let u = SVGMask.Units(rawValue: raw) {
+            partial.maskContentUnits = u
+        }
+        let axis: Axis = partial.maskUnits == .objectBoundingBox ? .length : .x
+        partial.x = attributes["x"].map { resolveLength($0, axis: axis) }
+        partial.y = attributes["y"].map { resolveLength($0, axis: axis) }
+        partial.width = attributes["width"].map { resolveLength($0, axis: axis) }
+        partial.height = attributes["height"].map { resolveLength($0, axis: axis) }
         maskStack.append(partial)
     }
 
     private func finalizeMask() {
         guard let partial = maskStack.popLast(), let id = partial.id else { return }
-        masks[id] = SVGMask(children: partial.children)
+        masks[id] = SVGMask(
+            maskUnits: partial.maskUnits,
+            maskContentUnits: partial.maskContentUnits,
+            x: partial.x,
+            y: partial.y,
+            width: partial.width,
+            height: partial.height,
+            children: partial.children
+        )
     }
 
     /// Parses a `mask="url(#id)"` attribute and returns the bare id, or `nil`.
