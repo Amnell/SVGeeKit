@@ -469,10 +469,8 @@
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/color-prof-01-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/color-prof-01-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "color",
     "testId" : "color-prof-01-f"
   },
@@ -505,10 +503,8 @@
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/color-prop-04-t\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/color-prop-04-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "color",
     "testId" : "color-prop-04-t"
   },
@@ -523,19 +519,15 @@
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/conform-viewers-02-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/conform-viewers-02-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "other",
     "testId" : "conform-viewers-02-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/conform-viewers-03-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/conform-viewers-03-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "other",
     "testId" : "conform-viewers-03-f"
   },
@@ -754,10 +746,8 @@
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-units-01-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/coords-units-01-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "coords",
     "testId" : "coords-units-01-b"
   },
@@ -781,37 +771,29 @@
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-viewattr-01-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/coords-viewattr-01-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "coords",
     "testId" : "coords-viewattr-01-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-viewattr-02-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/coords-viewattr-02-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "coords",
     "testId" : "coords-viewattr-02-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-viewattr-03-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/coords-viewattr-03-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "coords",
     "testId" : "coords-viewattr-03-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-viewattr-04-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/coords-viewattr-04-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "coords",
     "testId" : "coords-viewattr-04-f"
   },
@@ -1183,10 +1165,8 @@
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/imp-path-01-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/imp-path-01-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "other",
     "testId" : "imp-path-01-f"
   },
@@ -1443,8 +1423,11 @@
     "testId" : "masking-opacity-01-b"
   },
   {
-    "detail" : "feature family not yet supported by SVGeeKit",
-    "status" : "skipped",
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/masking-path-01-b\/actual.png",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/masking-path-01-b\/baseline.png",
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
+    "status" : "passed",
     "tag" : "masking",
     "testId" : "masking-path-01-b"
   },
@@ -1927,10 +1910,8 @@
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/paths-data-18-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/paths-data-18-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "paths",
     "testId" : "paths-data-18-f"
   },
@@ -1954,19 +1935,15 @@
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/paths-dom-01-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/paths-dom-01-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "paths",
     "testId" : "paths-dom-01-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/paths-dom-02-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/paths-dom-02-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "paths",
     "testId" : "paths-dom-02-f"
   },
@@ -1981,46 +1958,36 @@
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-02-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-grad-02-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "pservers",
     "testId" : "pservers-grad-02-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-03-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-grad-03-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "pservers",
     "testId" : "pservers-grad-03-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-04-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-grad-04-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "pservers",
     "testId" : "pservers-grad-04-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-05-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-grad-05-b\/baseline.png",
-    "diffMaxChannel" : 1,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "pservers",
     "testId" : "pservers-grad-05-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-06-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-grad-06-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "pservers",
     "testId" : "pservers-grad-06-b"
   },
@@ -2035,10 +2002,8 @@
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-08-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-grad-08-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "pservers",
     "testId" : "pservers-grad-08-b"
   },
@@ -2062,118 +2027,92 @@
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-11-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-grad-11-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "pservers",
     "testId" : "pservers-grad-11-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-12-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-grad-12-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "pservers",
     "testId" : "pservers-grad-12-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-13-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-grad-13-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "pservers",
     "testId" : "pservers-grad-13-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-14-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-grad-14-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "pservers",
     "testId" : "pservers-grad-14-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-15-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-grad-15-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "pservers",
     "testId" : "pservers-grad-15-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-16-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-grad-16-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "pservers",
     "testId" : "pservers-grad-16-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-17-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-grad-17-b\/baseline.png",
-    "diffMaxChannel" : 1,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "pservers",
     "testId" : "pservers-grad-17-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-18-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-grad-18-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "pservers",
     "testId" : "pservers-grad-18-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-20-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-grad-20-b\/baseline.png",
-    "diffMaxChannel" : 1,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "pservers",
     "testId" : "pservers-grad-20-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-21-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-grad-21-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "pservers",
     "testId" : "pservers-grad-21-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-22-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-grad-22-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "pservers",
     "testId" : "pservers-grad-22-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-23-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-grad-23-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "pservers",
     "testId" : "pservers-grad-23-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-24-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-grad-24-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "pservers",
     "testId" : "pservers-grad-24-f"
   },
@@ -2188,82 +2127,64 @@
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-pattern-01-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-pattern-01-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "pservers",
     "testId" : "pservers-pattern-01-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-pattern-02-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-pattern-02-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "pservers",
     "testId" : "pservers-pattern-02-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-pattern-03-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-pattern-03-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "pservers",
     "testId" : "pservers-pattern-03-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-pattern-04-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-pattern-04-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "pservers",
     "testId" : "pservers-pattern-04-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-pattern-05-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-pattern-05-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "pservers",
     "testId" : "pservers-pattern-05-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-pattern-06-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-pattern-06-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "pservers",
     "testId" : "pservers-pattern-06-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-pattern-07-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-pattern-07-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "pservers",
     "testId" : "pservers-pattern-07-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-pattern-08-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-pattern-08-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "pservers",
     "testId" : "pservers-pattern-08-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-pattern-09-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-pattern-09-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "pservers",
     "testId" : "pservers-pattern-09-f"
   },
@@ -2296,46 +2217,36 @@
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/render-elems-06-t\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/render-elems-06-t\/baseline.png",
-    "diffMaxChannel" : 1,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "render",
     "testId" : "render-elems-06-t"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/render-elems-07-t\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/render-elems-07-t\/baseline.png",
-    "diffMaxChannel" : 1,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "render",
     "testId" : "render-elems-07-t"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/render-elems-08-t\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/render-elems-08-t\/baseline.png",
-    "diffMaxChannel" : 1,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "render",
     "testId" : "render-elems-08-t"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/render-groups-01-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/render-groups-01-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "render",
     "testId" : "render-groups-01-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/render-groups-03-t\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/render-groups-03-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "render",
     "testId" : "render-groups-03-t"
   },
@@ -2376,15 +2287,6 @@
     "testId" : "script-specify-02-f"
   },
   {
-    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-circle-01-t\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-circle-01-t\/baseline.png",
-    "diffMaxChannel" : 1,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
-    "tag" : "shapes",
-    "testId" : "shapes-circle-01-t"
-  },
-  {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-circle-01\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-circle-01\/baseline.png",
     "diffMaxChannel" : 1,
@@ -2394,22 +2296,22 @@
     "testId" : "shapes-circle-01"
   },
   {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-circle-01-t\/actual.png",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-circle-01-t\/baseline.png",
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
+    "status" : "passed",
+    "tag" : "shapes",
+    "testId" : "shapes-circle-01-t"
+  },
+  {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-circle-02-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-circle-02-t\/baseline.png",
-    "diffMaxChannel" : 0,
+    "diffMaxChannel" : 1,
     "mismatchedFraction" : 0,
     "status" : "passed",
     "tag" : "shapes",
     "testId" : "shapes-circle-02-t"
-  },
-  {
-    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-ellipse-01-t\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-ellipse-01-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
-    "tag" : "shapes",
-    "testId" : "shapes-ellipse-01-t"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-ellipse-01\/actual.png",
@@ -2419,6 +2321,15 @@
     "status" : "passed",
     "tag" : "shapes",
     "testId" : "shapes-ellipse-01"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-ellipse-01-t\/actual.png",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-ellipse-01-t\/baseline.png",
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
+    "status" : "passed",
+    "tag" : "shapes",
+    "testId" : "shapes-ellipse-01-t"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-ellipse-02-t\/actual.png",
@@ -2440,19 +2351,15 @@
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-grammar-01-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-grammar-01-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "shapes",
     "testId" : "shapes-grammar-01-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-intro-01-t\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-intro-01-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "shapes",
     "testId" : "shapes-intro-01-t"
   },
@@ -2466,15 +2373,6 @@
     "testId" : "shapes-intro-02-f"
   },
   {
-    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-line-01-t\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-line-01-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
-    "tag" : "shapes",
-    "testId" : "shapes-line-01-t"
-  },
-  {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-line-01\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-line-01\/baseline.png",
     "diffMaxChannel" : 1,
@@ -2482,6 +2380,15 @@
     "status" : "passed",
     "tag" : "shapes",
     "testId" : "shapes-line-01"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-line-01-t\/actual.png",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-line-01-t\/baseline.png",
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
+    "status" : "passed",
+    "tag" : "shapes",
+    "testId" : "shapes-line-01-t"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-line-02-f\/actual.png",
@@ -2494,21 +2401,10 @@
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-path-01\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-path-01\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "shapes",
     "testId" : "shapes-path-01"
-  },
-  {
-    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-polygon-01-t\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-polygon-01-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
-    "tag" : "shapes",
-    "testId" : "shapes-polygon-01-t"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-polygon-01\/actual.png",
@@ -2518,6 +2414,15 @@
     "status" : "passed",
     "tag" : "shapes",
     "testId" : "shapes-polygon-01"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-polygon-01-t\/actual.png",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-polygon-01-t\/baseline.png",
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
+    "status" : "passed",
+    "tag" : "shapes",
+    "testId" : "shapes-polygon-01-t"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-polygon-02-t\/actual.png",
@@ -2538,15 +2443,6 @@
     "testId" : "shapes-polygon-03-t"
   },
   {
-    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-polyline-01-t\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-polyline-01-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
-    "tag" : "shapes",
-    "testId" : "shapes-polyline-01-t"
-  },
-  {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-polyline-01\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-polyline-01\/baseline.png",
     "diffMaxChannel" : 0,
@@ -2554,6 +2450,15 @@
     "status" : "passed",
     "tag" : "shapes",
     "testId" : "shapes-polyline-01"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-polyline-01-t\/actual.png",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-polyline-01-t\/baseline.png",
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
+    "status" : "passed",
+    "tag" : "shapes",
+    "testId" : "shapes-polyline-01-t"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-polyline-02-t\/actual.png",
@@ -2575,19 +2480,15 @@
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-rect-02-t\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-rect-02-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "shapes",
     "testId" : "shapes-rect-02-t"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-rect-03-t\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-rect-03-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "shapes",
     "testId" : "shapes-rect-03-t"
   },
@@ -2647,235 +2548,183 @@
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-cond-01-t\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-cond-01-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-cond-01-t"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-cond-02-t\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-cond-02-t\/baseline.png",
-    "diffMaxChannel" : 3,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-cond-02-t"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-cond-03-t\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-cond-03-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-cond-03-t"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-cond-overview-02-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-cond-overview-02-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-cond-overview-02-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-cond-overview-03-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-cond-overview-03-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-cond-overview-03-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-cond-overview-04-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-cond-overview-04-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-cond-overview-04-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-cond-overview-05-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-cond-overview-05-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-cond-overview-05-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-defs-01-t\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-defs-01-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-defs-01-t"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-01-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-dom-01-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-dom-01-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-02-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-dom-02-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-dom-02-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-03-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-dom-03-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-dom-03-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-04-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-dom-04-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-dom-04-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-05-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-dom-05-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-dom-05-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-06-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-dom-06-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-dom-06-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-07-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-dom-07-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-dom-07-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-08-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-dom-08-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-dom-08-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-11-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-dom-11-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-dom-11-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-12-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-dom-12-b\/baseline.png",
-    "diffMaxChannel" : 1,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-dom-12-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-13-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-dom-13-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-dom-13-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-14-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-dom-14-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-dom-14-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-15-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-dom-15-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-dom-15-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-16-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-dom-16-f\/baseline.png",
-    "diffMaxChannel" : 1,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-dom-16-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-17-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-dom-17-f\/baseline.png",
-    "diffMaxChannel" : 1,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-dom-17-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-18-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-dom-18-f\/baseline.png",
-    "diffMaxChannel" : 1,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-dom-18-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-19-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-dom-19-f\/baseline.png",
-    "diffMaxChannel" : 1,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-dom-19-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-20-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-dom-20-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-dom-20-f"
   },
@@ -2899,37 +2748,29 @@
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-frag-03-t\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-frag-03-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-frag-03-t"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-frag-04-t\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-frag-04-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-frag-04-t"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-frag-05-t\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-frag-05-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-frag-05-t"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-frag-06-t\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-frag-06-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-frag-06-t"
   },
@@ -2944,316 +2785,246 @@
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-group-02-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-group-02-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-group-02-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-group-03-t\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-group-03-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-group-03-t"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-01-t\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-image-01-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-image-01-t"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-02-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-image-02-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-image-02-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-03-t\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-image-03-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-image-03-t"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-04-t\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-image-04-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-image-04-t"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-05-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-image-05-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-image-05-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-06-t\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-image-06-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-image-06-t"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-07-t\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-image-07-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-image-07-t"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-08-t\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-image-08-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-image-08-t"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-09-t\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-image-09-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-image-09-t"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-10-t\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-image-10-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-image-10-t"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-11-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-image-11-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-image-11-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-12-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-image-12-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-image-12-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-13-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-image-13-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-image-13-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-14-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-image-14-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-image-14-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-15-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-image-15-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-image-15-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-16-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-image-16-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-image-16-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-17-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-image-17-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-image-17-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-18-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-image-18-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-image-18-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-19-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-image-19-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-image-19-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-svg-01-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-svg-01-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-svg-01-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-svg-02-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-svg-02-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-svg-02-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-svg-03-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-svg-03-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-svg-03-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-symbol-01-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-symbol-01-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-symbol-01-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-use-01-t\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-use-01-t\/baseline.png",
-    "diffMaxChannel" : 15,
-    "mismatchedFraction" : 0.00046875,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-use-01-t"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-use-03-t\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-use-03-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-use-03-t"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-use-04-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-use-04-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-use-04-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-use-05-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-use-05-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-use-05-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-use-06-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-use-06-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-use-06-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-use-07-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-use-07-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-use-07-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-use-08-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-use-08-b\/baseline.png",
-    "diffMaxChannel" : 1,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-use-08-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-use-09-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-use-09-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-use-09-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-use-10-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-use-10-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-use-10-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-use-11-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-use-11-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-use-11-f"
   },
@@ -3268,91 +3039,71 @@
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-use-13-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-use-13-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-use-13-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-use-14-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-use-14-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-use-14-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-use-15-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-use-15-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "struct",
     "testId" : "struct-use-15-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-class-01-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/styling-class-01-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "styling",
     "testId" : "styling-class-01-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-css-01-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/styling-css-01-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "styling",
     "testId" : "styling-css-01-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-css-02-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/styling-css-02-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "styling",
     "testId" : "styling-css-02-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-css-03-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/styling-css-03-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "styling",
     "testId" : "styling-css-03-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-css-04-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/styling-css-04-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "styling",
     "testId" : "styling-css-04-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-css-05-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/styling-css-05-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "styling",
     "testId" : "styling-css-05-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-css-06-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/styling-css-06-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "styling",
     "testId" : "styling-css-06-b"
   },
@@ -3367,46 +3118,36 @@
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-css-08-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/styling-css-08-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "styling",
     "testId" : "styling-css-08-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-css-09-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/styling-css-09-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "styling",
     "testId" : "styling-css-09-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-css-10-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/styling-css-10-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "styling",
     "testId" : "styling-css-10-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-elem-01-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/styling-elem-01-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "styling",
     "testId" : "styling-elem-01-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-inherit-01-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/styling-inherit-01-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "styling",
     "testId" : "styling-inherit-01-b"
   },
@@ -3421,46 +3162,36 @@
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-pres-02-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/styling-pres-02-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "styling",
     "testId" : "styling-pres-02-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-pres-03-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/styling-pres-03-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "styling",
     "testId" : "styling-pres-03-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-pres-04-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/styling-pres-04-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "styling",
     "testId" : "styling-pres-04-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-pres-05-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/styling-pres-05-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "styling",
     "testId" : "styling-pres-05-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/svgdom-over-01-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/svgdom-over-01-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "other",
     "testId" : "svgdom-over-01-f"
   },
@@ -3847,127 +3578,99 @@
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/types-basic-02-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/types-basic-02-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "other",
     "testId" : "types-basic-02-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/types-dom-01-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/types-dom-01-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "other",
     "testId" : "types-dom-01-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/types-dom-02-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/types-dom-02-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "other",
     "testId" : "types-dom-02-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/types-dom-03-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/types-dom-03-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "other",
     "testId" : "types-dom-03-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/types-dom-04-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/types-dom-04-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "other",
     "testId" : "types-dom-04-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/types-dom-05-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/types-dom-05-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "other",
     "testId" : "types-dom-05-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/types-dom-06-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/types-dom-06-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "other",
     "testId" : "types-dom-06-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/types-dom-07-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/types-dom-07-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "other",
     "testId" : "types-dom-07-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/types-dom-08-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/types-dom-08-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "other",
     "testId" : "types-dom-08-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/types-dom-svgfittoviewbox-01-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/types-dom-svgfittoviewbox-01-f\/baseline.png",
-    "diffMaxChannel" : 1,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "other",
     "testId" : "types-dom-svgfittoviewbox-01-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/types-dom-svglengthlist-01-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/types-dom-svglengthlist-01-f\/baseline.png",
-    "diffMaxChannel" : 1,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "other",
     "testId" : "types-dom-svglengthlist-01-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/types-dom-svgnumberlist-01-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/types-dom-svgnumberlist-01-f\/baseline.png",
-    "diffMaxChannel" : 1,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "other",
     "testId" : "types-dom-svgnumberlist-01-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/types-dom-svgstringlist-01-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/types-dom-svgstringlist-01-f\/baseline.png",
-    "diffMaxChannel" : 1,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "other",
     "testId" : "types-dom-svgstringlist-01-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/types-dom-svgtransformable-01-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/types-dom-svgtransformable-01-f\/baseline.png",
-    "diffMaxChannel" : 1,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
+    "status" : "missingBaseline",
     "tag" : "other",
     "testId" : "types-dom-svgtransformable-01-f"
   }
