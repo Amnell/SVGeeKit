@@ -1405,8 +1405,11 @@
     "testId" : "masking-mask-01-b"
   },
   {
-    "detail" : "feature family not yet supported by SVGeeKit",
-    "status" : "skipped",
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/masking-mask-02-f\/actual.png",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/masking-mask-02-f\/baseline.png",
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
+    "status" : "passed",
     "tag" : "masking",
     "testId" : "masking-mask-02-f"
   },
@@ -1941,7 +1944,7 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-01-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-grad-01-b\/baseline.png",
-    "diffMaxChannel" : 1,
+    "diffMaxChannel" : 0,
     "mismatchedFraction" : 0,
     "status" : "passed",
     "tag" : "pservers",
@@ -1985,7 +1988,7 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-07-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-grad-07-b\/baseline.png",
-    "diffMaxChannel" : 0,
+    "diffMaxChannel" : 1,
     "mismatchedFraction" : 0,
     "status" : "passed",
     "tag" : "pservers",
@@ -2298,7 +2301,7 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-circle-02-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-circle-02-t\/baseline.png",
-    "diffMaxChannel" : 0,
+    "diffMaxChannel" : 1,
     "mismatchedFraction" : 0,
     "status" : "passed",
     "tag" : "shapes",

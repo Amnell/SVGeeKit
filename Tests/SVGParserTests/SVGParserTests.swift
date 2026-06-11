@@ -409,4 +409,55 @@ struct SVGParserTests {
         #expect(r1.paint.fill == .paintServer(id: "A"))
         #expect(r2.paint.fill == .paintServer(id: "B"))
     }
+
+    @Test func parsesClipPathAndAppliesRef() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200">
+          <defs>
+            <clipPath id="clip1">
+              <rect x="10" y="10" width="80" height="80"/>
+            </clipPath>
+            <clipPath id="clip2">
+              <rect x="0" y="0" width="50" height="50"/>
+              <rect x="60" y="60" width="50" height="50"/>
+            </clipPath>
+          </defs>
+          <rect x="0" y="0" width="100" height="100" fill="blue" clip-path="url(#clip1)"/>
+          <g clip-path="url(#clip2)">
+            <rect x="0" y="0" width="200" height="200" fill="red"/>
+          </g>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+
+        // clip paths are stored in the document
+        #expect(doc.clipPaths.count == 2)
+
+        guard let cp1 = doc.clipPaths["clip1"] else {
+            Issue.record("expected clipPath clip1"); return
+        }
+        #expect(cp1.units == .userSpaceOnUse)
+        #expect(cp1.children.count == 1)
+        guard case .rect(let cpRect) = cp1.children.first else {
+            Issue.record("expected rect in clip1"); return
+        }
+        #expect(cpRect.origin == CGPoint(x: 10, y: 10))
+
+        guard let cp2 = doc.clipPaths["clip2"] else {
+            Issue.record("expected clipPath clip2"); return
+        }
+        #expect(cp2.children.count == 2)
+
+        // shape with clip-path attribute carries the ref
+        guard case .rect(let blueRect) = doc.root.children.first else {
+            Issue.record("expected blue rect"); return
+        }
+        #expect(blueRect.paint.clipPathRef == "clip1")
+
+        // group with clip-path attribute carries the ref
+        guard case .group(let g) = doc.root.children.last else {
+            Issue.record("expected group"); return
+        }
+        #expect(g.clipPathRef == "clip2")
+    }
 }

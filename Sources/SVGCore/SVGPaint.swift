@@ -60,6 +60,8 @@ public struct SVGPaintProperties: Equatable, Sendable {
     public var opacity: CGFloat
     public var color: SVGColor
     public var visibility: SVGVisibility
+    public var clipPathRef: String?
+    public var maskRef: String?
 
     public init(
         fill: SVGPaint = .color(.black),
@@ -75,7 +77,9 @@ public struct SVGPaintProperties: Equatable, Sendable {
         strokeDashOffset: CGFloat = 0,
         opacity: CGFloat = 1,
         color: SVGColor = .black,
-        visibility: SVGVisibility = .visible
+        visibility: SVGVisibility = .visible,
+        clipPathRef: String? = nil,
+        maskRef: String? = nil
     ) {
         self.fill = fill
         self.fillOpacity = fillOpacity
@@ -91,5 +95,7 @@ public struct SVGPaintProperties: Equatable, Sendable {
         self.opacity = opacity
         self.color = color
         self.visibility = visibility
+        self.clipPathRef = clipPathRef
+        self.maskRef = maskRef
     }
 }

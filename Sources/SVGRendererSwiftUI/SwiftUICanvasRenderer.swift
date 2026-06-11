@@ -71,6 +71,9 @@ public struct SwiftUICanvasRenderer {
                     strokeWidth: strokeWidth,
                     in: &context
                 )
+
+            case .clipToPath(let cgPath, _):
+                context.clip(to: Path(cgPath))
             }
         }
     }

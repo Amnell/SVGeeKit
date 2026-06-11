@@ -7,27 +7,68 @@ public struct SVGDocument: Equatable, Sendable {
     public var intrinsicSize: CGSize?
     public var root: SVGGroup
     public var paintServers: [String: SVGPaintServer]
+    public var clipPaths: [String: SVGClipPath]
+    public var masks: [String: SVGMask]
 
     public init(
         viewBox: CGRect? = nil,
         intrinsicSize: CGSize? = nil,
         root: SVGGroup = SVGGroup(),
-        paintServers: [String: SVGPaintServer] = [:]
+        paintServers: [String: SVGPaintServer] = [:],
+        clipPaths: [String: SVGClipPath] = [:],
+        masks: [String: SVGMask] = [:]
     ) {
         self.viewBox = viewBox
         self.intrinsicSize = intrinsicSize
         self.root = root
         self.paintServers = paintServers
+        self.clipPaths = clipPaths
+        self.masks = masks
     }
 }
 
 /// A grouping container. Used for the implicit root and for `<g>`.
 public struct SVGGroup: Equatable, Sendable {
     public var transform: SVGTransform
+    public var clipPathRef: String?
+    public var maskRef: String?
     public var children: [SVGElement]
 
-    public init(transform: SVGTransform = .identity, children: [SVGElement] = []) {
+    public init(transform: SVGTransform = .identity, clipPathRef: String? = nil, maskRef: String? = nil, children: [SVGElement] = []) {
         self.transform = transform
+        self.clipPathRef = clipPathRef
+        self.maskRef = maskRef
+        self.children = children
+    }
+}
+
+/// A clipping path definition (`<clipPath>`). Children describe the clip region.
+public struct SVGClipPath: Equatable, Sendable {
+    public enum Units: String, Equatable, Sendable {
+        case userSpaceOnUse
+        case objectBoundingBox
+    }
+    public var units: Units
+    public var transform: SVGTransform
+    public var children: [SVGElement]
+
+    public init(
+        units: Units = .userSpaceOnUse,
+        transform: SVGTransform = .identity,
+        children: [SVGElement] = []
+    ) {
+        self.units = units
+        self.transform = transform
+        self.children = children
+    }
+}
+
+/// An alpha mask definition (`<mask>`). Children define the mask image.
+/// An empty mask (no children) suppresses rendering of the referencing element.
+public struct SVGMask: Equatable, Sendable {
+    public var children: [SVGElement]
+
+    public init(children: [SVGElement] = []) {
         self.children = children
     }
 }

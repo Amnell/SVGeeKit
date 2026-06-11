@@ -35,6 +35,8 @@ public struct SVGParser {
         }
         delegate.resolveGradientHrefs()
         document.paintServers = delegate.paintServers
+        document.clipPaths = delegate.clipPaths
+        document.masks = delegate.masks
         return document
     }
 
@@ -89,6 +91,16 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
     /// Resolved in a final pass once the whole document has been parsed.
     private var gradientHrefs: [(id: String, href: String)] = []
 
+    /// Partial `<clipPath>` definitions currently open.
+    private var clipPathStack: [PartialClipPath] = []
+    /// Completed clip paths keyed by id.
+    fileprivate var clipPaths: [String: SVGClipPath] = [:]
+
+    /// Partial `<mask>` definitions currently open.
+    private var maskStack: [PartialMask] = []
+    /// Completed masks keyed by id.
+    fileprivate var masks: [String: SVGMask] = [:]
+
     struct PartialGradient {
         var id: String?
         var href: String?
@@ -100,6 +112,18 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
         var spreadMethod: SVGGradientSpread?
         var transform: SVGTransform?
         var stops: [SVGGradientStop] = []
+    }
+
+    struct PartialClipPath {
+        var id: String?
+        var units: SVGClipPath.Units = .userSpaceOnUse
+        var transform: SVGTransform = .identity
+        var children: [SVGElement] = []
+    }
+
+    struct PartialMask {
+        var id: String?
+        var children: [SVGElement] = []
     }
 
     func parser(
@@ -122,7 +146,9 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
             handleSVGRoot(attributes: attributeDict, parser: parser)
         case "g":
             let transform = transform(from: attributeDict, parser: parser) ?? .identity
-            groupStack.append(SVGGroup(transform: transform))
+            let clipRef = parseClipPathRef(attributeDict)
+            let maskR = parseMaskRef(attributeDict)
+            groupStack.append(SVGGroup(transform: transform, clipPathRef: clipRef, maskRef: maskR))
         case "rect":
             handleRect(attributes: attributeDict, paint: elementPaint, parser: parser)
         case "circle":
@@ -150,6 +176,10 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
             handleLinearGradientStart(attributes: attributeDict)
         case "stop":
             handleStop(attributes: attributeDict, currentColor: elementPaint.color)
+        case "clipPath":
+            handleClipPathStart(attributes: attributeDict, parser: parser)
+        case "mask":
+            handleMaskStart(attributes: attributeDict)
         default:
             break
         }
@@ -182,6 +212,10 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
             appendChild(.text(finished))
         case "linearGradient":
             finalizeLinearGradient()
+        case "clipPath":
+            finalizeClipPath()
+        case "mask":
+            finalizeMask()
         default:
             break
         }
@@ -365,8 +399,14 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
     // MARK: - Helpers
 
     private func appendChild(_ element: SVGElement) {
-        guard !groupStack.isEmpty else { return }
-        groupStack[groupStack.count - 1].children.append(element)
+        if !clipPathStack.isEmpty {
+            clipPathStack[clipPathStack.count - 1].children.append(element)
+        } else if !maskStack.isEmpty {
+            maskStack[maskStack.count - 1].children.append(element)
+        } else {
+            guard !groupStack.isEmpty else { return }
+            groupStack[groupStack.count - 1].children.append(element)
+        }
     }
 
     private func transform(from attributes: [String: String], parser: XMLParser) -> SVGTransform? {
@@ -457,6 +497,14 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
         case "visibility":
             if let v = SVGVisibility(rawValue: value.trimmingCharacters(in: .whitespaces).lowercased()) {
                 p.visibility = v
+            }
+        case "clip-path":
+            if let ref = parseClipPathRef(["clip-path": value]) {
+                p.clipPathRef = ref
+            }
+        case "mask":
+            if let ref = parseMaskRef(["mask": value]) {
+                p.maskRef = ref
             }
         default:
             break
@@ -578,6 +626,70 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
         gradientStack[gradientStack.count - 1].stops.append(
             SVGGradientStop(offset: max(0, min(1, offset)), color: color)
         )
+    }
+
+    // MARK: - Masks
+
+    private func handleMaskStart(attributes: [String: String]) {
+        var partial = PartialMask()
+        partial.id = attributes["id"]
+        maskStack.append(partial)
+    }
+
+    private func finalizeMask() {
+        guard let partial = maskStack.popLast(), let id = partial.id else { return }
+        masks[id] = SVGMask(children: partial.children)
+    }
+
+    /// Parses a `mask="url(#id)"` attribute and returns the bare id, or `nil`.
+    private func parseMaskRef(_ attributes: [String: String]) -> String? {
+        guard let raw = attributes["mask"] else { return nil }
+        let trimmed = raw.trimmingCharacters(in: .whitespaces)
+        guard trimmed.lowercased().hasPrefix("url(") else { return nil }
+        let body = trimmed.dropFirst(4)
+        guard let close = body.firstIndex(of: ")") else { return nil }
+        var ref = String(body[..<close]).trimmingCharacters(in: .whitespaces)
+        ref = ref.trimmingCharacters(in: CharacterSet(charactersIn: "'\""))
+        if ref.hasPrefix("#") { ref = String(ref.dropFirst()) }
+        return ref.isEmpty ? nil : ref
+    }
+
+    // MARK: - Clip paths
+
+    private func handleClipPathStart(attributes: [String: String], parser: XMLParser) {
+        var partial = PartialClipPath()
+        partial.id = attributes["id"]
+        if let u = attributes["clipPathUnits"]?.trimmingCharacters(in: .whitespaces),
+           let units = SVGClipPath.Units(rawValue: u) {
+            partial.units = units
+        }
+        if let t = transform(from: attributes, parser: parser) {
+            partial.transform = t
+        }
+        clipPathStack.append(partial)
+    }
+
+    private func finalizeClipPath() {
+        guard let partial = clipPathStack.popLast(), let id = partial.id else { return }
+        let clipPath = SVGClipPath(
+            units: partial.units,
+            transform: partial.transform,
+            children: partial.children
+        )
+        clipPaths[id] = clipPath
+    }
+
+    /// Parses a `clip-path="url(#id)"` attribute and returns the bare id, or `nil`.
+    private func parseClipPathRef(_ attributes: [String: String]) -> String? {
+        guard let raw = attributes["clip-path"] else { return nil }
+        let trimmed = raw.trimmingCharacters(in: .whitespaces)
+        guard trimmed.lowercased().hasPrefix("url(") else { return nil }
+        let body = trimmed.dropFirst(4)
+        guard let close = body.firstIndex(of: ")") else { return nil }
+        var ref = String(body[..<close]).trimmingCharacters(in: .whitespaces)
+        ref = ref.trimmingCharacters(in: CharacterSet(charactersIn: "'\"" ))
+        if ref.hasPrefix("#") { ref = String(ref.dropFirst()) }
+        return ref.isEmpty ? nil : ref
     }
 
     fileprivate func finalizeLinearGradient() {

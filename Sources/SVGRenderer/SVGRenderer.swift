@@ -45,6 +45,9 @@ public enum SVGRenderCommand: Equatable, Sendable {
         strokeOpacity: CGFloat,
         strokeWidth: CGFloat
     )
+
+    /// Clip subsequent drawing to `path`. Must be bracketed by pushState/popState.
+    case clipToPath(CGPath, evenOdd: Bool)
 }
 
 /// A renderer consumes a render-command stream and draws it into its backend.
@@ -59,7 +62,7 @@ public enum SVGRenderTree {
     /// Lower a parsed document into a flat command stream.
     public static func lower(_ document: SVGDocument) -> [SVGRenderCommand] {
         var commands: [SVGRenderCommand] = []
-        let ctx = Context(paintServers: document.paintServers)
+        let ctx = Context(paintServers: document.paintServers, clipPaths: document.clipPaths, masks: document.masks)
         commands.append(.pushState)
         if let viewBox = document.viewBox, let size = document.intrinsicSize {
             let sx = size.width / viewBox.width
@@ -75,17 +78,26 @@ public enum SVGRenderTree {
 
     fileprivate struct Context {
         let paintServers: [String: SVGPaintServer]
+        let clipPaths: [String: SVGClipPath]
+        let masks: [String: SVGMask]
     }
 
     private static func lower(group: SVGGroup, ctx: Context, into commands: inout [SVGRenderCommand]) {
-        commands.append(.pushState)
+        // An empty mask suppresses the entire group per SVG 1.1 §14.4.
+        if let ref = group.maskRef, let m = ctx.masks[ref], m.children.isEmpty { return }
+        let hasClip = group.clipPathRef != nil
+        let needsState = hasClip || group.transform.matrix != .identity
+        if needsState { commands.append(.pushState) }
+        if let clipRef = group.clipPathRef, let clipDef = ctx.clipPaths[clipRef] {
+            commands.append(.clipToPath(lowerToClipPath(clipDef, ctx: ctx), evenOdd: false))
+        }
         if group.transform.matrix != .identity {
             commands.append(.concatenate(group.transform))
         }
         for child in group.children {
             lower(element: child, ctx: ctx, into: &commands)
         }
-        commands.append(.popState)
+        if needsState { commands.append(.popState) }
     }
 
     private static func lower(element: SVGElement, ctx: Context, into commands: inout [SVGRenderCommand]) {
@@ -221,6 +233,62 @@ public enum SVGRenderTree {
         if needsState { commands.append(.popState) }
     }
 
+    /// Build a `CGPath` from all shape children of a `<clipPath>` definition.
+    /// Nested groups and text are not supported in this initial implementation.
+    private static func lowerToClipPath(_ clipDef: SVGClipPath, ctx: Context) -> CGPath {
+        let combined = CGMutablePath()
+        for element in clipDef.children {
+            switch element {
+            case .rect(let r):
+                let cgRect = CGRect(origin: r.origin, size: r.size)
+                let p: CGPath = r.cornerRadii == .zero
+                    ? CGPath(rect: cgRect, transform: nil)
+                    : CGPath(roundedRect: cgRect, cornerWidth: r.cornerRadii.width,
+                             cornerHeight: r.cornerRadii.height, transform: nil)
+                combined.addPath(p, transform: r.transform.matrix)
+            case .circle(let c):
+                guard c.radius > 0 else { break }
+                let bounds = CGRect(
+                    x: c.center.x - c.radius, y: c.center.y - c.radius,
+                    width: c.radius * 2, height: c.radius * 2
+                )
+                let p = CGPath(ellipseIn: bounds, transform: nil)
+                combined.addPath(p, transform: c.transform.matrix)
+            case .ellipse(let e):
+                guard e.radii.width > 0, e.radii.height > 0 else { break }
+                let bounds = CGRect(
+                    x: e.center.x - e.radii.width, y: e.center.y - e.radii.height,
+                    width: e.radii.width * 2, height: e.radii.height * 2
+                )
+                let p = CGPath(ellipseIn: bounds, transform: nil)
+                combined.addPath(p, transform: e.transform.matrix)
+            case .path(let sp):
+                let cg = CGMutablePath()
+                for cmd in sp.commands {
+                    switch cmd {
+                    case .moveTo(let pt):    cg.move(to: pt)
+                    case .lineTo(let pt):    cg.addLine(to: pt)
+                    case .quadTo(let c, let end): cg.addQuadCurve(to: end, control: c)
+                    case .cubicTo(let c1, let c2, let end): cg.addCurve(to: end, control1: c1, control2: c2)
+                    case .close:             cg.closeSubpath()
+                    }
+                }
+                combined.addPath(cg, transform: sp.transform.matrix)
+            case .polyline(let pl):
+                if let p = polylinePath(points: pl.points, closed: false) {
+                    combined.addPath(p, transform: pl.transform.matrix)
+                }
+            case .polygon(let pg):
+                if let p = polylinePath(points: pg.points, closed: true) {
+                    combined.addPath(p, transform: pg.transform.matrix)
+                }
+            default:
+                break
+            }
+        }
+        return combined
+    }
+
     private static func polylinePath(points: [CGPoint], closed: Bool) -> CGPath? {
         guard let first = points.first else { return nil }
         let path = CGMutablePath()
@@ -240,8 +308,14 @@ public enum SVGRenderTree {
         into commands: inout [SVGRenderCommand]
     ) {
         guard paint.visibility == .visible else { return }
-        let needsState = transform.matrix != .identity || paint.opacity < 1
+        // An empty mask suppresses the element per SVG 1.1 §14.4.
+        if let ref = paint.maskRef, let m = ctx.masks[ref], m.children.isEmpty { return }
+        let hasClip = paint.clipPathRef != nil
+        let needsState = hasClip || transform.matrix != .identity || paint.opacity < 1
         if needsState { commands.append(.pushState) }
+        if let clipRef = paint.clipPathRef, let clipDef = ctx.clipPaths[clipRef] {
+            commands.append(.clipToPath(lowerToClipPath(clipDef, ctx: ctx), evenOdd: false))
+        }
         if transform.matrix != .identity {
             commands.append(.concatenate(transform))
         }

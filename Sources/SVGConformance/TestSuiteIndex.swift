@@ -14,6 +14,8 @@ public struct SVGTestCase: Sendable, Hashable {
 public struct SVGTestOverride: Codable, Sendable {
     public var tag: String?
     public var skip: String?
+    /// When `true`, overrides a matching `skipTags` entry and forces the test to run.
+    public var run: Bool?
 }
 
 /// Top-level shape of `overrides.json`. The file may be either this object
@@ -65,6 +67,7 @@ public struct SVGTestSuiteIndex {
 
             let (skipped, reason) = Self.skipDecision(
                 explicit: overrideEntry?.skip,
+                run: overrideEntry?.run,
                 tag: tag,
                 skipTags: skipTags,
                 defaultReason: defaultSkipReason
@@ -100,11 +103,13 @@ public struct SVGTestSuiteIndex {
 
     private static func skipDecision(
         explicit: String?,
+        run: Bool?,
         tag: SVGFeatureTag,
         skipTags: Set<SVGFeatureTag>,
         defaultReason: String?
     ) -> (Bool, String?) {
         if let explicit { return (true, explicit) }
+        if run == true { return (false, nil) }
         if skipTags.contains(tag) {
             return (true, defaultReason ?? "feature family not yet supported")
         }
