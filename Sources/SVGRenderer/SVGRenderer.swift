@@ -99,7 +99,7 @@ public enum SVGRenderTree {
         let needsState = hasClip || group.transform.matrix != .identity
         if needsState { inner.append(.pushState) }
         if let clipRef = group.clipPathRef, let clipDef = ctx.clipPaths[clipRef] {
-            inner.append(.clipToPath(lowerToClipPath(clipDef, ctx: ctx), evenOdd: false))
+            inner.append(.clipToPath(lowerToClipPath(clipDef, bbox: nil, ctx: ctx), evenOdd: false))
         }
         if group.transform.matrix != .identity {
             inner.append(.concatenate(group.transform))
@@ -304,8 +304,16 @@ public enum SVGRenderTree {
     }
 
     /// Build a `CGPath` from all shape children of a `<clipPath>` definition.
-    /// Nested groups and text are not supported in this initial implementation.
-    private static func lowerToClipPath(_ clipDef: SVGClipPath, ctx: Context) -> CGPath {
+    /// When `clipPathUnits="objectBoundingBox"` and a `bbox` is supplied, the
+    /// clip coordinates (in [0,1] space) are mapped to that bounding box.
+    private static func lowerToClipPath(_ clipDef: SVGClipPath, bbox: CGRect?, ctx: Context) -> CGPath {
+        // OBB clips: compose translate(bbox.origin)+scale(bbox.size) on each path.
+        let obbTransform: CGAffineTransform? = (clipDef.units == .objectBoundingBox)
+            ? bbox.map { b in
+                CGAffineTransform(translationX: b.minX, y: b.minY)
+                    .scaledBy(x: b.width, y: b.height)
+              }
+            : nil
         let combined = CGMutablePath()
         for element in clipDef.children {
             switch element {
@@ -315,7 +323,9 @@ public enum SVGRenderTree {
                     ? CGPath(rect: cgRect, transform: nil)
                     : CGPath(roundedRect: cgRect, cornerWidth: r.cornerRadii.width,
                              cornerHeight: r.cornerRadii.height, transform: nil)
-                combined.addPath(p, transform: r.transform.matrix)
+                var tx = r.transform.matrix
+                if let obb = obbTransform { tx = tx.isIdentity ? obb : tx.concatenating(obb) }
+                combined.addPath(p, transform: tx)
             case .circle(let c):
                 guard c.radius > 0 else { break }
                 let bounds = CGRect(
@@ -323,7 +333,9 @@ public enum SVGRenderTree {
                     width: c.radius * 2, height: c.radius * 2
                 )
                 let p = CGPath(ellipseIn: bounds, transform: nil)
-                combined.addPath(p, transform: c.transform.matrix)
+                var tx = c.transform.matrix
+                if let obb = obbTransform { tx = tx.isIdentity ? obb : tx.concatenating(obb) }
+                combined.addPath(p, transform: tx)
             case .ellipse(let e):
                 guard e.radii.width > 0, e.radii.height > 0 else { break }
                 let bounds = CGRect(
@@ -331,7 +343,9 @@ public enum SVGRenderTree {
                     width: e.radii.width * 2, height: e.radii.height * 2
                 )
                 let p = CGPath(ellipseIn: bounds, transform: nil)
-                combined.addPath(p, transform: e.transform.matrix)
+                var tx = e.transform.matrix
+                if let obb = obbTransform { tx = tx.isIdentity ? obb : tx.concatenating(obb) }
+                combined.addPath(p, transform: tx)
             case .path(let sp):
                 let cg = CGMutablePath()
                 for cmd in sp.commands {
@@ -343,14 +357,20 @@ public enum SVGRenderTree {
                     case .close:             cg.closeSubpath()
                     }
                 }
-                combined.addPath(cg, transform: sp.transform.matrix)
+                var tx = sp.transform.matrix
+                if let obb = obbTransform { tx = tx.isIdentity ? obb : tx.concatenating(obb) }
+                combined.addPath(cg, transform: tx)
             case .polyline(let pl):
                 if let p = polylinePath(points: pl.points, closed: false) {
-                    combined.addPath(p, transform: pl.transform.matrix)
+                    var tx = pl.transform.matrix
+                    if let obb = obbTransform { tx = tx.isIdentity ? obb : tx.concatenating(obb) }
+                    combined.addPath(p, transform: tx)
                 }
             case .polygon(let pg):
                 if let p = polylinePath(points: pg.points, closed: true) {
-                    combined.addPath(p, transform: pg.transform.matrix)
+                    var tx = pg.transform.matrix
+                    if let obb = obbTransform { tx = tx.isIdentity ? obb : tx.concatenating(obb) }
+                    combined.addPath(p, transform: tx)
                 }
             default:
                 break
@@ -384,11 +404,14 @@ public enum SVGRenderTree {
         let hasClip = paint.clipPathRef != nil
         let needsState = hasClip || transform.matrix != .identity || paint.opacity < 1
         if needsState { painted.append(.pushState) }
-        if let clipRef = paint.clipPathRef, let clipDef = ctx.clipPaths[clipRef] {
-            painted.append(.clipToPath(lowerToClipPath(clipDef, ctx: ctx), evenOdd: false))
-        }
+        // SVG §14.3: clip-path is evaluated in the element's local coordinate
+        // system (after the element's own transform). Apply transform first so
+        // the clip path coordinates are in local space, not parent space.
         if transform.matrix != .identity {
             painted.append(.concatenate(transform))
+        }
+        if let clipRef = paint.clipPathRef, let clipDef = ctx.clipPaths[clipRef] {
+            painted.append(.clipToPath(lowerToClipPath(clipDef, bbox: bbox, ctx: ctx), evenOdd: false))
         }
         if paint.opacity < 1 {
             painted.append(.beginOpacityLayer(paint.opacity))
