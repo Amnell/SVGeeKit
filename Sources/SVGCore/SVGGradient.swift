@@ -52,9 +52,47 @@ public struct SVGLinearGradient: Equatable, Sendable {
     }
 }
 
+public struct SVGRadialGradient: Equatable, Sendable {
+    /// Center of the outer circle.
+    public var cx: CGFloat
+    public var cy: CGFloat
+    /// Focal point (defaults to cx/cy when unspecified).
+    public var fx: CGFloat
+    public var fy: CGFloat
+    /// Radius of the outer circle.
+    public var r: CGFloat
+    public var units: SVGGradientUnits
+    public var spreadMethod: SVGGradientSpread
+    public var stops: [SVGGradientStop]
+    public var transform: SVGTransform
+
+    public init(
+        cx: CGFloat = 0.5,
+        cy: CGFloat = 0.5,
+        fx: CGFloat? = nil,
+        fy: CGFloat? = nil,
+        r: CGFloat = 0.5,
+        units: SVGGradientUnits = .objectBoundingBox,
+        spreadMethod: SVGGradientSpread = .pad,
+        stops: [SVGGradientStop] = [],
+        transform: SVGTransform = .identity
+    ) {
+        self.cx = cx
+        self.cy = cy
+        self.fx = fx ?? cx
+        self.fy = fy ?? cy
+        self.r = r
+        self.units = units
+        self.spreadMethod = spreadMethod
+        self.stops = stops
+        self.transform = transform
+    }
+}
+
 /// A paint definition referenced by `fill="url(#id)"`. Lives on
 /// `SVGDocument.paintServers`; resolved into concrete `SVGPaint` cases
 /// during render-tree lowering.
 public enum SVGPaintServer: Equatable, Sendable {
     case linearGradient(SVGLinearGradient)
+    case radialGradient(SVGRadialGradient)
 }

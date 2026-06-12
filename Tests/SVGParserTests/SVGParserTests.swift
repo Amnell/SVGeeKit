@@ -509,4 +509,41 @@ struct SVGParserTests {
         }
         #expect(g2.opacity == 1.0)
     }
+
+    @Test func parsesRadialGradientWithXlinkHrefStopInheritance() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+             width="480" height="360" viewBox="0 0 480 360">
+          <radialGradient id="Grad2a" gradientUnits="objectBoundingBox"
+                          cx=".5" cy=".5" fx=".5" fy=".5" r=".5">
+            <stop stop-color="black" offset="0"/>
+            <stop stop-color="orange" offset="1"/>
+          </radialGradient>
+          <radialGradient id="Grad2b" xlink:href="#Grad2a"
+                          gradientUnits="userSpaceOnUse" cx="240" cy="190" fx="240" fy="190" r="40"/>
+          <rect x="20" y="20" width="440" height="80" fill="url(#Grad2a)"/>
+          <rect x="20" y="150" width="440" height="80" fill="url(#Grad2b)"/>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+
+        guard case .radialGradient(let a) = doc.paintServers["Grad2a"] else {
+            Issue.record("expected Grad2a radialGradient"); return
+        }
+        #expect(a.units == .objectBoundingBox)
+        #expect(a.cx == 0.5)
+        #expect(a.cy == 0.5)
+        #expect(a.r == 0.5)
+        #expect(a.stops.count == 2)
+
+        guard case .radialGradient(let b) = doc.paintServers["Grad2b"] else {
+            Issue.record("expected Grad2b radialGradient"); return
+        }
+        #expect(b.units == .userSpaceOnUse)
+        #expect(b.cx == 240)
+        #expect(b.cy == 190)
+        #expect(b.r == 40)
+        // Stops inherited from Grad2a via xlink:href
+        #expect(b.stops.count == 2)
+    }
 }

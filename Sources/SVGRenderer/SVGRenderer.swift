@@ -450,6 +450,20 @@ public enum SVGRenderTree {
                 concrete.units = .userSpaceOnUse
             }
             return .linearGradient(concrete)
+        case .radialGradient(let g):
+            guard !g.stops.isEmpty else { return .none }
+            var concrete = g
+            if g.units == .objectBoundingBox {
+                concrete.cx = bbox.minX + g.cx * bbox.width
+                concrete.cy = bbox.minY + g.cy * bbox.height
+                concrete.fx = bbox.minX + g.fx * bbox.width
+                concrete.fy = bbox.minY + g.fy * bbox.height
+                // SVG spec: r is a fraction of (width+height)/2 for OBB
+                let avgDim = (bbox.width + bbox.height) / 2
+                concrete.r  = g.r * avgDim
+                concrete.units = .userSpaceOnUse
+            }
+            return .radialGradient(concrete)
         }
     }
 

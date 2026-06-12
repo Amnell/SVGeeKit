@@ -102,12 +102,21 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
     fileprivate var masks: [String: SVGMask] = [:]
 
     struct PartialGradient {
+        enum Kind { case linear, radial }
+        var kind: Kind = .linear
         var id: String?
         var href: String?
+        // linear
         var x1: CGFloat?
         var y1: CGFloat?
         var x2: CGFloat?
         var y2: CGFloat?
+        // radial
+        var cx: CGFloat?
+        var cy: CGFloat?
+        var fx: CGFloat?
+        var fy: CGFloat?
+        var r: CGFloat?
         var units: SVGGradientUnits?
         var spreadMethod: SVGGradientSpread?
         var transform: SVGTransform?
@@ -180,6 +189,8 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
             break
         case "linearGradient":
             handleLinearGradientStart(attributes: attributeDict)
+        case "radialGradient":
+            handleRadialGradientStart(attributes: attributeDict)
         case "stop":
             handleStop(attributes: attributeDict, currentColor: elementPaint.color)
         case "clipPath":
@@ -218,6 +229,8 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
             appendChild(.text(finished))
         case "linearGradient":
             finalizeLinearGradient()
+        case "radialGradient":
+            finalizeRadialGradient()
         case "clipPath":
             finalizeClipPath()
         case "mask":
@@ -717,6 +730,51 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
         return ref.isEmpty ? nil : ref
     }
 
+    fileprivate func handleRadialGradientStart(attributes: [String: String]) {
+        var p = PartialGradient()
+        p.kind = .radial
+        p.id = attributes["id"]
+        p.href = attributes["xlink:href"] ?? attributes["href"]
+        p.cx = attributes["cx"].flatMap { AttributeParsers.length($0)?.resolved() }
+        p.cy = attributes["cy"].flatMap { AttributeParsers.length($0)?.resolved() }
+        p.fx = attributes["fx"].flatMap { AttributeParsers.length($0)?.resolved() }
+        p.fy = attributes["fy"].flatMap { AttributeParsers.length($0)?.resolved() }
+        p.r  = attributes["r"].flatMap  { AttributeParsers.length($0)?.resolved() }
+        if let u = attributes["gradientUnits"]?.trimmingCharacters(in: .whitespaces),
+           let units = SVGGradientUnits(rawValue: u) {
+            p.units = units
+        }
+        if let s = attributes["spreadMethod"]?.trimmingCharacters(in: .whitespaces),
+           let spread = SVGGradientSpread(rawValue: s) {
+            p.spreadMethod = spread
+        }
+        if let raw = attributes["gradientTransform"],
+           let t = AttributeParsers.transform(raw) {
+            p.transform = t
+        }
+        gradientStack.append(p)
+    }
+
+    fileprivate func finalizeRadialGradient() {
+        guard let p = gradientStack.popLast(), let id = p.id else { return }
+        let gradient = SVGRadialGradient(
+            cx: p.cx ?? 0.5,
+            cy: p.cy ?? 0.5,
+            fx: p.fx,
+            fy: p.fy,
+            r: p.r ?? 0.5,
+            units: p.units ?? .objectBoundingBox,
+            spreadMethod: p.spreadMethod ?? .pad,
+            stops: p.stops,
+            transform: p.transform ?? .identity
+        )
+        paintServers[id] = .radialGradient(gradient)
+        if var href = p.href {
+            if href.hasPrefix("#") { href = String(href.dropFirst()) }
+            gradientHrefs.append((id: id, href: href))
+        }
+    }
+
     fileprivate func finalizeLinearGradient() {
         guard let p = gradientStack.popLast(), let id = p.id else { return }
         let gradient = SVGLinearGradient(
@@ -746,21 +804,37 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
             changed = false
             iterations += 1
             for (id, href) in gradientHrefs {
-                guard case .linearGradient(let child) = paintServers[id],
-                      case .linearGradient(let parent) = paintServers[href] else { continue }
-                let merged = SVGLinearGradient(
-                    x1: child.x1,
-                    y1: child.y1,
-                    x2: child.x2,
-                    y2: child.y2,
-                    units: child.units,
-                    spreadMethod: child.spreadMethod,
-                    stops: child.stops.isEmpty ? parent.stops : child.stops,
-                    transform: child.transform
-                )
-                if merged != child {
-                    paintServers[id] = .linearGradient(merged)
-                    changed = true
+                guard let childServer = paintServers[id],
+                      let parentServer = paintServers[href] else { continue }
+                switch (childServer, parentServer) {
+                case (.linearGradient(let child), .linearGradient(let parent)):
+                    let merged = SVGLinearGradient(
+                        x1: child.x1, y1: child.y1, x2: child.x2, y2: child.y2,
+                        units: child.units, spreadMethod: child.spreadMethod,
+                        stops: child.stops.isEmpty ? parent.stops : child.stops,
+                        transform: child.transform
+                    )
+                    if merged != child { paintServers[id] = .linearGradient(merged); changed = true }
+                case (.radialGradient(let child), .radialGradient(let parent)):
+                    let merged = SVGRadialGradient(
+                        cx: child.cx, cy: child.cy, fx: child.fx, fy: child.fy, r: child.r,
+                        units: child.units, spreadMethod: child.spreadMethod,
+                        stops: child.stops.isEmpty ? parent.stops : child.stops,
+                        transform: child.transform
+                    )
+                    if merged != child { paintServers[id] = .radialGradient(merged); changed = true }
+                case (.radialGradient(let child), .linearGradient(let parent)):
+                    // Inherit stops from linear parent into radial child.
+                    if child.stops.isEmpty {
+                        var merged = child; merged.stops = parent.stops
+                        paintServers[id] = .radialGradient(merged); changed = true
+                    }
+                case (.linearGradient(let child), .radialGradient(let parent)):
+                    // Inherit stops from radial parent into linear child.
+                    if child.stops.isEmpty {
+                        var merged = child; merged.stops = parent.stops
+                        paintServers[id] = .linearGradient(merged); changed = true
+                    }
                 }
             }
         }

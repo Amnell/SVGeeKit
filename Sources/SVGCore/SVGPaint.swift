@@ -26,6 +26,7 @@ public enum SVGPaint: Equatable, Sendable {
     case color(SVGColor)
     case paintServer(id: String)
     case linearGradient(SVGLinearGradient)
+    case radialGradient(SVGRadialGradient)
 }
 
 public enum SVGLineCap: String, Sendable, Equatable {
