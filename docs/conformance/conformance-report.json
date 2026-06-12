@@ -2039,8 +2039,10 @@
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-12-b\/actual.png",
-    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
-    "status" : "missingBaseline",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-grad-12-b\/baseline.png",
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
+    "status" : "passed",
     "tag" : "pservers",
     "testId" : "pservers-grad-12-b"
   },
@@ -2053,15 +2055,19 @@
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-14-b\/actual.png",
-    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
-    "status" : "missingBaseline",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-grad-14-b\/baseline.png",
+    "diffMaxChannel" : 1,
+    "mismatchedFraction" : 0,
+    "status" : "passed",
     "tag" : "pservers",
     "testId" : "pservers-grad-14-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-15-b\/actual.png",
-    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
-    "status" : "missingBaseline",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-grad-15-b\/baseline.png",
+    "diffMaxChannel" : 1,
+    "mismatchedFraction" : 0,
+    "status" : "passed",
     "tag" : "pservers",
     "testId" : "pservers-grad-15-b"
   },
@@ -2303,7 +2309,7 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-circle-01-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-circle-01-t\/baseline.png",
-    "diffMaxChannel" : 1,
+    "diffMaxChannel" : 0,
     "mismatchedFraction" : 0,
     "status" : "passed",
     "tag" : "shapes",
