@@ -1770,7 +1770,7 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/paths-data-01-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/paths-data-01-t\/baseline.png",
-    "diffMaxChannel" : 1,
+    "diffMaxChannel" : 0,
     "mismatchedFraction" : 0,
     "status" : "passed",
     "tag" : "paths",
@@ -1779,7 +1779,7 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/paths-data-02-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/paths-data-02-t\/baseline.png",
-    "diffMaxChannel" : 0,
+    "diffMaxChannel" : 1,
     "mismatchedFraction" : 0,
     "status" : "passed",
     "tag" : "paths",
@@ -1997,7 +1997,7 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-07-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-grad-07-b\/baseline.png",
-    "diffMaxChannel" : 0,
+    "diffMaxChannel" : 1,
     "mismatchedFraction" : 0,
     "status" : "passed",
     "tag" : "pservers",
@@ -2301,7 +2301,7 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-circle-01-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-circle-01-t\/baseline.png",
-    "diffMaxChannel" : 1,
+    "diffMaxChannel" : 0,
     "mismatchedFraction" : 0,
     "status" : "passed",
     "tag" : "shapes",
@@ -2404,8 +2404,10 @@
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-path-01\/actual.png",
-    "detail" : "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
-    "status" : "missingBaseline",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-path-01\/baseline.png",
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
+    "status" : "passed",
     "tag" : "shapes",
     "testId" : "shapes-path-01"
   },
