@@ -44,8 +44,24 @@ public struct SwiftUICanvasRenderer {
 
             case .fillPath(let cgPath, let paint, let opacity, let evenOdd):
                 guard let shading = shading(for: paint, opacity: opacity) else { continue }
-                let path = Path(cgPath)
-                context.fill(path, with: shading, style: FillStyle(eoFill: evenOdd))
+                // Radial gradients resolved from objectBoundingBox carry a
+                // non-identity gradientTransform (the OBB→userSpace mapping).
+                // Apply it to the context so the backend's circular gradient
+                // is stretched into the correct ellipse; inverse-transform the
+                // path so it clips to the original screen-space shape.
+                if case .radialGradient(let g) = paint, !g.transform.matrix.isIdentity {
+                    let tx = g.transform.matrix
+                    context.drawLayer { layerCtx in
+                        layerCtx.concatenate(tx)
+                        layerCtx.fill(
+                            Path(cgPath).applying(tx.inverted()),
+                            with: shading,
+                            style: FillStyle(eoFill: evenOdd)
+                        )
+                    }
+                } else {
+                    context.fill(Path(cgPath), with: shading, style: FillStyle(eoFill: evenOdd))
+                }
 
             case .strokePath(let cgPath, let paint, let opacity, let width, let cap, let join, let miterLimit, let dashArray, let dashPhase):
                 guard let shading = shading(for: paint, opacity: opacity) else { continue }

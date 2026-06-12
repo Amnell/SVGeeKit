@@ -454,13 +454,17 @@ public enum SVGRenderTree {
             guard !g.stops.isEmpty else { return .none }
             var concrete = g
             if g.units == .objectBoundingBox {
-                concrete.cx = bbox.minX + g.cx * bbox.width
-                concrete.cy = bbox.minY + g.cy * bbox.height
-                concrete.fx = bbox.minX + g.fx * bbox.width
-                concrete.fy = bbox.minY + g.fy * bbox.height
-                // SVG spec: r is a fraction of (width+height)/2 for OBB
-                let avgDim = (bbox.width + bbox.height) / 2
-                concrete.r  = g.r * avgDim
+                // SVG 1.1 §13.4.2: for objectBoundingBox, the gradient's own
+                // coordinate system is [0,1]×[0,1] mapped to the bbox via
+                // translate(bbox.origin) scale(bbox.size). Folding that into
+                // concrete.transform lets the backend scale the context
+                // non-uniformly, which naturally produces an ellipse on
+                // non-square bboxes (correct per spec). Converting cx/cy/r
+                // individually with avgDim would incorrectly force a circle.
+                let obbToUser = CGAffineTransform(translationX: bbox.minX, y: bbox.minY)
+                    .scaledBy(x: bbox.width, y: bbox.height)
+                let gt = g.transform.matrix
+                concrete.transform = SVGTransform(gt.isIdentity ? obbToUser : obbToUser.concatenating(gt))
                 concrete.units = .userSpaceOnUse
             }
             return .radialGradient(concrete)
