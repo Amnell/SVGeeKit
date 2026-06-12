@@ -67,6 +67,7 @@ enum StatusStyle {
         switch status {
         case .passed: return .green
         case .failed: return .red
+        case .partialBaseline: return .yellow
         case .missingBaseline: return .orange
         case .skipped: return .gray
         case .parseError, .renderError: return .purple
@@ -76,6 +77,7 @@ enum StatusStyle {
         switch status {
         case .passed: return "Passed"
         case .failed: return "Failed"
+        case .partialBaseline: return "Partial baseline (unverified)"
         case .missingBaseline: return "Missing baseline"
         case .skipped: return "Skipped"
         case .parseError: return "Parse error"
@@ -88,7 +90,7 @@ private struct FilterBar: View {
     @Environment(TestStore.self) private var store
 
     private let allStatuses: [SVGConformanceStatus] = [
-        .passed, .failed, .missingBaseline, .skipped, .parseError, .renderError
+        .passed, .failed, .partialBaseline, .missingBaseline, .skipped, .parseError, .renderError
     ]
 
     var body: some View {

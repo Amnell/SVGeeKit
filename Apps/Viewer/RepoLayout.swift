@@ -26,6 +26,9 @@ enum RepoLayout {
     static let snapshotsDirectory = repoRoot
         .appendingPathComponent("Tests/__Snapshots__", isDirectory: true)
 
+    static let partialSnapshotsDirectory = repoRoot
+        .appendingPathComponent("Tests/__PartialSnapshots__", isDirectory: true)
+
     static let resultsDirectory = repoRoot
         .appendingPathComponent("Tests/__SnapshotResults__", isDirectory: true)
 

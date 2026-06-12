@@ -14,15 +14,16 @@ struct ConformanceSuite {
     func render(_ testCase: SVGTestCase) throws {
         let runner = SVGConformanceRunner(options: .init(
             snapshotsDirectory: Paths.snapshotsDirectory,
+            partialSnapshotsDirectory: Paths.partialSnapshotsDirectory,
             resultsDirectory: Paths.resultsDirectory
         ))
         let record = runner.run(testCase)
         try Reporter.shared.record(record)
 
         switch record.status {
-        case .passed, .skipped, .missingBaseline:
-            // missingBaseline is expected for unimplemented features and stays
-            // visible in the JSON report + Viewer; do not fail the test run.
+        case .passed, .skipped, .missingBaseline, .partialBaseline:
+            // missingBaseline is kept for parse/render errors with no output.
+            // partialBaseline tracks auto-captured renders pending visual review.
             return
         case .failed:
             Issue.record(.init(rawValue: "Snapshot mismatch for \(record.testId): \(record.detail ?? "")"))
@@ -61,6 +62,7 @@ enum Paths {
     }()
 
     static let snapshotsDirectory: URL = repoRoot.appendingPathComponent("Tests/__Snapshots__", isDirectory: true)
+    static let partialSnapshotsDirectory: URL = repoRoot.appendingPathComponent("Tests/__PartialSnapshots__", isDirectory: true)
     static let resultsDirectory: URL = repoRoot.appendingPathComponent("Tests/__SnapshotResults__", isDirectory: true)
     static let reportURL: URL = repoRoot.appendingPathComponent("docs/conformance/conformance-report.json")
 }

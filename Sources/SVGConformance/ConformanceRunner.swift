@@ -8,6 +8,13 @@ import SVGRendererSwiftUI
 public enum SVGConformanceStatus: String, Sendable, Codable {
     case passed
     case failed
+    /// A partial (auto-tracked) baseline exists. The render is captured and
+    /// tracked for regressions, but has not yet been visually verified against
+    /// the W3C reference. Promote to `passed` via the Viewer Approve button or
+    /// `APPROVE_SNAPSHOTS=<id>` (comma-separated list of test IDs). Using
+    /// `APPROVE_SNAPSHOTS=1` does **not** promote partials — it only re-approves
+    /// drifted real baselines.
+    case partialBaseline
     case missingBaseline
     case skipped
     case parseError
@@ -32,22 +39,50 @@ public struct SVGConformanceRunner {
     public struct Options: Sendable {
         public var outputSize: CGSize
         public var tolerance: SVGSnapshotDiffer.Tolerance
+        /// Directory for verified baselines (committed, gate-kept). A mismatch
+        /// here fails the test suite unless `APPROVE_SNAPSHOTS=1` is set.
         public var snapshotsDirectory: URL
+        /// Directory for auto-tracked partial baselines (committed, not verified).
+        /// Mismatches silently update the stored render and are reported as
+        /// `partialBaseline`. Promote to a real baseline via `APPROVE_SNAPSHOTS=<id>`.
+        public var partialSnapshotsDirectory: URL
         public var resultsDirectory: URL
+        /// When `true`, re-approves drifted **real** baselines and creates new real
+        /// baselines for tests that currently have no baseline at all.
+        /// Does **not** promote partial baselines; use `promotePartialIDs` for that.
+        /// Defaults to `true` when `APPROVE_SNAPSHOTS=1`.
         public var approveBaselines: Bool
+        /// Explicit set of test IDs whose partial baseline should be promoted to a
+        /// real (verified) baseline on the next run. Populated when
+        /// `APPROVE_SNAPSHOTS` is a comma-separated list of IDs rather than `"1"`.
+        public var promotePartialIDs: Set<String>
 
         public init(
             outputSize: CGSize = CGSize(width: 480, height: 360),
             tolerance: SVGSnapshotDiffer.Tolerance = .init(perChannel: 4, pixelFraction: 0.001),
             snapshotsDirectory: URL,
+            partialSnapshotsDirectory: URL,
             resultsDirectory: URL,
-            approveBaselines: Bool = ProcessInfo.processInfo.environment["APPROVE_SNAPSHOTS"] == "1"
+            approveBaselines: Bool = ProcessInfo.processInfo.environment["APPROVE_SNAPSHOTS"] == "1",
+            promotePartialIDs: Set<String> = Options.promotePartialIDsFromEnvironment()
         ) {
             self.outputSize = outputSize
             self.tolerance = tolerance
             self.snapshotsDirectory = snapshotsDirectory
+            self.partialSnapshotsDirectory = partialSnapshotsDirectory
             self.resultsDirectory = resultsDirectory
             self.approveBaselines = approveBaselines
+            self.promotePartialIDs = promotePartialIDs
+        }
+
+        /// Parses `APPROVE_SNAPSHOTS` env var.
+        /// - Returns a non-empty set when the value is a comma-separated list of IDs.
+        /// - Returns an empty set when the value is absent or `"1"` (bulk-approve mode
+        ///   does not promote partials; that must be done explicitly per-ID).
+        public static func promotePartialIDsFromEnvironment() -> Set<String> {
+            let value = ProcessInfo.processInfo.environment["APPROVE_SNAPSHOTS"] ?? ""
+            guard value != "1", !value.isEmpty else { return [] }
+            return Set(value.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) })
         }
     }
 
@@ -100,13 +135,18 @@ public struct SVGConformanceRunner {
         let baselineURL = options.snapshotsDirectory
             .appendingPathComponent(testCase.id, isDirectory: true)
             .appendingPathComponent("baseline.png")
+        let partialURL = options.partialSnapshotsDirectory
+            .appendingPathComponent(testCase.id, isDirectory: true)
+            .appendingPathComponent("baseline.png")
 
         if let baseline = SVGSnapshotDiffer.loadPNG(baselineURL) {
+            // ── Real (verified) baseline ────────────────────────────────────
             do {
                 let result = try SVGSnapshotDiffer.diff(baseline, actualImage, tolerance: options.tolerance)
                 let exceeds = result.mismatchedFraction > options.tolerance.pixelFraction
                 if exceeds && options.approveBaselines {
                     try SVGSnapshotDiffer.writePNG(actualImage, to: baselineURL)
+                    try? FileManager.default.removeItem(at: partialURL)
                     return record(testCase, status: .passed,
                                   detail: "baseline re-approved",
                                   baseline: baselineURL, actual: actualURL,
@@ -121,8 +161,40 @@ public struct SVGConformanceRunner {
                 return record(testCase, status: .failed, detail: String(describing: error),
                               baseline: baselineURL, actual: actualURL, result: nil)
             }
+
+        } else if let partial = SVGSnapshotDiffer.loadPNG(partialURL) {
+            // ── Partial (auto-tracked) baseline ─────────────────────────────
+            let shouldPromote = options.promotePartialIDs.contains(testCase.id)
+            if shouldPromote {
+                // Promote partial → real baseline.
+                do {
+                    try SVGSnapshotDiffer.writePNG(actualImage, to: baselineURL)
+                    try? FileManager.default.removeItem(at: partialURL)
+                    return record(testCase, status: .passed,
+                                  detail: "promoted from partial baseline",
+                                  baseline: baselineURL, actual: actualURL, result: nil)
+                } catch {
+                    return record(testCase, status: .renderError, detail: String(describing: error),
+                                  baseline: nil, actual: actualURL, result: nil)
+                }
+            }
+            // Compare and silently update on change — never fail.
+            let result = try? SVGSnapshotDiffer.diff(partial, actualImage, tolerance: options.tolerance)
+            let changed = (result?.mismatchedFraction ?? 1) > options.tolerance.pixelFraction
+            if changed {
+                try? SVGSnapshotDiffer.writePNG(actualImage, to: partialURL)
+            }
+            let detail = changed
+                ? "partial baseline updated (\(result?.mismatchedPixels ?? 0) px changed)"
+                : nil
+            return record(testCase, status: .partialBaseline, detail: detail,
+                          baseline: partialURL, actual: actualURL, result: result)
+
         } else {
-            if options.approveBaselines {
+            // ── No baseline at all ───────────────────────────────────────────
+            let shouldPromote = options.promotePartialIDs.contains(testCase.id)
+            if options.approveBaselines || shouldPromote {
+                // Create real baseline when explicitly approving or promoting.
                 do {
                     try SVGSnapshotDiffer.writePNG(actualImage, to: baselineURL)
                     return record(testCase, status: .passed, detail: "baseline created",
@@ -132,9 +204,11 @@ public struct SVGConformanceRunner {
                                   baseline: nil, actual: actualURL, result: nil)
                 }
             }
-            return record(testCase, status: .missingBaseline,
-                          detail: "no baseline; run with APPROVE_SNAPSHOTS=1 after visual review",
-                          baseline: nil, actual: actualURL, result: nil)
+            // Auto-write partial baseline — tracked but not yet verified.
+            try? SVGSnapshotDiffer.writePNG(actualImage, to: partialURL)
+            return record(testCase, status: .partialBaseline,
+                          detail: "partial baseline created",
+                          baseline: partialURL, actual: actualURL, result: nil)
         }
     }
 

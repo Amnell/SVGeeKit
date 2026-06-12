@@ -72,6 +72,7 @@ final class TestStore {
             let index = try SVGTestSuiteIndex(rootDirectory: RepoLayout.suiteRoot)
             let runner = SVGConformanceRunner(options: .init(
                 snapshotsDirectory: RepoLayout.snapshotsDirectory,
+                partialSnapshotsDirectory: RepoLayout.partialSnapshotsDirectory,
                 resultsDirectory: RepoLayout.resultsDirectory,
                 approveBaselines: false
             ))
@@ -97,15 +98,18 @@ final class TestStore {
         await approve(testCaseID: row.id)
     }
 
-    /// Re-runs a single test with `APPROVE_SNAPSHOTS=1` semantics, then refreshes its row.
+    /// Re-runs a single test promoting its partial baseline (if any) to a real
+    /// verified baseline, then refreshes its row.
     func approve(testCaseID: String) async {
         guard let index = rows.firstIndex(where: { $0.id == testCaseID }) else { return }
         let row = rows[index]
 
         let runner = SVGConformanceRunner(options: .init(
             snapshotsDirectory: RepoLayout.snapshotsDirectory,
+            partialSnapshotsDirectory: RepoLayout.partialSnapshotsDirectory,
             resultsDirectory: RepoLayout.resultsDirectory,
-            approveBaselines: true
+            approveBaselines: true,
+            promotePartialIDs: [testCaseID]
         ))
         let updated = runner.run(row.testCase)
         let newRow = makeRow(testCase: row.testCase, record: updated)
