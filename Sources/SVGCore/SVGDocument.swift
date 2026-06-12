@@ -30,12 +30,23 @@ public struct SVGDocument: Equatable, Sendable {
 /// A grouping container. Used for the implicit root and for `<g>`.
 public struct SVGGroup: Equatable, Sendable {
     public var transform: SVGTransform
+    /// Group-level opacity (`opacity` presentation attribute on `<g>`).
+    /// Children are composited as a unit before this opacity is applied,
+    /// so overlapping children don't show through each other.
+    public var opacity: CGFloat
     public var clipPathRef: String?
     public var maskRef: String?
     public var children: [SVGElement]
 
-    public init(transform: SVGTransform = .identity, clipPathRef: String? = nil, maskRef: String? = nil, children: [SVGElement] = []) {
+    public init(
+        transform: SVGTransform = .identity,
+        opacity: CGFloat = 1,
+        clipPathRef: String? = nil,
+        maskRef: String? = nil,
+        children: [SVGElement] = []
+    ) {
         self.transform = transform
+        self.opacity = opacity
         self.clipPathRef = clipPathRef
         self.maskRef = maskRef
         self.children = children

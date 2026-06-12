@@ -49,6 +49,11 @@ public enum SVGRenderCommand: Equatable, Sendable {
     /// Clip subsequent drawing to `path`. Must be bracketed by pushState/popState.
     case clipToPath(CGPath, evenOdd: Bool)
 
+    /// Render `content` into an isolated transparency group, then composite
+    /// the result onto the canvas at `opacity`. This implements SVG group
+    /// opacity (§11.3): overlapping children do not show through each other.
+    case groupLayer(opacity: CGFloat, content: [SVGRenderCommand])
+
     /// Composite `content` through a luminance mask built from `mask`.
     /// The mask's per-pixel luminance × alpha becomes the alpha applied to the
     /// content. `region`, when present, clips the mask to that rectangle so
@@ -104,9 +109,16 @@ public enum SVGRenderTree {
         }
         if needsState { inner.append(.popState) }
 
+        // Group opacity < 1 requires compositing children as a unit (SVG §11.3).
+        // Wrap in groupLayer so the backend renders an isolated layer.
+        let opaque = inner
+        let withOpacity: [SVGRenderCommand] = group.opacity < 1
+            ? [.groupLayer(opacity: group.opacity, content: opaque)]
+            : opaque
+
         // An empty mask suppresses the group (applyMask returns nil); a present
         // mask wraps the lowered children in a `.maskedContent` command.
-        guard let wrapped = applyMask(group.maskRef, bbox: .null, content: inner, ctx: ctx) else { return }
+        guard let wrapped = applyMask(group.maskRef, bbox: .null, content: withOpacity, ctx: ctx) else { return }
         commands.append(contentsOf: wrapped)
     }
 

@@ -19,6 +19,7 @@
     "painting-control-05-f": { "skip": "requires <mask>/<clipPath>; masking out of scope" },
     "masking-mask-01-b": { "run": true },
     "masking-mask-02-f": { "run": true },
+    "masking-opacity-01-b": { "run": true },
     "masking-path-01-b": { "run": true },
     "painting-render-01-b": { "skip": "requires <linearGradient>; deferred to pservers-grad" },
     "painting-render-02-b": { "skip": "requires color-interpolation=linearRGB; color-space switching out of scope" },

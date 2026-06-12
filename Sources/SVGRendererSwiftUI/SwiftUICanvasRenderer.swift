@@ -90,6 +90,19 @@ public struct SwiftUICanvasRenderer {
                     }
                     self.execute(contentCommands, context: &layer)
                 }
+
+            case .groupLayer(let opacity, let commands):
+                // SVG group opacity (§11.3): render children into an isolated
+                // layer at full opacity, then composite the layer at `opacity`.
+                // This prevents overlapping children from showing through each
+                // other — unlike multiplying opacity per element.
+                let savedOpacity = context.opacity
+                context.opacity = savedOpacity * opacity
+                context.drawLayer { layerCtx in
+                    var l = layerCtx
+                    self.execute(commands, context: &l)
+                }
+                context.opacity = savedOpacity
             }
         }
     }

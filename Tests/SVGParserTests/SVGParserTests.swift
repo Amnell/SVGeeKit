@@ -487,4 +487,26 @@ struct SVGParserTests {
         }
         #expect(masked.paint.maskRef == "mask1")
     }
+
+    @Test func parsesGroupOpacity() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200">
+          <g opacity="0.5">
+            <rect x="0" y="0" width="100" height="100" fill="blue"/>
+          </g>
+          <g>
+            <rect x="0" y="0" width="100" height="100" fill="lime"/>
+          </g>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .group(let g1) = doc.root.children.first else {
+            Issue.record("expected first group"); return
+        }
+        #expect(g1.opacity == 0.5)
+        guard case .group(let g2) = doc.root.children.last else {
+            Issue.record("expected second group"); return
+        }
+        #expect(g2.opacity == 1.0)
+    }
 }

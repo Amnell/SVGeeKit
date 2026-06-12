@@ -154,7 +154,7 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
             let transform = transform(from: attributeDict, parser: parser) ?? .identity
             let clipRef = parseClipPathRef(attributeDict)
             let maskR = parseMaskRef(attributeDict)
-            groupStack.append(SVGGroup(transform: transform, clipPathRef: clipRef, maskRef: maskR))
+            groupStack.append(SVGGroup(transform: transform, opacity: elementPaint.opacity, clipPathRef: clipRef, maskRef: maskR))
         case "rect":
             handleRect(attributes: attributeDict, paint: elementPaint, parser: parser)
         case "circle":
