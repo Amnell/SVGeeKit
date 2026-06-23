@@ -234,6 +234,21 @@ struct SVGParserTests {
         #expect(t.runs[1].explicitX == [63.13, 81.88])
     }
 
+    @Test func parsesTspanRotatePropagation() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="480" height="360"><text x="20" y="120" rotate="5,15,25">No<tspan rotate="-10,-20">te</tspan></text></svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .text(let t) = doc.root.children.first else {
+            Issue.record("expected text"); return
+        }
+        #expect(t.runs.count == 2)
+        #expect(t.runs[0].string == "No")
+        #expect(t.runs[0].rotations == [5, 15])
+        #expect(t.runs[1].string == "te")
+        #expect(t.runs[1].rotations == [-10, -20])
+    }
+
     @Test func parsesTspanExplicitXYLists() throws {
         let svg = """
         <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200">

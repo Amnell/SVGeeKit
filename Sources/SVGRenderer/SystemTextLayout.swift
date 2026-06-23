@@ -35,7 +35,12 @@ enum SystemTextLayout {
         return CGFloat(CTLineGetTypographicBounds(line, nil, nil, nil))
     }
 
-    static func glyphPathUnanchored(string: String, font: SVGFont, origin: CGPoint) -> CGPath? {
+    static func glyphPathUnanchored(
+        string: String,
+        font: SVGFont,
+        origin: CGPoint,
+        rotations: [CGFloat]? = nil
+    ) -> CGPath? {
         let ctFont = SystemFontResolver.font(for: font)
         let attributed = NSAttributedString(
             string: string,
@@ -58,8 +63,13 @@ enum SystemTextLayout {
                 guard let glyphPath = CTFontCreatePathForGlyph(ctFont, glyphs[i], nil) else {
                     continue
                 }
-                let transform = CGAffineTransform(translationX: origin.x + positions[i].x, y: origin.y)
-                    .scaledBy(x: 1, y: -1)
+                let angle = rotations.flatMap { $0.indices.contains(i) ? $0[i] : nil } ?? 0
+                let transform = textGlyphTransform(
+                    at: CGPoint(x: origin.x + positions[i].x, y: origin.y),
+                    rotationDegrees: angle,
+                    scaleX: 1,
+                    scaleY: -1
+                )
                 result.addPath(glyphPath, transform: transform)
             }
         }
@@ -70,7 +80,8 @@ enum SystemTextLayout {
     static func glyphPathAtPositions(
         string: String,
         font: SVGFont,
-        positions: [CGPoint]
+        positions: [CGPoint],
+        rotations: [CGFloat]? = nil
     ) -> CGPath? {
         let ctFont = SystemFontResolver.font(for: font)
         let chars = Array(string)
@@ -86,12 +97,30 @@ enum SystemTextLayout {
             }
             guard let glyphPath = CTFontCreatePathForGlyph(ctFont, glyph, nil) else { continue }
             let pos = positions[i]
-            let transform = CGAffineTransform(translationX: pos.x, y: pos.y)
-                .scaledBy(x: 1, y: -1)
+            let angle = rotations.flatMap { $0.indices.contains(i) ? $0[i] : nil } ?? 0
+            let transform = textGlyphTransform(
+                at: pos,
+                rotationDegrees: angle,
+                scaleX: 1,
+                scaleY: -1
+            )
             result.addPath(glyphPath, transform: transform)
         }
         return result.isEmpty ? nil : result
     }
+}
+
+private func textGlyphTransform(
+    at position: CGPoint,
+    rotationDegrees: CGFloat,
+    scaleX: CGFloat = 1,
+    scaleY: CGFloat = 1
+) -> CGAffineTransform {
+    var transform = CGAffineTransform(translationX: position.x, y: position.y)
+    if rotationDegrees != 0 {
+        transform = transform.rotated(by: -rotationDegrees * .pi / 180)
+    }
+    return transform.scaledBy(x: scaleX, y: scaleY)
 }
 
 /// Resolves an `SVGFont` to a `CTFont`. Caches by (family, size, weight)

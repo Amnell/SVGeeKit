@@ -212,6 +212,7 @@ Work in roughly this order (each with parser + lowering + W3C test):
 | Feature | Example tests | Notes |
 | --- | --- | --- |
 | `tspan` positioning | `text-tspan-01-b`, `text-tspan-02-b` | Per-tspan `x`/`y`/`dx`/`dy`; model may need `SVGTextRun[]` instead of flat string |
+| `tspan` rotate | `text-tspan-02-b` | Per-character rotation with list propagation across nested tspans |
 | `textLength` / `lengthAdjust` | `text-text-01-b` | `spacing` = adjust advances; `spacingAndGlyphs` = scale glyph paths |
 | `writing-mode`, `direction`, `unicode-bidi` | `text-intro-02-b` | Bidi may need CoreText levels; some lines use system i18n fonts |
 | `text-decoration` | `text-deco-01-b` | Underline/overline as extra paths |
@@ -227,6 +228,7 @@ Replace flat `SVGText.string` with structured runs when `tspan` lands:
 - [x] Renderer: multi-run layout with element-level `text-anchor`
 - [x] Per-glyph `x`/`y` lists on `<tspan>` (`text-tspan-01-b` § tspan03)
 - [x] Weight/style-aware `@font-face` matching (FreeSerif bold via CoreText or SVG font)
+- [x] `rotate` on `<text>` / `<tspan>` with nested propagation (`text-tspan-02-b`)
 - [ ] `xml:space="preserve"` end-to-end
 
 ```swift

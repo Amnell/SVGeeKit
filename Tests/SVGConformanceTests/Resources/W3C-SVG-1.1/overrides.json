@@ -26,6 +26,7 @@
     "text-align-01-b": { "run": true },
     "text-font-mini-01": { "run": true },
     "text-tspan-01-b": { "run": true },
+    "text-tspan-02-b": { "run": true },
     "painting-render-01-b": { "skip": "requires <linearGradient>; deferred to pservers-grad" },
     "painting-render-02-b": { "skip": "requires color-interpolation=linearRGB; color-space switching out of scope" },
     "painting-marker-01-f": { "skip": "<marker> element not supported" },

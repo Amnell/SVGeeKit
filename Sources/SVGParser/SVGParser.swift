@@ -89,6 +89,22 @@ struct PartialSVGFont {
     var missingGlyph: SVGGlyph?
 }
 
+/// Consumes SVG `rotate` list values in document order.
+private struct RotateCursor {
+    var values: [CGFloat]
+    var index: Int = 0
+
+    mutating func consume() -> CGFloat {
+        guard !values.isEmpty else { return 0 }
+        if index < values.count {
+            let angle = values[index]
+            index += 1
+            return angle
+        }
+        return values[values.count - 1]
+    }
+}
+
 final class SAXDelegate: NSObject, XMLParserDelegate {
 
     enum Axis { case x, y, length }
@@ -118,6 +134,9 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
     private var activeTextRun: SVGTextRun?
     /// Font/paint stack for nested `<tspan>` inheritance.
     private var tspanStyleStack: [(SVGFont, SVGPaintProperties)] = []
+    /// `rotate` list consumption stack; new frame when `<tspan rotate>` opens.
+    private var rotateStack: [RotateCursor] = []
+    private var rotatePushStack: [Bool] = []
 
     /// Partial linearGradient definitions currently open. Top receives `<stop>`s.
     private var gradientStack: [PartialGradient] = []
@@ -282,10 +301,15 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             guard var finished = textStack.popLast() else { return }
             finalizeTextRuns(&finished)
             tspanStyleStack.removeAll()
+            rotateStack.removeAll()
+            rotatePushStack.removeAll()
             activeTextRun = nil
             appendChild(.text(finished))
         case "tspan":
             flushActiveTextRun()
+            if rotatePushStack.popLast() == true {
+                rotateStack.removeLast()
+            }
             if tspanStyleStack.count > 1 {
                 tspanStyleStack.removeLast()
             }
@@ -486,6 +510,8 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         textStack.append(text)
         tspanStyleStack = [(font, paint)]
         activeTextRun = SVGTextRun(string: "", font: font, paint: paint)
+        rotateStack = [RotateCursor(values: parseRotateList(attributes["rotate"]) ?? [])]
+        rotatePushStack = []
         if attributes["xml:space"] == "preserve" {
             activeTextRun?.preserveSpace = true
         }
@@ -498,6 +524,10 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         let parts = trimmed.split { $0.isWhitespace || $0 == "," || $0 == "\t" || $0 == "\n" || $0 == "\r" }
         guard !parts.isEmpty else { return nil }
         return parts.map { resolveLength(String($0), axis: axis) }
+    }
+
+    private func parseRotateList(_ raw: String?) -> [CGFloat]? {
+        resolveLengthList(raw, axis: .length)
     }
 
     private func applyTspanPositionAttributes(
@@ -529,12 +559,26 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         let runPaint = mergePaint(into: inheritedPaint, from: attributes, parser: parser)
         var run = SVGTextRun(string: "", font: runFont, paint: runPaint)
         applyTspanPositionAttributes(attributes, to: &run)
+        if let rotate = parseRotateList(attributes["rotate"]) {
+            rotateStack.append(RotateCursor(values: rotate))
+            rotatePushStack.append(true)
+        } else {
+            rotatePushStack.append(false)
+        }
         tspanStyleStack.append((runFont, runPaint))
         activeTextRun = run
     }
 
     private func flushActiveTextRun() {
-        guard !textStack.isEmpty, let run = activeTextRun else { return }
+        guard !textStack.isEmpty, var run = activeTextRun else { return }
+        if !rotateStack.isEmpty {
+            var cursor = rotateStack[rotateStack.count - 1]
+            let angles = run.string.map { _ in cursor.consume() }
+            rotateStack[rotateStack.count - 1] = cursor
+            if !cursor.values.isEmpty {
+                run.rotations = angles
+            }
+        }
         let isEmpty = run.string.isEmpty
         let hasOffset = run.dx != 0 || run.dy != 0
             || run.explicitX != nil || run.explicitY != nil
@@ -565,18 +609,29 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         guard !text.runs.isEmpty else { return }
 
         if let first = text.runs.indices.first, !text.runs[first].preserveSpace {
-            if let idx = text.runs[first].string.firstIndex(where: { !$0.isWhitespace }) {
-                text.runs[first].string = String(text.runs[first].string[idx...])
+            let original = text.runs[first].string
+            if let idx = original.firstIndex(where: { !$0.isWhitespace }) {
+                let drop = original.distance(from: original.startIndex, to: idx)
+                text.runs[first].string = String(original[idx...])
+                if let rots = text.runs[first].rotations, rots.count == original.count, drop > 0 {
+                    text.runs[first].rotations = Array(rots.dropFirst(drop))
+                }
             } else {
                 text.runs[first].string = ""
+                text.runs[first].rotations = []
             }
         }
         if let last = text.runs.indices.last, !text.runs[last].preserveSpace {
-            var s = text.runs[last].string
+            let original = text.runs[last].string
+            var s = original
             while let c = s.unicodeScalars.last, Character(c).isWhitespace {
                 s.removeLast()
             }
+            let drop = original.count - s.count
             text.runs[last].string = s
+            if drop > 0, let rots = text.runs[last].rotations, rots.count == original.count {
+                text.runs[last].rotations = Array(rots.dropLast(drop))
+            }
         }
 
         text.runs.removeAll { run in
@@ -592,10 +647,11 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             $0.dx != 0 || $0.dy != 0 || $0.explicitX != nil || $0.explicitY != nil
         }
         let hasPreserve = text.runs.contains { $0.preserveSpace }
+        let hasRotations = text.runs.contains { $0.rotations != nil }
         let uniformStyle = text.runs.allSatisfy {
             $0.font == text.runs[0].font && $0.paint == text.runs[0].paint
         }
-        if !hasLayout && !hasPreserve && uniformStyle {
+        if !hasLayout && !hasPreserve && !hasRotations && uniformStyle {
             let merged = SAXDelegate.collapseTextWhitespace(text.runs.map(\.string).joined())
             text.runs = [SVGTextRun(string: merged, font: text.runs[0].font, paint: text.runs[0].paint)]
         }

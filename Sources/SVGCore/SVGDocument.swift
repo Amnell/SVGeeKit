@@ -380,6 +380,8 @@ public struct SVGTextRun: Equatable, Sendable {
     public var explicitX: [CGFloat]?
     /// Absolute y for glyphs in this run when `y` is set on `<tspan>`.
     public var explicitY: CGFloat?
+    /// Per-character rotation in degrees (`rotate` list); same length as `string`.
+    public var rotations: [CGFloat]?
 
     public init(
         string: String = "",
@@ -389,7 +391,8 @@ public struct SVGTextRun: Equatable, Sendable {
         dy: CGFloat = 0,
         preserveSpace: Bool = false,
         explicitX: [CGFloat]? = nil,
-        explicitY: CGFloat? = nil
+        explicitY: CGFloat? = nil,
+        rotations: [CGFloat]? = nil
     ) {
         self.string = string
         self.font = font
@@ -399,6 +402,7 @@ public struct SVGTextRun: Equatable, Sendable {
         self.preserveSpace = preserveSpace
         self.explicitX = explicitX
         self.explicitY = explicitY
+        self.rotations = rotations
     }
 }
 

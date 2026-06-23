@@ -48,6 +48,7 @@ enum TextLayout {
                     string: run.string,
                     font: run.font,
                     positions: positions,
+                    rotations: run.rotations,
                     fontFaces: fontFaces,
                     fonts: fonts
                 )
@@ -67,6 +68,7 @@ enum TextLayout {
                     string: run.string,
                     font: run.font,
                     origin: origin,
+                    rotations: run.rotations,
                     fontFaces: fontFaces,
                     fonts: fonts
                 )
@@ -104,6 +106,7 @@ enum TextLayout {
             string: string,
             font: font,
             origin: CGPoint(x: origin.x + shift, y: origin.y),
+            rotations: nil,
             fontFaces: fontFaces,
             fonts: fonts
         )
@@ -146,6 +149,7 @@ enum TextLayout {
         string: String,
         font: SVGFont,
         positions: [CGPoint],
+        rotations: [CGFloat]?,
         fontFaces: [SVGFontFace],
         fonts: [String: SVGFontDefinition]
     ) -> CGPath? {
@@ -154,16 +158,23 @@ enum TextLayout {
                 string: string,
                 font: font,
                 positions: positions,
+                rotations: rotations,
                 definition: definition
             )
         }
-        return SystemTextLayout.glyphPathAtPositions(string: string, font: font, positions: positions)
+        return SystemTextLayout.glyphPathAtPositions(
+            string: string,
+            font: font,
+            positions: positions,
+            rotations: rotations
+        )
     }
 
     private static func glyphPathUnanchored(
         string: String,
         font: SVGFont,
         origin: CGPoint,
+        rotations: [CGFloat]?,
         fontFaces: [SVGFontFace],
         fonts: [String: SVGFontDefinition]
     ) -> CGPath? {
@@ -172,10 +183,16 @@ enum TextLayout {
                 string: string,
                 font: font,
                 origin: origin,
+                rotations: rotations,
                 definition: definition
             )
         }
-        return SystemTextLayout.glyphPathUnanchored(string: string, font: font, origin: origin)
+        return SystemTextLayout.glyphPathUnanchored(
+            string: string,
+            font: font,
+            origin: origin,
+            rotations: rotations
+        )
     }
 
     private static func applyAnchorShift(
@@ -252,6 +269,20 @@ enum TextLayout {
     }
 }
 
+/// SVG `rotate` angles are clockwise; Core Graphics is counter-clockwise.
+fileprivate func svgTextGlyphTransform(
+    at position: CGPoint,
+    rotationDegrees: CGFloat,
+    scaleX: CGFloat = 1,
+    scaleY: CGFloat = 1
+) -> CGAffineTransform {
+    var transform = CGAffineTransform(translationX: position.x, y: position.y)
+    if rotationDegrees != 0 {
+        transform = transform.rotated(by: -rotationDegrees * .pi / 180)
+    }
+    return transform.scaledBy(x: scaleX, y: scaleY)
+}
+
 enum SVGFontTextLayout {
 
     static func typographicWidth(
@@ -275,18 +306,20 @@ enum SVGFontTextLayout {
         string: String,
         font: SVGFont,
         positions: [CGPoint],
+        rotations: [CGFloat]?,
         definition: SVGFontDefinition
     ) -> CGPath? {
         guard definition.unitsPerEm > 0 else { return nil }
         let scale = font.size / definition.unitsPerEm
         let fallback = definition.missingGlyph
             ?? SVGGlyph(commands: nil, advance: definition.defaultAdvance)
-        let scalars = Array(string.unicodeScalars)
-        guard !scalars.isEmpty else { return nil }
+        let chars = Array(string)
+        guard !chars.isEmpty else { return nil }
 
         let result = CGMutablePath()
-        for (i, scalar) in scalars.enumerated() {
+        for (i, char) in chars.enumerated() {
             guard i < positions.count else { break }
+            guard let scalar = char.unicodeScalars.first else { continue }
             if definition.glyphs[scalar] == nil, Character(scalar).isWhitespace {
                 continue
             }
@@ -294,8 +327,13 @@ enum SVGFontTextLayout {
             guard let commands = glyph.commands, !commands.isEmpty else { continue }
             let glyphPath = commands.makeCGPath()
             let pos = positions[i]
-            let transform = CGAffineTransform(translationX: pos.x, y: pos.y)
-                .scaledBy(x: scale, y: -scale)
+            let angle = rotations.flatMap { $0.indices.contains(i) ? $0[i] : nil } ?? 0
+            let transform = svgTextGlyphTransform(
+                at: pos,
+                rotationDegrees: angle,
+                scaleX: scale,
+                scaleY: -scale
+            )
             result.addPath(glyphPath, transform: transform)
         }
         return result.isEmpty ? nil : result
@@ -305,6 +343,7 @@ enum SVGFontTextLayout {
         string: String,
         font: SVGFont,
         origin: CGPoint,
+        rotations: [CGFloat]?,
         definition: SVGFontDefinition
     ) -> CGPath? {
         guard definition.unitsPerEm > 0 else { return nil }
@@ -313,14 +352,16 @@ enum SVGFontTextLayout {
             ?? SVGGlyph(commands: nil, advance: definition.defaultAdvance)
 
         var penX: CGFloat = 0
-        var placements: [(glyph: SVGGlyph, x: CGFloat)] = []
+        var placements: [(glyph: SVGGlyph, x: CGFloat, index: Int)] = []
+        let chars = Array(string)
 
-        for scalar in string.unicodeScalars {
+        for (i, char) in chars.enumerated() {
+            guard let scalar = char.unicodeScalars.first else { continue }
             if definition.glyphs[scalar] == nil, Character(scalar).isWhitespace {
                 continue
             }
             let glyph = definition.glyphs[scalar] ?? fallback
-            placements.append((glyph, penX))
+            placements.append((glyph, penX, i))
             penX += glyph.advance * scale
         }
 
@@ -328,8 +369,13 @@ enum SVGFontTextLayout {
         for item in placements {
             guard let commands = item.glyph.commands, !commands.isEmpty else { continue }
             let glyphPath = commands.makeCGPath()
-            let transform = CGAffineTransform(translationX: origin.x + item.x, y: origin.y)
-                .scaledBy(x: scale, y: -scale)
+            let angle = rotations.flatMap { $0.indices.contains(item.index) ? $0[item.index] : nil } ?? 0
+            let transform = svgTextGlyphTransform(
+                at: CGPoint(x: origin.x + item.x, y: origin.y),
+                rotationDegrees: angle,
+                scaleX: scale,
+                scaleY: -scale
+            )
             result.addPath(glyphPath, transform: transform)
         }
 
