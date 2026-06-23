@@ -546,4 +546,55 @@ struct SVGParserTests {
         // Stops inherited from Grad2a via xlink:href
         #expect(b.stops.count == 2)
     }
+
+    @Test func parseStoresBaseURL() throws {
+        let base = URL(fileURLWithPath: "/tmp/svgeekit/tests/svg", isDirectory: true)
+        let doc = try SVGParser().parse(
+            string: "<svg xmlns=\"http://www.w3.org/2000/svg\"/>",
+            baseURL: base
+        )
+        #expect(doc.baseURL == base)
+    }
+
+    @Test func resolveURLHandlesRelativeHrefs() throws {
+        let base = URL(fileURLWithPath: "/tmp/svgeekit/tests/svg", isDirectory: true)
+        let doc = try SVGParser().parse(
+            string: "<svg xmlns=\"http://www.w3.org/2000/svg\"/>",
+            baseURL: base
+        )
+        let resolved = doc.resolveURL("../resources/SVGFreeSans.svg#ascii")
+        #expect(resolved?.lastPathComponent == "SVGFreeSans.svg")
+        #expect(resolved?.fragment == "ascii")
+        #expect(resolved?.path.contains("resources") == true)
+    }
+
+    @Test func parseURLSetsBaseURLToParentDirectory() throws {
+        let directory = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString, isDirectory: true)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+
+        let file = directory.appendingPathComponent("sample.svg")
+        let svg = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"10\" height=\"10\"/>"
+        try svg.write(to: file, atomically: true, encoding: .utf8)
+
+        let doc = try SVGParser().parse(url: file)
+        #expect(doc.baseURL == directory)
+    }
+
+    @Test func parsesTextClipPathAttribute() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+          <defs>
+            <clipPath id="c"><rect width="50" height="50"/></clipPath>
+          </defs>
+          <text x="0" y="20" clip-path="url(#c)">Hi</text>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .text(let t) = doc.root.children.first else {
+            Issue.record("expected text"); return
+        }
+        #expect(t.paint.clipPathRef == "c")
+    }
 }

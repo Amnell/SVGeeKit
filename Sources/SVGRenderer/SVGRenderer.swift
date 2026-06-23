@@ -32,20 +32,6 @@ public enum SVGRenderCommand: Equatable, Sendable {
         dashPhase: CGFloat
     )
 
-    /// Draw text. The renderer is responsible for font lookup, metrics, and
-    /// baseline placement at `origin` honoring `font.anchor` for horizontal
-    /// alignment. Y is the alphabetic baseline (SVG semantics).
-    case drawText(
-        string: String,
-        origin: CGPoint,
-        font: SVGFont,
-        fill: SVGPaint,
-        fillOpacity: CGFloat,
-        stroke: SVGPaint,
-        strokeOpacity: CGFloat,
-        strokeWidth: CGFloat
-    )
-
     /// Clip subsequent drawing to `path`. Must be bracketed by pushState/popState.
     case clipToPath(CGPath, evenOdd: Bool)
 
@@ -270,37 +256,12 @@ public enum SVGRenderTree {
     private static func lower(text: SVGText, ctx: Context, into commands: inout [SVGRenderCommand]) {
         guard !text.string.isEmpty else { return }
         guard text.paint.visibility == .visible else { return }
-
-        var inner: [SVGRenderCommand] = []
-        let needsState = text.transform.matrix != .identity || text.paint.opacity < 1
-        if needsState { inner.append(.pushState) }
-        if text.transform.matrix != .identity {
-            inner.append(.concatenate(text.transform))
-        }
-        if text.paint.opacity < 1 {
-            inner.append(.beginOpacityLayer(text.paint.opacity))
-        }
-
-        // SVG default for <text> is fill=black, stroke=none. Element paint
-        // already carries that cascade, so we just pass it through.
-        inner.append(.drawText(
+        guard let path = SystemTextLayout.glyphPath(
             string: text.string,
-            origin: text.origin,
             font: text.font,
-            fill: text.paint.fill,
-            fillOpacity: text.paint.fillOpacity,
-            stroke: text.paint.stroke,
-            strokeOpacity: text.paint.strokeOpacity,
-            strokeWidth: text.paint.strokeWidth
-        ))
-
-        if text.paint.opacity < 1 { inner.append(.endOpacityLayer) }
-        if needsState { inner.append(.popState) }
-
-        // An empty mask suppresses the text (applyMask returns nil); a present
-        // mask wraps the drawn glyphs in a `.maskedContent` command.
-        guard let wrapped = applyMask(text.paint.maskRef, bbox: .null, content: inner, ctx: ctx) else { return }
-        commands.append(contentsOf: wrapped)
+            origin: text.origin
+        ) else { return }
+        emitPaintedPath(path, paint: text.paint, transform: text.transform, ctx: ctx, into: &commands)
     }
 
     /// Build a `CGPath` from all shape children of a `<clipPath>` definition.

@@ -5,6 +5,9 @@ import Foundation
 public struct SVGDocument: Equatable, Sendable {
     public var viewBox: CGRect?
     public var intrinsicSize: CGSize?
+    /// Directory containing the parsed SVG file, used to resolve relative
+    /// `xlink:href` / `href` values (e.g. external SVG fonts in Phase 2).
+    public var baseURL: URL?
     public var root: SVGGroup
     public var paintServers: [String: SVGPaintServer]
     public var clipPaths: [String: SVGClipPath]
@@ -13,6 +16,7 @@ public struct SVGDocument: Equatable, Sendable {
     public init(
         viewBox: CGRect? = nil,
         intrinsicSize: CGSize? = nil,
+        baseURL: URL? = nil,
         root: SVGGroup = SVGGroup(),
         paintServers: [String: SVGPaintServer] = [:],
         clipPaths: [String: SVGClipPath] = [:],
@@ -20,10 +24,23 @@ public struct SVGDocument: Equatable, Sendable {
     ) {
         self.viewBox = viewBox
         self.intrinsicSize = intrinsicSize
+        self.baseURL = baseURL
         self.root = root
         self.paintServers = paintServers
         self.clipPaths = clipPaths
         self.masks = masks
+    }
+
+    /// Resolve `href` against `baseURL`. Absolute URLs are returned unchanged;
+    /// fragment identifiers are preserved.
+    public func resolveURL(_ href: String) -> URL? {
+        let trimmed = href.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
+        if let absolute = URL(string: trimmed), absolute.scheme != nil {
+            return absolute
+        }
+        guard let baseURL else { return URL(string: trimmed) }
+        return URL(string: trimmed, relativeTo: baseURL)?.standardized
     }
 }
 

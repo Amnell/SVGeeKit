@@ -11,9 +11,9 @@ public struct SVGParser {
 
     public init() {}
 
-    public func parse(data: Data) throws -> SVGDocument {
+    public func parse(data: Data, baseURL: URL? = nil) throws -> SVGDocument {
         let parser = XMLParser(data: data)
-        let delegate = SAXDelegate()
+        let delegate = SAXDelegate(baseURL: baseURL)
         parser.delegate = delegate
         parser.shouldProcessNamespaces = false
         parser.shouldReportNamespacePrefixes = false
@@ -34,30 +34,36 @@ public struct SVGParser {
             throw SVGParseError(kind: .missingRoot, line: nil, column: nil)
         }
         delegate.resolveGradientHrefs()
+        document.baseURL = baseURL
         document.paintServers = delegate.paintServers
         document.clipPaths = delegate.clipPaths
         document.masks = delegate.masks
         return document
     }
 
-    public func parse(string: String) throws -> SVGDocument {
-        try parse(data: Data(string.utf8))
+    public func parse(string: String, baseURL: URL? = nil) throws -> SVGDocument {
+        try parse(data: Data(string.utf8), baseURL: baseURL)
     }
 
-    /// Async convenience: runs the synchronous `parse(data:)` on a detached
+    /// Reads `url` and parses with `baseURL` set to the file's parent directory.
+    public func parse(url: URL) throws -> SVGDocument {
+        let data = try Data(contentsOf: url)
+        return try parse(data: data, baseURL: url.deletingLastPathComponent())
+    }
+
+    /// Async convenience: runs the synchronous `parse(data:baseURL:)` on a detached
     /// task at `userInitiated` priority so callers on the main actor don't
     /// block their thread on large SVG files.
-    public static func parse(data: Data) async throws -> SVGDocument {
+    public static func parse(data: Data, baseURL: URL? = nil) async throws -> SVGDocument {
         try await Task.detached(priority: .userInitiated) {
-            try SVGParser().parse(data: data)
+            try SVGParser().parse(data: data, baseURL: baseURL)
         }.value
     }
 
     /// Async convenience that reads `url` and parses, both off the main actor.
     public static func parse(url: URL) async throws -> SVGDocument {
         try await Task.detached(priority: .userInitiated) {
-            let data = try Data(contentsOf: url)
-            return try SVGParser().parse(data: data)
+            try SVGParser().parse(url: url)
         }.value
     }
 }
@@ -66,8 +72,14 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
 
     enum Axis { case x, y, length }
 
+    let baseURL: URL?
+
     var document: SVGDocument?
     var error: SVGParseError?
+
+    init(baseURL: URL? = nil) {
+        self.baseURL = baseURL
+    }
 
     /// Viewport (in user-space units) used to resolve `%` lengths. Set when
     /// the root `<svg>` is opened: prefers viewBox, then width/height.
