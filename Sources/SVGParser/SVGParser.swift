@@ -75,6 +75,8 @@ struct PartialCSSFontFace {
     var family: String?
     var uris: [String] = []
     var names: [String] = []
+    var weight: SVGFontWeight?
+    var style: SVGFontStyle?
 }
 
 struct PartialSVGFont {
@@ -484,15 +486,30 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         textStack.append(text)
         tspanStyleStack = [(font, paint)]
         activeTextRun = SVGTextRun(string: "", font: font, paint: paint)
+        if attributes["xml:space"] == "preserve" {
+            activeTextRun?.preserveSpace = true
+        }
     }
 
-    private func handleTspanStart(attributes: [String: String], parser: XMLParser) {
-        guard !textStack.isEmpty else { return }
-        flushActiveTextRun()
-        let (inheritedFont, inheritedPaint) = tspanStyleStack.last!
-        let runFont = mergeFont(into: inheritedFont, from: attributes)
-        let runPaint = mergePaint(into: inheritedPaint, from: attributes, parser: parser)
-        var run = SVGTextRun(string: "", font: runFont, paint: runPaint)
+    private func resolveLengthList(_ raw: String?, axis: Axis) -> [CGFloat]? {
+        guard let raw else { return nil }
+        let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
+        let parts = trimmed.split { $0.isWhitespace || $0 == "," || $0 == "\t" || $0 == "\n" || $0 == "\r" }
+        guard !parts.isEmpty else { return nil }
+        return parts.map { resolveLength(String($0), axis: axis) }
+    }
+
+    private func applyTspanPositionAttributes(
+        _ attributes: [String: String],
+        to run: inout SVGTextRun
+    ) {
+        if let xs = resolveLengthList(attributes["x"], axis: .x) {
+            run.explicitX = xs
+        }
+        if let raw = attributes["y"] {
+            run.explicitY = resolveLength(raw, axis: .y)
+        }
         if let raw = attributes["dx"] {
             run.dx = resolveLength(raw, axis: .length)
         }
@@ -502,6 +519,16 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         if attributes["xml:space"] == "preserve" {
             run.preserveSpace = true
         }
+    }
+
+    private func handleTspanStart(attributes: [String: String], parser: XMLParser) {
+        guard !textStack.isEmpty else { return }
+        flushActiveTextRun()
+        let (inheritedFont, inheritedPaint) = tspanStyleStack.last!
+        let runFont = mergeFont(into: inheritedFont, from: attributes)
+        let runPaint = mergePaint(into: inheritedPaint, from: attributes, parser: parser)
+        var run = SVGTextRun(string: "", font: runFont, paint: runPaint)
+        applyTspanPositionAttributes(attributes, to: &run)
         tspanStyleStack.append((runFont, runPaint))
         activeTextRun = run
     }
@@ -510,6 +537,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         guard !textStack.isEmpty, let run = activeTextRun else { return }
         let isEmpty = run.string.isEmpty
         let hasOffset = run.dx != 0 || run.dy != 0
+            || run.explicitX != nil || run.explicitY != nil
         guard !isEmpty || hasOffset else { return }
         textStack[textStack.count - 1].runs.append(run)
         if let (font, paint) = tspanStyleStack.last {
@@ -521,7 +549,48 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
     /// structured runs when styling or positioning differs.
     private func finalizeTextRuns(_ text: inout SVGText) {
         guard !text.runs.isEmpty else { return }
-        let hasLayout = text.runs.contains { $0.dx != 0 || $0.dy != 0 }
+
+        for i in text.runs.indices where !text.runs[i].preserveSpace {
+            text.runs[i].string = SAXDelegate.stripFormattingWhitespace(text.runs[i].string)
+        }
+
+        text.runs.removeAll { run in
+            guard !run.preserveSpace else { return false }
+            let whitespaceOnly = run.string.allSatisfy(\.isWhitespace)
+            let hasOffset = run.dx != 0 || run.dy != 0
+                || run.explicitX != nil || run.explicitY != nil
+            return (run.string.isEmpty || whitespaceOnly) && !hasOffset
+        }
+
+        guard !text.runs.isEmpty else { return }
+
+        if let first = text.runs.indices.first, !text.runs[first].preserveSpace {
+            if let idx = text.runs[first].string.firstIndex(where: { !$0.isWhitespace }) {
+                text.runs[first].string = String(text.runs[first].string[idx...])
+            } else {
+                text.runs[first].string = ""
+            }
+        }
+        if let last = text.runs.indices.last, !text.runs[last].preserveSpace {
+            var s = text.runs[last].string
+            while let c = s.unicodeScalars.last, Character(c).isWhitespace {
+                s.removeLast()
+            }
+            text.runs[last].string = s
+        }
+
+        text.runs.removeAll { run in
+            guard !run.preserveSpace else { return false }
+            let hasOffset = run.dx != 0 || run.dy != 0
+                || run.explicitX != nil || run.explicitY != nil
+            return run.string.isEmpty && !hasOffset
+        }
+
+        guard !text.runs.isEmpty else { return }
+
+        let hasLayout = text.runs.contains {
+            $0.dx != 0 || $0.dy != 0 || $0.explicitX != nil || $0.explicitY != nil
+        }
         let hasPreserve = text.runs.contains { $0.preserveSpace }
         let uniformStyle = text.runs.allSatisfy {
             $0.font == text.runs[0].font && $0.paint == text.runs[0].paint
@@ -690,6 +759,8 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             if let len = AttributeParsers.length(value) { f.size = len.resolved() }
         case "font-weight":
             if let w = SVGFontWeight.parse(value) { f.weight = w }
+        case "font-style":
+            if let s = SVGFontStyle.parse(value) { f.style = s }
         case "text-anchor":
             if value == "inherit" { return }
             if let a = SVGTextAnchor(rawValue: value) { f.anchor = a }
@@ -698,10 +769,19 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         }
     }
 
-    /// SVG's xml:space="default" behaviour: collapse runs of whitespace and
-    /// trim leading/trailing. We don't implement xml:space="preserve" yet.
+    /// SVG `xml:space="default"`: collapse runs of whitespace and trim leading/trailing.
     static func collapseTextWhitespace(_ raw: String) -> String {
         raw.split(whereSeparator: { $0.isWhitespace }).joined(separator: " ")
+    }
+
+    /// Strip newlines, carriage returns, and tabs from a text run. Does not
+    /// collapse or trim spaces — edge trimming happens in `finalizeTextRuns`.
+    static func stripFormattingWhitespace(_ raw: String) -> String {
+        raw
+            .replacingOccurrences(of: "\r\n", with: "")
+            .replacingOccurrences(of: "\n", with: "")
+            .replacingOccurrences(of: "\r", with: "")
+            .replacingOccurrences(of: "\t", with: "")
     }
 
     // MARK: - Paint servers

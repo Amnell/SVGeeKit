@@ -225,7 +225,8 @@ Replace flat `SVGText.string` with structured runs when `tspan` lands:
 - [x] `SVGTextRun` model (`string`, `font`, `paint`, `dx`, `dy`, `preserveSpace`)
 - [x] Parser: `<tspan>` style inheritance, `dx`/`dy`, per-run paint
 - [x] Renderer: multi-run layout with element-level `text-anchor`
-- [ ] Per-glyph `x`/`y` lists on `<tspan>` (`text-tspan-01-b` § tspan03)
+- [x] Per-glyph `x`/`y` lists on `<tspan>` (`text-tspan-01-b` § tspan03)
+- [x] Weight/style-aware `@font-face` matching (FreeSerif bold via CoreText or SVG font)
 - [ ] `xml:space="preserve"` end-to-end
 
 ```swift

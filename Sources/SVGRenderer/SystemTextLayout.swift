@@ -66,6 +66,32 @@ enum SystemTextLayout {
 
         return result.isEmpty ? nil : result
     }
+
+    static func glyphPathAtPositions(
+        string: String,
+        font: SVGFont,
+        positions: [CGPoint]
+    ) -> CGPath? {
+        let ctFont = SystemFontResolver.font(for: font)
+        let chars = Array(string)
+        guard !chars.isEmpty else { return nil }
+
+        let result = CGMutablePath()
+        for (i, char) in chars.enumerated() {
+            guard i < positions.count else { break }
+            var glyph = CGGlyph(0)
+            let scalar = String(char)
+            guard CTFontGetGlyphsForCharacters(ctFont, Array(scalar.utf16), &glyph, 1) else {
+                continue
+            }
+            guard let glyphPath = CTFontCreatePathForGlyph(ctFont, glyph, nil) else { continue }
+            let pos = positions[i]
+            let transform = CGAffineTransform(translationX: pos.x, y: pos.y)
+                .scaledBy(x: 1, y: -1)
+            result.addPath(glyphPath, transform: transform)
+        }
+        return result.isEmpty ? nil : result
+    }
 }
 
 /// Resolves an `SVGFont` to a `CTFont`. Caches by (family, size, weight)
@@ -76,12 +102,18 @@ private enum SystemFontResolver {
         let family: String?
         let size: CGFloat
         let weight: SVGFontWeight
+        let style: SVGFontStyle
     }
 
     private static let cache = Cache()
 
     static func font(for font: SVGFont) -> CTFont {
-        cache.font(for: Key(family: font.family, size: font.size, weight: font.weight))
+        cache.font(for: Key(
+            family: font.family,
+            size: font.size,
+            weight: font.weight,
+            style: font.style
+        ))
     }
 
     private final class Cache: @unchecked Sendable {
@@ -92,20 +124,37 @@ private enum SystemFontResolver {
             lock.lock()
             defer { lock.unlock() }
             if let cached = storage[key] { return cached }
-            let resolved = makeFont(family: key.family, size: key.size, weight: key.weight)
+            let resolved = makeFont(
+                family: key.family,
+                size: key.size,
+                weight: key.weight,
+                style: key.style
+            )
             storage[key] = resolved
             return resolved
         }
 
-        private func makeFont(family: String?, size: CGFloat, weight: SVGFontWeight) -> CTFont {
-            let descriptor = descriptor(for: family, weight: weight)
+        private func makeFont(
+            family: String?,
+            size: CGFloat,
+            weight: SVGFontWeight,
+            style: SVGFontStyle
+        ) -> CTFont {
+            let descriptor = descriptor(for: family, weight: weight, style: style)
             return CTFontCreateWithFontDescriptor(descriptor, size, nil)
         }
 
-        private func descriptor(for family: String?, weight: SVGFontWeight) -> CTFontDescriptor {
-            let traits: [CFString: Any] = [
+        private func descriptor(
+            for family: String?,
+            weight: SVGFontWeight,
+            style: SVGFontStyle
+        ) -> CTFontDescriptor {
+            var traits: [CFString: Any] = [
                 kCTFontWeightTrait: weightValue(for: weight)
             ]
+            if style == .italic || style == .oblique {
+                traits[kCTFontSlantTrait] = 1.0
+            }
             var attributes: [CFString: Any] = [
                 kCTFontTraitsAttribute: traits as CFDictionary
             ]

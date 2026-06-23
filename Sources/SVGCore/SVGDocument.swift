@@ -317,12 +317,28 @@ public enum SVGFontWeight: Sendable, Equatable, Hashable {
 
     public static func parse(_ raw: String) -> SVGFontWeight? {
         switch raw.lowercased() {
-        case "normal": return .normal
-        case "bold": return .bold
+        case "normal", "400": return .normal
+        case "bold", "700": return .bold
         default:
             if let n = Int(raw) { return .numeric(n) }
             return nil
         }
+    }
+
+    public var normalizedValue: Int {
+        switch self {
+        case .normal: return 400
+        case .bold: return 700
+        case .numeric(let n): return n
+        }
+    }
+}
+
+public enum SVGFontStyle: String, Sendable, Equatable {
+    case normal, italic, oblique
+
+    public static func parse(_ raw: String) -> SVGFontStyle? {
+        SVGFontStyle(rawValue: raw.trimmingCharacters(in: .whitespaces).lowercased())
     }
 }
 
@@ -332,17 +348,20 @@ public struct SVGFont: Equatable, Sendable {
     public var family: String?
     public var size: CGFloat
     public var weight: SVGFontWeight
+    public var style: SVGFontStyle
     public var anchor: SVGTextAnchor
 
     public init(
         family: String? = nil,
         size: CGFloat = 16,
         weight: SVGFontWeight = .normal,
+        style: SVGFontStyle = .normal,
         anchor: SVGTextAnchor = .start
     ) {
         self.family = family
         self.size = size
         self.weight = weight
+        self.style = style
         self.anchor = anchor
     }
 }
@@ -357,6 +376,10 @@ public struct SVGTextRun: Equatable, Sendable {
     public var dy: CGFloat
     /// When `true`, whitespace in this run is not collapsed (`xml:space="preserve"`).
     public var preserveSpace: Bool
+    /// Per-glyph absolute x coordinates (`x` list on `<tspan>`).
+    public var explicitX: [CGFloat]?
+    /// Absolute y for glyphs in this run when `y` is set on `<tspan>`.
+    public var explicitY: CGFloat?
 
     public init(
         string: String = "",
@@ -364,7 +387,9 @@ public struct SVGTextRun: Equatable, Sendable {
         paint: SVGPaintProperties = .init(),
         dx: CGFloat = 0,
         dy: CGFloat = 0,
-        preserveSpace: Bool = false
+        preserveSpace: Bool = false,
+        explicitX: [CGFloat]? = nil,
+        explicitY: CGFloat? = nil
     ) {
         self.string = string
         self.font = font
@@ -372,6 +397,8 @@ public struct SVGTextRun: Equatable, Sendable {
         self.dx = dx
         self.dy = dy
         self.preserveSpace = preserveSpace
+        self.explicitX = explicitX
+        self.explicitY = explicitY
     }
 }
 

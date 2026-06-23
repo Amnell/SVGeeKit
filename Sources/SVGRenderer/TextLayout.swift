@@ -5,52 +5,90 @@ import SVGCore
 /// Dispatches text layout to SVG fonts when available, otherwise CoreText.
 enum TextLayout {
 
-    /// Lays out all runs in a `<text>` element, applying `text-anchor` once for
-    /// the whole string.
+    struct RunSegment {
+        var run: SVGTextRun
+        var path: CGPath
+    }
+
     static func glyphPath(
         text: SVGText,
         fontFaces: [SVGFontFace],
         fonts: [String: SVGFontDefinition]
     ) -> CGPath? {
-        guard !text.runs.isEmpty else { return nil }
+        let segments = layoutRuns(text: text, fontFaces: fontFaces, fonts: fonts)
+        guard !segments.isEmpty else { return nil }
+        let result = CGMutablePath()
+        for segment in segments {
+            result.addPath(segment.path)
+        }
+        return result
+    }
 
-        var placements: [(run: SVGTextRun, origin: CGPoint)] = []
+    static func layoutRuns(
+        text: SVGText,
+        fontFaces: [SVGFontFace],
+        fonts: [String: SVGFontDefinition]
+    ) -> [RunSegment] {
+        guard !text.runs.isEmpty else { return [] }
+
         var penX = text.origin.x
         var penY = text.origin.y
-        var totalWidth: CGFloat = 0
+        var segments: [RunSegment] = []
 
         for run in text.runs {
             penX += run.dx
             penY += run.dy
-            let origin = CGPoint(x: penX, y: penY)
-            placements.append((run, origin))
-            let width = typographicWidth(
-                string: run.string,
-                font: run.font,
-                fontFaces: fontFaces,
-                fonts: fonts
-            )
-            totalWidth = penX + width - text.origin.x
-            penX += width
+            guard !run.string.isEmpty else { continue }
+
+            let path: CGPath?
+            if let xs = run.explicitX {
+                let y = run.explicitY ?? penY
+                let positions = explicitPositions(string: run.string, xs: xs, y: y)
+                path = glyphPathAtPositions(
+                    string: run.string,
+                    font: run.font,
+                    positions: positions,
+                    fontFaces: fontFaces,
+                    fonts: fonts
+                )
+                if let last = positions.last {
+                    let lastWidth = typographicWidth(
+                        of: run.string.last.map(String.init) ?? "",
+                        font: run.font,
+                        fontFaces: fontFaces,
+                        fonts: fonts
+                    )
+                    penX = last.x + lastWidth
+                }
+                penY = y
+            } else {
+                let origin = CGPoint(x: penX, y: penY)
+                path = glyphPathUnanchored(
+                    string: run.string,
+                    font: run.font,
+                    origin: origin,
+                    fontFaces: fontFaces,
+                    fonts: fonts
+                )
+                penX += typographicWidth(
+                    string: run.string,
+                    font: run.font,
+                    fontFaces: fontFaces,
+                    fonts: fonts
+                )
+            }
+
+            if let path, !path.isEmpty {
+                segments.append(RunSegment(run: run, path: path))
+            }
         }
 
-        let anchorShift = anchorOffset(anchor: text.font.anchor, width: totalWidth)
-        let result = CGMutablePath()
-
-        for item in placements {
-            guard !item.run.string.isEmpty else { continue }
-            let origin = CGPoint(x: item.origin.x + anchorShift, y: item.origin.y)
-            guard let path = glyphPathUnanchored(
-                string: item.run.string,
-                font: item.run.font,
-                origin: origin,
-                fontFaces: fontFaces,
-                fonts: fonts
-            ) else { continue }
-            result.addPath(path)
+        // Per-glyph `x` on `<tspan>` are absolute coordinates; text-anchor must
+        // not re-shift them to align bounds with `text.origin.x`.
+        if text.runs.contains(where: { $0.explicitX != nil }) {
+            return segments
         }
-
-        return result.isEmpty ? nil : result
+        return applyAnchorShift(segments: segments, anchor: text.font.anchor, anchorX: text.origin.x)
     }
 
     static func glyphPath(
@@ -62,11 +100,10 @@ enum TextLayout {
     ) -> CGPath? {
         let width = typographicWidth(string: string, font: font, fontFaces: fontFaces, fonts: fonts)
         let shift = anchorOffset(anchor: font.anchor, width: width)
-        let anchored = CGPoint(x: origin.x + shift, y: origin.y)
         return glyphPathUnanchored(
             string: string,
             font: font,
-            origin: anchored,
+            origin: CGPoint(x: origin.x + shift, y: origin.y),
             fontFaces: fontFaces,
             fonts: fonts
         )
@@ -78,10 +115,49 @@ enum TextLayout {
         fontFaces: [SVGFontFace],
         fonts: [String: SVGFontDefinition]
     ) -> CGFloat {
-        if let definition = resolveSVGFont(family: font.family, fontFaces: fontFaces, fonts: fonts) {
+        typographicWidth(of: string, font: font, fontFaces: fontFaces, fonts: fonts)
+    }
+
+    private static func typographicWidth(
+        of string: String,
+        font: SVGFont,
+        fontFaces: [SVGFontFace],
+        fonts: [String: SVGFontDefinition]
+    ) -> CGFloat {
+        if let definition = resolveSVGFont(font: font, fontFaces: fontFaces, fonts: fonts) {
             return SVGFontTextLayout.typographicWidth(string: string, font: font, definition: definition)
         }
         return SystemTextLayout.typographicWidth(string: string, font: font)
+    }
+
+    private static func explicitPositions(
+        string: String,
+        xs: [CGFloat],
+        y: CGFloat
+    ) -> [CGPoint] {
+        let chars = Array(string)
+        guard !chars.isEmpty, !xs.isEmpty else { return [] }
+        return chars.indices.map { i in
+            CGPoint(x: xs[min(i, xs.count - 1)], y: y)
+        }
+    }
+
+    private static func glyphPathAtPositions(
+        string: String,
+        font: SVGFont,
+        positions: [CGPoint],
+        fontFaces: [SVGFontFace],
+        fonts: [String: SVGFontDefinition]
+    ) -> CGPath? {
+        if let definition = resolveSVGFont(font: font, fontFaces: fontFaces, fonts: fonts) {
+            return SVGFontTextLayout.glyphPathAtPositions(
+                string: string,
+                font: font,
+                positions: positions,
+                definition: definition
+            )
+        }
+        return SystemTextLayout.glyphPathAtPositions(string: string, font: font, positions: positions)
     }
 
     private static func glyphPathUnanchored(
@@ -91,7 +167,7 @@ enum TextLayout {
         fontFaces: [SVGFontFace],
         fonts: [String: SVGFontDefinition]
     ) -> CGPath? {
-        if let definition = resolveSVGFont(family: font.family, fontFaces: fontFaces, fonts: fonts) {
+        if let definition = resolveSVGFont(font: font, fontFaces: fontFaces, fonts: fonts) {
             return SVGFontTextLayout.glyphPathUnanchored(
                 string: string,
                 font: font,
@@ -100,6 +176,34 @@ enum TextLayout {
             )
         }
         return SystemTextLayout.glyphPathUnanchored(string: string, font: font, origin: origin)
+    }
+
+    private static func applyAnchorShift(
+        segments: [RunSegment],
+        anchor: SVGTextAnchor,
+        anchorX: CGFloat
+    ) -> [RunSegment] {
+        guard !segments.isEmpty else { return [] }
+        var bounds = CGRect.null
+        for segment in segments {
+            bounds = bounds.union(segment.path.boundingBox)
+        }
+        guard !bounds.isNull else { return segments }
+
+        let shift: CGFloat = {
+            switch anchor {
+            case .start: return anchorX - bounds.minX
+            case .middle: return anchorX - bounds.midX
+            case .end: return anchorX - bounds.maxX
+            }
+        }()
+        guard shift != 0 else { return segments }
+
+        return segments.map { segment in
+            var transform = CGAffineTransform(translationX: shift, y: 0)
+            let shifted = segment.path.copy(using: &transform) ?? segment.path
+            return RunSegment(run: segment.run, path: shifted)
+        }
     }
 
     private static func anchorOffset(anchor: SVGTextAnchor, width: CGFloat) -> CGFloat {
@@ -111,16 +215,31 @@ enum TextLayout {
     }
 
     private static func resolveSVGFont(
-        family: String?,
+        font: SVGFont,
         fontFaces: [SVGFontFace],
         fonts: [String: SVGFontDefinition]
     ) -> SVGFontDefinition? {
-        for name in familyNames(from: family) {
+        for name in familyNames(from: font.family) {
             for face in fontFaces where face.family.caseInsensitiveCompare(name) == .orderedSame {
+                guard faceMatches(face, font: font) else { continue }
                 if let def = fonts[face.fontID] { return def }
             }
         }
         return nil
+    }
+
+    private static func faceMatches(_ face: SVGFontFace, font: SVGFont) -> Bool {
+        if let weight = face.weight, weight.normalizedValue != font.weight.normalizedValue {
+            return false
+        }
+        if let style = face.style {
+            switch (style, font.style) {
+            case (.normal, .normal): break
+            case (.italic, .italic), (.italic, .oblique), (.oblique, .italic), (.oblique, .oblique): break
+            default: return false
+            }
+        }
+        return true
     }
 
     private static func familyNames(from raw: String?) -> [String] {
@@ -152,6 +271,36 @@ enum SVGFontTextLayout {
         return width
     }
 
+    static func glyphPathAtPositions(
+        string: String,
+        font: SVGFont,
+        positions: [CGPoint],
+        definition: SVGFontDefinition
+    ) -> CGPath? {
+        guard definition.unitsPerEm > 0 else { return nil }
+        let scale = font.size / definition.unitsPerEm
+        let fallback = definition.missingGlyph
+            ?? SVGGlyph(commands: nil, advance: definition.defaultAdvance)
+        let scalars = Array(string.unicodeScalars)
+        guard !scalars.isEmpty else { return nil }
+
+        let result = CGMutablePath()
+        for (i, scalar) in scalars.enumerated() {
+            guard i < positions.count else { break }
+            if definition.glyphs[scalar] == nil, Character(scalar).isWhitespace {
+                continue
+            }
+            let glyph = definition.glyphs[scalar] ?? fallback
+            guard let commands = glyph.commands, !commands.isEmpty else { continue }
+            let glyphPath = commands.makeCGPath()
+            let pos = positions[i]
+            let transform = CGAffineTransform(translationX: pos.x, y: pos.y)
+                .scaledBy(x: scale, y: -scale)
+            result.addPath(glyphPath, transform: transform)
+        }
+        return result.isEmpty ? nil : result
+    }
+
     static func glyphPathUnanchored(
         string: String,
         font: SVGFont,
@@ -167,6 +316,9 @@ enum SVGFontTextLayout {
         var placements: [(glyph: SVGGlyph, x: CGFloat)] = []
 
         for scalar in string.unicodeScalars {
+            if definition.glyphs[scalar] == nil, Character(scalar).isWhitespace {
+                continue
+            }
             let glyph = definition.glyphs[scalar] ?? fallback
             placements.append((glyph, penX))
             penX += glyph.advance * scale
@@ -182,27 +334,5 @@ enum SVGFontTextLayout {
         }
 
         return result.isEmpty ? nil : result
-    }
-
-    static func glyphPath(
-        string: String,
-        font: SVGFont,
-        origin: CGPoint,
-        definition: SVGFontDefinition
-    ) -> CGPath? {
-        let width = typographicWidth(string: string, font: font, definition: definition)
-        let shift: CGFloat = {
-            switch font.anchor {
-            case .start: return 0
-            case .middle: return -width / 2
-            case .end: return -width
-            }
-        }()
-        return glyphPathUnanchored(
-            string: string,
-            font: font,
-            origin: CGPoint(x: origin.x + shift, y: origin.y),
-            definition: definition
-        )
     }
 }

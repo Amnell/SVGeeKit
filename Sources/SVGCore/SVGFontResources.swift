@@ -7,10 +7,19 @@ public struct SVGFontFace: Equatable, Sendable {
     public var family: String
     /// `id` of the resolved `<font>` in `SVGDocument.fonts`.
     public var fontID: String
+    public var weight: SVGFontWeight?
+    public var style: SVGFontStyle?
 
-    public init(family: String, fontID: String) {
+    public init(
+        family: String,
+        fontID: String,
+        weight: SVGFontWeight? = nil,
+        style: SVGFontStyle? = nil
+    ) {
         self.family = family
         self.fontID = fontID
+        self.weight = weight
+        self.style = style
     }
 }
 

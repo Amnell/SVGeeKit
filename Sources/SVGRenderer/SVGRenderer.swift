@@ -268,6 +268,7 @@ public enum SVGRenderTree {
         if text.runs.count == 1,
            let run = text.runs.first,
            run.dx == 0, run.dy == 0,
+           run.explicitX == nil, run.explicitY == nil,
            run.font == text.font,
            run.paint == text.paint {
             guard !run.string.isEmpty else { return }
@@ -303,48 +304,15 @@ public enum SVGRenderTree {
         ctx: Context,
         into commands: inout [SVGRenderCommand]
     ) {
-        var penX = text.origin.x
-        var penY = text.origin.y
-        var totalWidth: CGFloat = 0
-        var segments: [(run: SVGTextRun, origin: CGPoint, width: CGFloat)] = []
-
-        for run in text.runs {
-            penX += run.dx
-            penY += run.dy
-            let width = TextLayout.typographicWidth(
-                string: run.string,
-                font: run.font,
-                fontFaces: ctx.fontFaces,
-                fonts: ctx.fonts
-            )
-            segments.append((run, CGPoint(x: penX, y: penY), width))
-            totalWidth = penX + width - text.origin.x
-            penX += width
-        }
-
-        let anchorShift: CGFloat = {
-            switch text.font.anchor {
-            case .start: return 0
-            case .middle: return -totalWidth / 2
-            case .end: return -totalWidth
-            }
-        }()
-
+        let segments = TextLayout.layoutRuns(
+            text: text,
+            fontFaces: ctx.fontFaces,
+            fonts: ctx.fonts
+        )
         for segment in segments {
-            guard !segment.run.string.isEmpty else { continue }
             guard segment.run.paint.visibility == .visible else { continue }
-            let origin = CGPoint(x: segment.origin.x + anchorShift, y: segment.origin.y)
-            var font = segment.run.font
-            font.anchor = .start
-            guard let path = TextLayout.glyphPath(
-                string: segment.run.string,
-                font: font,
-                origin: origin,
-                fontFaces: ctx.fontFaces,
-                fonts: ctx.fonts
-            ) else { continue }
             emitPaintedPath(
-                path,
+                segment.path,
                 paint: segment.run.paint,
                 transform: text.transform,
                 ctx: ctx,

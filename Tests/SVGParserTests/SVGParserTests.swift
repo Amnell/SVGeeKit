@@ -195,6 +195,61 @@ struct SVGParserTests {
         #expect(t.runs[1].font.weight == .bold)
     }
 
+    @Test func stripsIgnorableWhitespaceFromIndentedTextRuns() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+          <text x="0" y="20" fill="blue">
+            You are<tspan font-weight="bold" fill="green"> not </tspan>a banana.
+          </text>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .text(let t) = doc.root.children.first else {
+            Issue.record("expected text"); return
+        }
+        #expect(t.runs.count == 3)
+        #expect(t.runs[0].string == "You are")
+        #expect(t.runs[1].string == " not ")
+        #expect(t.runs[2].string == "a banana.")
+        #expect(!t.runs[0].string.contains("\n"))
+    }
+
+    @Test func parsesTspanExplicitXYWithoutLeadingWhitespaceRun() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="480" height="360">
+          <text fill="orange">
+            <tspan x="35 53.75 72.5" y="200">Cute</tspan>
+            <tspan x="63.13 81.88" y="230.5">fu</tspan>
+          </text>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .text(let t) = doc.root.children.first else {
+            Issue.record("expected text"); return
+        }
+        #expect(t.runs.count == 2)
+        #expect(t.runs[0].string == "Cute")
+        #expect(t.runs[0].explicitX == [35, 53.75, 72.5])
+        #expect(t.runs[1].string == "fu")
+        #expect(t.runs[1].explicitX == [63.13, 81.88])
+    }
+
+    @Test func parsesTspanExplicitXYLists() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200">
+          <text fill="orange"><tspan x="10 30 50" y="40">ABC</tspan></text>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .text(let t) = doc.root.children.first else {
+            Issue.record("expected text"); return
+        }
+        #expect(t.runs.count == 1)
+        #expect(t.runs[0].string == "ABC")
+        #expect(t.runs[0].explicitX == [10, 30, 50])
+        #expect(t.runs[0].explicitY == 40)
+    }
+
     @Test func textIgnoresTitleAndDescContent() throws {
         // Ensures the text-capture machinery doesn't accidentally suck in
         // non-text content like <title>'s string.
@@ -641,6 +696,39 @@ struct SVGParserTests {
         let space = Unicode.Scalar(" ")
         #expect(ascii.glyphs[space]?.advance == 278)
         #expect(ascii.glyphs[space]?.commands == nil)
+    }
+
+    @Test func loadsFreeSerifFontsForTspanConformance() throws {
+        let repoRoot = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+        let svgURL = repoRoot
+            .appendingPathComponent("Tests/SVGConformanceTests/Resources/W3C-SVG-1.1/svg/text-tspan-01-b.svg")
+
+        let doc = try SVGParser().parse(url: svgURL)
+        guard let regular = doc.fonts["FreeSerif"] else {
+            Issue.record("expected FreeSerif font table"); return
+        }
+        guard let bold = doc.fonts["FreeSerifBold"] else {
+            Issue.record("expected FreeSerifBold font table"); return
+        }
+        #expect(regular.unitsPerEm == 1000)
+        #expect(regular.glyphs.count > 100)
+        #expect(bold.glyphs.count > 100)
+        let space = Unicode.Scalar(" ")
+        let apostrophe = Unicode.Scalar("'")
+        #expect(regular.glyphs[space]?.advance == 250)
+        #expect(bold.glyphs[space]?.advance == 250)
+        #expect(regular.glyphs[apostrophe]?.commands != nil)
+        #expect(bold.glyphs[apostrophe]?.commands != nil)
+
+        let boldFaces = doc.fontFaces.filter { $0.family == "FreeSerif" && $0.weight == .bold }
+        #expect(boldFaces.count == 2) // bold + bold-italic faces
+        #expect(doc.fonts[boldFaces[0].fontID] != nil)
+
+        let quote = Unicode.Scalar("\"")
+        #expect(regular.glyphs[quote]?.commands != nil)
     }
 
     @Test func registersFontFaceAndLoadsReferencedFont() throws {

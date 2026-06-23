@@ -52,6 +52,12 @@ extension SAXDelegate {
                 .trimmingCharacters(in: .whitespacesAndNewlines)
                 .trimmingCharacters(in: CharacterSet(charactersIn: "'\""))
         }
+        if let raw = attributes["font-weight"] {
+            partial.weight = SVGFontWeight.parse(raw)
+        }
+        if let raw = attributes["font-style"] {
+            partial.style = SVGFontStyle.parse(raw)
+        }
         cssFontFaceStack.append(partial)
     }
 
@@ -82,7 +88,12 @@ extension SAXDelegate {
             return partial.names.first
         }()
         guard let fontID else { return }
-        fontFaces.append(SVGFontFace(family: family, fontID: fontID))
+        fontFaces.append(SVGFontFace(
+            family: family,
+            fontID: fontID,
+            weight: partial.weight,
+            style: partial.style
+        ))
     }
 
     func handleSVGFontStart(attributes: [String: String]) {
