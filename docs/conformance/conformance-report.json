@@ -479,8 +479,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/color-prop-01-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/color-prop-01-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 130,
+    "mismatchedFraction" : 0.015185185185185185,
     "status" : "passed",
     "tag" : "color",
     "testId" : "color-prop-01-b"
@@ -488,8 +489,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/color-prop-02-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/color-prop-02-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 130,
+    "mismatchedFraction" : 0.007355324074074074,
     "status" : "passed",
     "tag" : "color",
     "testId" : "color-prop-02-f"
@@ -497,8 +499,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/color-prop-03-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/color-prop-03-t\/baseline.png",
-    "diffMaxChannel" : 1,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 130,
+    "mismatchedFraction" : 0.007355324074074074,
     "status" : "passed",
     "tag" : "color",
     "testId" : "color-prop-03-t"
@@ -515,8 +518,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/color-prop-05-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/color-prop-05-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 130,
+    "mismatchedFraction" : 0.00728587962962963,
     "status" : "passed",
     "tag" : "color",
     "testId" : "color-prop-05-t"
@@ -542,8 +546,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-coord-01-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/coords-coord-01-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 130,
+    "mismatchedFraction" : 0.007262731481481481,
     "status" : "passed",
     "tag" : "coords",
     "testId" : "coords-coord-01-t"
@@ -551,8 +556,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-coord-02-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/coords-coord-02-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 187,
+    "mismatchedFraction" : 0.006990740740740741,
     "status" : "passed",
     "tag" : "coords",
     "testId" : "coords-coord-02-t"
@@ -584,8 +590,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-trans-01-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/coords-trans-01-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 130,
+    "mismatchedFraction" : 0.024890046296296296,
     "status" : "passed",
     "tag" : "coords",
     "testId" : "coords-trans-01-b"
@@ -593,8 +600,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-trans-02-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/coords-trans-02-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 149,
+    "mismatchedFraction" : 0.01987847222222222,
     "status" : "passed",
     "tag" : "coords",
     "testId" : "coords-trans-02-t"
@@ -602,8 +610,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-trans-03-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/coords-trans-03-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 149,
+    "mismatchedFraction" : 0.01693287037037037,
     "status" : "passed",
     "tag" : "coords",
     "testId" : "coords-trans-03-t"
@@ -611,8 +620,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-trans-04-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/coords-trans-04-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 130,
+    "mismatchedFraction" : 0.01109375,
     "status" : "passed",
     "tag" : "coords",
     "testId" : "coords-trans-04-t"
@@ -620,8 +630,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-trans-05-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/coords-trans-05-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 187,
+    "mismatchedFraction" : 0.01916087962962963,
     "status" : "passed",
     "tag" : "coords",
     "testId" : "coords-trans-05-t"
@@ -629,8 +640,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-trans-06-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/coords-trans-06-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 149,
+    "mismatchedFraction" : 0.021498842592592594,
     "status" : "passed",
     "tag" : "coords",
     "testId" : "coords-trans-06-t"
@@ -638,8 +650,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-trans-07-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/coords-trans-07-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 164,
+    "mismatchedFraction" : 0.015538194444444445,
     "status" : "passed",
     "tag" : "coords",
     "testId" : "coords-trans-07-t"
@@ -647,8 +660,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-trans-08-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/coords-trans-08-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 130,
+    "mismatchedFraction" : 0.012783564814814815,
     "status" : "passed",
     "tag" : "coords",
     "testId" : "coords-trans-08-t"
@@ -656,8 +670,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-trans-09-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/coords-trans-09-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 130,
+    "mismatchedFraction" : 0.04663194444444444,
     "status" : "passed",
     "tag" : "coords",
     "testId" : "coords-trans-09-t"
@@ -665,8 +680,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-trans-10-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/coords-trans-10-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 255,
+    "mismatchedFraction" : 0.013674768518518518,
     "status" : "passed",
     "tag" : "coords",
     "testId" : "coords-trans-10-f"
@@ -674,8 +690,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-trans-11-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/coords-trans-11-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 255,
+    "mismatchedFraction" : 0.019010416666666665,
     "status" : "passed",
     "tag" : "coords",
     "testId" : "coords-trans-11-f"
@@ -683,8 +700,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-trans-12-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/coords-trans-12-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 255,
+    "mismatchedFraction" : 0.013564814814814814,
     "status" : "passed",
     "tag" : "coords",
     "testId" : "coords-trans-12-f"
@@ -692,8 +710,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-trans-13-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/coords-trans-13-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 255,
+    "mismatchedFraction" : 0.01322337962962963,
     "status" : "passed",
     "tag" : "coords",
     "testId" : "coords-trans-13-f"
@@ -701,8 +720,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-trans-14-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/coords-trans-14-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 255,
+    "mismatchedFraction" : 0.010949074074074075,
     "status" : "passed",
     "tag" : "coords",
     "testId" : "coords-trans-14-f"
@@ -710,8 +730,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-transformattr-01-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/coords-transformattr-01-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 130,
+    "mismatchedFraction" : 0.006828703703703704,
     "status" : "passed",
     "tag" : "coords",
     "testId" : "coords-transformattr-01-f"
@@ -719,8 +740,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-transformattr-02-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/coords-transformattr-02-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 130,
+    "mismatchedFraction" : 0.007083333333333333,
     "status" : "passed",
     "tag" : "coords",
     "testId" : "coords-transformattr-02-f"
@@ -728,8 +750,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-transformattr-03-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/coords-transformattr-03-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 130,
+    "mismatchedFraction" : 0.0072048611111111115,
     "status" : "passed",
     "tag" : "coords",
     "testId" : "coords-transformattr-03-f"
@@ -737,8 +760,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-transformattr-04-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/coords-transformattr-04-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 130,
+    "mismatchedFraction" : 0.0072048611111111115,
     "status" : "passed",
     "tag" : "coords",
     "testId" : "coords-transformattr-04-f"
@@ -746,8 +770,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-transformattr-05-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/coords-transformattr-05-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 130,
+    "mismatchedFraction" : 0.007083333333333333,
     "status" : "passed",
     "tag" : "coords",
     "testId" : "coords-transformattr-05-f"
@@ -764,8 +789,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-units-02-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/coords-units-02-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 130,
+    "mismatchedFraction" : 0.05318865740740741,
     "status" : "passed",
     "tag" : "coords",
     "testId" : "coords-units-02-b"
@@ -773,8 +799,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-units-03-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/coords-units-03-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 186,
+    "mismatchedFraction" : 0.04703125,
     "status" : "passed",
     "tag" : "coords",
     "testId" : "coords-units-03-b"
@@ -1421,8 +1448,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/masking-mask-01-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/masking-mask-01-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 255,
+    "mismatchedFraction" : 0.03822337962962963,
     "status" : "passed",
     "tag" : "masking",
     "testId" : "masking-mask-01-b"
@@ -1430,8 +1458,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/masking-mask-02-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/masking-mask-02-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 130,
+    "mismatchedFraction" : 0.0072048611111111115,
     "status" : "passed",
     "tag" : "masking",
     "testId" : "masking-mask-02-f"
@@ -1439,8 +1468,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/masking-opacity-01-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/masking-opacity-01-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 255,
+    "mismatchedFraction" : 0.10111689814814814,
     "status" : "passed",
     "tag" : "masking",
     "testId" : "masking-opacity-01-b"
@@ -1448,8 +1478,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/masking-path-01-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/masking-path-01-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 187,
+    "mismatchedFraction" : 0.031689814814814816,
     "status" : "passed",
     "tag" : "masking",
     "testId" : "masking-path-01-b"
@@ -1457,8 +1488,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/masking-path-02-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/masking-path-02-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 255,
+    "mismatchedFraction" : 0.03723958333333333,
     "status" : "passed",
     "tag" : "masking",
     "testId" : "masking-path-02-b"
@@ -1538,8 +1570,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/metadata-example-01-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/metadata-example-01-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 130,
+    "mismatchedFraction" : 0.007262731481481481,
     "status" : "passed",
     "tag" : "metadata",
     "testId" : "metadata-example-01-t"
@@ -1547,8 +1580,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-control-01-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/painting-control-01-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 130,
+    "mismatchedFraction" : 0.007083333333333333,
     "status" : "passed",
     "tag" : "painting",
     "testId" : "painting-control-01-f"
@@ -1556,8 +1590,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-control-02-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/painting-control-02-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 130,
+    "mismatchedFraction" : 0.0072048611111111115,
     "status" : "passed",
     "tag" : "painting",
     "testId" : "painting-control-02-f"
@@ -1565,8 +1600,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-control-03-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/painting-control-03-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 175,
+    "mismatchedFraction" : 0.00730324074074074,
     "status" : "passed",
     "tag" : "painting",
     "testId" : "painting-control-03-f"
@@ -1574,8 +1610,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-control-04-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/painting-control-04-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 130,
+    "mismatchedFraction" : 0.007083333333333333,
     "status" : "passed",
     "tag" : "painting",
     "testId" : "painting-control-04-f"
@@ -1589,8 +1626,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-control-06-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/painting-control-06-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 130,
+    "mismatchedFraction" : 0.007083333333333333,
     "status" : "passed",
     "tag" : "painting",
     "testId" : "painting-control-06-f"
@@ -1598,8 +1636,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-fill-01-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/painting-fill-01-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 255,
+    "mismatchedFraction" : 0.03172453703703704,
     "status" : "passed",
     "tag" : "painting",
     "testId" : "painting-fill-01-t"
@@ -1607,8 +1646,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-fill-02-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/painting-fill-02-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 175,
+    "mismatchedFraction" : 0.00730324074074074,
     "status" : "passed",
     "tag" : "painting",
     "testId" : "painting-fill-02-t"
@@ -1616,8 +1656,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-fill-03-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/painting-fill-03-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 192,
+    "mismatchedFraction" : 0.03140625,
     "status" : "passed",
     "tag" : "painting",
     "testId" : "painting-fill-03-t"
@@ -1625,8 +1666,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-fill-04-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/painting-fill-04-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 130,
+    "mismatchedFraction" : 0.007262731481481481,
     "status" : "passed",
     "tag" : "painting",
     "testId" : "painting-fill-04-t"
@@ -1634,8 +1676,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-fill-05-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/painting-fill-05-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 175,
+    "mismatchedFraction" : 0.007309027777777778,
     "status" : "passed",
     "tag" : "painting",
     "testId" : "painting-fill-05-b"
@@ -1703,8 +1746,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-stroke-01-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/painting-stroke-01-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 255,
+    "mismatchedFraction" : 0.03519097222222222,
     "status" : "passed",
     "tag" : "painting",
     "testId" : "painting-stroke-01-t"
@@ -1712,8 +1756,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-stroke-02-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/painting-stroke-02-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 255,
+    "mismatchedFraction" : 0.04619212962962963,
     "status" : "passed",
     "tag" : "painting",
     "testId" : "painting-stroke-02-t"
@@ -1721,8 +1766,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-stroke-03-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/painting-stroke-03-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 255,
+    "mismatchedFraction" : 0.0479224537037037,
     "status" : "passed",
     "tag" : "painting",
     "testId" : "painting-stroke-03-t"
@@ -1730,8 +1776,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-stroke-04-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/painting-stroke-04-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 255,
+    "mismatchedFraction" : 0.04456018518518518,
     "status" : "passed",
     "tag" : "painting",
     "testId" : "painting-stroke-04-t"
@@ -1739,8 +1786,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-stroke-05-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/painting-stroke-05-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 130,
+    "mismatchedFraction" : 0.0128125,
     "status" : "passed",
     "tag" : "painting",
     "testId" : "painting-stroke-05-t"
@@ -1748,8 +1796,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-stroke-06-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/painting-stroke-06-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 187,
+    "mismatchedFraction" : 0.006990740740740741,
     "status" : "passed",
     "tag" : "painting",
     "testId" : "painting-stroke-06-t"
@@ -1757,8 +1806,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-stroke-07-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/painting-stroke-07-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 187,
+    "mismatchedFraction" : 0.006990740740740741,
     "status" : "passed",
     "tag" : "painting",
     "testId" : "painting-stroke-07-t"
@@ -1766,8 +1816,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-stroke-08-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/painting-stroke-08-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 130,
+    "mismatchedFraction" : 0.007245370370370371,
     "status" : "passed",
     "tag" : "painting",
     "testId" : "painting-stroke-08-t"
@@ -1775,8 +1826,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-stroke-09-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/painting-stroke-09-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 187,
+    "mismatchedFraction" : 0.006990740740740741,
     "status" : "passed",
     "tag" : "painting",
     "testId" : "painting-stroke-09-t"
@@ -1784,8 +1836,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-stroke-10-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/painting-stroke-10-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 255,
+    "mismatchedFraction" : 0.027777777777777776,
     "status" : "passed",
     "tag" : "painting",
     "testId" : "painting-stroke-10-t"
@@ -1793,8 +1846,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/paths-data-01-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/paths-data-01-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 187,
+    "mismatchedFraction" : 0.01828125,
     "status" : "passed",
     "tag" : "paths",
     "testId" : "paths-data-01-t"
@@ -1802,8 +1856,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/paths-data-02-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/paths-data-02-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 254,
+    "mismatchedFraction" : 0.020318287037037037,
     "status" : "passed",
     "tag" : "paths",
     "testId" : "paths-data-02-t"
@@ -1811,8 +1866,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/paths-data-03-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/paths-data-03-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 253,
+    "mismatchedFraction" : 0.019398148148148147,
     "status" : "passed",
     "tag" : "paths",
     "testId" : "paths-data-03-f"
@@ -1820,8 +1876,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/paths-data-04-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/paths-data-04-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 187,
+    "mismatchedFraction" : 0.017123842592592593,
     "status" : "passed",
     "tag" : "paths",
     "testId" : "paths-data-04-t"
@@ -1829,8 +1886,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/paths-data-05-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/paths-data-05-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 187,
+    "mismatchedFraction" : 0.013148148148148148,
     "status" : "passed",
     "tag" : "paths",
     "testId" : "paths-data-05-t"
@@ -1838,8 +1896,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/paths-data-06-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/paths-data-06-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 255,
+    "mismatchedFraction" : 0.01511574074074074,
     "status" : "passed",
     "tag" : "paths",
     "testId" : "paths-data-06-t"
@@ -1847,8 +1906,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/paths-data-07-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/paths-data-07-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 255,
+    "mismatchedFraction" : 0.013200231481481481,
     "status" : "passed",
     "tag" : "paths",
     "testId" : "paths-data-07-t"
@@ -1856,8 +1916,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/paths-data-08-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/paths-data-08-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 130,
+    "mismatchedFraction" : 0.02199074074074074,
     "status" : "passed",
     "tag" : "paths",
     "testId" : "paths-data-08-t"
@@ -1865,8 +1926,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/paths-data-09-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/paths-data-09-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 130,
+    "mismatchedFraction" : 0.01791087962962963,
     "status" : "passed",
     "tag" : "paths",
     "testId" : "paths-data-09-t"
@@ -1874,8 +1936,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/paths-data-10-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/paths-data-10-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 198,
+    "mismatchedFraction" : 0.04988425925925926,
     "status" : "passed",
     "tag" : "paths",
     "testId" : "paths-data-10-t"
@@ -1883,8 +1946,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/paths-data-12-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/paths-data-12-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 175,
+    "mismatchedFraction" : 0.00730324074074074,
     "status" : "passed",
     "tag" : "paths",
     "testId" : "paths-data-12-t"
@@ -1892,8 +1956,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/paths-data-13-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/paths-data-13-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 175,
+    "mismatchedFraction" : 0.00730324074074074,
     "status" : "passed",
     "tag" : "paths",
     "testId" : "paths-data-13-t"
@@ -1901,8 +1966,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/paths-data-14-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/paths-data-14-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 130,
+    "mismatchedFraction" : 0.007262731481481481,
     "status" : "passed",
     "tag" : "paths",
     "testId" : "paths-data-14-t"
@@ -1910,8 +1976,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/paths-data-15-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/paths-data-15-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 130,
+    "mismatchedFraction" : 0.007262731481481481,
     "status" : "passed",
     "tag" : "paths",
     "testId" : "paths-data-15-t"
@@ -1919,8 +1986,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/paths-data-16-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/paths-data-16-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 255,
+    "mismatchedFraction" : 0.018784722222222223,
     "status" : "passed",
     "tag" : "paths",
     "testId" : "paths-data-16-t"
@@ -1928,8 +1996,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/paths-data-17-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/paths-data-17-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 130,
+    "mismatchedFraction" : 0.007083333333333333,
     "status" : "passed",
     "tag" : "paths",
     "testId" : "paths-data-17-f"
@@ -1946,8 +2015,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/paths-data-19-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/paths-data-19-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 130,
+    "mismatchedFraction" : 0.006967592592592593,
     "status" : "passed",
     "tag" : "paths",
     "testId" : "paths-data-19-f"
@@ -1955,8 +2025,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/paths-data-20-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/paths-data-20-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 130,
+    "mismatchedFraction" : 0.0072048611111111115,
     "status" : "passed",
     "tag" : "paths",
     "testId" : "paths-data-20-f"
@@ -1982,8 +2053,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-01-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-grad-01-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 227,
+    "mismatchedFraction" : 0.02530671296296296,
     "status" : "passed",
     "tag" : "pservers",
     "testId" : "pservers-grad-01-b"
@@ -1991,8 +2063,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-02-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-grad-02-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 227,
+    "mismatchedFraction" : 0.026469907407407407,
     "status" : "passed",
     "tag" : "pservers",
     "testId" : "pservers-grad-02-b"
@@ -2036,26 +2109,27 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-07-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-grad-07-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 155,
+    "mismatchedFraction" : 0.035243055555555555,
     "status" : "passed",
     "tag" : "pservers",
     "testId" : "pservers-grad-07-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-08-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/pservers-grad-08-b\/baseline.png",
-    "diffMaxChannel" : 1,
-    "mismatchedFraction" : 0,
-    "status" : "partialBaseline",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-grad-08-b\/baseline.png",
+    "detail" : "promoted from partial baseline",
+    "status" : "passed",
     "tag" : "pservers",
     "testId" : "pservers-grad-08-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-09-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-grad-09-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 255,
+    "mismatchedFraction" : 0.016996527777777777,
     "status" : "passed",
     "tag" : "pservers",
     "testId" : "pservers-grad-09-b"
@@ -2063,26 +2137,27 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-10-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-grad-10-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 255,
+    "mismatchedFraction" : 0.025127314814814814,
     "status" : "passed",
     "tag" : "pservers",
     "testId" : "pservers-grad-10-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-11-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/pservers-grad-11-b\/baseline.png",
-    "diffMaxChannel" : 1,
-    "mismatchedFraction" : 0,
-    "status" : "partialBaseline",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-grad-11-b\/baseline.png",
+    "detail" : "promoted from partial baseline",
+    "status" : "passed",
     "tag" : "pservers",
     "testId" : "pservers-grad-11-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-12-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-grad-12-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 255,
+    "mismatchedFraction" : 0.05009259259259259,
     "status" : "passed",
     "tag" : "pservers",
     "testId" : "pservers-grad-12-b"
@@ -2099,8 +2174,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-14-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-grad-14-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 175,
+    "mismatchedFraction" : 0.05133101851851852,
     "status" : "passed",
     "tag" : "pservers",
     "testId" : "pservers-grad-14-b"
@@ -2108,8 +2184,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-15-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-grad-15-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 130,
+    "mismatchedFraction" : 0.007262731481481481,
     "status" : "passed",
     "tag" : "pservers",
     "testId" : "pservers-grad-15-b"
@@ -2189,8 +2266,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-stops-01-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-grad-stops-01-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 255,
+    "mismatchedFraction" : 0.010983796296296297,
     "status" : "passed",
     "tag" : "pservers",
     "testId" : "pservers-grad-stops-01-f"
@@ -2279,8 +2357,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/render-elems-01-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/render-elems-01-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 130,
+    "mismatchedFraction" : 0.010972222222222222,
     "status" : "passed",
     "tag" : "render",
     "testId" : "render-elems-01-t"
@@ -2288,8 +2367,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/render-elems-02-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/render-elems-02-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 135,
+    "mismatchedFraction" : 0.012488425925925925,
     "status" : "passed",
     "tag" : "render",
     "testId" : "render-elems-02-t"
@@ -2297,36 +2377,34 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/render-elems-03-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/render-elems-03-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 187,
+    "mismatchedFraction" : 0.014791666666666667,
     "status" : "passed",
     "tag" : "render",
     "testId" : "render-elems-03-t"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/render-elems-06-t\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/render-elems-06-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "partialBaseline",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/render-elems-06-t\/baseline.png",
+    "detail" : "promoted from partial baseline",
+    "status" : "passed",
     "tag" : "render",
     "testId" : "render-elems-06-t"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/render-elems-07-t\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/render-elems-07-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "partialBaseline",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/render-elems-07-t\/baseline.png",
+    "detail" : "promoted from partial baseline",
+    "status" : "passed",
     "tag" : "render",
     "testId" : "render-elems-07-t"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/render-elems-08-t\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/render-elems-08-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "partialBaseline",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/render-elems-08-t\/baseline.png",
+    "detail" : "promoted from partial baseline",
+    "status" : "passed",
     "tag" : "render",
     "testId" : "render-elems-08-t"
   },
@@ -2385,55 +2463,59 @@
     "testId" : "script-specify-02-f"
   },
   {
-    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-circle-01-t\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-circle-01-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
-    "tag" : "shapes",
-    "testId" : "shapes-circle-01-t"
-  },
-  {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-circle-01\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-circle-01\/baseline.png",
-    "diffMaxChannel" : 1,
+    "diffMaxChannel" : 0,
     "mismatchedFraction" : 0,
     "status" : "passed",
     "tag" : "shapes",
     "testId" : "shapes-circle-01"
   },
   {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-circle-01-t\/actual.png",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-circle-01-t\/baseline.png",
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 187,
+    "mismatchedFraction" : 0.006990740740740741,
+    "status" : "passed",
+    "tag" : "shapes",
+    "testId" : "shapes-circle-01-t"
+  },
+  {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-circle-02-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-circle-02-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 175,
+    "mismatchedFraction" : 0.00730324074074074,
     "status" : "passed",
     "tag" : "shapes",
     "testId" : "shapes-circle-02-t"
   },
   {
-    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-ellipse-01-t\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-ellipse-01-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
-    "tag" : "shapes",
-    "testId" : "shapes-ellipse-01-t"
-  },
-  {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-ellipse-01\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-ellipse-01\/baseline.png",
-    "diffMaxChannel" : 1,
+    "diffMaxChannel" : 0,
     "mismatchedFraction" : 0,
     "status" : "passed",
     "tag" : "shapes",
     "testId" : "shapes-ellipse-01"
   },
   {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-ellipse-01-t\/actual.png",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-ellipse-01-t\/baseline.png",
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 187,
+    "mismatchedFraction" : 0.006990740740740741,
+    "status" : "passed",
+    "tag" : "shapes",
+    "testId" : "shapes-ellipse-01-t"
+  },
+  {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-ellipse-02-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-ellipse-02-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 130,
+    "mismatchedFraction" : 0.007262731481481481,
     "status" : "passed",
     "tag" : "shapes",
     "testId" : "shapes-ellipse-02-t"
@@ -2441,8 +2523,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-ellipse-03-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-ellipse-03-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 175,
+    "mismatchedFraction" : 0.00730324074074074,
     "status" : "passed",
     "tag" : "shapes",
     "testId" : "shapes-ellipse-03-f"
@@ -2468,20 +2551,12 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-intro-02-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-intro-02-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 130,
+    "mismatchedFraction" : 0.0069328703703703705,
     "status" : "passed",
     "tag" : "shapes",
     "testId" : "shapes-intro-02-f"
-  },
-  {
-    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-line-01-t\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-line-01-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
-    "tag" : "shapes",
-    "testId" : "shapes-line-01-t"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-line-01\/actual.png",
@@ -2493,10 +2568,21 @@
     "testId" : "shapes-line-01"
   },
   {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-line-01-t\/actual.png",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-line-01-t\/baseline.png",
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 175,
+    "mismatchedFraction" : 0.00730324074074074,
+    "status" : "passed",
+    "tag" : "shapes",
+    "testId" : "shapes-line-01-t"
+  },
+  {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-line-02-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-line-02-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 130,
+    "mismatchedFraction" : 0.0072048611111111115,
     "status" : "passed",
     "tag" : "shapes",
     "testId" : "shapes-line-02-f"
@@ -2511,15 +2597,6 @@
     "testId" : "shapes-path-01"
   },
   {
-    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-polygon-01-t\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-polygon-01-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
-    "tag" : "shapes",
-    "testId" : "shapes-polygon-01-t"
-  },
-  {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-polygon-01\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-polygon-01\/baseline.png",
     "diffMaxChannel" : 0,
@@ -2529,10 +2606,21 @@
     "testId" : "shapes-polygon-01"
   },
   {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-polygon-01-t\/actual.png",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-polygon-01-t\/baseline.png",
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 187,
+    "mismatchedFraction" : 0.006990740740740741,
+    "status" : "passed",
+    "tag" : "shapes",
+    "testId" : "shapes-polygon-01-t"
+  },
+  {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-polygon-02-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-polygon-02-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 130,
+    "mismatchedFraction" : 0.007141203703703703,
     "status" : "passed",
     "tag" : "shapes",
     "testId" : "shapes-polygon-02-t"
@@ -2540,20 +2628,12 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-polygon-03-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-polygon-03-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 130,
+    "mismatchedFraction" : 0.006851851851851852,
     "status" : "passed",
     "tag" : "shapes",
     "testId" : "shapes-polygon-03-t"
-  },
-  {
-    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-polyline-01-t\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-polyline-01-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
-    "tag" : "shapes",
-    "testId" : "shapes-polyline-01-t"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-polyline-01\/actual.png",
@@ -2565,10 +2645,21 @@
     "testId" : "shapes-polyline-01"
   },
   {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-polyline-01-t\/actual.png",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-polyline-01-t\/baseline.png",
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 175,
+    "mismatchedFraction" : 0.00730324074074074,
+    "status" : "passed",
+    "tag" : "shapes",
+    "testId" : "shapes-polyline-01-t"
+  },
+  {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-polyline-02-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-polyline-02-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 130,
+    "mismatchedFraction" : 0.0072048611111111115,
     "status" : "passed",
     "tag" : "shapes",
     "testId" : "shapes-polyline-02-t"
@@ -2576,8 +2667,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-rect-01-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-rect-01-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 187,
+    "mismatchedFraction" : 0.006990740740740741,
     "status" : "passed",
     "tag" : "shapes",
     "testId" : "shapes-rect-01-t"
@@ -2603,8 +2695,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-rect-04-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-rect-04-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 130,
+    "mismatchedFraction" : 0.0072048611111111115,
     "status" : "passed",
     "tag" : "shapes",
     "testId" : "shapes-rect-04-f"
@@ -2612,8 +2705,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-rect-05-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-rect-05-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 130,
+    "mismatchedFraction" : 0.0072048611111111115,
     "status" : "passed",
     "tag" : "shapes",
     "testId" : "shapes-rect-05-f"
@@ -2621,8 +2715,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-rect-06-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-rect-06-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 130,
+    "mismatchedFraction" : 0.0072048611111111115,
     "status" : "passed",
     "tag" : "shapes",
     "testId" : "shapes-rect-06-f"
@@ -2630,8 +2725,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-rect-07-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-rect-07-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 130,
+    "mismatchedFraction" : 0.007141203703703703,
     "status" : "passed",
     "tag" : "shapes",
     "testId" : "shapes-rect-07-f"
@@ -2945,8 +3041,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-group-01-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-group-01-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 175,
+    "mismatchedFraction" : 0.00730324074074074,
     "status" : "passed",
     "tag" : "struct",
     "testId" : "struct-group-01-t"
@@ -3269,8 +3366,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-use-12-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-use-12-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 130,
+    "mismatchedFraction" : 0.0072048611111111115,
     "status" : "passed",
     "tag" : "struct",
     "testId" : "struct-use-12-f"
@@ -3368,8 +3466,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-css-07-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/styling-css-07-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 130,
+    "mismatchedFraction" : 0.0072048611111111115,
     "status" : "passed",
     "tag" : "styling",
     "testId" : "styling-css-07-f"
@@ -3422,8 +3521,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-pres-01-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/styling-pres-01-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 187,
+    "mismatchedFraction" : 0.006990740740740741,
     "status" : "passed",
     "tag" : "styling",
     "testId" : "styling-pres-01-t"
@@ -3474,8 +3574,10 @@
     "testId" : "svgdom-over-01-f"
   },
   {
-    "detail" : "feature family not yet supported by SVGeeKit",
-    "status" : "skipped",
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/text-align-01-b\/actual.png",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/text-align-01-b\/baseline.png",
+    "detail" : "promoted from partial baseline",
+    "status" : "passed",
     "tag" : "text",
     "testId" : "text-align-01-b"
   },
@@ -3580,6 +3682,14 @@
     "status" : "skipped",
     "tag" : "text",
     "testId" : "text-dom-05-f"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/text-font-mini-01\/actual.png",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/text-font-mini-01\/baseline.png",
+    "detail" : "promoted from partial baseline",
+    "status" : "passed",
+    "tag" : "text",
+    "testId" : "text-font-mini-01"
   },
   {
     "detail" : "feature family not yet supported by SVGeeKit",

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 40" width="120" height="40">
+  <defs>
+    <font id="mini" horiz-adv-x="50">
+      <font-face units-per-em="100" ascent="80" descent="-20"/>
+      <glyph unicode="A" d="M5 0L15 40H25L35 0H28L26 10H14L12 0H5ZM16 16H24L20 32L16 16Z" horiz-adv-x="40"/>
+    </font>
+    <font-face font-family="MiniFace">
+      <font-face-src>
+        <font-face-uri xlink:href="#mini"/>
+      </font-face-src>
+    </font-face>
+  </defs>
+  <text x="10" y="30" font-family="MiniFace,sans-serif" font-size="20" fill="black">A</text>
+</svg>

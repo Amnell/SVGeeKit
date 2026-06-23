@@ -59,7 +59,13 @@ public enum SVGRenderTree {
     /// Lower a parsed document into a flat command stream.
     public static func lower(_ document: SVGDocument) -> [SVGRenderCommand] {
         var commands: [SVGRenderCommand] = []
-        let ctx = Context(paintServers: document.paintServers, clipPaths: document.clipPaths, masks: document.masks)
+        let ctx = Context(
+            paintServers: document.paintServers,
+            clipPaths: document.clipPaths,
+            masks: document.masks,
+            fonts: document.fonts,
+            fontFaces: document.fontFaces
+        )
         commands.append(.pushState)
         if let viewBox = document.viewBox, let size = document.intrinsicSize {
             let sx = size.width / viewBox.width
@@ -77,6 +83,8 @@ public enum SVGRenderTree {
         let paintServers: [String: SVGPaintServer]
         let clipPaths: [String: SVGClipPath]
         let masks: [String: SVGMask]
+        let fonts: [String: SVGFontDefinition]
+        let fontFaces: [SVGFontFace]
     }
 
     private static func lower(group: SVGGroup, ctx: Context, into commands: inout [SVGRenderCommand]) {
@@ -256,10 +264,12 @@ public enum SVGRenderTree {
     private static func lower(text: SVGText, ctx: Context, into commands: inout [SVGRenderCommand]) {
         guard !text.string.isEmpty else { return }
         guard text.paint.visibility == .visible else { return }
-        guard let path = SystemTextLayout.glyphPath(
+        guard let path = TextLayout.glyphPath(
             string: text.string,
             font: text.font,
-            origin: text.origin
+            origin: text.origin,
+            fontFaces: ctx.fontFaces,
+            fonts: ctx.fonts
         ) else { return }
         emitPaintedPath(path, paint: text.paint, transform: text.transform, ctx: ctx, into: &commands)
     }

@@ -34,10 +34,13 @@ public struct SVGParser {
             throw SVGParseError(kind: .missingRoot, line: nil, column: nil)
         }
         delegate.resolveGradientHrefs()
+        delegate.resolvePendingFontHrefs()
         document.baseURL = baseURL
         document.paintServers = delegate.paintServers
         document.clipPaths = delegate.clipPaths
         document.masks = delegate.masks
+        document.fonts = delegate.fonts
+        document.fontFaces = delegate.fontFaces
         return document
     }
 
@@ -68,7 +71,23 @@ public struct SVGParser {
     }
 }
 
-private final class SAXDelegate: NSObject, XMLParserDelegate {
+struct PartialCSSFontFace {
+    var family: String?
+    var uris: [String] = []
+    var names: [String] = []
+}
+
+struct PartialSVGFont {
+    var id: String?
+    var defaultAdvance: CGFloat = 0
+    var unitsPerEm: CGFloat = 1000
+    var ascent: CGFloat = 800
+    var descent: CGFloat = -200
+    var glyphs: [Unicode.Scalar: SVGGlyph] = [:]
+    var missingGlyph: SVGGlyph?
+}
+
+final class SAXDelegate: NSObject, XMLParserDelegate {
 
     enum Axis { case x, y, length }
 
@@ -112,6 +131,13 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
     private var maskStack: [PartialMask] = []
     /// Completed masks keyed by id.
     fileprivate var masks: [String: SVGMask] = [:]
+
+    /// SVG `<font id="…">` tables and CSS `<font-face>` bindings.
+    var fonts: [String: SVGFontDefinition] = [:]
+    var fontFaces: [SVGFontFace] = []
+    var cssFontFaceStack: [PartialCSSFontFace] = []
+    var svgFontStack: [PartialSVGFont] = []
+    var pendingFontHrefs: [String] = []
 
     struct PartialGradient {
         enum Kind { case linear, radial }
@@ -209,6 +235,20 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
             handleClipPathStart(attributes: attributeDict, parser: parser)
         case "mask":
             handleMaskStart(attributes: attributeDict)
+        case "font-face" where !svgFontStack.isEmpty:
+            handleSVGFontFaceMetrics(attributes: attributeDict)
+        case "font-face":
+            handleCSSFontFaceStart(attributes: attributeDict)
+        case "font-face-uri":
+            handleFontFaceURI(attributes: attributeDict)
+        case "font-face-name":
+            handleFontFaceName(attributes: attributeDict)
+        case "font":
+            handleSVGFontStart(attributes: attributeDict)
+        case "glyph":
+            handleGlyph(attributes: attributeDict, missing: false)
+        case "missing-glyph":
+            handleGlyph(attributes: attributeDict, missing: true)
         default:
             break
         }
@@ -247,6 +287,12 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
             finalizeClipPath()
         case "mask":
             finalizeMask()
+        case "font-face" where !svgFontStack.isEmpty:
+            break
+        case "font-face":
+            finalizeCSSFontFace()
+        case "font":
+            finalizeSVGFont()
         default:
             break
         }

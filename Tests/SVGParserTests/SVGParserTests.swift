@@ -597,4 +597,79 @@ struct SVGParserTests {
         }
         #expect(t.paint.clipPathRef == "c")
     }
+
+    @Test func parsesInlineSVGFontGlyphs() throws {
+        let repoRoot = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+        let fontURL = repoRoot
+            .appendingPathComponent("Tests/SVGConformanceTests/Resources/W3C-SVG-1.1/resources/SVGFreeSans.svg")
+
+        let doc = try SVGParser().parse(url: fontURL)
+        guard let ascii = doc.fonts["ascii"] else {
+            Issue.record("expected font id ascii"); return
+        }
+        #expect(ascii.unitsPerEm == 1000)
+        #expect(ascii.defaultAdvance == 481)
+        #expect(ascii.glyphs.count > 90)
+        let a = Unicode.Scalar("A")
+        #expect(ascii.glyphs[a]?.advance == 667)
+        #expect(ascii.glyphs[a]?.commands != nil)
+        let space = Unicode.Scalar(" ")
+        #expect(ascii.glyphs[space]?.advance == 278)
+        #expect(ascii.glyphs[space]?.commands == nil)
+    }
+
+    @Test func registersFontFaceAndLoadsReferencedFont() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+          <defs>
+            <font id="ascii" horiz-adv-x="100">
+              <font-face units-per-em="100" ascent="80" descent="-20"/>
+              <glyph unicode="!" d="M10 0V50H30V0H10Z" horiz-adv-x="40"/>
+            </font>
+            <font-face font-family="MiniASCII">
+              <font-face-src>
+                <font-face-uri xlink:href="#ascii"/>
+              </font-face-src>
+            </font-face>
+          </defs>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        #expect(doc.fontFaces.count == 1)
+        #expect(doc.fontFaces[0].family == "MiniASCII")
+        #expect(doc.fonts["ascii"]?.glyphs[Unicode.Scalar("!")] != nil)
+    }
+
+    @Test func loadsExternalFontViaFontFaceURI() throws {
+        let repoRoot = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+        let svgDir = repoRoot
+            .appendingPathComponent("Tests/SVGConformanceTests/Resources/W3C-SVG-1.1/svg")
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+          <defs>
+            <font-face font-family="SVGFreeSansASCII">
+              <font-face-src>
+                <font-face-uri xlink:href="../resources/SVGFreeSans.svg#ascii"/>
+              </font-face-src>
+            </font-face>
+          </defs>
+        </svg>
+        """
+        let doc = try SVGParser().parse(
+            data: Data(svg.utf8),
+            baseURL: svgDir
+        )
+        #expect(doc.fontFaces.count == 1)
+        #expect(doc.fontFaces[0].family == "SVGFreeSansASCII")
+        guard let ascii = doc.fonts["ascii"] else {
+            Issue.record("expected external font id ascii"); return
+        }
+        #expect(ascii.glyphs[Unicode.Scalar("A")]?.commands != nil)
+    }
 }

@@ -12,6 +12,10 @@ public struct SVGDocument: Equatable, Sendable {
     public var paintServers: [String: SVGPaintServer]
     public var clipPaths: [String: SVGClipPath]
     public var masks: [String: SVGMask]
+    /// CSS `<font-face>` family → font id bindings.
+    public var fontFaces: [SVGFontFace]
+    /// SVG `<font id="…">` tables keyed by id.
+    public var fonts: [String: SVGFontDefinition]
 
     public init(
         viewBox: CGRect? = nil,
@@ -20,7 +24,9 @@ public struct SVGDocument: Equatable, Sendable {
         root: SVGGroup = SVGGroup(),
         paintServers: [String: SVGPaintServer] = [:],
         clipPaths: [String: SVGClipPath] = [:],
-        masks: [String: SVGMask] = [:]
+        masks: [String: SVGMask] = [:],
+        fontFaces: [SVGFontFace] = [],
+        fonts: [String: SVGFontDefinition] = [:]
     ) {
         self.viewBox = viewBox
         self.intrinsicSize = intrinsicSize
@@ -29,6 +35,8 @@ public struct SVGDocument: Equatable, Sendable {
         self.paintServers = paintServers
         self.clipPaths = clipPaths
         self.masks = masks
+        self.fontFaces = fontFaces
+        self.fonts = fonts
     }
 
     /// Resolve `href` against `baseURL`. Absolute URLs are returned unchanged;
@@ -40,7 +48,23 @@ public struct SVGDocument: Equatable, Sendable {
             return absolute
         }
         guard let baseURL else { return URL(string: trimmed) }
-        return URL(string: trimmed, relativeTo: baseURL)?.standardized
+        let (pathPart, fragment) = Self.splitHrefFragment(trimmed)
+        guard var resolved = URL(string: pathPart, relativeTo: baseURL)?.standardizedFileURL else {
+            return nil
+        }
+        if let fragment {
+            var components = URLComponents(url: resolved, resolvingAgainstBaseURL: false)
+            components?.fragment = fragment
+            resolved = components?.url ?? resolved
+        }
+        return resolved
+    }
+
+    private static func splitHrefFragment(_ href: String) -> (String, String?) {
+        guard let hash = href.firstIndex(of: "#") else { return (href, nil) }
+        let pathPart = String(href[..<hash])
+        let fragment = String(href[href.index(after: hash)...])
+        return (pathPart, fragment.isEmpty ? nil : fragment)
     }
 }
 
