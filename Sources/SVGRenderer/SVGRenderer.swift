@@ -262,16 +262,95 @@ public enum SVGRenderTree {
     }
 
     private static func lower(text: SVGText, ctx: Context, into commands: inout [SVGRenderCommand]) {
-        guard !text.string.isEmpty else { return }
+        guard !text.runs.isEmpty else { return }
         guard text.paint.visibility == .visible else { return }
+
+        if text.runs.count == 1,
+           let run = text.runs.first,
+           run.dx == 0, run.dy == 0,
+           run.font == text.font,
+           run.paint == text.paint {
+            guard !run.string.isEmpty else { return }
+            guard let path = TextLayout.glyphPath(
+                string: run.string,
+                font: run.font,
+                origin: text.origin,
+                fontFaces: ctx.fontFaces,
+                fonts: ctx.fonts
+            ) else { return }
+            emitPaintedPath(path, paint: run.paint, transform: text.transform, ctx: ctx, into: &commands)
+            return
+        }
+
         guard let path = TextLayout.glyphPath(
-            string: text.string,
-            font: text.font,
-            origin: text.origin,
+            text: text,
             fontFaces: ctx.fontFaces,
             fonts: ctx.fonts
         ) else { return }
-        emitPaintedPath(path, paint: text.paint, transform: text.transform, ctx: ctx, into: &commands)
+
+        // Per-run paint: emit separate paths when runs differ in fill/stroke.
+        let uniformPaint = text.runs.allSatisfy { $0.paint == text.runs[0].paint }
+        if uniformPaint, let paint = text.runs.first?.paint {
+            emitPaintedPath(path, paint: paint, transform: text.transform, ctx: ctx, into: &commands)
+            return
+        }
+
+        emitRunsIndividually(text: text, ctx: ctx, into: &commands)
+    }
+
+    private static func emitRunsIndividually(
+        text: SVGText,
+        ctx: Context,
+        into commands: inout [SVGRenderCommand]
+    ) {
+        var penX = text.origin.x
+        var penY = text.origin.y
+        var totalWidth: CGFloat = 0
+        var segments: [(run: SVGTextRun, origin: CGPoint, width: CGFloat)] = []
+
+        for run in text.runs {
+            penX += run.dx
+            penY += run.dy
+            let width = TextLayout.typographicWidth(
+                string: run.string,
+                font: run.font,
+                fontFaces: ctx.fontFaces,
+                fonts: ctx.fonts
+            )
+            segments.append((run, CGPoint(x: penX, y: penY), width))
+            totalWidth = penX + width - text.origin.x
+            penX += width
+        }
+
+        let anchorShift: CGFloat = {
+            switch text.font.anchor {
+            case .start: return 0
+            case .middle: return -totalWidth / 2
+            case .end: return -totalWidth
+            }
+        }()
+
+        for segment in segments {
+            guard !segment.run.string.isEmpty else { continue }
+            guard segment.run.paint.visibility == .visible else { continue }
+            let origin = CGPoint(x: segment.origin.x + anchorShift, y: segment.origin.y)
+            var font = segment.run.font
+            font.anchor = .start
+            guard let path = TextLayout.glyphPath(
+                string: segment.run.string,
+                font: font,
+                origin: origin,
+                fontFaces: ctx.fontFaces,
+                fonts: ctx.fonts
+            ) else { continue }
+            emitPaintedPath(
+                path,
+                paint: segment.run.paint,
+                transform: text.transform,
+                ctx: ctx,
+                into: &commands
+            )
+        }
     }
 
     /// Build a `CGPath` from all shape children of a `<clipPath>` definition.

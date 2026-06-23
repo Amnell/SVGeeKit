@@ -195,10 +195,10 @@ Defer: full `unicode-range`, weight/style selection across multiple faces.
 
 ### Exit criteria
 
-- [ ] `text-align-01-b` passes snapshot against W3C reference.
-- [ ] Any test file's revision line (`$Revision:…$`) renders with
+- [x] `text-align-01-b` passes snapshot against W3C reference.
+- [x] Any test file's revision line (`$Revision:…$`) renders with
   SVGFreeSansASCII when body uses that family.
-- [ ] Parser round-trips `SVGFreeSans.svg` glyph count and a spot-check `d` path.
+- [x] Parser round-trips `SVGFreeSans.svg` glyph count and a spot-check `d` path.
 
 ---
 
@@ -221,6 +221,12 @@ Work in roughly this order (each with parser + lowering + W3C test):
 ### Model evolution
 
 Replace flat `SVGText.string` with structured runs when `tspan` lands:
+
+- [x] `SVGTextRun` model (`string`, `font`, `paint`, `dx`, `dy`, `preserveSpace`)
+- [x] Parser: `<tspan>` style inheritance, `dx`/`dy`, per-run paint
+- [x] Renderer: multi-run layout with element-level `text-anchor`
+- [ ] Per-glyph `x`/`y` lists on `<tspan>` (`text-tspan-01-b` § tspan03)
+- [ ] `xml:space="preserve"` end-to-end
 
 ```swift
 public struct SVGTextRun: Equatable, Sendable {

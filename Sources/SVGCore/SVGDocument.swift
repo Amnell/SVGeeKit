@@ -347,12 +347,61 @@ public struct SVGFont: Equatable, Sendable {
     }
 }
 
-public struct SVGText: Equatable, Sendable {
-    public var origin: CGPoint
+public struct SVGTextRun: Equatable, Sendable {
     public var string: String
     public var font: SVGFont
     public var paint: SVGPaintProperties
+    /// Inline-progression offset applied before this run (`dx` on `<tspan>`).
+    public var dx: CGFloat
+    /// Block-progression offset applied before this run (`dy` on `<tspan>`).
+    public var dy: CGFloat
+    /// When `true`, whitespace in this run is not collapsed (`xml:space="preserve"`).
+    public var preserveSpace: Bool
+
+    public init(
+        string: String = "",
+        font: SVGFont = SVGFont(),
+        paint: SVGPaintProperties = .init(),
+        dx: CGFloat = 0,
+        dy: CGFloat = 0,
+        preserveSpace: Bool = false
+    ) {
+        self.string = string
+        self.font = font
+        self.paint = paint
+        self.dx = dx
+        self.dy = dy
+        self.preserveSpace = preserveSpace
+    }
+}
+
+public struct SVGText: Equatable, Sendable {
+    public var origin: CGPoint
+    public var runs: [SVGTextRun]
+    /// Element-level font (cascade result on `<text>`); also supplies `text-anchor`.
+    public var font: SVGFont
+    /// Element-level paint on `<text>`.
+    public var paint: SVGPaintProperties
     public var transform: SVGTransform
+
+    /// Flattened character content across all runs.
+    public var string: String {
+        runs.map(\.string).joined()
+    }
+
+    public init(
+        origin: CGPoint,
+        runs: [SVGTextRun],
+        font: SVGFont = SVGFont(),
+        paint: SVGPaintProperties = .init(),
+        transform: SVGTransform = .identity
+    ) {
+        self.origin = origin
+        self.runs = runs
+        self.font = font
+        self.paint = paint
+        self.transform = transform
+    }
 
     public init(
         origin: CGPoint,
@@ -361,10 +410,12 @@ public struct SVGText: Equatable, Sendable {
         paint: SVGPaintProperties = .init(),
         transform: SVGTransform = .identity
     ) {
-        self.origin = origin
-        self.string = string
-        self.font = font
-        self.paint = paint
-        self.transform = transform
+        self.init(
+            origin: origin,
+            runs: [SVGTextRun(string: string, font: font, paint: paint)],
+            font: font,
+            paint: paint,
+            transform: transform
+        )
     }
 }

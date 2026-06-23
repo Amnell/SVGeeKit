@@ -10,21 +10,38 @@ enum SystemTextLayout {
     /// `origin.y` is the alphabetic baseline; `font.anchor` adjusts horizontal
     /// placement.
     static func glyphPath(string: String, font: SVGFont, origin: CGPoint) -> CGPath? {
+        let width = typographicWidth(string: string, font: font)
+        let shift: CGFloat = {
+            switch font.anchor {
+            case .start: return 0
+            case .middle: return -width / 2
+            case .end: return -width
+            }
+        }()
+        return glyphPathUnanchored(
+            string: string,
+            font: font,
+            origin: CGPoint(x: origin.x + shift, y: origin.y)
+        )
+    }
+
+    static func typographicWidth(string: String, font: SVGFont) -> CGFloat {
         let ctFont = SystemFontResolver.font(for: font)
         let attributed = NSAttributedString(
             string: string,
             attributes: [kCTFontAttributeName as NSAttributedString.Key: ctFont]
         )
         let line = CTLineCreateWithAttributedString(attributed)
+        return CGFloat(CTLineGetTypographicBounds(line, nil, nil, nil))
+    }
 
-        let typographicWidth = CTLineGetTypographicBounds(line, nil, nil, nil)
-        let anchoredX: CGFloat = {
-            switch font.anchor {
-            case .start: return origin.x
-            case .middle: return origin.x - CGFloat(typographicWidth) / 2
-            case .end: return origin.x - CGFloat(typographicWidth)
-            }
-        }()
+    static func glyphPathUnanchored(string: String, font: SVGFont, origin: CGPoint) -> CGPath? {
+        let ctFont = SystemFontResolver.font(for: font)
+        let attributed = NSAttributedString(
+            string: string,
+            attributes: [kCTFontAttributeName as NSAttributedString.Key: ctFont]
+        )
+        let line = CTLineCreateWithAttributedString(attributed)
 
         let result = CGMutablePath()
         let runs = CTLineGetGlyphRuns(line) as! [CTRun]
@@ -41,7 +58,7 @@ enum SystemTextLayout {
                 guard let glyphPath = CTFontCreatePathForGlyph(ctFont, glyphs[i], nil) else {
                     continue
                 }
-                let transform = CGAffineTransform(translationX: anchoredX + positions[i].x, y: origin.y)
+                let transform = CGAffineTransform(translationX: origin.x + positions[i].x, y: origin.y)
                     .scaledBy(x: 1, y: -1)
                 result.addPath(glyphPath, transform: transform)
             }

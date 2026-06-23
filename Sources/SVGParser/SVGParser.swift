@@ -113,6 +113,9 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
     /// Partially-built <text> elements. Character data is appended to the top
     /// while a text capture is active (including text inside nested <tspan>).
     private var textStack: [SVGText] = []
+    private var activeTextRun: SVGTextRun?
+    /// Font/paint stack for nested `<tspan>` inheritance.
+    private var tspanStyleStack: [(SVGFont, SVGPaintProperties)] = []
 
     /// Partial linearGradient definitions currently open. Top receives `<stop>`s.
     private var gradientStack: [PartialGradient] = []
@@ -221,10 +224,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
                 attributes: attributeDict, paint: elementPaint, font: elementFont, parser: parser
             )
         case "tspan":
-            // No standalone positioning today: tspan content is appended to the
-            // active <text> via foundCharacters. Drop the call here so the
-            // tspan's character data isn't double-counted in didEnd handling.
-            break
+            handleTspanStart(attributes: attributeDict, parser: parser)
         case "linearGradient":
             handleLinearGradientStart(attributes: attributeDict)
         case "radialGradient":
@@ -255,8 +255,8 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
     }
 
     func parser(_ parser: XMLParser, foundCharacters string: String) {
-        guard !textStack.isEmpty else { return }
-        textStack[textStack.count - 1].string.append(string)
+        guard activeTextRun != nil else { return }
+        activeTextRun?.string.append(string)
     }
 
     func parser(
@@ -276,9 +276,20 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             guard let finished = groupStack.popLast() else { return }
             appendChild(.group(finished))
         case "text":
+            flushActiveTextRun()
             guard var finished = textStack.popLast() else { return }
-            finished.string = SAXDelegate.collapseTextWhitespace(finished.string)
+            finalizeTextRuns(&finished)
+            tspanStyleStack.removeAll()
+            activeTextRun = nil
             appendChild(.text(finished))
+        case "tspan":
+            flushActiveTextRun()
+            if tspanStyleStack.count > 1 {
+                tspanStyleStack.removeLast()
+            }
+            if let (font, paint) = tspanStyleStack.last {
+                activeTextRun = SVGTextRun(string: "", font: font, paint: paint)
+            }
         case "linearGradient":
             finalizeLinearGradient()
         case "radialGradient":
@@ -465,12 +476,60 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         let y = resolveLength(attributes["y"], axis: .y)
         let text = SVGText(
             origin: CGPoint(x: x, y: y),
-            string: "",
+            runs: [],
             font: font,
             paint: paint,
             transform: transform(from: attributes, parser: parser) ?? .identity
         )
         textStack.append(text)
+        tspanStyleStack = [(font, paint)]
+        activeTextRun = SVGTextRun(string: "", font: font, paint: paint)
+    }
+
+    private func handleTspanStart(attributes: [String: String], parser: XMLParser) {
+        guard !textStack.isEmpty else { return }
+        flushActiveTextRun()
+        let (inheritedFont, inheritedPaint) = tspanStyleStack.last!
+        let runFont = mergeFont(into: inheritedFont, from: attributes)
+        let runPaint = mergePaint(into: inheritedPaint, from: attributes, parser: parser)
+        var run = SVGTextRun(string: "", font: runFont, paint: runPaint)
+        if let raw = attributes["dx"] {
+            run.dx = resolveLength(raw, axis: .length)
+        }
+        if let raw = attributes["dy"] {
+            run.dy = resolveLength(raw, axis: .length)
+        }
+        if attributes["xml:space"] == "preserve" {
+            run.preserveSpace = true
+        }
+        tspanStyleStack.append((runFont, runPaint))
+        activeTextRun = run
+    }
+
+    private func flushActiveTextRun() {
+        guard !textStack.isEmpty, let run = activeTextRun else { return }
+        let isEmpty = run.string.isEmpty
+        let hasOffset = run.dx != 0 || run.dy != 0
+        guard !isEmpty || hasOffset else { return }
+        textStack[textStack.count - 1].runs.append(run)
+        if let (font, paint) = tspanStyleStack.last {
+            activeTextRun = SVGTextRun(string: "", font: font, paint: paint)
+        }
+    }
+
+    /// Collapse inter-run whitespace for homogeneous `<text>` content; keep
+    /// structured runs when styling or positioning differs.
+    private func finalizeTextRuns(_ text: inout SVGText) {
+        guard !text.runs.isEmpty else { return }
+        let hasLayout = text.runs.contains { $0.dx != 0 || $0.dy != 0 }
+        let hasPreserve = text.runs.contains { $0.preserveSpace }
+        let uniformStyle = text.runs.allSatisfy {
+            $0.font == text.runs[0].font && $0.paint == text.runs[0].paint
+        }
+        if !hasLayout && !hasPreserve && uniformStyle {
+            let merged = SAXDelegate.collapseTextWhitespace(text.runs.map(\.string).joined())
+            text.runs = [SVGTextRun(string: merged, font: text.runs[0].font, paint: text.runs[0].paint)]
+        }
     }
 
     // MARK: - Helpers

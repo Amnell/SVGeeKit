@@ -173,6 +173,28 @@ struct SVGParserTests {
         #expect(t.string == "Hello brave world")
     }
 
+    @Test func parsesTspanWithDistinctStyleRuns() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+          <text x="0" y="20" fill="blue">You are<tspan font-weight="bold" fill="green"> not </tspan>a banana.</text>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .text(let t) = doc.root.children.first else {
+            Issue.record("expected text"); return
+        }
+        #expect(t.runs.count == 3)
+        #expect(t.runs[0].string == "You are")
+        #expect(t.runs[1].string == " not ")
+        if case .color(let c) = t.runs[1].paint.fill {
+            #expect(c.green == CGFloat(128) / 255)
+            #expect(c.blue == 0)
+        } else {
+            Issue.record("expected green tspan fill")
+        }
+        #expect(t.runs[1].font.weight == .bold)
+    }
+
     @Test func textIgnoresTitleAndDescContent() throws {
         // Ensures the text-capture machinery doesn't accidentally suck in
         // non-text content like <title>'s string.
