@@ -54,8 +54,10 @@ public struct SVGResolvedPattern: Equatable, Sendable {
     public var step: CGSize
     /// Maps pattern content coordinates into tile-local space.
     public var contentMatrix: SVGTransform
-    /// When true, children are already in user space and each tile only clips.
-    public var contentUsesUserSpace: Bool
+    /// When true, pattern children use tile-local coordinates `(0,0)…(step)`
+    /// and repeat identically in each cell (`patternContentUnits="userSpaceOnUse"`
+    /// without `viewBox`).
+    public var tileLocalContent: Bool
 
     public init(
         children: [SVGElement],
@@ -64,7 +66,7 @@ public struct SVGResolvedPattern: Equatable, Sendable {
         y: CGFloat,
         step: CGSize,
         contentMatrix: SVGTransform,
-        contentUsesUserSpace: Bool
+        tileLocalContent: Bool
     ) {
         self.children = children
         self.patternToUser = patternToUser
@@ -72,6 +74,6 @@ public struct SVGResolvedPattern: Equatable, Sendable {
         self.y = y
         self.step = step
         self.contentMatrix = contentMatrix
-        self.contentUsesUserSpace = contentUsesUserSpace
+        self.tileLocalContent = tileLocalContent
     }
 }

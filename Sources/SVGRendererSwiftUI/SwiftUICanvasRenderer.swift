@@ -227,15 +227,7 @@ public struct SwiftUICanvasRenderer {
         let step = pattern.step
         guard step.width > 0, step.height > 0 else { return }
 
-        if pattern.contentUsesUserSpace {
-            tileUserSpacePattern(
-                pattern, tileCommands: tileCommands, clipBounds: clipBounds, context: &context
-            )
-            return
-        }
-
-        context.concatenate(pattern.patternToUser.matrix)
-
+        // Tile indices are computed in pattern coordinate space.
         let inv = pattern.patternToUser.matrix.inverted()
         let localBounds = clipBounds.applying(inv)
 
@@ -244,55 +236,21 @@ public struct SwiftUICanvasRenderer {
         let startJ = Int(floor((localBounds.minY - pattern.y) / step.height)) - 1
         let endJ = Int(ceil((localBounds.maxY - pattern.y) / step.height)) + 1
 
+        let tileClip = CGRect(x: 0, y: 0, width: step.width, height: step.height)
+
         for j in startJ...endJ {
             for i in startI...endI {
                 context.drawLayer { tile in
-                    tile.concatenate(SVGTransform(CGAffineTransform(
+                    tile.concatenate(pattern.patternToUser.matrix)
+                    tile.concatenate(CGAffineTransform(
                         translationX: pattern.x + CGFloat(i) * step.width,
                         y: pattern.y + CGFloat(j) * step.height
-                    )).matrix)
-                    tile.concatenate(pattern.contentMatrix.matrix)
-                    self.execute(tileCommands, context: &tile)
-                }
-            }
-        }
-    }
-
-    /// `patternContentUnits="userSpaceOnUse"` without `viewBox`: children live in
-    /// user space; each tile only establishes a clip rect.
-    private func tileUserSpacePattern(
-        _ pattern: SVGResolvedPattern,
-        tileCommands: [SVGRenderCommand],
-        clipBounds: CGRect,
-        context: inout GraphicsContext
-    ) {
-        let step = pattern.step
-        let m = pattern.patternToUser.matrix
-        let corners = [
-            CGPoint(x: pattern.x, y: pattern.y),
-            CGPoint(x: pattern.x + step.width, y: pattern.y + step.height)
-        ].map { $0.applying(m) }
-        let tileW = abs(corners[1].x - corners[0].x)
-        let tileH = abs(corners[1].y - corners[0].y)
-        guard tileW > 0, tileH > 0 else { return }
-
-        let origin = CGPoint(x: pattern.x, y: pattern.y).applying(m)
-        let expanded = clipBounds.insetBy(dx: -tileW, dy: -tileH)
-        let startI = Int(floor((expanded.minX - origin.x) / tileW)) - 1
-        let endI = Int(ceil((expanded.maxX - origin.x) / tileW)) + 1
-        let startJ = Int(floor((expanded.minY - origin.y) / tileH)) - 1
-        let endJ = Int(ceil((expanded.maxY - origin.y) / tileH)) + 1
-
-        for j in startJ...endJ {
-            for i in startI...endI {
-                let tileRect = CGRect(
-                    x: origin.x + CGFloat(i) * tileW,
-                    y: origin.y + CGFloat(j) * tileH,
-                    width: tileW,
-                    height: tileH
-                )
-                context.drawLayer { tile in
-                    tile.clip(to: Path(tileRect))
+                    ))
+                    if pattern.tileLocalContent {
+                        tile.clip(to: Path(tileClip))
+                    } else {
+                        tile.concatenate(pattern.contentMatrix.matrix)
+                    }
                     self.execute(tileCommands, context: &tile)
                 }
             }

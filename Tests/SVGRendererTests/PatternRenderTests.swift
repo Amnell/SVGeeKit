@@ -69,6 +69,12 @@ struct PatternRenderTests {
     }
   }
 
+  @Test func w3cPattern01BMatchesReference() throws {
+    let diff = try diffAgainstW3C(testId: "pservers-pattern-01-b")
+    // Remaining delta is mostly Arial vs SVGFreeSans label text and antialiasing.
+    #expect(diff.mismatchedFraction < 0.12)
+  }
+
   @Test func w3cPattern06MatchesReference() throws {
     let diff = try diffAgainstW3C(testId: "pservers-pattern-06-f")
     // Test file includes an uncommented DRAFT watermark not in the W3C PNG.

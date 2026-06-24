@@ -582,7 +582,7 @@ public enum SVGRenderTree {
             y: pattern.y,
             step: CGSize(width: pattern.width, height: pattern.height),
             contentMatrix: SVGTransform(patternContentMatrix(pattern, referencingBBox: referencingBBox)),
-            contentUsesUserSpace: pattern.patternContentUnits == .userSpaceOnUse && pattern.viewBox == nil
+            tileLocalContent: pattern.patternContentUnits == .userSpaceOnUse && pattern.viewBox == nil
         )
     }
 
