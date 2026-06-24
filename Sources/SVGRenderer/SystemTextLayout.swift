@@ -123,7 +123,7 @@ enum SystemTextLayout {
     }
 }
 
-private func textGlyphTransform(
+func textGlyphTransform(
     at position: CGPoint,
     rotationDegrees: CGFloat,
     scaleX: CGFloat = 1,

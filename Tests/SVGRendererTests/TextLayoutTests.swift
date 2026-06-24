@@ -100,6 +100,62 @@ struct TextLayoutTests {
         #expect(abs(e.position.y - 57.075) < 0.05)
     }
 
+    @Test func textTspan02GreenLine1MatchesRedPenPositions() throws {
+        let doc = try loadTextTspan02()
+        let green = try greenText(in: doc)
+        let red = try redText(in: doc)
+
+        func line1Placements(_ text: SVGText) -> [TextLayout.CharacterPlacement] {
+            var line1 = text
+            line1.runs = Array(text.runs.prefix { $0.explicitY == nil })
+            return TextLayout.layoutCharacterPlacements(
+                text: line1,
+                fontFaces: doc.fontFaces,
+                fonts: doc.fonts
+            )
+        }
+
+        let greenP = line1Placements(green)
+        let redP = line1Placements(red)
+        #expect(greenP.count == redP.count)
+        for i in greenP.indices {
+            #expect(greenP[i].character == redP[i].character)
+            #expect(greenP[i].rotation == redP[i].rotation)
+            #expect(abs(greenP[i].position.x - redP[i].position.x) < 0.001)
+            #expect(abs(greenP[i].position.y - redP[i].position.y) < 0.001)
+        }
+    }
+
+    @Test func rotatedGlyphLocalOriginMapsToPenPosition() {
+        for degrees in [0, 5, -40, 70, 55] {
+            let pos = CGPoint(x: 100, y: 120)
+            let t = textGlyphTransform(
+                at: pos,
+                rotationDegrees: CGFloat(degrees),
+                scaleX: 1,
+                scaleY: -1
+            )
+            let mapped = CGPoint.zero.applying(t)
+            #expect(abs(mapped.x - pos.x) < 0.001)
+            #expect(abs(mapped.y - pos.y) < 0.001)
+        }
+    }
+
+    @Test func rotatedGlyphInlineAxisMatchesPenAdvance() {
+        for degrees in [5, -40, 70, 55] {
+            let radians = CGFloat(degrees) * .pi / 180
+            let t = textGlyphTransform(
+                at: .zero,
+                rotationDegrees: CGFloat(degrees),
+                scaleX: 1,
+                scaleY: -1
+            )
+            let axis = CGPoint(x: 1, y: 0).applying(t)
+            #expect(abs(axis.x - cos(radians)) < 0.001)
+            #expect(abs(axis.y - sin(radians)) < 0.001)
+        }
+    }
+
     @Test func textTspan02GreenLine1MatchesRedReferenceRotations() throws {
         let doc = try loadTextTspan02()
         let green = try greenText(in: doc)
