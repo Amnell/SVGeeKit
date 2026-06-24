@@ -93,11 +93,11 @@ struct TextLayoutTests {
 
         // Golden pen anchors on line 1 (SVGFreeSansASCII, font-size 35).
         #expect(abs(s.position.x - 233.158) < 0.05)
-        #expect(abs(s.position.y - 26.986) < 0.05)
+        #expect(abs(s.position.y - 120.0) < 0.05)
         #expect(abs(n.position.x - 256.675) < 0.05)
-        #expect(abs(n.position.y - 16.785) < 0.05)
+        #expect(abs(n.position.y - 120.0) < 0.05)
         #expect(abs(e.position.x - 296.966) < 0.05)
-        #expect(abs(e.position.y - 57.075) < 0.05)
+        #expect(abs(e.position.y - 120.0) < 0.05)
     }
 
     @Test func textTspan02GreenLine1MatchesRedPenPositions() throws {

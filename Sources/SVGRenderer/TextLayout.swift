@@ -51,7 +51,10 @@ enum TextLayout {
 
         var penX = text.origin.x
         var penY = text.origin.y
-        var activeLineY: CGFloat?
+        /// Rotated text without per-run `y` keeps the block baseline at the
+        /// root `<text>` origin until an `explicitY` tspan resets it.
+        let hasRotations = text.runs.contains { $0.rotations != nil }
+        var activeLineY: CGFloat? = hasRotations ? text.origin.y : nil
         var batches: [RunLayout] = []
 
         for (runIndex, run) in text.runs.enumerated() {

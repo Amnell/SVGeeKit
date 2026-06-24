@@ -470,9 +470,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/color-prof-01-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/color-prof-01-f\/baseline.png",
-    "detail" : "partial baseline updated (2716 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.015717592592592592,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "color",
     "testId" : "color-prof-01-f"
@@ -480,7 +479,7 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/color-prop-01-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/color-prop-01-b\/baseline.png",
-    "diffMaxChannel" : 0,
+    "diffMaxChannel" : 1,
     "mismatchedFraction" : 0,
     "status" : "passed",
     "tag" : "color",
@@ -489,7 +488,7 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/color-prop-02-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/color-prop-02-f\/baseline.png",
-    "diffMaxChannel" : 1,
+    "diffMaxChannel" : 0,
     "mismatchedFraction" : 0,
     "status" : "passed",
     "tag" : "color",
@@ -507,9 +506,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/color-prop-04-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/color-prop-04-t\/baseline.png",
-    "detail" : "partial baseline updated (2053 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.011880787037037037,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "color",
     "testId" : "color-prop-04-t"
@@ -526,9 +524,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/conform-viewers-02-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/conform-viewers-02-f\/baseline.png",
-    "detail" : "partial baseline updated (4130 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.023900462962962964,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "other",
     "testId" : "conform-viewers-02-f"
@@ -536,9 +533,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/conform-viewers-03-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/conform-viewers-03-f\/baseline.png",
-    "detail" : "partial baseline updated (4217 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.024403935185185185,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "other",
     "testId" : "conform-viewers-03-f"
@@ -759,9 +755,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-units-01-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/coords-units-01-b\/baseline.png",
-    "detail" : "partial baseline updated (12075 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.06987847222222222,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "coords",
     "testId" : "coords-units-01-b"
@@ -787,9 +782,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-viewattr-01-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/coords-viewattr-01-b\/baseline.png",
-    "detail" : "partial baseline updated (25077 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.1451215277777778,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "coords",
     "testId" : "coords-viewattr-01-b"
@@ -797,9 +791,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-viewattr-02-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/coords-viewattr-02-b\/baseline.png",
-    "detail" : "partial baseline updated (7915 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.04580439814814815,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "coords",
     "testId" : "coords-viewattr-02-b"
@@ -807,9 +800,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-viewattr-03-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/coords-viewattr-03-b\/baseline.png",
-    "detail" : "partial baseline updated (6450 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.03732638888888889,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "coords",
     "testId" : "coords-viewattr-03-b"
@@ -817,9 +809,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-viewattr-04-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/coords-viewattr-04-f\/baseline.png",
-    "detail" : "partial baseline updated (8257 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.04778356481481481,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "coords",
     "testId" : "coords-viewattr-04-f"
@@ -1193,9 +1184,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/imp-path-01-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/imp-path-01-f\/baseline.png",
-    "detail" : "partial baseline updated (2689 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.015561342592592592,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "other",
     "testId" : "imp-path-01-f"
@@ -1947,9 +1937,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/paths-data-18-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/paths-data-18-f\/baseline.png",
-    "detail" : "partial baseline updated (2139 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.012378472222222223,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "paths",
     "testId" : "paths-data-18-f"
@@ -1975,9 +1964,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/paths-dom-01-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/paths-dom-01-f\/baseline.png",
-    "detail" : "partial baseline updated (7921 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.04583912037037037,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "paths",
     "testId" : "paths-dom-01-f"
@@ -1985,9 +1973,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/paths-dom-02-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/paths-dom-02-f\/baseline.png",
-    "detail" : "partial baseline updated (2689 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.015561342592592592,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "paths",
     "testId" : "paths-dom-02-f"
@@ -2013,9 +2000,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-03-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/pservers-grad-03-b\/baseline.png",
-    "detail" : "partial baseline updated (7020 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.040625,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "pservers",
     "testId" : "pservers-grad-03-b"
@@ -2023,9 +2009,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-04-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/pservers-grad-04-b\/baseline.png",
-    "detail" : "partial baseline updated (8402 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.048622685185185185,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "pservers",
     "testId" : "pservers-grad-04-b"
@@ -2033,9 +2018,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-05-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/pservers-grad-05-b\/baseline.png",
-    "detail" : "partial baseline updated (12990 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.07517361111111111,
+    "diffMaxChannel" : 1,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "pservers",
     "testId" : "pservers-grad-05-b"
@@ -2043,9 +2027,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-06-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/pservers-grad-06-b\/baseline.png",
-    "detail" : "partial baseline updated (11281 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.06528356481481482,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "pservers",
     "testId" : "pservers-grad-06-b"
@@ -2107,9 +2090,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-13-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/pservers-grad-13-b\/baseline.png",
-    "detail" : "partial baseline updated (3774 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.021840277777777778,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "pservers",
     "testId" : "pservers-grad-13-b"
@@ -2135,9 +2117,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-16-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/pservers-grad-16-b\/baseline.png",
-    "detail" : "partial baseline updated (2124 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.012291666666666666,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "pservers",
     "testId" : "pservers-grad-16-b"
@@ -2145,9 +2126,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-17-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/pservers-grad-17-b\/baseline.png",
-    "detail" : "partial baseline updated (3738 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.021631944444444443,
+    "diffMaxChannel" : 1,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "pservers",
     "testId" : "pservers-grad-17-b"
@@ -2155,9 +2135,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-18-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/pservers-grad-18-b\/baseline.png",
-    "detail" : "partial baseline updated (2124 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.012291666666666666,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "pservers",
     "testId" : "pservers-grad-18-b"
@@ -2165,9 +2144,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-20-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/pservers-grad-20-b\/baseline.png",
-    "detail" : "partial baseline updated (3698 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.02140046296296296,
+    "diffMaxChannel" : 1,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "pservers",
     "testId" : "pservers-grad-20-b"
@@ -2175,9 +2153,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-21-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/pservers-grad-21-b\/baseline.png",
-    "detail" : "partial baseline updated (2474 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.01431712962962963,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "pservers",
     "testId" : "pservers-grad-21-b"
@@ -2185,9 +2162,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-22-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/pservers-grad-22-b\/baseline.png",
-    "detail" : "partial baseline updated (2093 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.012112268518518519,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "pservers",
     "testId" : "pservers-grad-22-b"
@@ -2195,9 +2171,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-23-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/pservers-grad-23-f\/baseline.png",
-    "detail" : "partial baseline updated (2676 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.015486111111111112,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "pservers",
     "testId" : "pservers-grad-23-f"
@@ -2205,9 +2180,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-24-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/pservers-grad-24-f\/baseline.png",
-    "detail" : "partial baseline updated (3764 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.021782407407407407,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "pservers",
     "testId" : "pservers-grad-24-f"
@@ -2224,9 +2198,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-pattern-01-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/pservers-pattern-01-b\/baseline.png",
-    "detail" : "partial baseline updated (8110 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.04693287037037037,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "pservers",
     "testId" : "pservers-pattern-01-b"
@@ -2234,9 +2207,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-pattern-02-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/pservers-pattern-02-f\/baseline.png",
-    "detail" : "partial baseline updated (2111 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.012216435185185184,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "pservers",
     "testId" : "pservers-pattern-02-f"
@@ -2244,9 +2216,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-pattern-03-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/pservers-pattern-03-f\/baseline.png",
-    "detail" : "partial baseline updated (2588 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.014976851851851852,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "pservers",
     "testId" : "pservers-pattern-03-f"
@@ -2254,9 +2225,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-pattern-04-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/pservers-pattern-04-f\/baseline.png",
-    "detail" : "partial baseline updated (2111 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.012216435185185184,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "pservers",
     "testId" : "pservers-pattern-04-f"
@@ -2264,9 +2234,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-pattern-05-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/pservers-pattern-05-f\/baseline.png",
-    "detail" : "partial baseline updated (2676 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.015486111111111112,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "pservers",
     "testId" : "pservers-pattern-05-f"
@@ -2274,9 +2243,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-pattern-06-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/pservers-pattern-06-f\/baseline.png",
-    "detail" : "partial baseline updated (2674 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.015474537037037037,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "pservers",
     "testId" : "pservers-pattern-06-f"
@@ -2284,9 +2252,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-pattern-07-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/pservers-pattern-07-f\/baseline.png",
-    "detail" : "partial baseline updated (2674 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.015474537037037037,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "pservers",
     "testId" : "pservers-pattern-07-f"
@@ -2294,9 +2261,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-pattern-08-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/pservers-pattern-08-f\/baseline.png",
-    "detail" : "partial baseline updated (2674 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.015474537037037037,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "pservers",
     "testId" : "pservers-pattern-08-f"
@@ -2304,9 +2270,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-pattern-09-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/pservers-pattern-09-f\/baseline.png",
-    "detail" : "partial baseline updated (2588 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.014976851851851852,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "pservers",
     "testId" : "pservers-pattern-09-f"
@@ -2368,9 +2333,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/render-groups-01-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/render-groups-01-b\/baseline.png",
-    "detail" : "partial baseline updated (25000 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.14467592592592593,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "render",
     "testId" : "render-groups-01-b"
@@ -2378,9 +2342,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/render-groups-03-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/render-groups-03-t\/baseline.png",
-    "detail" : "partial baseline updated (21133 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.1222974537037037,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "render",
     "testId" : "render-groups-03-t"
@@ -2433,7 +2396,7 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-circle-01-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-circle-01-t\/baseline.png",
-    "diffMaxChannel" : 1,
+    "diffMaxChannel" : 0,
     "mismatchedFraction" : 0,
     "status" : "passed",
     "tag" : "shapes",
@@ -2442,7 +2405,7 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-circle-02-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-circle-02-t\/baseline.png",
-    "diffMaxChannel" : 0,
+    "diffMaxChannel" : 1,
     "mismatchedFraction" : 0,
     "status" : "passed",
     "tag" : "shapes",
@@ -2487,9 +2450,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-grammar-01-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/shapes-grammar-01-f\/baseline.png",
-    "detail" : "partial baseline updated (2109 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.01220486111111111,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "shapes",
     "testId" : "shapes-grammar-01-f"
@@ -2497,9 +2459,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-intro-01-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/shapes-intro-01-t\/baseline.png",
-    "detail" : "partial baseline updated (3944 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.022824074074074073,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "shapes",
     "testId" : "shapes-intro-01-t"
@@ -2624,9 +2585,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-rect-02-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/shapes-rect-02-t\/baseline.png",
-    "detail" : "partial baseline updated (2124 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.012291666666666666,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "shapes",
     "testId" : "shapes-rect-02-t"
@@ -2634,9 +2594,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-rect-03-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/shapes-rect-03-t\/baseline.png",
-    "detail" : "partial baseline updated (2137 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.012366898148148148,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "shapes",
     "testId" : "shapes-rect-03-t"
@@ -2698,9 +2657,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-cond-01-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-cond-01-t\/baseline.png",
-    "detail" : "partial baseline updated (2124 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.012291666666666666,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-cond-01-t"
@@ -2708,9 +2666,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-cond-02-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-cond-02-t\/baseline.png",
-    "detail" : "partial baseline updated (24892 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.14405092592592592,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-cond-02-t"
@@ -2718,9 +2675,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-cond-03-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-cond-03-t\/baseline.png",
-    "detail" : "partial baseline updated (3794 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.021956018518518517,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-cond-03-t"
@@ -2728,9 +2684,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-cond-overview-02-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-cond-overview-02-f\/baseline.png",
-    "detail" : "partial baseline updated (1687 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.009762731481481482,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-cond-overview-02-f"
@@ -2738,9 +2693,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-cond-overview-03-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-cond-overview-03-f\/baseline.png",
-    "detail" : "partial baseline updated (1733 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.010028935185185186,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-cond-overview-03-f"
@@ -2748,9 +2702,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-cond-overview-04-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-cond-overview-04-f\/baseline.png",
-    "detail" : "partial baseline updated (2676 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.015486111111111112,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-cond-overview-04-f"
@@ -2758,9 +2711,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-cond-overview-05-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-cond-overview-05-f\/baseline.png",
-    "detail" : "partial baseline updated (1703 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.009855324074074074,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-cond-overview-05-f"
@@ -2777,9 +2729,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-01-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-dom-01-b\/baseline.png",
-    "detail" : "partial baseline updated (2147 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.012424768518518519,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-dom-01-b"
@@ -2787,9 +2738,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-02-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-dom-02-b\/baseline.png",
-    "detail" : "partial baseline updated (2137 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.012366898148148148,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-dom-02-b"
@@ -2797,9 +2747,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-03-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-dom-03-b\/baseline.png",
-    "detail" : "partial baseline updated (2147 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.012424768518518519,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-dom-03-b"
@@ -2807,9 +2756,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-04-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-dom-04-b\/baseline.png",
-    "detail" : "partial baseline updated (2147 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.012424768518518519,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-dom-04-b"
@@ -2817,9 +2765,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-05-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-dom-05-b\/baseline.png",
-    "detail" : "partial baseline updated (2053 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.011880787037037037,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-dom-05-b"
@@ -2827,9 +2774,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-06-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-dom-06-b\/baseline.png",
-    "detail" : "partial baseline updated (5835 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.03376736111111111,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-dom-06-b"
@@ -2837,9 +2783,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-07-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-dom-07-f\/baseline.png",
-    "detail" : "partial baseline updated (1844 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.010671296296296297,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-dom-07-f"
@@ -2847,9 +2792,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-08-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-dom-08-f\/baseline.png",
-    "detail" : "partial baseline updated (4398 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.025451388888888888,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-dom-08-f"
@@ -2857,9 +2801,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-11-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-dom-11-f\/baseline.png",
-    "detail" : "partial baseline updated (6089 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.03523726851851852,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-dom-11-f"
@@ -2867,9 +2810,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-12-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-dom-12-b\/baseline.png",
-    "detail" : "partial baseline updated (7262 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.042025462962962966,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-dom-12-b"
@@ -2877,9 +2819,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-13-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-dom-13-f\/baseline.png",
-    "detail" : "partial baseline updated (2658 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.015381944444444445,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-dom-13-f"
@@ -2887,9 +2828,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-14-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-dom-14-f\/baseline.png",
-    "detail" : "partial baseline updated (2093 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.012112268518518519,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-dom-14-f"
@@ -2897,9 +2837,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-15-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-dom-15-f\/baseline.png",
-    "detail" : "partial baseline updated (2111 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.012216435185185184,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-dom-15-f"
@@ -2907,9 +2846,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-16-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-dom-16-f\/baseline.png",
-    "detail" : "partial baseline updated (6080 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.03518518518518519,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-dom-16-f"
@@ -2917,9 +2855,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-17-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-dom-17-f\/baseline.png",
-    "detail" : "partial baseline updated (5386 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.03116898148148148,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-dom-17-f"
@@ -2927,9 +2864,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-18-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-dom-18-f\/baseline.png",
-    "detail" : "partial baseline updated (4081 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.023616898148148147,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-dom-18-f"
@@ -2937,9 +2873,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-19-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-dom-19-f\/baseline.png",
-    "detail" : "partial baseline updated (9233 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.053431712962962966,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-dom-19-f"
@@ -2947,9 +2882,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-dom-20-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-dom-20-f\/baseline.png",
-    "detail" : "partial baseline updated (2674 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.015474537037037037,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-dom-20-f"
@@ -2993,9 +2927,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-frag-05-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-frag-05-t\/baseline.png",
-    "detail" : "partial baseline updated (3441 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.019913194444444445,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-frag-05-t"
@@ -3003,9 +2936,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-frag-06-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-frag-06-t\/baseline.png",
-    "detail" : "partial baseline updated (9416 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.05449074074074074,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-frag-06-t"
@@ -3031,9 +2963,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-group-03-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-group-03-t\/baseline.png",
-    "detail" : "partial baseline updated (12844 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.0743287037037037,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-group-03-t"
@@ -3041,9 +2972,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-01-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-image-01-t\/baseline.png",
-    "detail" : "partial baseline updated (2053 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.011880787037037037,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-image-01-t"
@@ -3060,9 +2990,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-03-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-image-03-t\/baseline.png",
-    "detail" : "partial baseline updated (5680 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.03287037037037037,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-image-03-t"
@@ -3070,9 +2999,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-04-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-image-04-t\/baseline.png",
-    "detail" : "partial baseline updated (2053 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.011880787037037037,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-image-04-t"
@@ -3080,9 +3008,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-05-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-image-05-b\/baseline.png",
-    "detail" : "partial baseline updated (2139 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.012378472222222223,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-image-05-b"
@@ -3090,9 +3017,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-06-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-image-06-t\/baseline.png",
-    "detail" : "partial baseline updated (3667 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.021221064814814814,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-image-06-t"
@@ -3100,9 +3026,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-07-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-image-07-t\/baseline.png",
-    "detail" : "partial baseline updated (6510 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.03767361111111111,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-image-07-t"
@@ -3110,9 +3035,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-08-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-image-08-t\/baseline.png",
-    "detail" : "partial baseline updated (2124 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.012291666666666666,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-image-08-t"
@@ -3120,9 +3044,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-09-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-image-09-t\/baseline.png",
-    "detail" : "partial baseline updated (2124 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.012291666666666666,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-image-09-t"
@@ -3130,9 +3053,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-10-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-image-10-t\/baseline.png",
-    "detail" : "partial baseline updated (2124 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.012291666666666666,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-image-10-t"
@@ -3140,9 +3062,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-11-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-image-11-b\/baseline.png",
-    "detail" : "partial baseline updated (2618 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.015150462962962963,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-image-11-b"
@@ -3150,9 +3071,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-12-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-image-12-b\/baseline.png",
-    "detail" : "partial baseline updated (2288 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.01324074074074074,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-image-12-b"
@@ -3160,9 +3080,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-13-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-image-13-f\/baseline.png",
-    "detail" : "partial baseline updated (8351 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.0483275462962963,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-image-13-f"
@@ -3170,9 +3089,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-14-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-image-14-f\/baseline.png",
-    "detail" : "partial baseline updated (7982 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.04619212962962963,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-image-14-f"
@@ -3180,9 +3098,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-15-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-image-15-f\/baseline.png",
-    "detail" : "partial baseline updated (7129 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.041255787037037035,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-image-15-f"
@@ -3190,9 +3107,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-16-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-image-16-f\/baseline.png",
-    "detail" : "partial baseline updated (2111 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.012216435185185184,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-image-16-f"
@@ -3200,9 +3116,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-17-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-image-17-b\/baseline.png",
-    "detail" : "partial baseline updated (3612 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.020902777777777777,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-image-17-b"
@@ -3210,9 +3125,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-18-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-image-18-f\/baseline.png",
-    "detail" : "partial baseline updated (2674 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.015474537037037037,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-image-18-f"
@@ -3220,9 +3134,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-19-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-image-19-f\/baseline.png",
-    "detail" : "partial baseline updated (2588 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.014976851851851852,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-image-19-f"
@@ -3230,9 +3143,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-svg-01-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-svg-01-f\/baseline.png",
-    "detail" : "partial baseline updated (11843 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.06853587962962963,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-svg-01-f"
@@ -3240,9 +3152,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-svg-02-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-svg-02-f\/baseline.png",
-    "detail" : "partial baseline updated (1527 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.008836805555555556,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-svg-02-f"
@@ -3259,9 +3170,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-symbol-01-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-symbol-01-b\/baseline.png",
-    "detail" : "partial baseline updated (2053 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.011880787037037037,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-symbol-01-b"
@@ -3269,9 +3179,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-use-01-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-use-01-t\/baseline.png",
-    "detail" : "partial baseline updated (7381 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.04271412037037037,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-use-01-t"
@@ -3279,9 +3188,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-use-03-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-use-03-t\/baseline.png",
-    "detail" : "partial baseline updated (3005 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.017390046296296296,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-use-03-t"
@@ -3289,9 +3197,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-use-04-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-use-04-b\/baseline.png",
-    "detail" : "partial baseline updated (3862 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.022349537037037036,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-use-04-b"
@@ -3299,9 +3206,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-use-05-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-use-05-b\/baseline.png",
-    "detail" : "partial baseline updated (5490 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.03177083333333333,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-use-05-b"
@@ -3309,9 +3215,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-use-06-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-use-06-b\/baseline.png",
-    "detail" : "partial baseline updated (2689 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.015561342592592592,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-use-06-b"
@@ -3319,9 +3224,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-use-07-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-use-07-b\/baseline.png",
-    "detail" : "partial baseline updated (2267 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.013119212962962963,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-use-07-b"
@@ -3329,9 +3233,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-use-08-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-use-08-b\/baseline.png",
-    "detail" : "partial baseline updated (6494 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.03758101851851852,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-use-08-b"
@@ -3339,9 +3242,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-use-09-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-use-09-b\/baseline.png",
-    "detail" : "partial baseline updated (2689 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.015561342592592592,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-use-09-b"
@@ -3349,9 +3251,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-use-10-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-use-10-f\/baseline.png",
-    "detail" : "partial baseline updated (3728 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.021574074074074075,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-use-10-f"
@@ -3359,9 +3260,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-use-11-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-use-11-f\/baseline.png",
-    "detail" : "partial baseline updated (2111 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.012216435185185184,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-use-11-f"
@@ -3378,9 +3278,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-use-13-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-use-13-f\/baseline.png",
-    "detail" : "partial baseline updated (2111 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.012216435185185184,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-use-13-f"
@@ -3388,9 +3287,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-use-14-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-use-14-f\/baseline.png",
-    "detail" : "partial baseline updated (2676 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.015486111111111112,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-use-14-f"
@@ -3398,9 +3296,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-use-15-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-use-15-f\/baseline.png",
-    "detail" : "partial baseline updated (2676 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.015486111111111112,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "struct",
     "testId" : "struct-use-15-f"
@@ -3408,9 +3305,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-class-01-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/styling-class-01-f\/baseline.png",
-    "detail" : "partial baseline updated (2111 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.012216435185185184,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "styling",
     "testId" : "styling-class-01-f"
@@ -3418,9 +3314,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-css-01-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/styling-css-01-b\/baseline.png",
-    "detail" : "partial baseline updated (3168 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.018333333333333333,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "styling",
     "testId" : "styling-css-01-b"
@@ -3428,9 +3323,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-css-02-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/styling-css-02-b\/baseline.png",
-    "detail" : "partial baseline updated (3085 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.01785300925925926,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "styling",
     "testId" : "styling-css-02-b"
@@ -3438,9 +3332,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-css-03-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/styling-css-03-b\/baseline.png",
-    "detail" : "partial baseline updated (4790 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.02771990740740741,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "styling",
     "testId" : "styling-css-03-b"
@@ -3457,9 +3350,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-css-05-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/styling-css-05-b\/baseline.png",
-    "detail" : "partial baseline updated (5792 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.03351851851851852,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "styling",
     "testId" : "styling-css-05-b"
@@ -3467,9 +3359,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-css-06-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/styling-css-06-b\/baseline.png",
-    "detail" : "partial baseline updated (10843 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.0627488425925926,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "styling",
     "testId" : "styling-css-06-b"
@@ -3504,9 +3395,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-css-10-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/styling-css-10-f\/baseline.png",
-    "detail" : "partial baseline updated (2676 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.015486111111111112,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "styling",
     "testId" : "styling-css-10-f"
@@ -3514,9 +3404,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-elem-01-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/styling-elem-01-b\/baseline.png",
-    "detail" : "partial baseline updated (6207 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.03592013888888889,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "styling",
     "testId" : "styling-elem-01-b"
@@ -3524,9 +3413,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-inherit-01-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/styling-inherit-01-b\/baseline.png",
-    "detail" : "partial baseline updated (2124 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.012291666666666666,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "styling",
     "testId" : "styling-inherit-01-b"
@@ -3543,9 +3431,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-pres-02-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/styling-pres-02-f\/baseline.png",
-    "detail" : "partial baseline updated (14804 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.0856712962962963,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "styling",
     "testId" : "styling-pres-02-f"
@@ -3553,9 +3440,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-pres-03-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/styling-pres-03-f\/baseline.png",
-    "detail" : "partial baseline updated (2676 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.015486111111111112,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "styling",
     "testId" : "styling-pres-03-f"
@@ -3563,9 +3449,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-pres-04-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/styling-pres-04-f\/baseline.png",
-    "detail" : "partial baseline updated (2674 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.015474537037037037,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "styling",
     "testId" : "styling-pres-04-f"
@@ -3573,9 +3458,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-pres-05-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/styling-pres-05-f\/baseline.png",
-    "detail" : "partial baseline updated (2674 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.015474537037037037,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "styling",
     "testId" : "styling-pres-05-f"
@@ -3583,9 +3467,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/svgdom-over-01-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/svgdom-over-01-f\/baseline.png",
-    "detail" : "partial baseline updated (2725 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.015769675925925927,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "other",
     "testId" : "svgdom-over-01-f"
@@ -3965,9 +3848,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/text-tspan-02-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/text-tspan-02-b\/baseline.png",
-    "detail" : "partial baseline updated (13861 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.08021412037037037,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "text",
     "testId" : "text-tspan-02-b"
@@ -4002,9 +3884,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/types-basic-02-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/types-basic-02-f\/baseline.png",
-    "detail" : "partial baseline updated (2588 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.014976851851851852,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "other",
     "testId" : "types-basic-02-f"
@@ -4012,9 +3893,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/types-dom-01-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/types-dom-01-b\/baseline.png",
-    "detail" : "partial baseline updated (9176 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.05310185185185185,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "other",
     "testId" : "types-dom-01-b"
@@ -4031,9 +3911,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/types-dom-03-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/types-dom-03-b\/baseline.png",
-    "detail" : "partial baseline updated (4398 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.025451388888888888,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "other",
     "testId" : "types-dom-03-b"
@@ -4050,9 +3929,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/types-dom-05-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/types-dom-05-b\/baseline.png",
-    "detail" : "partial baseline updated (8658 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.050104166666666665,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "other",
     "testId" : "types-dom-05-b"
@@ -4060,9 +3938,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/types-dom-06-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/types-dom-06-f\/baseline.png",
-    "detail" : "partial baseline updated (3282 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.018993055555555555,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "other",
     "testId" : "types-dom-06-f"
@@ -4079,9 +3956,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/types-dom-08-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/types-dom-08-f\/baseline.png",
-    "detail" : "partial baseline updated (5695 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.032957175925925924,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "other",
     "testId" : "types-dom-08-f"
@@ -4089,9 +3965,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/types-dom-svgfittoviewbox-01-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/types-dom-svgfittoviewbox-01-f\/baseline.png",
-    "detail" : "partial baseline updated (10737 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.062135416666666665,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "other",
     "testId" : "types-dom-svgfittoviewbox-01-f"
@@ -4099,9 +3974,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/types-dom-svglengthlist-01-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/types-dom-svglengthlist-01-f\/baseline.png",
-    "detail" : "partial baseline updated (12606 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.07295138888888889,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "other",
     "testId" : "types-dom-svglengthlist-01-f"
@@ -4109,9 +3983,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/types-dom-svgnumberlist-01-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/types-dom-svgnumberlist-01-f\/baseline.png",
-    "detail" : "partial baseline updated (12637 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.07313078703703704,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "other",
     "testId" : "types-dom-svgnumberlist-01-f"
@@ -4119,9 +3992,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/types-dom-svgstringlist-01-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/types-dom-svgstringlist-01-f\/baseline.png",
-    "detail" : "partial baseline updated (12606 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.07295138888888889,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "other",
     "testId" : "types-dom-svgstringlist-01-f"
@@ -4129,9 +4001,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/types-dom-svgtransformable-01-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/types-dom-svgtransformable-01-f\/baseline.png",
-    "detail" : "partial baseline updated (9246 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.05350694444444445,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "other",
     "testId" : "types-dom-svgtransformable-01-f"
