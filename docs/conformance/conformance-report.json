@@ -470,7 +470,7 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/color-prof-01-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/color-prof-01-f\/baseline.png",
-    "diffMaxChannel" : 1,
+    "diffMaxChannel" : 0,
     "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "color",
@@ -488,7 +488,7 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/color-prop-02-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/color-prop-02-f\/baseline.png",
-    "diffMaxChannel" : 1,
+    "diffMaxChannel" : 0,
     "mismatchedFraction" : 0,
     "status" : "passed",
     "tag" : "color",
@@ -3848,9 +3848,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/text-tspan-02-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/text-tspan-02-b\/baseline.png",
-    "detail" : "partial baseline updated (9202 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.053252314814814815,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "text",
     "testId" : "text-tspan-02-b"
