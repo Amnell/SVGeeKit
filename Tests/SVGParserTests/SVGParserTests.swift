@@ -280,6 +280,36 @@ struct SVGParserTests {
         #expect(green.runs.last?.rotations?.allSatisfy { $0 == 55 } == true)
     }
 
+    @Test func parsesRotationValuesAnnotationText() throws {
+        let repoRoot = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+        let svgURL = repoRoot
+            .appendingPathComponent("Tests/SVGConformanceTests/Resources/W3C-SVG-1.1/svg/text-tspan-02-b.svg")
+        let doc = try SVGParser().parse(url: svgURL)
+
+        guard case .group(let body) = doc.root.children.first(where: {
+            if case .group = $0 { return true }
+            return false
+        }) else {
+            Issue.record("expected body group"); return
+        }
+
+        let annotations = body.children.compactMap { el -> SVGText? in
+            guard case .text(let t) = el else { return nil }
+            return t.font.size == 8 ? t : nil
+        }
+        #expect(annotations.count == 1)
+        let text = annotations[0]
+        #expect(text.runs.allSatisfy { $0.preserveSpace })
+        #expect(text.runs[0].explicitX == [30])
+        #expect(text.runs[0].explicitY == 135)
+        #expect(text.runs[0].string.contains("5"))
+        #expect(text.runs[3].explicitX == [295])
+        #expect(text.runs[4].explicitX == [340])
+    }
+
     @Test func preservesXmlSpaceOnTextRun() throws {
         let svg = """
         <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">

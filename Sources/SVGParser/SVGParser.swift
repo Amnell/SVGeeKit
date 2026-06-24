@@ -127,6 +127,8 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
     private var pendingRotateFrame: [CGFloat]?
     /// Inherited baseline `y` stack for nested `<tspan>` elements.
     private var tspanBaselineYStack: [CGFloat] = []
+    /// `xml:space="preserve"` on the current `<text>` element.
+    private var textPreserveSpaceStack: [Bool] = []
 
     /// Partial linearGradient definitions currently open. Top receives `<stop>`s.
     private var gradientStack: [PartialGradient] = []
@@ -301,6 +303,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             textSegmentMeta = []
             pendingRotateFrame = nil
             tspanBaselineYStack = []
+            textPreserveSpaceStack.removeLast()
             activeTextRun = nil
             appendChild(.text(finished))
         case "tspan":
@@ -320,6 +323,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             if let (font, paint) = tspanStyleStack.last {
                 var next = SVGTextRun(string: "", font: font, paint: paint)
                 next.baselineY = tspanBaselineYStack.last
+                next.preserveSpace = textPreserveSpaceStack.last ?? false
                 activeTextRun = next
             }
         case "linearGradient":
@@ -522,7 +526,9 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         tspanBaselineYStack = [y]
         rotateStack = [RotateCursor(values: textRootRotate)]
         rotatePushStack = []
-        if attributes["xml:space"] == "preserve" {
+        let preserve = attributes["xml:space"] == "preserve"
+        textPreserveSpaceStack.append(preserve)
+        if preserve {
             activeTextRun?.preserveSpace = true
         }
     }
@@ -563,12 +569,23 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
 
     private func handleTspanStart(attributes: [String: String], parser: XMLParser) {
         guard !textStack.isEmpty else { return }
+        // Inter-`<tspan>` formatting whitespace is not painted when the next
+        // tspan supplies an explicit anchor.
+        if let run = activeTextRun,
+           run.string.allSatisfy(\.isWhitespace),
+           run.explicitX == nil, run.explicitY == nil,
+           attributes["x"] != nil || attributes["y"] != nil {
+            activeTextRun?.string = ""
+        }
         flushActiveTextRun()
         let (inheritedFont, inheritedPaint) = tspanStyleStack.last!
         let runFont = mergeFont(into: inheritedFont, from: attributes)
         let runPaint = mergePaint(into: inheritedPaint, from: attributes, parser: parser)
         var run = SVGTextRun(string: "", font: runFont, paint: runPaint)
         applyTspanPositionAttributes(attributes, to: &run)
+        if run.preserveSpace == false {
+            run.preserveSpace = textPreserveSpaceStack.last ?? false
+        }
         if let raw = attributes["y"] {
             let resolved = resolveLength(raw, axis: .y)
             tspanBaselineYStack.append(resolved)
@@ -611,6 +628,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         if let (font, paint) = tspanStyleStack.last {
             var next = SVGTextRun(string: "", font: font, paint: paint)
             next.baselineY = tspanBaselineYStack.last
+            next.preserveSpace = textPreserveSpaceStack.last ?? false
             activeTextRun = next
         }
     }

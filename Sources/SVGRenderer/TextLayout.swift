@@ -225,8 +225,11 @@ enum TextLayout {
                 fonts: fonts
             )
             if fixedY != nil {
+                // Block baseline: glyphs rotate at the anchor but inline
+                // progression stays horizontal (matches W3C text-tspan-02-b).
+                let xAdvance = rotations != nil ? advance : advance * cos(radians)
                 pen = CGPoint(
-                    x: pos.x + advance * cos(radians),
+                    x: pos.x + xAdvance,
                     y: fixedY!
                 )
             } else {

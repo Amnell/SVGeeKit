@@ -50,13 +50,31 @@ enum TextCharacterStream {
             }
 
             if run.preserveSpace {
-                if pendingSpace, !segment.raw.hasPrefix(" ") {
+                var content = segment.raw
+                if run.explicitX != nil || run.explicitY != nil {
+                    content = String(content.drop(while: \.isWhitespace))
+                    let nextHasExplicit = index + 1 < segments.count
+                        && (segments[index + 1].run.explicitX != nil
+                            || segments[index + 1].run.explicitY != nil)
+                    if nextHasExplicit || index == segments.count - 1 {
+                        while let last = content.last, last.isWhitespace {
+                            content.removeLast()
+                        }
+                    }
+                }
+                guard !content.isEmpty else {
+                    if segment.meta.closesRotate, let last = output.indices.last {
+                        outputMeta[last].closesRotate = true
+                    }
+                    continue
+                }
+                if pendingSpace, !content.hasPrefix(" ") {
                     ensureSegmentRun()
                     output[segmentRunIndex!].string.append(" ")
                     pendingSpace = false
                 }
                 ensureSegmentRun()
-                output[segmentRunIndex!].string.append(segment.raw)
+                output[segmentRunIndex!].string.append(content)
                 if segment.meta.closesRotate, let idx = segmentRunIndex {
                     outputMeta[idx].closesRotate = true
                 }
