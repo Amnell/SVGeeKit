@@ -617,6 +617,65 @@ struct SVGParserTests {
         #expect(r2.paint.fill == .paintServer(id: "B"))
     }
 
+    @Test func parsesPatternWithChildrenAndHrefMerge() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100">
+          <pattern id="p1" patternUnits="userSpaceOnUse" width="100" height="100" viewBox="0 0 10 10">
+            <circle cx="5" cy="5" r="1" fill="red"/>
+          </pattern>
+          <pattern id="p2" xlink:href="#p1" y="30">
+            <circle cx="5" cy="2" r="2" fill="lime"/>
+          </pattern>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+
+        guard case .pattern(let p1) = doc.paintServers["p1"] else {
+            Issue.record("expected pattern p1"); return
+        }
+        guard case .pattern(let p2) = doc.paintServers["p2"] else {
+            Issue.record("expected pattern p2"); return
+        }
+        #expect(p1.children.count == 1)
+        #expect(p2.children.count == 1)
+        #expect(p2.y == 30)
+        #expect(p2.width == 100)
+        #expect(p2.viewBox == CGRect(x: 0, y: 0, width: 10, height: 10))
+    }
+
+    @Test func parsesPaintServerFallbackColor() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50">
+          <rect width="50" height="50" fill="url(#missing) lime"/>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .rect(let r) = doc.root.children.first else {
+            Issue.record("expected rect"); return
+        }
+        guard case .paintServer(let id, let fallback) = r.paint.fill else {
+            Issue.record("expected paintServer"); return
+        }
+        #expect(id == "missing")
+        #expect(fallback?.green == 1)
+    }
+
+    @Test func patternChildrenDoNotLeakToSceneGraph() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+          <pattern id="p" width="20" height="20">
+            <rect width="10" height="10" fill="red"/>
+          </pattern>
+          <pattern width="20" height="20">
+            <rect width="10" height="10" fill="red"/>
+          </pattern>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        #expect(doc.root.children.isEmpty)
+        #expect(doc.paintServers["p"] != nil)
+    }
+
     @Test func parsesClipPathAndAppliesRef() throws {
         let svg = """
         <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200">

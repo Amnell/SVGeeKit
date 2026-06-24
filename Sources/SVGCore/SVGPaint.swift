@@ -24,9 +24,10 @@ public struct SVGColor: Equatable, Sendable {
 public enum SVGPaint: Equatable, Sendable {
     case none
     case color(SVGColor)
-    case paintServer(id: String)
+    case paintServer(id: String, fallback: SVGColor? = nil)
     case linearGradient(SVGLinearGradient)
     case radialGradient(SVGRadialGradient)
+    case pattern(SVGResolvedPattern)
 }
 
 public enum SVGLineCap: String, Sendable, Equatable {
