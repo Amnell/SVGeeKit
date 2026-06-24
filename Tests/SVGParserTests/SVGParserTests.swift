@@ -173,6 +173,213 @@ struct SVGParserTests {
         #expect(t.string == "Hello brave world")
     }
 
+    @Test func parsesTspanWithDistinctStyleRuns() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+          <text x="0" y="20" fill="blue">You are<tspan font-weight="bold" fill="green"> not </tspan>a banana.</text>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .text(let t) = doc.root.children.first else {
+            Issue.record("expected text"); return
+        }
+        #expect(t.runs.count == 3)
+        #expect(t.runs[0].string == "You are")
+        #expect(t.runs[1].string == " not ")
+        if case .color(let c) = t.runs[1].paint.fill {
+            #expect(c.green == CGFloat(128) / 255)
+            #expect(c.blue == 0)
+        } else {
+            Issue.record("expected green tspan fill")
+        }
+        #expect(t.runs[1].font.weight == .bold)
+    }
+
+    @Test func stripsIgnorableWhitespaceFromIndentedTextRuns() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+          <text x="0" y="20" fill="blue">
+            You are<tspan font-weight="bold" fill="green"> not </tspan>a banana.
+          </text>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .text(let t) = doc.root.children.first else {
+            Issue.record("expected text"); return
+        }
+        #expect(t.runs.count == 3)
+        #expect(t.runs[0].string == "You are")
+        #expect(t.runs[1].string == " not ")
+        #expect(t.runs[2].string == "a banana.")
+        #expect(!t.runs[0].string.contains("\n"))
+    }
+
+    @Test func parsesTspanExplicitXYWithoutLeadingWhitespaceRun() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="480" height="360">
+          <text fill="orange">
+            <tspan x="35 53.75 72.5" y="200">Cute</tspan>
+            <tspan x="63.13 81.88" y="230.5">fu</tspan>
+          </text>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .text(let t) = doc.root.children.first else {
+            Issue.record("expected text"); return
+        }
+        #expect(t.runs.count == 2)
+        #expect(t.runs[0].string == "Cute")
+        #expect(t.runs[0].explicitX == [35, 53.75, 72.5])
+        #expect(t.runs[1].string == "fu")
+        #expect(t.runs[1].explicitX == [63.13, 81.88])
+    }
+
+    @Test func normalizesTextCharacterStreamForTspan02GreenText() throws {
+        let repoRoot = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+        let svgURL = repoRoot
+            .appendingPathComponent("Tests/SVGConformanceTests/Resources/W3C-SVG-1.1/svg/text-tspan-02-b.svg")
+        let doc = try SVGParser().parse(url: svgURL)
+
+        guard case .group(let body) = doc.root.children.first(where: {
+            if case .group = $0 { return true }
+            return false
+        }) else {
+            Issue.record("expected body group"); return
+        }
+
+        let green = body.children.compactMap { el -> SVGText? in
+            guard case .text(let t) = el else { return nil }
+            guard t.font.size == 35, t.origin.x == 20, t.origin.y == 120 else { return nil }
+            if case .color(let c) = t.paint.fill, c.green > 0.4, c.red < 0.1 { return t }
+            return nil
+        }.first
+        guard let green else {
+            Issue.record("expected green text"); return
+        }
+
+        #expect(green.string == "Not all characters in the text have a specified rotation")
+        #expect(green.runs.first?.string == "Not")
+        #expect(green.runs.first?.rotations == [5, 15, 25])
+
+        let child4 = green.runs.first { $0.explicitX == [20] && $0.explicitY == 180 }
+        #expect(child4?.string == "text")
+
+        let inRun = green.runs.first { $0.string == "in" }
+        #expect(inRun?.rotations == [70, 60])
+
+        let theRun = green.runs.first { $0.string == " the" }
+        #expect(theRun?.rotations == [50, 40, 30, 20])
+
+        let spaceBeforeIn = green.runs.first { $0.string == " " && $0.rotations == [-40] }
+        #expect(spaceBeforeIn != nil)
+
+        #expect(green.runs.last?.string == "rotation")
+        #expect(green.runs.last?.rotations?.allSatisfy { $0 == 55 } == true)
+
+        let specified = green.runs.first { $0.string.contains("specified") }
+        guard let specified else {
+            Issue.record("missing specified run"); return
+        }
+        #expect(specified.rotations?.allSatisfy { $0 == -10 } == true)
+        #expect(specified.rotations?.count == (specified.string == "specified" ? 9 : 10))
+    }
+
+    @Test func parsesRotationValuesAnnotationText() throws {
+        let repoRoot = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+        let svgURL = repoRoot
+            .appendingPathComponent("Tests/SVGConformanceTests/Resources/W3C-SVG-1.1/svg/text-tspan-02-b.svg")
+        let doc = try SVGParser().parse(url: svgURL)
+
+        guard case .group(let body) = doc.root.children.first(where: {
+            if case .group = $0 { return true }
+            return false
+        }) else {
+            Issue.record("expected body group"); return
+        }
+
+        let annotations = body.children.compactMap { el -> SVGText? in
+            guard case .text(let t) = el else { return nil }
+            return t.font.size == 8 ? t : nil
+        }
+        #expect(annotations.count == 1)
+        let text = annotations[0]
+        #expect(text.runs.allSatisfy { $0.preserveSpace })
+        #expect(text.runs[0].explicitX == [30])
+        #expect(text.runs[0].explicitY == 135)
+        #expect(text.runs[0].string.contains("5"))
+        #expect(text.runs[3].explicitX == [295])
+        #expect(text.runs[4].explicitX == [340])
+    }
+
+    @Test func preservesSpaceBeforeExplicitPositionedTspan() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="480" height="360">
+          <text x="20" y="120" rotate="5,15,25,35,45">Not all characters in the
+          <tspan x="20" y="180">text</tspan></text>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .text(let t) = doc.root.children.first else {
+            Issue.record("expected text"); return
+        }
+        #expect(t.string == "Not all characters in the text")
+        #expect(t.runs.count == 2)
+        #expect(t.runs[0].string == "Not all characters in the ")
+        #expect(t.runs[1].string == "text")
+    }
+
+    @Test func preservesXmlSpaceOnTextRun() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+          <text x="0" y="20" xml:space="preserve">  spaced  </text>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .text(let t) = doc.root.children.first else {
+            Issue.record("expected text"); return
+        }
+        #expect(t.runs.count == 1)
+        #expect(t.runs[0].preserveSpace)
+        #expect(t.runs[0].string == "  spaced  ")
+    }
+
+    @Test func parsesTspanRotatePropagation() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="480" height="360"><text x="20" y="120" rotate="5,15,25">No<tspan rotate="-10,-20">te</tspan></text></svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .text(let t) = doc.root.children.first else {
+            Issue.record("expected text"); return
+        }
+        #expect(t.runs.count == 2)
+        #expect(t.runs[0].string == "No")
+        #expect(t.runs[0].rotations == [5, 15])
+        #expect(t.runs[1].string == "te")
+        #expect(t.runs[1].rotations == [-10, -20])
+    }
+
+    @Test func parsesTspanExplicitXYLists() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200">
+          <text fill="orange"><tspan x="10 30 50" y="40">ABC</tspan></text>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .text(let t) = doc.root.children.first else {
+            Issue.record("expected text"); return
+        }
+        #expect(t.runs.count == 1)
+        #expect(t.runs[0].string == "ABC")
+        #expect(t.runs[0].explicitX == [10, 30, 50])
+        #expect(t.runs[0].explicitY == 40)
+    }
+
     @Test func textIgnoresTitleAndDescContent() throws {
         // Ensures the text-capture machinery doesn't accidentally suck in
         // non-text content like <title>'s string.
@@ -545,5 +752,164 @@ struct SVGParserTests {
         #expect(b.r == 40)
         // Stops inherited from Grad2a via xlink:href
         #expect(b.stops.count == 2)
+    }
+
+    @Test func parseStoresBaseURL() throws {
+        let base = URL(fileURLWithPath: "/tmp/svgeekit/tests/svg", isDirectory: true)
+        let doc = try SVGParser().parse(
+            string: "<svg xmlns=\"http://www.w3.org/2000/svg\"/>",
+            baseURL: base
+        )
+        #expect(doc.baseURL == base)
+    }
+
+    @Test func resolveURLHandlesRelativeHrefs() throws {
+        let base = URL(fileURLWithPath: "/tmp/svgeekit/tests/svg", isDirectory: true)
+        let doc = try SVGParser().parse(
+            string: "<svg xmlns=\"http://www.w3.org/2000/svg\"/>",
+            baseURL: base
+        )
+        let resolved = doc.resolveURL("../resources/SVGFreeSans.svg#ascii")
+        #expect(resolved?.lastPathComponent == "SVGFreeSans.svg")
+        #expect(resolved?.fragment == "ascii")
+        #expect(resolved?.path.contains("resources") == true)
+    }
+
+    @Test func parseURLSetsBaseURLToParentDirectory() throws {
+        let directory = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString, isDirectory: true)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+
+        let file = directory.appendingPathComponent("sample.svg")
+        let svg = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"10\" height=\"10\"/>"
+        try svg.write(to: file, atomically: true, encoding: .utf8)
+
+        let doc = try SVGParser().parse(url: file)
+        #expect(doc.baseURL == directory)
+    }
+
+    @Test func parsesTextClipPathAttribute() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+          <defs>
+            <clipPath id="c"><rect width="50" height="50"/></clipPath>
+          </defs>
+          <text x="0" y="20" clip-path="url(#c)">Hi</text>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .text(let t) = doc.root.children.first else {
+            Issue.record("expected text"); return
+        }
+        #expect(t.paint.clipPathRef == "c")
+    }
+
+    @Test func parsesInlineSVGFontGlyphs() throws {
+        let repoRoot = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+        let fontURL = repoRoot
+            .appendingPathComponent("Tests/SVGConformanceTests/Resources/W3C-SVG-1.1/resources/SVGFreeSans.svg")
+
+        let doc = try SVGParser().parse(url: fontURL)
+        guard let ascii = doc.fonts["ascii"] else {
+            Issue.record("expected font id ascii"); return
+        }
+        #expect(ascii.unitsPerEm == 1000)
+        #expect(ascii.defaultAdvance == 481)
+        #expect(ascii.glyphs.count > 90)
+        let a = Unicode.Scalar("A")
+        #expect(ascii.glyphs[a]?.advance == 667)
+        #expect(ascii.glyphs[a]?.commands != nil)
+        let space = Unicode.Scalar(" ")
+        #expect(ascii.glyphs[space]?.advance == 278)
+        #expect(ascii.glyphs[space]?.commands == nil)
+    }
+
+    @Test func loadsFreeSerifFontsForTspanConformance() throws {
+        let repoRoot = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+        let svgURL = repoRoot
+            .appendingPathComponent("Tests/SVGConformanceTests/Resources/W3C-SVG-1.1/svg/text-tspan-01-b.svg")
+
+        let doc = try SVGParser().parse(url: svgURL)
+        guard let regular = doc.fonts["FreeSerif"] else {
+            Issue.record("expected FreeSerif font table"); return
+        }
+        guard let bold = doc.fonts["FreeSerifBold"] else {
+            Issue.record("expected FreeSerifBold font table"); return
+        }
+        #expect(regular.unitsPerEm == 1000)
+        #expect(regular.glyphs.count > 100)
+        #expect(bold.glyphs.count > 100)
+        let space = Unicode.Scalar(" ")
+        let apostrophe = Unicode.Scalar("'")
+        #expect(regular.glyphs[space]?.advance == 250)
+        #expect(bold.glyphs[space]?.advance == 250)
+        #expect(regular.glyphs[apostrophe]?.commands != nil)
+        #expect(bold.glyphs[apostrophe]?.commands != nil)
+
+        let boldFaces = doc.fontFaces.filter { $0.family == "FreeSerif" && $0.weight == .bold }
+        #expect(boldFaces.count == 2) // bold + bold-italic faces
+        #expect(doc.fonts[boldFaces[0].fontID] != nil)
+
+        let quote = Unicode.Scalar("\"")
+        #expect(regular.glyphs[quote]?.commands != nil)
+    }
+
+    @Test func registersFontFaceAndLoadsReferencedFont() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+          <defs>
+            <font id="ascii" horiz-adv-x="100">
+              <font-face units-per-em="100" ascent="80" descent="-20"/>
+              <glyph unicode="!" d="M10 0V50H30V0H10Z" horiz-adv-x="40"/>
+            </font>
+            <font-face font-family="MiniASCII">
+              <font-face-src>
+                <font-face-uri xlink:href="#ascii"/>
+              </font-face-src>
+            </font-face>
+          </defs>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        #expect(doc.fontFaces.count == 1)
+        #expect(doc.fontFaces[0].family == "MiniASCII")
+        #expect(doc.fonts["ascii"]?.glyphs[Unicode.Scalar("!")] != nil)
+    }
+
+    @Test func loadsExternalFontViaFontFaceURI() throws {
+        let repoRoot = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+        let svgDir = repoRoot
+            .appendingPathComponent("Tests/SVGConformanceTests/Resources/W3C-SVG-1.1/svg")
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+          <defs>
+            <font-face font-family="SVGFreeSansASCII">
+              <font-face-src>
+                <font-face-uri xlink:href="../resources/SVGFreeSans.svg#ascii"/>
+              </font-face-src>
+            </font-face>
+          </defs>
+        </svg>
+        """
+        let doc = try SVGParser().parse(
+            data: Data(svg.utf8),
+            baseURL: svgDir
+        )
+        #expect(doc.fontFaces.count == 1)
+        #expect(doc.fontFaces[0].family == "SVGFreeSansASCII")
+        guard let ascii = doc.fonts["ascii"] else {
+            Issue.record("expected external font id ascii"); return
+        }
+        #expect(ascii.glyphs[Unicode.Scalar("A")]?.commands != nil)
     }
 }

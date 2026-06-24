@@ -5,25 +5,66 @@ import Foundation
 public struct SVGDocument: Equatable, Sendable {
     public var viewBox: CGRect?
     public var intrinsicSize: CGSize?
+    /// Directory containing the parsed SVG file, used to resolve relative
+    /// `xlink:href` / `href` values (e.g. external SVG fonts in Phase 2).
+    public var baseURL: URL?
     public var root: SVGGroup
     public var paintServers: [String: SVGPaintServer]
     public var clipPaths: [String: SVGClipPath]
     public var masks: [String: SVGMask]
+    /// CSS `<font-face>` family → font id bindings.
+    public var fontFaces: [SVGFontFace]
+    /// SVG `<font id="…">` tables keyed by id.
+    public var fonts: [String: SVGFontDefinition]
 
     public init(
         viewBox: CGRect? = nil,
         intrinsicSize: CGSize? = nil,
+        baseURL: URL? = nil,
         root: SVGGroup = SVGGroup(),
         paintServers: [String: SVGPaintServer] = [:],
         clipPaths: [String: SVGClipPath] = [:],
-        masks: [String: SVGMask] = [:]
+        masks: [String: SVGMask] = [:],
+        fontFaces: [SVGFontFace] = [],
+        fonts: [String: SVGFontDefinition] = [:]
     ) {
         self.viewBox = viewBox
         self.intrinsicSize = intrinsicSize
+        self.baseURL = baseURL
         self.root = root
         self.paintServers = paintServers
         self.clipPaths = clipPaths
         self.masks = masks
+        self.fontFaces = fontFaces
+        self.fonts = fonts
+    }
+
+    /// Resolve `href` against `baseURL`. Absolute URLs are returned unchanged;
+    /// fragment identifiers are preserved.
+    public func resolveURL(_ href: String) -> URL? {
+        let trimmed = href.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
+        if let absolute = URL(string: trimmed), absolute.scheme != nil {
+            return absolute
+        }
+        guard let baseURL else { return URL(string: trimmed) }
+        let (pathPart, fragment) = Self.splitHrefFragment(trimmed)
+        guard var resolved = URL(string: pathPart, relativeTo: baseURL)?.standardizedFileURL else {
+            return nil
+        }
+        if let fragment {
+            var components = URLComponents(url: resolved, resolvingAgainstBaseURL: false)
+            components?.fragment = fragment
+            resolved = components?.url ?? resolved
+        }
+        return resolved
+    }
+
+    private static func splitHrefFragment(_ href: String) -> (String, String?) {
+        guard let hash = href.firstIndex(of: "#") else { return (href, nil) }
+        let pathPart = String(href[..<hash])
+        let fragment = String(href[href.index(after: hash)...])
+        return (pathPart, fragment.isEmpty ? nil : fragment)
     }
 }
 
@@ -276,12 +317,28 @@ public enum SVGFontWeight: Sendable, Equatable, Hashable {
 
     public static func parse(_ raw: String) -> SVGFontWeight? {
         switch raw.lowercased() {
-        case "normal": return .normal
-        case "bold": return .bold
+        case "normal", "400": return .normal
+        case "bold", "700": return .bold
         default:
             if let n = Int(raw) { return .numeric(n) }
             return nil
         }
+    }
+
+    public var normalizedValue: Int {
+        switch self {
+        case .normal: return 400
+        case .bold: return 700
+        case .numeric(let n): return n
+        }
+    }
+}
+
+public enum SVGFontStyle: String, Sendable, Equatable {
+    case normal, italic, oblique
+
+    public static func parse(_ raw: String) -> SVGFontStyle? {
+        SVGFontStyle(rawValue: raw.trimmingCharacters(in: .whitespaces).lowercased())
     }
 }
 
@@ -291,27 +348,95 @@ public struct SVGFont: Equatable, Sendable {
     public var family: String?
     public var size: CGFloat
     public var weight: SVGFontWeight
+    public var style: SVGFontStyle
     public var anchor: SVGTextAnchor
 
     public init(
         family: String? = nil,
         size: CGFloat = 16,
         weight: SVGFontWeight = .normal,
+        style: SVGFontStyle = .normal,
         anchor: SVGTextAnchor = .start
     ) {
         self.family = family
         self.size = size
         self.weight = weight
+        self.style = style
         self.anchor = anchor
+    }
+}
+
+public struct SVGTextRun: Equatable, Sendable {
+    public var string: String
+    public var font: SVGFont
+    public var paint: SVGPaintProperties
+    /// Inline-progression offset applied before this run (`dx` on `<tspan>`).
+    public var dx: CGFloat
+    /// Block-progression offset applied before this run (`dy` on `<tspan>`).
+    public var dy: CGFloat
+    /// When `true`, whitespace in this run is not collapsed (`xml:space="preserve"`).
+    public var preserveSpace: Bool
+    /// Per-glyph absolute x coordinates (`x` list on `<tspan>`).
+    public var explicitX: [CGFloat]?
+    /// Absolute y for glyphs in this run when `y` is set on `<tspan>`.
+    public var explicitY: CGFloat?
+    /// Inherited baseline y when `explicitY` is nil (from ancestor `<text>` / `<tspan>`).
+    public var baselineY: CGFloat?
+    /// Per-character rotation in degrees (`rotate` list); same length as `string`.
+    public var rotations: [CGFloat]?
+
+    public init(
+        string: String = "",
+        font: SVGFont = SVGFont(),
+        paint: SVGPaintProperties = .init(),
+        dx: CGFloat = 0,
+        dy: CGFloat = 0,
+        preserveSpace: Bool = false,
+        explicitX: [CGFloat]? = nil,
+        explicitY: CGFloat? = nil,
+        baselineY: CGFloat? = nil,
+        rotations: [CGFloat]? = nil
+    ) {
+        self.string = string
+        self.font = font
+        self.paint = paint
+        self.dx = dx
+        self.dy = dy
+        self.preserveSpace = preserveSpace
+        self.explicitX = explicitX
+        self.explicitY = explicitY
+        self.baselineY = baselineY
+        self.rotations = rotations
     }
 }
 
 public struct SVGText: Equatable, Sendable {
     public var origin: CGPoint
-    public var string: String
+    public var runs: [SVGTextRun]
+    /// Element-level font (cascade result on `<text>`); also supplies `text-anchor`.
     public var font: SVGFont
+    /// Element-level paint on `<text>`.
     public var paint: SVGPaintProperties
     public var transform: SVGTransform
+
+    /// Flattened character content across all runs.
+    public var string: String {
+        runs.map(\.string).joined()
+    }
+
+    public init(
+        origin: CGPoint,
+        runs: [SVGTextRun],
+        font: SVGFont = SVGFont(),
+        paint: SVGPaintProperties = .init(),
+        transform: SVGTransform = .identity
+    ) {
+        self.origin = origin
+        self.runs = runs
+        self.font = font
+        self.paint = paint
+        self.transform = transform
+    }
 
     public init(
         origin: CGPoint,
@@ -320,10 +445,12 @@ public struct SVGText: Equatable, Sendable {
         paint: SVGPaintProperties = .init(),
         transform: SVGTransform = .identity
     ) {
-        self.origin = origin
-        self.string = string
-        self.font = font
-        self.paint = paint
-        self.transform = transform
+        self.init(
+            origin: origin,
+            runs: [SVGTextRun(string: string, font: font, paint: paint)],
+            font: font,
+            paint: paint,
+            transform: transform
+        )
     }
 }

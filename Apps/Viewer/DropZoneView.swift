@@ -108,7 +108,10 @@ struct DropZoneView: View {
             let result: Result<(SVGDocument, String), Error> = await Task.detached(priority: .userInitiated) {
                 do {
                     let data = try Data(contentsOf: url)
-                    let document = try SVGParser().parse(data: data)
+                    let document = try SVGParser().parse(
+                        data: data,
+                        baseURL: url.deletingLastPathComponent()
+                    )
                     let source = String(data: data, encoding: .utf8) ?? ""
                     return .success((document, source))
                 } catch {

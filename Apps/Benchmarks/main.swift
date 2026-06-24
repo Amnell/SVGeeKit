@@ -67,11 +67,14 @@ struct Benchmarks {
             // Skip silently if anything fails to load; benchmarks shouldn't
             // mask correctness work — that's what the conformance suite is for.
             guard let data = try? Data(contentsOf: tc.url) else { continue }
-            guard let warmDoc = try? parser.parse(data: data) else { continue }
+            guard let warmDoc = try? parser.parse(
+                data: data,
+                baseURL: tc.url.deletingLastPathComponent()
+            ) else { continue }
 
             // Warmup runs (untimed) to settle caches.
             for _ in 0..<config.warmup {
-                _ = try? parser.parse(data: data)
+                _ = try? parser.parse(data: data, baseURL: tc.url.deletingLastPathComponent())
                 _ = SVGRenderTree.lower(warmDoc)
                 if !config.skipRasterize {
                     _ = try? SVGRasterizer.rasterize(warmDoc, pixelSize: config.outputSize)
@@ -90,7 +93,10 @@ struct Benchmarks {
                 // parse
                 var parsed: SVGDocument?
                 let parseDur = clock.measure {
-                    parsed = try? parser.parse(data: data)
+                    parsed = try? parser.parse(
+                        data: data,
+                        baseURL: tc.url.deletingLastPathComponent()
+                    )
                 }
                 phaseSamples[.parse]!.append(parseDur)
                 caseTotal += parseDur

@@ -57,6 +57,35 @@ enum AttributeParsers {
         return out
     }
 
+    /// Parses a `unicode` attribute on `<glyph>` (literal, `&#…;`, or `&#x…;`).
+    static func glyphUnicode(_ raw: String) -> Unicode.Scalar? {
+        if raw.hasPrefix("&#x") || raw.hasPrefix("&#X") {
+            let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !trimmed.isEmpty else { return nil }
+            let body = trimmed.dropFirst(3)
+            guard body.hasSuffix(";") else { return nil }
+            let hex = body.dropLast()
+            guard let value = UInt32(hex, radix: 16), let scalar = Unicode.Scalar(value) else {
+                return nil
+            }
+            return scalar
+        }
+        if raw.hasPrefix("&#") {
+            let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !trimmed.isEmpty else { return nil }
+            let body = trimmed.dropFirst(2)
+            guard body.hasSuffix(";") else { return nil }
+            let digits = body.dropLast()
+            guard let value = UInt32(digits), let scalar = Unicode.Scalar(value) else {
+                return nil
+            }
+            return scalar
+        }
+        // Literal glyph, including `unicode=" "` — must not trim whitespace away.
+        guard raw.count == 1, let scalar = raw.unicodeScalars.first else { return nil }
+        return scalar
+    }
+
     /// Parses an SVG color value. Supports the named-color subset most tests
     /// need, plus #rgb/#rrggbb and rgb(r,g,b). Extends easily.
     static func color(_ raw: String) -> SVGPaint? {

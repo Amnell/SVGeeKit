@@ -106,7 +106,10 @@ public struct SVGConformanceRunner {
         let document: SVGDocument
         do {
             let data = try Data(contentsOf: testCase.svgURL)
-            document = try parser.parse(data: data)
+            document = try parser.parse(
+                data: data,
+                baseURL: testCase.svgURL.deletingLastPathComponent()
+            )
         } catch {
             return SVGConformanceRecord(
                 testId: testCase.id, tag: testCase.tag.rawValue,

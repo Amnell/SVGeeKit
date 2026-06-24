@@ -32,20 +32,6 @@ public enum SVGRenderCommand: Equatable, Sendable {
         dashPhase: CGFloat
     )
 
-    /// Draw text. The renderer is responsible for font lookup, metrics, and
-    /// baseline placement at `origin` honoring `font.anchor` for horizontal
-    /// alignment. Y is the alphabetic baseline (SVG semantics).
-    case drawText(
-        string: String,
-        origin: CGPoint,
-        font: SVGFont,
-        fill: SVGPaint,
-        fillOpacity: CGFloat,
-        stroke: SVGPaint,
-        strokeOpacity: CGFloat,
-        strokeWidth: CGFloat
-    )
-
     /// Clip subsequent drawing to `path`. Must be bracketed by pushState/popState.
     case clipToPath(CGPath, evenOdd: Bool)
 
@@ -73,7 +59,13 @@ public enum SVGRenderTree {
     /// Lower a parsed document into a flat command stream.
     public static func lower(_ document: SVGDocument) -> [SVGRenderCommand] {
         var commands: [SVGRenderCommand] = []
-        let ctx = Context(paintServers: document.paintServers, clipPaths: document.clipPaths, masks: document.masks)
+        let ctx = Context(
+            paintServers: document.paintServers,
+            clipPaths: document.clipPaths,
+            masks: document.masks,
+            fonts: document.fonts,
+            fontFaces: document.fontFaces
+        )
         commands.append(.pushState)
         if let viewBox = document.viewBox, let size = document.intrinsicSize {
             let sx = size.width / viewBox.width
@@ -91,6 +83,8 @@ public enum SVGRenderTree {
         let paintServers: [String: SVGPaintServer]
         let clipPaths: [String: SVGClipPath]
         let masks: [String: SVGMask]
+        let fonts: [String: SVGFontDefinition]
+        let fontFaces: [SVGFontFace]
     }
 
     private static func lower(group: SVGGroup, ctx: Context, into commands: inout [SVGRenderCommand]) {
@@ -268,39 +262,63 @@ public enum SVGRenderTree {
     }
 
     private static func lower(text: SVGText, ctx: Context, into commands: inout [SVGRenderCommand]) {
-        guard !text.string.isEmpty else { return }
+        guard !text.runs.isEmpty else { return }
         guard text.paint.visibility == .visible else { return }
 
-        var inner: [SVGRenderCommand] = []
-        let needsState = text.transform.matrix != .identity || text.paint.opacity < 1
-        if needsState { inner.append(.pushState) }
-        if text.transform.matrix != .identity {
-            inner.append(.concatenate(text.transform))
+        if text.runs.count == 1,
+           let run = text.runs.first,
+           run.dx == 0, run.dy == 0,
+           run.explicitX == nil, run.explicitY == nil,
+           run.font == text.font,
+           run.paint == text.paint {
+            guard !run.string.isEmpty else { return }
+            guard let path = TextLayout.glyphPath(
+                string: run.string,
+                font: run.font,
+                origin: text.origin,
+                fontFaces: ctx.fontFaces,
+                fonts: ctx.fonts
+            ) else { return }
+            emitPaintedPath(path, paint: run.paint, transform: text.transform, ctx: ctx, into: &commands)
+            return
         }
-        if text.paint.opacity < 1 {
-            inner.append(.beginOpacityLayer(text.paint.opacity))
+
+        guard let path = TextLayout.glyphPath(
+            text: text,
+            fontFaces: ctx.fontFaces,
+            fonts: ctx.fonts
+        ) else { return }
+
+        // Per-run paint: emit separate paths when runs differ in fill/stroke.
+        let uniformPaint = text.runs.allSatisfy { $0.paint == text.runs[0].paint }
+        if uniformPaint, let paint = text.runs.first?.paint {
+            emitPaintedPath(path, paint: paint, transform: text.transform, ctx: ctx, into: &commands)
+            return
         }
 
-        // SVG default for <text> is fill=black, stroke=none. Element paint
-        // already carries that cascade, so we just pass it through.
-        inner.append(.drawText(
-            string: text.string,
-            origin: text.origin,
-            font: text.font,
-            fill: text.paint.fill,
-            fillOpacity: text.paint.fillOpacity,
-            stroke: text.paint.stroke,
-            strokeOpacity: text.paint.strokeOpacity,
-            strokeWidth: text.paint.strokeWidth
-        ))
+        emitRunsIndividually(text: text, ctx: ctx, into: &commands)
+    }
 
-        if text.paint.opacity < 1 { inner.append(.endOpacityLayer) }
-        if needsState { inner.append(.popState) }
-
-        // An empty mask suppresses the text (applyMask returns nil); a present
-        // mask wraps the drawn glyphs in a `.maskedContent` command.
-        guard let wrapped = applyMask(text.paint.maskRef, bbox: .null, content: inner, ctx: ctx) else { return }
-        commands.append(contentsOf: wrapped)
+    private static func emitRunsIndividually(
+        text: SVGText,
+        ctx: Context,
+        into commands: inout [SVGRenderCommand]
+    ) {
+        let segments = TextLayout.layoutRuns(
+            text: text,
+            fontFaces: ctx.fontFaces,
+            fonts: ctx.fonts
+        )
+        for segment in segments {
+            guard segment.run.paint.visibility == .visible else { continue }
+            emitPaintedPath(
+                segment.path,
+                paint: segment.run.paint,
+                transform: text.transform,
+                ctx: ctx,
+                into: &commands
+            )
+        }
     }
 
     /// Build a `CGPath` from all shape children of a `<clipPath>` definition.

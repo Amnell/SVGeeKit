@@ -1,0 +1,353 @@
+import CoreGraphics
+import Foundation
+import SVGCore
+import SVGParser
+import Testing
+@testable import SVGRenderer
+
+@Suite("Text layout")
+struct TextLayoutTests {
+
+    @Test func textTspan02Line1SplitMatchesMergedLayout() throws {
+        let doc = try loadTextTspan02()
+        let green = try greenText(in: doc)
+        let line1Runs = Array(green.runs.prefix { $0.explicitY == nil })
+
+        var split = green
+        split.runs = line1Runs
+
+        let mergedString = line1Runs.map(\.string).joined()
+        let mergedRotations = line1Runs.flatMap { $0.rotations ?? [] }
+        let merged = SVGText(
+            origin: green.origin,
+            runs: [
+                SVGTextRun(
+                    string: mergedString,
+                    font: green.font,
+                    paint: green.paint,
+                    rotations: mergedRotations
+                )
+            ],
+            font: green.font,
+            paint: green.paint
+        )
+
+        let splitPlacements = TextLayout.layoutCharacterPlacements(
+            text: split,
+            fontFaces: doc.fontFaces,
+            fonts: doc.fonts
+        )
+        let mergedPlacements = TextLayout.layoutCharacterPlacements(
+            text: merged,
+            fontFaces: doc.fontFaces,
+            fonts: doc.fonts
+        )
+
+        #expect(splitPlacements.count == mergedPlacements.count)
+        #expect(splitPlacements.count == mergedString.count)
+
+        for i in splitPlacements.indices {
+            let lhs = splitPlacements[i]
+            let rhs = mergedPlacements[i]
+            #expect(lhs.character == rhs.character)
+            #expect(lhs.rotation == rhs.rotation)
+            #expect(abs(lhs.position.x - rhs.position.x) < 0.001)
+            #expect(abs(lhs.position.y - rhs.position.y) < 0.001)
+        }
+    }
+
+    /// Pins pen positions at word boundaries on line 1. Update only when layout
+    /// math intentionally changes; use split-vs-merged test to catch run bugs first.
+    @Test func textTspan02Line1AnchorPenPositions() throws {
+        let doc = try loadTextTspan02()
+        let green = try greenText(in: doc)
+        let line1Runs = Array(green.runs.prefix { $0.explicitY == nil })
+
+        var line1 = green
+        line1.runs = line1Runs
+
+        let placements = TextLayout.layoutCharacterPlacements(
+            text: line1,
+            fontFaces: doc.fontFaces,
+            fonts: doc.fonts
+        )
+        let stream = line1Runs.map(\.string).joined()
+
+        func placement(of character: Character, occurrence: Int = 1) -> TextLayout.CharacterPlacement? {
+            var seen = 0
+            for p in placements {
+                if p.character == character {
+                    seen += 1
+                    if seen == occurrence { return p }
+                }
+            }
+            return nil
+        }
+
+        guard let s = placement(of: "s", occurrence: 1),
+              let n = placement(of: "n", occurrence: 1),
+              let e = placement(of: "e", occurrence: 2) else {
+            Issue.record("missing anchor characters in '\(stream)'")
+            return
+        }
+
+        // Golden pen anchors on line 1 (SVGFreeSansASCII, font-size 35).
+        #expect(abs(s.position.x - 274.800) < 0.05)
+        #expect(abs(s.position.y - 120.0) < 0.05)
+        #expect(abs(n.position.x - 309.800) < 0.05)
+        #expect(abs(n.position.y - 120.0) < 0.05)
+        #expect(abs(e.position.x - 368.180) < 0.05)
+        #expect(abs(e.position.y - 120.0) < 0.05)
+    }
+
+    @Test func redTextPreservesSpaceBeforeLine2() throws {
+        let doc = try loadTextTspan02()
+        let red = try redText(in: doc)
+        #expect(red.string.contains("the text"))
+        #expect(red.runs.map(\.string).joined() == "Not all characters in the text have a specified rotation")
+    }
+
+    @Test func textTspan02GreenAndRedFullRotationStream() throws {
+        let doc = try loadTextTspan02()
+        let green = try greenText(in: doc)
+        let red = try redText(in: doc)
+
+        let greenRots = green.runs.flatMap { $0.rotations ?? [] }
+        let redRots = red.runs.flatMap { $0.rotations ?? [] }
+        let greenStream = green.runs.map(\.string).joined()
+        let redStream = red.runs.map(\.string).joined()
+
+        #expect(greenStream == redStream)
+        #expect(greenRots.count == redRots.count)
+        for i in greenRots.indices where greenRots[i] != redRots[i] {
+            let idx = greenStream.index(greenStream.startIndex, offsetBy: i)
+            let ch = greenStream[idx]
+            // Nested `<tspan rotate>` assigns -10 to the inter-word space before
+            // "specified"; the flat red reference list still has 55 there.
+            if ch == " ", greenStream[greenStream.index(after: idx)...].hasPrefix("specified") {
+                #expect(greenRots[i] == -10)
+                #expect(redRots[i] == 55)
+                continue
+            }
+            Issue.record("rot[\(i)] '\(ch)' green=\(greenRots[i]) red=\(redRots[i])")
+        }
+    }
+
+    @Test func textTspan02GreenLine2MatchesRedPenPositions() throws {
+        let doc = try loadTextTspan02()
+        let green = try greenText(in: doc)
+        let red = try redText(in: doc)
+
+        func line2Placements(_ text: SVGText) -> [TextLayout.CharacterPlacement] {
+            var line2 = text
+            if let idx = text.runs.firstIndex(where: { $0.explicitY == 180 }) {
+                line2.runs = Array(text.runs[idx...])
+            } else {
+                line2.runs = []
+            }
+            return TextLayout.layoutCharacterPlacements(
+                text: line2,
+                fontFaces: doc.fontFaces,
+                fonts: doc.fonts
+            )
+        }
+
+        let greenP = line2Placements(green)
+        let redP = line2Placements(red)
+        let greenStream = greenP.map(\.character).map(String.init).joined()
+        let redStream = redP.map(\.character).map(String.init).joined()
+
+        #expect(greenP.count == redP.count, "green \(greenP.count) vs red \(redP.count)")
+
+        if greenStream != redStream {
+            Issue.record("streams green='\(greenStream)' red='\(redStream)'")
+        }
+
+        for i in greenP.indices {
+            let g = greenP[i]
+            let r = redP[i]
+            #expect(abs(g.position.x - r.position.x) < 0.05)
+            #expect(abs(g.position.y - r.position.y) < 0.05)
+        }
+    }
+
+    @Test func textTspan02GreenLine1MatchesRedPenPositions() throws {
+        let doc = try loadTextTspan02()
+        let green = try greenText(in: doc)
+        let red = try redText(in: doc)
+
+        func line1Placements(_ text: SVGText) -> [TextLayout.CharacterPlacement] {
+            var line1 = text
+            line1.runs = Array(text.runs.prefix { $0.explicitY == nil })
+            return TextLayout.layoutCharacterPlacements(
+                text: line1,
+                fontFaces: doc.fontFaces,
+                fonts: doc.fonts
+            )
+        }
+
+        let greenP = line1Placements(green)
+        let redP = line1Placements(red)
+        #expect(greenP.count == redP.count)
+        for i in greenP.indices {
+            #expect(greenP[i].character == redP[i].character)
+            #expect(greenP[i].rotation == redP[i].rotation)
+            #expect(abs(greenP[i].position.x - redP[i].position.x) < 0.001)
+            #expect(abs(greenP[i].position.y - redP[i].position.y) < 0.001)
+        }
+    }
+
+    @Test func rotatedGlyphLocalOriginMapsToPenPosition() {
+        for degrees in [0, 5, -40, 70, 55] {
+            let pos = CGPoint(x: 100, y: 120)
+            let t = textGlyphTransform(
+                at: pos,
+                rotationDegrees: CGFloat(degrees),
+                scaleX: 1,
+                scaleY: -1
+            )
+            let mapped = CGPoint.zero.applying(t)
+            #expect(abs(mapped.x - pos.x) < 0.001)
+            #expect(abs(mapped.y - pos.y) < 0.001)
+        }
+    }
+
+    @Test func rotatedGlyphInlineAxisMatchesPenAdvance() {
+        for degrees in [5, -40, 70, 55] {
+            let radians = CGFloat(degrees) * .pi / 180
+            let t = textGlyphTransform(
+                at: .zero,
+                rotationDegrees: CGFloat(degrees),
+                scaleX: 1,
+                scaleY: -1
+            )
+            let axis = CGPoint(x: 1, y: 0).applying(t)
+            #expect(abs(axis.x - cos(radians)) < 0.001)
+            #expect(abs(axis.y - sin(radians)) < 0.001)
+        }
+    }
+
+    @Test func textTspan02GreenLine1MatchesRedReferenceRotations() throws {
+        let doc = try loadTextTspan02()
+        let green = try greenText(in: doc)
+        let red = try redText(in: doc)
+
+        let greenLine1 = Array(green.runs.prefix { $0.explicitY == nil })
+        let redLine1 = Array(red.runs.prefix { $0.explicitY == nil })
+
+        let greenStream = greenLine1.map(\.string).joined()
+        let redStream = redLine1.map(\.string).joined()
+        let greenRots = greenLine1.flatMap { $0.rotations ?? [] }
+        let redRots = redLine1.flatMap { $0.rotations ?? [] }
+
+        #expect(redStream == "Not all characters in the ")
+        #expect(greenStream == "Not all characters in the ")
+
+        let shared = min(greenRots.count, redRots.count)
+        for i in 0..<shared {
+            #expect(greenRots[i] == redRots[i])
+        }
+        #expect(greenRots.count == redRots.count)
+    }
+
+    @Test func svgFontCharAdvanceMatchesSingleGlyphWidth() throws {
+        let doc = try loadTextTspan02()
+        let green = try greenText(in: doc)
+        let font = green.font
+
+        for scalar in ["N", "o", "t", " ", "a", "s", "i", "n", "e"].map(Character.init) {
+            let s = String(scalar)
+            let width = TextLayout.typographicWidth(
+                string: s,
+                font: font,
+                fontFaces: doc.fontFaces,
+                fonts: doc.fonts
+            )
+            let placements = TextLayout.layoutCharacterPlacements(
+                text: SVGText(
+                    origin: .zero,
+                    runs: [SVGTextRun(string: s, font: font, paint: green.paint)]
+                ),
+                fontFaces: doc.fontFaces,
+                fonts: doc.fonts
+            )
+            guard placements.count == 1 else { continue }
+            let line1 = TextLayout.layoutCharacterPlacements(
+                text: SVGText(
+                    origin: .zero,
+                    runs: [
+                        SVGTextRun(string: s, font: font, paint: green.paint),
+                        SVGTextRun(string: "X", font: font, paint: green.paint)
+                    ]
+                ),
+                fontFaces: doc.fontFaces,
+                fonts: doc.fonts
+            )
+            #expect(line1.count == 2)
+            #expect(abs(line1[1].position.x - width) < 0.001)
+        }
+    }
+
+    // MARK: - Fixtures
+
+    private func repoRoot() -> URL {
+        URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+    }
+
+    private func loadTextTspan02() throws -> SVGDocument {
+        let svgURL = repoRoot()
+            .appendingPathComponent("Tests/SVGConformanceTests/Resources/W3C-SVG-1.1/svg/text-tspan-02-b.svg")
+        return try SVGParser().parse(url: svgURL)
+    }
+
+    private func greenText(in doc: SVGDocument) throws -> SVGText {
+        guard case .group(let body) = doc.root.children.first(where: {
+            if case .group = $0 { return true }
+            return false
+        }) else {
+            Issue.record("expected body group")
+            throw FixtureError.missingBody
+        }
+
+        guard let green = body.children.compactMap({ el -> SVGText? in
+            guard case .text(let t) = el else { return nil }
+            guard t.font.size == 35, t.origin.x == 20, t.origin.y == 120 else { return nil }
+            if case .color(let c) = t.paint.fill, c.green > 0.4, c.red < 0.1 { return t }
+            return nil
+        }).first else {
+            Issue.record("expected green text")
+            throw FixtureError.missingGreenText
+        }
+        return green
+    }
+
+    private func redText(in doc: SVGDocument) throws -> SVGText {
+        guard case .group(let body) = doc.root.children.first(where: {
+            if case .group = $0 { return true }
+            return false
+        }) else {
+            Issue.record("expected body group")
+            throw FixtureError.missingBody
+        }
+
+        guard let red = body.children.compactMap({ el -> SVGText? in
+            guard case .text(let t) = el else { return nil }
+            guard t.font.size == 35, t.origin.x == 20, t.origin.y == 120 else { return nil }
+            if case .color(let c) = t.paint.fill, c.red > 0.4, c.green < 0.1 { return t }
+            return nil
+        }).first else {
+            Issue.record("expected red text")
+            throw FixtureError.missingRedText
+        }
+        return red
+    }
+
+    private enum FixtureError: Error {
+        case missingBody
+        case missingGreenText
+        case missingRedText
+    }
+}

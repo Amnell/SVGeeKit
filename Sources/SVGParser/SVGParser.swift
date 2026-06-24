@@ -11,9 +11,9 @@ public struct SVGParser {
 
     public init() {}
 
-    public func parse(data: Data) throws -> SVGDocument {
+    public func parse(data: Data, baseURL: URL? = nil) throws -> SVGDocument {
         let parser = XMLParser(data: data)
-        let delegate = SAXDelegate()
+        let delegate = SAXDelegate(baseURL: baseURL)
         parser.delegate = delegate
         parser.shouldProcessNamespaces = false
         parser.shouldReportNamespacePrefixes = false
@@ -34,40 +34,73 @@ public struct SVGParser {
             throw SVGParseError(kind: .missingRoot, line: nil, column: nil)
         }
         delegate.resolveGradientHrefs()
+        delegate.resolvePendingFontHrefs()
+        document.baseURL = baseURL
         document.paintServers = delegate.paintServers
         document.clipPaths = delegate.clipPaths
         document.masks = delegate.masks
+        document.fonts = delegate.fonts
+        document.fontFaces = delegate.fontFaces
         return document
     }
 
-    public func parse(string: String) throws -> SVGDocument {
-        try parse(data: Data(string.utf8))
+    public func parse(string: String, baseURL: URL? = nil) throws -> SVGDocument {
+        try parse(data: Data(string.utf8), baseURL: baseURL)
     }
 
-    /// Async convenience: runs the synchronous `parse(data:)` on a detached
+    /// Reads `url` and parses with `baseURL` set to the file's parent directory.
+    public func parse(url: URL) throws -> SVGDocument {
+        let data = try Data(contentsOf: url)
+        return try parse(data: data, baseURL: url.deletingLastPathComponent())
+    }
+
+    /// Async convenience: runs the synchronous `parse(data:baseURL:)` on a detached
     /// task at `userInitiated` priority so callers on the main actor don't
     /// block their thread on large SVG files.
-    public static func parse(data: Data) async throws -> SVGDocument {
+    public static func parse(data: Data, baseURL: URL? = nil) async throws -> SVGDocument {
         try await Task.detached(priority: .userInitiated) {
-            try SVGParser().parse(data: data)
+            try SVGParser().parse(data: data, baseURL: baseURL)
         }.value
     }
 
     /// Async convenience that reads `url` and parses, both off the main actor.
     public static func parse(url: URL) async throws -> SVGDocument {
         try await Task.detached(priority: .userInitiated) {
-            let data = try Data(contentsOf: url)
-            return try SVGParser().parse(data: data)
+            try SVGParser().parse(url: url)
         }.value
     }
 }
 
-private final class SAXDelegate: NSObject, XMLParserDelegate {
+struct PartialCSSFontFace {
+    var family: String?
+    var uris: [String] = []
+    var names: [String] = []
+    var weight: SVGFontWeight?
+    var style: SVGFontStyle?
+}
+
+struct PartialSVGFont {
+    var id: String?
+    var defaultAdvance: CGFloat = 0
+    var unitsPerEm: CGFloat = 1000
+    var ascent: CGFloat = 800
+    var descent: CGFloat = -200
+    var glyphs: [Unicode.Scalar: SVGGlyph] = [:]
+    var missingGlyph: SVGGlyph?
+}
+
+final class SAXDelegate: NSObject, XMLParserDelegate {
 
     enum Axis { case x, y, length }
 
+    let baseURL: URL?
+
     var document: SVGDocument?
     var error: SVGParseError?
+
+    init(baseURL: URL? = nil) {
+        self.baseURL = baseURL
+    }
 
     /// Viewport (in user-space units) used to resolve `%` lengths. Set when
     /// the root `<svg>` is opened: prefers viewBox, then width/height.
@@ -82,6 +115,20 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
     /// Partially-built <text> elements. Character data is appended to the top
     /// while a text capture is active (including text inside nested <tspan>).
     private var textStack: [SVGText] = []
+    private var activeTextRun: SVGTextRun?
+    /// Font/paint stack for nested `<tspan>` inheritance.
+    private var tspanStyleStack: [(SVGFont, SVGPaintProperties)] = []
+    /// `rotate` list consumption stack; new frame when `<tspan rotate>` opens.
+    private var rotateStack: [RotateCursor] = []
+    private var rotatePushStack: [Bool] = []
+    /// Per-segment metadata and root rotate list for deferred assignment at `</text>`.
+    private var textRootRotate: [CGFloat] = []
+    private var textSegmentMeta: [TextSegmentMeta] = []
+    private var pendingRotateFrame: [CGFloat]?
+    /// Inherited baseline `y` stack for nested `<tspan>` elements.
+    private var tspanBaselineYStack: [CGFloat] = []
+    /// `xml:space="preserve"` on the current `<text>` element.
+    private var textPreserveSpaceStack: [Bool] = []
 
     /// Partial linearGradient definitions currently open. Top receives `<stop>`s.
     private var gradientStack: [PartialGradient] = []
@@ -100,6 +147,13 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
     private var maskStack: [PartialMask] = []
     /// Completed masks keyed by id.
     fileprivate var masks: [String: SVGMask] = [:]
+
+    /// SVG `<font id="…">` tables and CSS `<font-face>` bindings.
+    var fonts: [String: SVGFontDefinition] = [:]
+    var fontFaces: [SVGFontFace] = []
+    var cssFontFaceStack: [PartialCSSFontFace] = []
+    var svgFontStack: [PartialSVGFont] = []
+    var pendingFontHrefs: [String] = []
 
     struct PartialGradient {
         enum Kind { case linear, radial }
@@ -183,10 +237,7 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
                 attributes: attributeDict, paint: elementPaint, font: elementFont, parser: parser
             )
         case "tspan":
-            // No standalone positioning today: tspan content is appended to the
-            // active <text> via foundCharacters. Drop the call here so the
-            // tspan's character data isn't double-counted in didEnd handling.
-            break
+            handleTspanStart(attributes: attributeDict, parser: parser)
         case "linearGradient":
             handleLinearGradientStart(attributes: attributeDict)
         case "radialGradient":
@@ -197,14 +248,28 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
             handleClipPathStart(attributes: attributeDict, parser: parser)
         case "mask":
             handleMaskStart(attributes: attributeDict)
+        case "font-face" where !svgFontStack.isEmpty:
+            handleSVGFontFaceMetrics(attributes: attributeDict)
+        case "font-face":
+            handleCSSFontFaceStart(attributes: attributeDict)
+        case "font-face-uri":
+            handleFontFaceURI(attributes: attributeDict)
+        case "font-face-name":
+            handleFontFaceName(attributes: attributeDict)
+        case "font":
+            handleSVGFontStart(attributes: attributeDict)
+        case "glyph":
+            handleGlyph(attributes: attributeDict, missing: false)
+        case "missing-glyph":
+            handleGlyph(attributes: attributeDict, missing: true)
         default:
             break
         }
     }
 
     func parser(_ parser: XMLParser, foundCharacters string: String) {
-        guard !textStack.isEmpty else { return }
-        textStack[textStack.count - 1].string.append(string)
+        guard activeTextRun != nil else { return }
+        activeTextRun?.string.append(string)
     }
 
     func parser(
@@ -224,9 +289,43 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
             guard let finished = groupStack.popLast() else { return }
             appendChild(.group(finished))
         case "text":
+            flushActiveTextRun()
             guard var finished = textStack.popLast() else { return }
-            finished.string = SAXDelegate.collapseTextWhitespace(finished.string)
+            finalizeTextRuns(
+                &finished,
+                rootRotate: textRootRotate,
+                segmentMeta: textSegmentMeta
+            )
+            tspanStyleStack.removeAll()
+            rotateStack.removeAll()
+            rotatePushStack.removeAll()
+            textRootRotate = []
+            textSegmentMeta = []
+            pendingRotateFrame = nil
+            tspanBaselineYStack = []
+            textPreserveSpaceStack.removeLast()
+            activeTextRun = nil
             appendChild(.text(finished))
+        case "tspan":
+            flushActiveTextRun()
+            if rotatePushStack.popLast() == true {
+                rotateStack.removeLast()
+                if !textSegmentMeta.isEmpty {
+                    textSegmentMeta[textSegmentMeta.count - 1].closesRotate = true
+                }
+            }
+            if tspanStyleStack.count > 1 {
+                tspanStyleStack.removeLast()
+            }
+            if tspanBaselineYStack.count > 1 {
+                tspanBaselineYStack.removeLast()
+            }
+            if let (font, paint) = tspanStyleStack.last {
+                var next = SVGTextRun(string: "", font: font, paint: paint)
+                next.baselineY = tspanBaselineYStack.last
+                next.preserveSpace = textPreserveSpaceStack.last ?? false
+                activeTextRun = next
+            }
         case "linearGradient":
             finalizeLinearGradient()
         case "radialGradient":
@@ -235,6 +334,12 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
             finalizeClipPath()
         case "mask":
             finalizeMask()
+        case "font-face" where !svgFontStack.isEmpty:
+            break
+        case "font-face":
+            finalizeCSSFontFace()
+        case "font":
+            finalizeSVGFont()
         default:
             break
         }
@@ -407,12 +512,174 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
         let y = resolveLength(attributes["y"], axis: .y)
         let text = SVGText(
             origin: CGPoint(x: x, y: y),
-            string: "",
+            runs: [],
             font: font,
             paint: paint,
             transform: transform(from: attributes, parser: parser) ?? .identity
         )
         textStack.append(text)
+        tspanStyleStack = [(font, paint)]
+        activeTextRun = SVGTextRun(string: "", font: font, paint: paint, baselineY: y)
+        textRootRotate = parseRotateList(attributes["rotate"]) ?? []
+        textSegmentMeta = []
+        pendingRotateFrame = nil
+        tspanBaselineYStack = [y]
+        rotateStack = [RotateCursor(values: textRootRotate)]
+        rotatePushStack = []
+        let preserve = attributes["xml:space"] == "preserve"
+        textPreserveSpaceStack.append(preserve)
+        if preserve {
+            activeTextRun?.preserveSpace = true
+        }
+    }
+
+    private func resolveLengthList(_ raw: String?, axis: Axis) -> [CGFloat]? {
+        guard let raw else { return nil }
+        let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
+        let parts = trimmed.split { $0.isWhitespace || $0 == "," || $0 == "\t" || $0 == "\n" || $0 == "\r" }
+        guard !parts.isEmpty else { return nil }
+        return parts.map { resolveLength(String($0), axis: axis) }
+    }
+
+    private func parseRotateList(_ raw: String?) -> [CGFloat]? {
+        resolveLengthList(raw, axis: .length)
+    }
+
+    private func applyTspanPositionAttributes(
+        _ attributes: [String: String],
+        to run: inout SVGTextRun
+    ) {
+        if let xs = resolveLengthList(attributes["x"], axis: .x) {
+            run.explicitX = xs
+        }
+        if let raw = attributes["y"] {
+            run.explicitY = resolveLength(raw, axis: .y)
+        }
+        if let raw = attributes["dx"] {
+            run.dx = resolveLength(raw, axis: .length)
+        }
+        if let raw = attributes["dy"] {
+            run.dy = resolveLength(raw, axis: .length)
+        }
+        if attributes["xml:space"] == "preserve" {
+            run.preserveSpace = true
+        }
+    }
+
+    private func handleTspanStart(attributes: [String: String], parser: XMLParser) {
+        guard !textStack.isEmpty else { return }
+        var leadingWhitespace = ""
+        // Inter-`<tspan>` formatting whitespace is not painted when the next
+        // tspan supplies an explicit anchor.
+        if let run = activeTextRun,
+           run.string.allSatisfy(\.isWhitespace),
+           run.explicitX == nil, run.explicitY == nil {
+            if attributes["x"] != nil || attributes["y"] != nil {
+                activeTextRun?.string = ""
+            } else if attributes["rotate"] != nil {
+                // Whitespace before `<tspan rotate>` belongs in that frame
+                // (e.g. the space before "specified" in text-tspan-02-b).
+                leadingWhitespace = " "
+                activeTextRun?.string = ""
+            }
+        }
+        flushActiveTextRun()
+        let (inheritedFont, inheritedPaint) = tspanStyleStack.last!
+        let runFont = mergeFont(into: inheritedFont, from: attributes)
+        let runPaint = mergePaint(into: inheritedPaint, from: attributes, parser: parser)
+        var run = SVGTextRun(string: leadingWhitespace, font: runFont, paint: runPaint)
+        applyTspanPositionAttributes(attributes, to: &run)
+        if run.preserveSpace == false {
+            run.preserveSpace = textPreserveSpaceStack.last ?? false
+        }
+        if let raw = attributes["y"] {
+            let resolved = resolveLength(raw, axis: .y)
+            tspanBaselineYStack.append(resolved)
+        } else if let inherited = tspanBaselineYStack.last {
+            tspanBaselineYStack.append(inherited)
+        }
+        run.baselineY = tspanBaselineYStack.last
+        if let rotate = parseRotateList(attributes["rotate"]) {
+            if !rotateStack.isEmpty {
+                var parent = rotateStack[rotateStack.count - 1]
+                parent.index = parent.values.count
+                rotateStack[rotateStack.count - 1] = parent
+            }
+            rotateStack.append(RotateCursor(values: rotate))
+            rotatePushStack.append(true)
+            pendingRotateFrame = rotate
+        } else {
+            rotatePushStack.append(false)
+        }
+        tspanStyleStack.append((runFont, runPaint))
+        activeTextRun = run
+    }
+
+    private func flushActiveTextRun() {
+        guard !textStack.isEmpty, let run = activeTextRun else { return }
+        let isEmpty = run.string.isEmpty
+        let hasOffset = run.dx != 0 || run.dy != 0
+            || run.explicitX != nil || run.explicitY != nil
+        guard !isEmpty || hasOffset else { return }
+
+        var flushed = run
+        flushed.baselineY = tspanBaselineYStack.last ?? textStack[textStack.count - 1].origin.y
+        var meta = TextSegmentMeta()
+        if let frame = pendingRotateFrame {
+            meta.opensRotate = frame
+            pendingRotateFrame = nil
+        }
+        textStack[textStack.count - 1].runs.append(flushed)
+        textSegmentMeta.append(meta)
+        if let (font, paint) = tspanStyleStack.last {
+            var next = SVGTextRun(string: "", font: font, paint: paint)
+            next.baselineY = tspanBaselineYStack.last
+            next.preserveSpace = textPreserveSpaceStack.last ?? false
+            activeTextRun = next
+        }
+    }
+
+    /// Normalize character stream (`xml:space`) then assign per-character `rotate`.
+    private func finalizeTextRuns(
+        _ text: inout SVGText,
+        rootRotate: [CGFloat],
+        segmentMeta: [TextSegmentMeta]
+    ) {
+        guard !text.runs.isEmpty else { return }
+
+        var meta = segmentMeta
+        if meta.count < text.runs.count {
+            meta.append(contentsOf: repeatElement(TextSegmentMeta(), count: text.runs.count - meta.count))
+        } else if meta.count > text.runs.count {
+            meta = Array(meta.prefix(text.runs.count))
+        }
+
+        let segments = zip(text.runs, meta).map { run, runMeta in
+            TextCharacterStream.RawSegment(run: run, raw: run.string, meta: runMeta)
+        }
+        var normalized = TextCharacterStream.normalize(segments)
+        TextCharacterStream.assignRotations(
+            runs: &normalized.runs,
+            rootRotate: rootRotate,
+            meta: normalized.meta
+        )
+        text.runs = normalized.runs
+
+        guard !text.runs.isEmpty else { return }
+
+        let hasLayout = text.runs.contains {
+            $0.dx != 0 || $0.dy != 0 || $0.explicitX != nil || $0.explicitY != nil
+        }
+        let hasPreserve = text.runs.contains { $0.preserveSpace }
+        let hasRotations = text.runs.contains { $0.rotations != nil }
+        let uniformStyle = text.runs.allSatisfy {
+            $0.font == text.runs[0].font && $0.paint == text.runs[0].paint
+        }
+        if !hasLayout && !hasPreserve && !hasRotations && uniformStyle {
+            let merged = SAXDelegate.collapseTextWhitespace(text.runs.map(\.string).joined())
+            text.runs = [SVGTextRun(string: merged, font: text.runs[0].font, paint: text.runs[0].paint)]
+        }
     }
 
     // MARK: - Helpers
@@ -573,6 +840,8 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
             if let len = AttributeParsers.length(value) { f.size = len.resolved() }
         case "font-weight":
             if let w = SVGFontWeight.parse(value) { f.weight = w }
+        case "font-style":
+            if let s = SVGFontStyle.parse(value) { f.style = s }
         case "text-anchor":
             if value == "inherit" { return }
             if let a = SVGTextAnchor(rawValue: value) { f.anchor = a }
@@ -581,10 +850,19 @@ private final class SAXDelegate: NSObject, XMLParserDelegate {
         }
     }
 
-    /// SVG's xml:space="default" behaviour: collapse runs of whitespace and
-    /// trim leading/trailing. We don't implement xml:space="preserve" yet.
+    /// SVG `xml:space="default"`: collapse runs of whitespace and trim leading/trailing.
     static func collapseTextWhitespace(_ raw: String) -> String {
         raw.split(whereSeparator: { $0.isWhitespace }).joined(separator: " ")
+    }
+
+    /// Strip newlines, carriage returns, and tabs from a text run. Does not
+    /// collapse or trim spaces — edge trimming happens in `finalizeTextRuns`.
+    static func stripFormattingWhitespace(_ raw: String) -> String {
+        raw
+            .replacingOccurrences(of: "\r\n", with: "")
+            .replacingOccurrences(of: "\n", with: "")
+            .replacingOccurrences(of: "\r", with: "")
+            .replacingOccurrences(of: "\t", with: "")
     }
 
     // MARK: - Paint servers
