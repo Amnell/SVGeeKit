@@ -10,6 +10,89 @@ enum TextLayout {
         var path: CGPath
     }
 
+    /// Per-character layout result for tests and diagnostics.
+    struct CharacterPlacement: Sendable, Equatable {
+        var character: Character
+        var position: CGPoint
+        var rotation: CGFloat
+        var runIndex: Int
+    }
+
+    static func layoutCharacterPlacements(
+        text: SVGText,
+        fontFaces: [SVGFontFace],
+        fonts: [String: SVGFontDefinition]
+    ) -> [CharacterPlacement] {
+        layoutRunLayouts(text: text, fontFaces: fontFaces, fonts: fonts).flatMap { batch in
+            let chars = Array(batch.run.string)
+            return batch.positions.enumerated().map { i, pos in
+                CharacterPlacement(
+                    character: chars[i],
+                    position: pos,
+                    rotation: rotationAngle(at: i, rotations: batch.run.rotations),
+                    runIndex: batch.runIndex
+                )
+            }
+        }
+    }
+
+    private struct RunLayout {
+        var run: SVGTextRun
+        var runIndex: Int
+        var positions: [CGPoint]
+    }
+
+    private static func layoutRunLayouts(
+        text: SVGText,
+        fontFaces: [SVGFontFace],
+        fonts: [String: SVGFontDefinition]
+    ) -> [RunLayout] {
+        guard !text.runs.isEmpty else { return [] }
+
+        var penX = text.origin.x
+        var penY = text.origin.y
+        var activeLineY: CGFloat?
+        var batches: [RunLayout] = []
+
+        for (runIndex, run) in text.runs.enumerated() {
+            penX += run.dx
+            penY += run.dy
+            guard !run.string.isEmpty else { continue }
+
+            if let explicitY = run.explicitY {
+                penY = explicitY
+                activeLineY = explicitY
+            } else if let activeLineY {
+                penY = activeLineY
+            }
+
+            let lineFixedY = run.explicitY == nil ? activeLineY : nil
+
+            let (positions, endPen) = layoutCharacterPositions(
+                string: run.string,
+                font: run.font,
+                explicitX: run.explicitX,
+                explicitY: run.explicitY,
+                lineFixedY: lineFixedY,
+                startPen: CGPoint(x: penX, y: penY),
+                rotations: run.rotations,
+                fontFaces: fontFaces,
+                fonts: fonts
+            )
+            batches.append(RunLayout(run: run, runIndex: runIndex, positions: positions))
+            penX = endPen.x
+            penY = endPen.y
+        }
+
+        return batches
+    }
+
+    private static func rotationAngle(at index: Int, rotations: [CGFloat]?) -> CGFloat {
+        guard let rotations else { return 0 }
+        if rotations.indices.contains(index) { return rotations[index] }
+        return rotations.last ?? 0
+    }
+
     static func glyphPath(
         text: SVGText,
         fontFaces: [SVGFontFace],
@@ -29,65 +112,26 @@ enum TextLayout {
         fontFaces: [SVGFontFace],
         fonts: [String: SVGFontDefinition]
     ) -> [RunSegment] {
-        guard !text.runs.isEmpty else { return [] }
-
-        var penX = text.origin.x
-        var penY = text.origin.y
+        let batches = layoutRunLayouts(text: text, fontFaces: fontFaces, fonts: fonts)
         var segments: [RunSegment] = []
 
-        for run in text.runs {
-            penX += run.dx
-            penY += run.dy
-            guard !run.string.isEmpty else { continue }
-
-            let path: CGPath?
-            if let xs = run.explicitX {
-                let y = run.explicitY ?? penY
-                let positions = explicitPositions(string: run.string, xs: xs, y: y)
-                path = glyphPathAtPositions(
-                    string: run.string,
-                    font: run.font,
-                    positions: positions,
-                    rotations: run.rotations,
-                    fontFaces: fontFaces,
-                    fonts: fonts
-                )
-                if let last = positions.last {
-                    let lastWidth = typographicWidth(
-                        of: run.string.last.map(String.init) ?? "",
-                        font: run.font,
-                        fontFaces: fontFaces,
-                        fonts: fonts
-                    )
-                    penX = last.x + lastWidth
-                }
-                penY = y
-            } else {
-                let origin = CGPoint(x: penX, y: penY)
-                path = glyphPathUnanchored(
-                    string: run.string,
-                    font: run.font,
-                    origin: origin,
-                    rotations: run.rotations,
-                    fontFaces: fontFaces,
-                    fonts: fonts
-                )
-                penX += typographicWidth(
-                    string: run.string,
-                    font: run.font,
-                    fontFaces: fontFaces,
-                    fonts: fonts
-                )
-            }
-
+        for batch in batches {
+            let path = glyphPathAtPositions(
+                string: batch.run.string,
+                font: batch.run.font,
+                positions: batch.positions,
+                rotations: batch.run.rotations,
+                fontFaces: fontFaces,
+                fonts: fonts
+            )
             if let path, !path.isEmpty {
-                segments.append(RunSegment(run: run, path: path))
+                segments.append(RunSegment(run: batch.run, path: path))
             }
         }
 
-        // Per-glyph `x` on `<tspan>` are absolute coordinates; text-anchor must
-        // not re-shift them to align bounds with `text.origin.x`.
-        if text.runs.contains(where: { $0.explicitX != nil }) {
+        // Per-glyph `x` on `<tspan>` are absolute coordinates; `text-anchor`
+        // must not re-shift explicit or rotated glyph placement.
+        if text.runs.contains(where: { $0.explicitX != nil || $0.rotations != nil }) {
             return segments
         }
         return applyAnchorShift(segments: segments, anchor: text.font.anchor, anchorX: text.origin.x)
@@ -133,16 +177,76 @@ enum TextLayout {
         return SystemTextLayout.typographicWidth(string: string, font: font)
     }
 
-    private static func explicitPositions(
+    private static func layoutCharacterPositions(
         string: String,
-        xs: [CGFloat],
-        y: CGFloat
-    ) -> [CGPoint] {
+        font: SVGFont,
+        explicitX: [CGFloat]?,
+        explicitY: CGFloat?,
+        lineFixedY: CGFloat?,
+        startPen: CGPoint,
+        rotations: [CGFloat]?,
+        fontFaces: [SVGFontFace],
+        fonts: [String: SVGFontDefinition]
+    ) -> (positions: [CGPoint], endPen: CGPoint) {
         let chars = Array(string)
-        guard !chars.isEmpty, !xs.isEmpty else { return [] }
-        return chars.indices.map { i in
-            CGPoint(x: xs[min(i, xs.count - 1)], y: y)
+        guard !chars.isEmpty else { return ([], startPen) }
+
+        let fixedY = explicitY ?? lineFixedY
+        var pen = startPen
+        if let fixedY {
+            pen.y = fixedY
         }
+        var positions: [CGPoint] = []
+
+        for i in 0..<chars.count {
+            let angle: CGFloat = {
+                guard let rotations else { return 0 }
+                if rotations.indices.contains(i) { return rotations[i] }
+                return rotations.last ?? 0
+            }()
+            let radians = angle * .pi / 180
+            let y = fixedY ?? pen.y
+
+            let pos: CGPoint
+            if let xs = explicitX, i < xs.count {
+                pos = CGPoint(x: xs[i], y: y)
+            } else {
+                pos = CGPoint(x: pen.x, y: y)
+            }
+            positions.append(pos)
+
+            let advance = charAdvance(
+                of: String(chars[i]),
+                font: font,
+                fontFaces: fontFaces,
+                fonts: fonts
+            )
+            if fixedY != nil {
+                pen = CGPoint(
+                    x: pos.x + advance * cos(radians),
+                    y: fixedY!
+                )
+            } else {
+                pen = CGPoint(
+                    x: pos.x + advance * cos(radians),
+                    y: pos.y + advance * sin(radians)
+                )
+            }
+        }
+
+        return (positions, pen)
+    }
+
+    private static func charAdvance(
+        of string: String,
+        font: SVGFont,
+        fontFaces: [SVGFontFace],
+        fonts: [String: SVGFontDefinition]
+    ) -> CGFloat {
+        if let definition = resolveSVGFont(font: font, fontFaces: fontFaces, fonts: fonts) {
+            return SVGFontTextLayout.charAdvance(string: string, font: font, definition: definition)
+        }
+        return SystemTextLayout.charAdvance(string: string, font: font)
     }
 
     private static func glyphPathAtPositions(
@@ -269,7 +373,7 @@ enum TextLayout {
     }
 }
 
-/// SVG `rotate` angles are clockwise; Core Graphics is counter-clockwise.
+/// SVG and Core Graphics both use y-down user space where positive angles rotate clockwise.
 fileprivate func svgTextGlyphTransform(
     at position: CGPoint,
     rotationDegrees: CGFloat,
@@ -278,12 +382,26 @@ fileprivate func svgTextGlyphTransform(
 ) -> CGAffineTransform {
     var transform = CGAffineTransform(translationX: position.x, y: position.y)
     if rotationDegrees != 0 {
-        transform = transform.rotated(by: -rotationDegrees * .pi / 180)
+        transform = transform.rotated(by: rotationDegrees * .pi / 180)
     }
     return transform.scaledBy(x: scaleX, y: scaleY)
 }
 
 enum SVGFontTextLayout {
+
+    static func charAdvance(
+        string: String,
+        font: SVGFont,
+        definition: SVGFontDefinition
+    ) -> CGFloat {
+        guard definition.unitsPerEm > 0,
+              let scalar = string.unicodeScalars.first else { return 0 }
+        let scale = font.size / definition.unitsPerEm
+        let fallback = definition.missingGlyph
+            ?? SVGGlyph(commands: nil, advance: definition.defaultAdvance)
+        let glyph = definition.glyphs[scalar] ?? fallback
+        return glyph.advance * scale
+    }
 
     static func typographicWidth(
         string: String,

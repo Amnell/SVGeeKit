@@ -16,7 +16,7 @@ feature recipe in [adding-a-feature.md](adding-a-feature.md).
 
 | Area | Status |
 | --- | --- |
-| Parser | `<text>`, flat `tspan` string capture, font cascade (`font-family`, `font-size`, `font-weight`, `text-anchor`) |
+| Parser | `<text>`, `tspan` runs, character-stream `xml:space` at `</text>`, deferred `rotate` assignment |
 | Model | `SVGFont`, `SVGText` on `SVGElement` |
 | Lowering | `.drawText` command; mask wrapper with `bbox: .null`; **no** `clip-path` on text |
 | Backend | CoreText `CTLineDraw` in `SwiftUICanvasRenderer`; gradients on text skipped |
@@ -211,13 +211,35 @@ Work in roughly this order (each with parser + lowering + W3C test):
 
 | Feature | Example tests | Notes |
 | --- | --- | --- |
-| `tspan` positioning | `text-tspan-01-b`, `text-tspan-02-b` | Per-tspan `x`/`y`/`dx`/`dy`; model may need `SVGTextRun[]` instead of flat string |
-| `tspan` rotate | `text-tspan-02-b` | Per-character rotation with list propagation across nested tspans |
+| `tspan` positioning | `text-tspan-01-b` | Per-tspan `x`/`y`/`dx`/`dy`; `SVGTextRun[]` model — **passed** |
+| `xml:space` | `text-ws-01-t`, `text-tspan-02-b` | **Prerequisite** for per-character layout attrs. Build a normalized character stream at `</text>` before assigning `rotate` / `x` / `y` lists |
+| `tspan` rotate | `text-tspan-02-b` | Parser character-stream + deferred `rotate` assignment done; visual conformance pending |
 | `textLength` / `lengthAdjust` | `text-text-01-b` | `spacing` = adjust advances; `spacingAndGlyphs` = scale glyph paths |
 | `writing-mode`, `direction`, `unicode-bidi` | `text-intro-02-b` | Bidi may need CoreText levels; some lines use system i18n fonts |
 | `text-decoration` | `text-deco-01-b` | Underline/overline as extra paths |
 | `textPath` | `text-path-01-b` | Glyph placement along `CGPath` |
-| `xml:space` | `text-ws-01-t` | `preserve` vs `default` whitespace |
+
+### Parser: character-stream normalization
+
+SVG 1.1 text layout is **character-stream first**. `<tspan>` boundaries change style and
+open/close `rotate` frames, but `rotate`, `x`, `y`, `dx`, and `dy` are consumed per
+character on the **post-`xml:space` stream** — including spaces between nested tspans.
+
+Do **not** fix `text-tspan-02-b` with run-boundary heuristics (inject/drop separator
+spaces, `explicitX` exceptions, newline sniffing). That approach fights the spec and
+breaks unrelated parser tests.
+
+Pipeline at `</text>` (implemented in `TextCharacterStream.swift`):
+
+```
+SAX → raw spans (string chunk + style + rotate-frame events + preserveSpace)
+    → normalize to layout character stream (xml:space rules)
+    → assign rotate / x / y per character index
+    → group adjacent same-style chars into SVGTextRun[] for rendering
+```
+
+`text-tspan-02-b` green-text parser assertions pass (`normalizesTextCharacterStreamForTspan02GreenText`).
+Visual conformance still open — see [debug/text-tspan-02-b.md](debug/text-tspan-02-b.md).
 
 ### Model evolution
 
@@ -228,8 +250,23 @@ Replace flat `SVGText.string` with structured runs when `tspan` lands:
 - [x] Renderer: multi-run layout with element-level `text-anchor`
 - [x] Per-glyph `x`/`y` lists on `<tspan>` (`text-tspan-01-b` § tspan03)
 - [x] Weight/style-aware `@font-face` matching (FreeSerif bold via CoreText or SVG font)
-- [x] `rotate` on `<text>` / `<tspan>` with nested propagation (`text-tspan-02-b`)
-- [ ] `xml:space="preserve"` end-to-end
+- [x] `rotate` on `<text>` / `<tspan>` — renderer (`TextLayout` rotated pen, single-`x`, skip anchor) + parser character-stream assignment ([debug report](debug/text-tspan-02-b.md))
+- [x] `rotations: [CGFloat]?` per run (model + SAX flush for simple propagation)
+- [x] Character-stream normalization at `</text>` (`xml:space` default + preserve boundaries)
+- [x] Per-character `rotate` assignment on normalized stream (simple + nested propagation)
+- [ ] `xml:space="preserve"` end-to-end (`#rotation_values` in `text-tspan-02-b`)
+- [ ] `text-tspan-02-b` visual conformance (parser string/rotate aligned ✓; renderer verify)
+
+### SVG `rotate` semantics (reference)
+
+Per [SVG 1.1 Text — `rotate` / Example tspan05](https://www.w3.org/TR/SVG11/text.html#TSpanElementRotateAttribute):
+
+- Per-character supplemental rotation; glyph advances occur in a **temporary rotated coordinate system**
+- Spaces consume `rotate` values; last value repeats when the list is shorter than remaining characters; surplus propagates to descendant `<tspan>` elements without their own `rotate`
+- When a child `<tspan>` specifies `rotate`, parent's unused values are discarded (exhausted)
+- `rotate` + `xml:space="default"` require a **normalized character stream before** rotation assignment — consuming on raw SAX runs desynchronizes indices
+
+See also [debug/text-tspan-02-b.md](debug/text-tspan-02-b.md).
 
 ```swift
 public struct SVGTextRun: Equatable, Sendable {
@@ -320,6 +357,7 @@ Each slice still follows [adding-a-feature.md](adding-a-feature.md):
 | `drawText` / path duplication during migration | Single PR removes `.drawText` once path path is default |
 | `textLength` algorithm underspecified | Match W3C reference image, not a specific browser |
 | Large SVGFreeSans glyph tables | Parse once; store `CGPath` in model; share across renders |
+| `rotate` + run-boundary whitespace | **Resolved** — character-stream `xml:space` at `</text>` in `TextCharacterStream.swift`; do not add run-boundary heuristics |
 
 ## Suggested PR sequence
 

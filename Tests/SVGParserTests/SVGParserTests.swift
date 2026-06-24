@@ -234,6 +234,67 @@ struct SVGParserTests {
         #expect(t.runs[1].explicitX == [63.13, 81.88])
     }
 
+    @Test func normalizesTextCharacterStreamForTspan02GreenText() throws {
+        let repoRoot = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+        let svgURL = repoRoot
+            .appendingPathComponent("Tests/SVGConformanceTests/Resources/W3C-SVG-1.1/svg/text-tspan-02-b.svg")
+        let doc = try SVGParser().parse(url: svgURL)
+
+        guard case .group(let body) = doc.root.children.first(where: {
+            if case .group = $0 { return true }
+            return false
+        }) else {
+            Issue.record("expected body group"); return
+        }
+
+        let green = body.children.compactMap { el -> SVGText? in
+            guard case .text(let t) = el else { return nil }
+            guard t.font.size == 35, t.origin.x == 20, t.origin.y == 120 else { return nil }
+            if case .color(let c) = t.paint.fill, c.green > 0.4, c.red < 0.1 { return t }
+            return nil
+        }.first
+        guard let green else {
+            Issue.record("expected green text"); return
+        }
+
+        #expect(green.string == "Not all characters in the text have a specified rotation")
+        #expect(green.runs.first?.string == "Not")
+        #expect(green.runs.first?.rotations == [5, 15, 25])
+
+        let child4 = green.runs.first { $0.explicitX == [20] && $0.explicitY == 180 }
+        #expect(child4?.string == "text")
+
+        let inRun = green.runs.first { $0.string == "in" }
+        #expect(inRun?.rotations == [70, 60])
+
+        let theRun = green.runs.first { $0.string == " the" }
+        #expect(theRun?.rotations == [50, 40, 30, 20])
+
+        let spaceBeforeIn = green.runs.first { $0.string == " " && $0.rotations == [-40] }
+        #expect(spaceBeforeIn != nil)
+
+        #expect(green.runs.last?.string == "rotation")
+        #expect(green.runs.last?.rotations?.allSatisfy { $0 == 55 } == true)
+    }
+
+    @Test func preservesXmlSpaceOnTextRun() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+          <text x="0" y="20" xml:space="preserve">  spaced  </text>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .text(let t) = doc.root.children.first else {
+            Issue.record("expected text"); return
+        }
+        #expect(t.runs.count == 1)
+        #expect(t.runs[0].preserveSpace)
+        #expect(t.runs[0].string == "  spaced  ")
+    }
+
     @Test func parsesTspanRotatePropagation() throws {
         let svg = """
         <svg xmlns="http://www.w3.org/2000/svg" width="480" height="360"><text x="20" y="120" rotate="5,15,25">No<tspan rotate="-10,-20">te</tspan></text></svg>

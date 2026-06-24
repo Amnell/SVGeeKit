@@ -44,6 +44,13 @@ let package = Package(
         .testTarget(name: "SVGCoreTests", dependencies: ["SVGCore"]),
         .testTarget(name: "SVGParserTests", dependencies: ["SVGParser"]),
         .testTarget(
+            name: "SVGRendererTests",
+            dependencies: ["SVGParser", "SVGRenderer"],
+            resources: [
+                .copy("../SVGConformanceTests/Resources/W3C-SVG-1.1")
+            ]
+        ),
+        .testTarget(
             name: "SVGConformanceTests",
             dependencies: ["SVGConformance"],
             resources: [

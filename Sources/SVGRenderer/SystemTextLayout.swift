@@ -35,6 +35,19 @@ enum SystemTextLayout {
         return CGFloat(CTLineGetTypographicBounds(line, nil, nil, nil))
     }
 
+    static func charAdvance(string: String, font: SVGFont) -> CGFloat {
+        guard let char = string.first else { return 0 }
+        let ctFont = SystemFontResolver.font(for: font)
+        var glyph = CGGlyph(0)
+        let scalar = String(char)
+        guard CTFontGetGlyphsForCharacters(ctFont, Array(scalar.utf16), &glyph, 1) else {
+            return 0
+        }
+        var advance = CGSize.zero
+        CTFontGetAdvancesForGlyphs(ctFont, .default, [glyph], &advance, 1)
+        return advance.width
+    }
+
     static func glyphPathUnanchored(
         string: String,
         font: SVGFont,
@@ -118,7 +131,7 @@ private func textGlyphTransform(
 ) -> CGAffineTransform {
     var transform = CGAffineTransform(translationX: position.x, y: position.y)
     if rotationDegrees != 0 {
-        transform = transform.rotated(by: -rotationDegrees * .pi / 180)
+        transform = transform.rotated(by: rotationDegrees * .pi / 180)
     }
     return transform.scaledBy(x: scaleX, y: scaleY)
 }
