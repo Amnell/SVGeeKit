@@ -100,6 +100,77 @@ struct TextLayoutTests {
         #expect(abs(e.position.y - 120.0) < 0.05)
     }
 
+    @Test func redTextPreservesSpaceBeforeLine2() throws {
+        let doc = try loadTextTspan02()
+        let red = try redText(in: doc)
+        #expect(red.string.contains("the text"))
+        #expect(red.runs.map(\.string).joined() == "Not all characters in the text have a specified rotation")
+    }
+
+    @Test func textTspan02GreenAndRedFullRotationStream() throws {
+        let doc = try loadTextTspan02()
+        let green = try greenText(in: doc)
+        let red = try redText(in: doc)
+
+        let greenRots = green.runs.flatMap { $0.rotations ?? [] }
+        let redRots = red.runs.flatMap { $0.rotations ?? [] }
+        let greenStream = green.runs.map(\.string).joined()
+        let redStream = red.runs.map(\.string).joined()
+
+        #expect(greenStream == redStream)
+        #expect(greenRots.count == redRots.count)
+        for i in greenRots.indices where greenRots[i] != redRots[i] {
+            let idx = greenStream.index(greenStream.startIndex, offsetBy: i)
+            let ch = greenStream[idx]
+            // Nested `<tspan rotate>` assigns -10 to the inter-word space before
+            // "specified"; the flat red reference list still has 55 there.
+            if ch == " ", greenStream[greenStream.index(after: idx)...].hasPrefix("specified") {
+                #expect(greenRots[i] == -10)
+                #expect(redRots[i] == 55)
+                continue
+            }
+            Issue.record("rot[\(i)] '\(ch)' green=\(greenRots[i]) red=\(redRots[i])")
+        }
+    }
+
+    @Test func textTspan02GreenLine2MatchesRedPenPositions() throws {
+        let doc = try loadTextTspan02()
+        let green = try greenText(in: doc)
+        let red = try redText(in: doc)
+
+        func line2Placements(_ text: SVGText) -> [TextLayout.CharacterPlacement] {
+            var line2 = text
+            if let idx = text.runs.firstIndex(where: { $0.explicitY == 180 }) {
+                line2.runs = Array(text.runs[idx...])
+            } else {
+                line2.runs = []
+            }
+            return TextLayout.layoutCharacterPlacements(
+                text: line2,
+                fontFaces: doc.fontFaces,
+                fonts: doc.fonts
+            )
+        }
+
+        let greenP = line2Placements(green)
+        let redP = line2Placements(red)
+        let greenStream = greenP.map(\.character).map(String.init).joined()
+        let redStream = redP.map(\.character).map(String.init).joined()
+
+        #expect(greenP.count == redP.count, "green \(greenP.count) vs red \(redP.count)")
+
+        if greenStream != redStream {
+            Issue.record("streams green='\(greenStream)' red='\(redStream)'")
+        }
+
+        for i in greenP.indices {
+            let g = greenP[i]
+            let r = redP[i]
+            #expect(abs(g.position.x - r.position.x) < 0.05)
+            #expect(abs(g.position.y - r.position.y) < 0.05)
+        }
+    }
+
     @Test func textTspan02GreenLine1MatchesRedPenPositions() throws {
         let doc = try loadTextTspan02()
         let green = try greenText(in: doc)
@@ -169,8 +240,8 @@ struct TextLayoutTests {
         let greenRots = greenLine1.flatMap { $0.rotations ?? [] }
         let redRots = redLine1.flatMap { $0.rotations ?? [] }
 
-        #expect(redStream == "Not all characters in the")
-        #expect(greenStream == "Not all characters in the")
+        #expect(redStream == "Not all characters in the ")
+        #expect(greenStream == "Not all characters in the ")
 
         let shared = min(greenRots.count, redRots.count)
         for i in 0..<shared {

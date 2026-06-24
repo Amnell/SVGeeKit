@@ -278,6 +278,13 @@ struct SVGParserTests {
 
         #expect(green.runs.last?.string == "rotation")
         #expect(green.runs.last?.rotations?.allSatisfy { $0 == 55 } == true)
+
+        let specified = green.runs.first { $0.string.contains("specified") }
+        guard let specified else {
+            Issue.record("missing specified run"); return
+        }
+        #expect(specified.rotations?.allSatisfy { $0 == -10 } == true)
+        #expect(specified.rotations?.count == (specified.string == "specified" ? 9 : 10))
     }
 
     @Test func parsesRotationValuesAnnotationText() throws {
@@ -308,6 +315,23 @@ struct SVGParserTests {
         #expect(text.runs[0].string.contains("5"))
         #expect(text.runs[3].explicitX == [295])
         #expect(text.runs[4].explicitX == [340])
+    }
+
+    @Test func preservesSpaceBeforeExplicitPositionedTspan() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="480" height="360">
+          <text x="20" y="120" rotate="5,15,25,35,45">Not all characters in the
+          <tspan x="20" y="180">text</tspan></text>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .text(let t) = doc.root.children.first else {
+            Issue.record("expected text"); return
+        }
+        #expect(t.string == "Not all characters in the text")
+        #expect(t.runs.count == 2)
+        #expect(t.runs[0].string == "Not all characters in the ")
+        #expect(t.runs[1].string == "text")
     }
 
     @Test func preservesXmlSpaceOnTextRun() throws {

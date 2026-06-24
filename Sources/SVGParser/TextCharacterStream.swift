@@ -114,12 +114,14 @@ enum TextCharacterStream {
                     let next = segments[index + 1].run
                     var spaceRun = emptyRun(from: next)
                     spaceRun.string = " "
-                    spaceRun.explicitY = next.explicitY
+                    // Inter-tspan whitespace keeps the active baseline; only the
+                    // following tspan's own characters pick up its explicit `y`.
+                    spaceRun.explicitY = nil
                     spaceRun.explicitX = nil
-                    spaceRun.dx = 0
-                    spaceRun.dy = 0
+                    spaceRun.baselineY = output.last?.baselineY ?? segment.run.baselineY
                     output.append(spaceRun)
                     outputMeta.append(TextSegmentMeta())
+                    pendingSpace = false
                     continue
                 }
                 if !atStart {
@@ -147,7 +149,13 @@ enum TextCharacterStream {
                     content.removeLast()
                 }
                 if !before.isEmpty, !content.isEmpty, before.count != content.count {
-                    pendingSpace = true
+                    let nextHasExplicitY = index + 1 < segments.count
+                        && segments[index + 1].run.explicitY != nil
+                    if nextHasExplicitY {
+                        content.append(" ")
+                    } else {
+                        pendingSpace = true
+                    }
                 }
             }
             if !run.preserveSpace {
@@ -164,11 +172,22 @@ enum TextCharacterStream {
             if pendingSpace {
                 if content.first?.isWhitespace != true {
                     if run.explicitX != nil {
+                        if run.explicitY != nil, pendingSpace, let last = output.indices.last {
+                            if !output[last].string.hasSuffix(" ") {
+                                output[last].string.append(" ")
+                            }
+                        }
                         pendingSpace = false
                     } else if segment.meta.opensRotate != nil || pendingOpensRotate != nil {
-                        // Separator before a new `rotate` frame stays on the parent
-                        // cursor (e.g. -40° after "characters", 35° after "Not").
-                        emitParentLevelSpace(from: run)
+                        if segment.meta.opensRotate != nil, raw.first == " " {
+                            // Inter-`<tspan>` space merged into a new rotate frame
+                            // (e.g. before "specified" in text-tspan-02-b).
+                            content = " " + content
+                        } else {
+                            // Separator before a new `rotate` frame stays on the parent
+                            // cursor (e.g. -40° after "characters", 35° after "Not").
+                            emitParentLevelSpace(from: run)
+                        }
                         pendingSpace = false
                     } else if index == segments.count - 1, let last = output.indices.last {
                         if outputMeta[last].closesRotate {
@@ -182,8 +201,6 @@ enum TextCharacterStream {
                         pendingSpace = false
                     } else if index > 0 {
                         content = " " + content
-                        pendingSpace = false
-                    } else {
                         pendingSpace = false
                     }
                 } else {

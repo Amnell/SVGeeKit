@@ -569,19 +569,26 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
 
     private func handleTspanStart(attributes: [String: String], parser: XMLParser) {
         guard !textStack.isEmpty else { return }
+        var leadingWhitespace = ""
         // Inter-`<tspan>` formatting whitespace is not painted when the next
         // tspan supplies an explicit anchor.
         if let run = activeTextRun,
            run.string.allSatisfy(\.isWhitespace),
-           run.explicitX == nil, run.explicitY == nil,
-           attributes["x"] != nil || attributes["y"] != nil {
-            activeTextRun?.string = ""
+           run.explicitX == nil, run.explicitY == nil {
+            if attributes["x"] != nil || attributes["y"] != nil {
+                activeTextRun?.string = ""
+            } else if attributes["rotate"] != nil {
+                // Whitespace before `<tspan rotate>` belongs in that frame
+                // (e.g. the space before "specified" in text-tspan-02-b).
+                leadingWhitespace = " "
+                activeTextRun?.string = ""
+            }
         }
         flushActiveTextRun()
         let (inheritedFont, inheritedPaint) = tspanStyleStack.last!
         let runFont = mergeFont(into: inheritedFont, from: attributes)
         let runPaint = mergePaint(into: inheritedPaint, from: attributes, parser: parser)
-        var run = SVGTextRun(string: "", font: runFont, paint: runPaint)
+        var run = SVGTextRun(string: leadingWhitespace, font: runFont, paint: runPaint)
         applyTspanPositionAttributes(attributes, to: &run)
         if run.preserveSpace == false {
             run.preserveSpace = textPreserveSpaceStack.last ?? false
