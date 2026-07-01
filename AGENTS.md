@@ -12,7 +12,8 @@ SVGeeKit is a Swift package for iOS 17+ / macOS 14+ that **parses and renders st
    - `SVGRendererSwiftUI` is one concrete backend; do **not** leak `SwiftUI` types back into `SVGCore` / `SVGRenderer`.
 3. **Never weaken a passing snapshot.** If a real baseline mismatches, first determine whether your change is an intentional rendering improvement (re-approve with `APPROVE_SNAPSHOTS=1`) or a regression (fix the code).
 4. **Add tests for every new element / attribute.** Each new SVG feature lands together with at least one W3C-style test file under `Tests/SVGConformanceTests/Resources/W3C-SVG-1.1/svg/`.
-5. **Update [docs/conformance/report.md](docs/conformance/report.md)** is auto-generated — don't hand-edit; re-run the test suite to regenerate `conformance-report.json`.
+5. **Always read a W3C test's embedded metadata before implementing it.** Every W3C SVG file carries a `<d:SVGTestCase>` block with `<d:testDescription>` (what the test exercises) and `<d:passCriteria>` (the exact visual outcome that counts as a pass — e.g. "four green circles visible, no red"). Read these *before* touching code: they tell you what the correct render is, independent of any existing baseline. Never infer correctness from a `__PartialSnapshots__` baseline alone — those are auto-captured and unverified, so they can enshrine a bug.
+6. **Update [docs/conformance/report.md](docs/conformance/report.md)** is auto-generated — don't hand-edit; re-run the test suite to regenerate `conformance-report.json`.
 
 ## Where to start (by task)
 

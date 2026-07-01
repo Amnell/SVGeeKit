@@ -10,6 +10,26 @@ narrow responsibility and is independently testable.
   `painting-`, `coords-`, `pservers-`, `struct-`, `styling-`, `masking-`,
   `text-`, `filters-`, …).
 
+## 1a. Read the target test's embedded metadata FIRST
+
+Before writing or changing any code for a specific test, open the test's own
+SVG under `Tests/SVGConformanceTests/Resources/W3C-SVG-1.1/svg/<test-id>.svg`
+and read its `<d:SVGTestCase>` block:
+
+- **`<d:testDescription>`** — what SVG behavior the test exercises (e.g. "an
+  invalid `xlink:href` on a `pattern` has no effect on the pattern").
+- **`<d:passCriteria>`** — the exact visual outcome that defines a pass (e.g.
+  "the test is passed if there are four green circles visible, and no red").
+
+These two fields are the ground truth for what the render *should* look like.
+Derive your expected output from them, then confirm the W3C reference PNG at
+`…/W3C-SVG-1.1/png/<test-id>.png` matches that description.
+
+> ⚠️ Do **not** trust a `Tests/__PartialSnapshots__/<test-id>/baseline.png` as
+> the target — partial baselines are auto-captured from the *current* (possibly
+> buggy) renderer and are explicitly unverified. If the partial baseline
+> disagrees with the pass criteria, the renderer is wrong, not the criteria.
+
 ## 2. Extend the model in `SVGCore`
 
 - Add a new `case` to `SVGElement` (e.g. `case circle(SVGCircle)`).
@@ -74,3 +94,5 @@ swift test
 - ❌ Re-approving a baseline without visually inspecting the new image.
 - ❌ Marking a failing test as `skip` instead of fixing the renderer — only
   skip when the test depends on a feature that genuinely is not yet implemented.
+- ❌ Treating a `__PartialSnapshots__` baseline as the correct target instead of
+  reading the test's `<d:passCriteria>` (see step 1a).
