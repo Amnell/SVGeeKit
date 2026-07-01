@@ -617,6 +617,26 @@ struct SVGParserTests {
         #expect(r2.paint.fill == .paintServer(id: "B"))
     }
 
+    @Test func parsesGradientStopOpacity() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg">
+          <linearGradient id="g">
+            <stop offset="0" stop-color="red" stop-opacity="1"/>
+            <stop offset="0.5" stop-color="blue" stop-opacity="0"/>
+            <stop offset="1" stop-color="lime" stop-opacity="0.5"/>
+          </linearGradient>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .linearGradient(let g) = doc.paintServers["g"] else {
+            Issue.record("expected linearGradient"); return
+        }
+        #expect(g.stops.count == 3)
+        #expect(g.stops[0].color.alpha == 1)
+        #expect(g.stops[1].color.alpha == 0)
+        #expect(g.stops[2].color.alpha == 0.5)
+    }
+
     @Test func parsesPatternWithChildrenAndHrefMerge() throws {
         let svg = """
         <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100">

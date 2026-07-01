@@ -179,7 +179,163 @@ struct PatternRenderTests {
     // font, so the text drives most of the mismatch. Gradient geometry is
     // asserted precisely in objectBoundingBoxDiagonalLinearGradientSkewsStopLines;
     // this is only a coarse regression guard on the overall render.
+    #expect(diff.mismatchedFraction < 0.4)
+  }
+
+  @Test func w3cGrad05MatchesReference() throws {
+    let diff = try diffAgainstW3C(testId: "pservers-grad-05-b")
+    // Large "Background" labels dominate the W3C diff; stop-opacity bands are
+    // covered by gradientStopOpacity* tests.
+    #expect(diff.mismatchedFraction < 0.45)
+  }
+
+  @Test func w3cGrad10MatchesReference() throws {
+    let diff = try diffAgainstW3C(testId: "pservers-grad-10-b")
+    #expect(diff.mismatchedFraction < 0.08)
+  }
+
+  @Test func w3cGrad14MatchesReference() throws {
+    let diff = try diffAgainstW3C(testId: "pservers-grad-14-b")
     #expect(diff.mismatchedFraction < 0.2)
+  }
+
+  /// pservers-grad-10-b reflect row: blue-lime-blue-lime across the bar.
+  @Test func linearGradientReflectSpreadTiles() throws {
+    let svg = """
+    <svg xmlns="http://www.w3.org/2000/svg" width="460" height="55" viewBox="0 0 460 55">
+      <linearGradient id="g" gradientUnits="objectBoundingBox" x1=".4" y1="0" x2=".6" y2="0" spreadMethod="reflect">
+        <stop stop-color="blue" offset="0"/>
+        <stop stop-color="lime" offset="1"/>
+      </linearGradient>
+      <rect width="460" height="55" fill="url(#g)"/>
+    </svg>
+    """
+    let doc = try SVGParser().parse(string: svg)
+    let image = try SVGRasterizer.rasterize(doc, pixelSize: CGSize(width: 460, height: 55))
+    let left = Self.pixel(in: image, x: 20, y: 27)
+    let mid = Self.pixel(in: image, x: 230, y: 27)
+    let right = Self.pixel(in: image, x: 440, y: 27)
+    #expect(left.blue > left.green)
+    #expect(mid.green > mid.blue)
+    #expect(right.green > right.blue)
+  }
+
+  /// pservers-grad-10-b repeat row: abrupt blue discontinuities between tiles.
+  @Test func linearGradientRepeatSpreadTiles() throws {
+    let svg = """
+    <svg xmlns="http://www.w3.org/2000/svg" width="460" height="55" viewBox="0 0 460 55">
+      <linearGradient id="g" gradientUnits="objectBoundingBox" x1=".4" y1="0" x2=".6" y2="0" spreadMethod="repeat">
+        <stop stop-color="blue" offset="0"/>
+        <stop stop-color="lime" offset="1"/>
+      </linearGradient>
+      <rect width="460" height="55" fill="url(#g)"/>
+    </svg>
+    """
+    let doc = try SVGParser().parse(string: svg)
+    let image = try SVGRasterizer.rasterize(doc, pixelSize: CGSize(width: 460, height: 55))
+    // Tile boundary near 20%: blue end meets blue start.
+    let boundary = Self.pixel(in: image, x: Int(460 * 0.2), y: 27)
+    #expect(boundary.blue > 200)
+    #expect(boundary.green < 80)
+    let mid = Self.pixel(in: image, x: 230, y: 27)
+    #expect(mid.green > 50)
+    #expect(mid.blue > 50)
+  }
+
+  @Test func userSpaceLinearRepeatSpread() throws {
+    let svg = """
+    <svg xmlns="http://www.w3.org/2000/svg" width="225" height="40" viewBox="0 0 225 40">
+      <linearGradient id="g" gradientUnits="userSpaceOnUse" x1="50" y1="0" x2="100" y2="0" spreadMethod="repeat">
+        <stop offset="0" stop-color="black"/>
+        <stop offset="1" stop-color="gold"/>
+      </linearGradient>
+      <rect width="225" height="40" fill="url(#g)"/>
+    </svg>
+    """
+    let doc = try SVGParser().parse(string: svg)
+    let image = try SVGRasterizer.rasterize(doc, pixelSize: CGSize(width: 225, height: 40))
+    let mid = Self.pixel(in: image, x: 112, y: 20)
+    #expect(mid.red > 40)
+    #expect(mid.green > 30)
+  }
+
+  @Test func grad10RepeatRowShowsTiledGradient() throws {
+    let svgURL = Self.w3cRoot.appendingPathComponent("svg/pservers-grad-10-b.svg")
+    let doc = try SVGParser().parse(
+      data: Data(contentsOf: svgURL),
+      baseURL: svgURL.deletingLastPathComponent()
+    )
+    let image = try SVGRasterizer.rasterize(doc, pixelSize: CGSize(width: 480, height: 360))
+    let mid = Self.pixel(in: image, x: 230, y: 232)
+    #expect(mid.green > 50)
+    #expect(mid.blue > 50)
+  }
+
+  /// pservers-grad-05-b: blue at offset 0.2 with stop-opacity 0 reveals the aqua fill behind.
+  @Test func gradientStopOpacityZeroBandShowsBackground() throws {
+    let svg = """
+    <svg xmlns="http://www.w3.org/2000/svg" width="480" height="100" viewBox="0 0 480 100">
+      <rect width="480" height="100" fill="aqua"/>
+      <linearGradient id="Grad1" gradientUnits="objectBoundingBox" x1="0" y1="0" x2="1" y2="1">
+        <stop stop-color="rgb(238,130,238)" stop-opacity="1" offset="0"/>
+        <stop stop-color="blue" stop-opacity="0" offset="0.2"/>
+        <stop stop-color="lime" stop-opacity="0.5" offset="0.4"/>
+        <stop stop-color="yellow" stop-opacity="0.2" offset="0.6"/>
+        <stop stop-color="rgb(255,165,0)" stop-opacity="0.8" offset="0.8"/>
+        <stop stop-color="black" stop-opacity="1" offset="1"/>
+      </linearGradient>
+      <rect x="20" y="20" width="440" height="80" fill="url(#Grad1)"/>
+    </svg>
+    """
+    let doc = try SVGParser().parse(string: svg)
+    let image = try SVGRasterizer.rasterize(doc, pixelSize: CGSize(width: 480, height: 100))
+    // On the u+v ≈ 0.4 iso-line (offset 0.2 along the diagonal), blue is fully transparent.
+    let p = Self.pixel(in: image, x: 108, y: 36)
+    #expect(p.green > 200)
+    #expect(p.blue > 200)
+    #expect(p.red < 120)
+  }
+
+  /// Semi-transparent stops must not double-darken (straight alpha, not premul RGB).
+  @Test func semiTransparentGradientStopPreservesBrightness() throws {
+    let svg = """
+    <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">
+      <rect width="100" height="100" fill="black"/>
+      <linearGradient id="g" x1="0" y1="0" x2="1" y2="0" gradientUnits="objectBoundingBox">
+        <stop offset="0" stop-color="lime" stop-opacity="1"/>
+        <stop offset="1" stop-color="lime" stop-opacity="0.5"/>
+      </linearGradient>
+      <rect width="100" height="100" fill="url(#g)"/>
+    </svg>
+    """
+    let doc = try SVGParser().parse(string: svg)
+    let image = try SVGRasterizer.rasterize(doc, pixelSize: CGSize(width: 100, height: 100))
+    let p = Self.pixel(in: image, x: 75, y: 50)
+    #expect(p.green > 140)
+    #expect(p.green > p.red + 40)
+  }
+
+  /// A stop with stop-opacity="0" is fully transparent at the gradient endpoint.
+  @Test func gradientStopOpacityShowsBackground() throws {
+    let svg = """
+    <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">
+      <rect width="100" height="100" fill="aqua"/>
+      <linearGradient id="g" x1="0" y1="0" x2="1" y2="0" gradientUnits="objectBoundingBox">
+        <stop offset="0" stop-color="red" stop-opacity="1"/>
+        <stop offset="1" stop-color="blue" stop-opacity="0"/>
+      </linearGradient>
+      <rect width="100" height="100" fill="url(#g)"/>
+    </svg>
+    """
+    let doc = try SVGParser().parse(string: svg)
+    let image = try SVGRasterizer.rasterize(doc, pixelSize: CGSize(width: 100, height: 100))
+    let left = Self.pixel(in: image, x: 5, y: 50)
+    let right = Self.pixel(in: image, x: 95, y: 50)
+    #expect(left.red > 200)
+    #expect(left.green < 80)
+    #expect(right.green > 200)
+    #expect(right.blue > 200)
+    #expect(right.red < 80)
   }
 
   /// objectBoundingBox diagonal linear gradients map stop lines through the
@@ -209,10 +365,11 @@ struct PatternRenderTests {
 
     let image = try SVGRasterizer.rasterize(doc, pixelSize: CGSize(width: 400, height: 40))
     // Endpoint baking would project (200,10) to ~52% along the user-space
-    // diagonal; the OBB affine maps the same point to ~38% in gradient space.
+    // diagonal; the OBB affine maps the same point to ~37.5% in sRGB space.
     let p = Self.pixel(in: image, x: 200, y: 10)
+    #expect(p.red > p.blue)
     #expect(p.red > 140)
-    #expect(p.blue < 110)
+    #expect(p.blue > 80 && p.blue < 110)
   }
 
   private static func pixel(in image: CGImage, x: Int, y: Int)

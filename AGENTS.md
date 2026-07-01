@@ -58,7 +58,7 @@ Sources/
   SVGCore/              # value-type model (SVGDocument, SVGRect, SVGPaint, …)
   SVGParser/            # XMLParser-based reader → SVGCore
   SVGRenderer/          # backend-neutral protocol + render-tree lowering
-  SVGRendererSwiftUI/   # SwiftUI Canvas backend + ImageRenderer rasterizer
+  SVGRendererSwiftUI/   # SwiftUI Canvas backend + Core Graphics rasterizer
   SVGKit/               # umbrella re-export (public API)
   SVGConformance/       # test-support: suite index, snapshot diff, report
 Tests/
