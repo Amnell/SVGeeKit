@@ -643,6 +643,29 @@ struct SVGParserTests {
         #expect(p2.viewBox == CGRect(x: 0, y: 0, width: 10, height: 10))
     }
 
+    @Test func invalidPatternHrefDoesNotMergeAttributes() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100">
+          <pattern id="p1" patternUnits="userSpaceOnUse" width="100" height="100" viewBox="0 0 10 10">
+            <circle cx="5" cy="5" r="1" fill="red"/>
+          </pattern>
+          <pattern id="p2" xlink:href="#invalidlink" width="0.5" height="0.5">
+            <circle cx="50" cy="50" r="20" fill="lime"/>
+          </pattern>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+
+        guard case .pattern(let p2) = doc.paintServers["p2"] else {
+            Issue.record("expected pattern p2"); return
+        }
+        #expect(p2.width == 0.5)
+        #expect(p2.height == 0.5)
+        #expect(p2.patternUnits == .objectBoundingBox)
+        #expect(p2.viewBox == nil)
+        #expect(p2.children.count == 1)
+    }
+
     @Test func parsesPaintServerFallbackColor() throws {
         let svg = """
         <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50">

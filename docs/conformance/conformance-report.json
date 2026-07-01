@@ -2027,7 +2027,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-grad-06-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-grad-06-b\/baseline.png",
-    "detail" : "promoted from partial baseline",
+    "diffMaxChannel" : 2,
+    "mismatchedFraction" : 0,
     "status" : "passed",
     "tag" : "pservers",
     "testId" : "pservers-grad-06-b"
@@ -2197,7 +2198,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-pattern-01-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-pattern-01-b\/baseline.png",
-    "detail" : "promoted from partial baseline",
+    "diffMaxChannel" : 1,
+    "mismatchedFraction" : 0,
     "status" : "passed",
     "tag" : "pservers",
     "testId" : "pservers-pattern-01-b"
@@ -2205,10 +2207,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-pattern-02-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-pattern-02-f\/baseline.png",
-    "detail" : "92978 px exceed tolerance",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.5380671296296297,
-    "status" : "failed",
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
+    "status" : "passed",
     "tag" : "pservers",
     "testId" : "pservers-pattern-02-f"
   },
@@ -2259,10 +2260,11 @@
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-pattern-08-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/pservers-pattern-08-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "partialBaseline",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-pattern-08-f\/baseline.png",
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 255,
+    "mismatchedFraction" : 0.030462962962962963,
+    "status" : "passed",
     "tag" : "pservers",
     "testId" : "pservers-pattern-08-f"
   },

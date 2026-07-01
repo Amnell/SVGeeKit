@@ -47,10 +47,10 @@ public struct SVGResolvedPattern: Equatable, Sendable {
     public var children: [SVGElement]
     /// Maps pattern coordinate space to user space (`patternUnits` + `patternTransform`).
     public var patternToUser: SVGTransform
-    /// Tile origin in pattern coordinate space.
+    /// Tile origin. User space when `tileLocalContent`; otherwise pattern space.
     public var x: CGFloat
     public var y: CGFloat
-    /// Tile size in pattern coordinate space.
+    /// Tile size. User space when `tileLocalContent`; otherwise pattern space.
     public var step: CGSize
     /// Maps pattern content coordinates into tile-local space.
     public var contentMatrix: SVGTransform

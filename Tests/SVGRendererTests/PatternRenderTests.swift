@@ -95,4 +95,15 @@ struct PatternRenderTests {
     let diff = try diffAgainstW3C(testId: "pservers-pattern-04-f")
     #expect(diff.mismatchedFraction < 0.05)
   }
+
+  @Test func w3cPattern07MatchesReference() throws {
+    let diff = try diffAgainstW3C(testId: "pservers-pattern-07-f")
+    #expect(diff.mismatchedFraction < 0.05)
+  }
+
+  @Test func w3cPattern08MatchesReference() throws {
+    let diff = try diffAgainstW3C(testId: "pservers-pattern-08-f")
+    // DRAFT watermark at top; body is four lime circles over red reference pattern.
+    #expect(diff.mismatchedFraction < 0.05)
+  }
 }

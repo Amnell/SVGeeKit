@@ -227,6 +227,33 @@ public struct SwiftUICanvasRenderer {
         let step = pattern.step
         guard step.width > 0, step.height > 0 else { return }
 
+        let tileClip = CGRect(x: 0, y: 0, width: step.width, height: step.height)
+
+        if pattern.tileLocalContent {
+            // Grid may be transformed (patternTransform); compute tile indices in pattern space.
+            let inv = pattern.patternToUser.matrix.inverted()
+            let localBounds = clipBounds.applying(inv)
+            let startI = Int(floor((localBounds.minX - pattern.x) / step.width)) - 1
+            let endI = Int(ceil((localBounds.maxX - pattern.x) / step.width)) + 1
+            let startJ = Int(floor((localBounds.minY - pattern.y) / step.height)) - 1
+            let endJ = Int(ceil((localBounds.maxY - pattern.y) / step.height)) + 1
+
+            for j in startJ...endJ {
+                for i in startI...endI {
+                    context.drawLayer { tile in
+                        tile.concatenate(pattern.patternToUser.matrix)
+                        tile.concatenate(CGAffineTransform(
+                            translationX: pattern.x + CGFloat(i) * step.width,
+                            y: pattern.y + CGFloat(j) * step.height
+                        ))
+                        tile.clip(to: Path(tileClip))
+                        self.execute(tileCommands, context: &tile)
+                    }
+                }
+            }
+            return
+        }
+
         // Tile indices are computed in pattern coordinate space.
         let inv = pattern.patternToUser.matrix.inverted()
         let localBounds = clipBounds.applying(inv)
@@ -236,8 +263,6 @@ public struct SwiftUICanvasRenderer {
         let startJ = Int(floor((localBounds.minY - pattern.y) / step.height)) - 1
         let endJ = Int(ceil((localBounds.maxY - pattern.y) / step.height)) + 1
 
-        let tileClip = CGRect(x: 0, y: 0, width: step.width, height: step.height)
-
         for j in startJ...endJ {
             for i in startI...endI {
                 context.drawLayer { tile in
@@ -246,11 +271,7 @@ public struct SwiftUICanvasRenderer {
                         translationX: pattern.x + CGFloat(i) * step.width,
                         y: pattern.y + CGFloat(j) * step.height
                     ))
-                    if pattern.tileLocalContent {
-                        tile.clip(to: Path(tileClip))
-                    } else {
-                        tile.concatenate(pattern.contentMatrix.matrix)
-                    }
+                    tile.concatenate(pattern.contentMatrix.matrix)
                     self.execute(tileCommands, context: &tile)
                 }
             }

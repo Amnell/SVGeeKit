@@ -564,25 +564,46 @@ public enum SVGRenderTree {
         referencingBBox: CGRect,
         ctx: Context
     ) -> SVGResolvedPattern? {
+        let tileLocalContent = pattern.patternContentUnits == .userSpaceOnUse && pattern.viewBox == nil
+        var x = pattern.x
+        var y = pattern.y
+        var step = CGSize(width: pattern.width, height: pattern.height)
         let patternToUser: CGAffineTransform
-        switch pattern.patternUnits {
-        case .userSpaceOnUse:
+
+        if tileLocalContent {
+            // Children repeat in tile-local user coordinates `(0,0)…(step)`.
+            // Bake `objectBoundingBox` geometry into user space so a circle at
+            // `(50,50)` lands in the centre of each `width=0.5` tile on a 200×200 rect.
             patternToUser = pattern.transform.matrix
-        case .objectBoundingBox:
-            guard !referencingBBox.isNull, !referencingBBox.isEmpty else { return nil }
-            let obb = CGAffineTransform(translationX: referencingBBox.minX, y: referencingBBox.minY)
-                .scaledBy(x: referencingBBox.width, y: referencingBBox.height)
-            patternToUser = obb.concatenating(pattern.transform.matrix)
+            if pattern.patternUnits == .objectBoundingBox {
+                guard !referencingBBox.isNull, !referencingBBox.isEmpty else { return nil }
+                x = referencingBBox.minX + pattern.x * referencingBBox.width
+                y = referencingBBox.minY + pattern.y * referencingBBox.height
+                step = CGSize(
+                    width: pattern.width * referencingBBox.width,
+                    height: pattern.height * referencingBBox.height
+                )
+            }
+        } else {
+            switch pattern.patternUnits {
+            case .userSpaceOnUse:
+                patternToUser = pattern.transform.matrix
+            case .objectBoundingBox:
+                guard !referencingBBox.isNull, !referencingBBox.isEmpty else { return nil }
+                let obb = CGAffineTransform(translationX: referencingBBox.minX, y: referencingBBox.minY)
+                    .scaledBy(x: referencingBBox.width, y: referencingBBox.height)
+                patternToUser = obb.concatenating(pattern.transform.matrix)
+            }
         }
 
         return SVGResolvedPattern(
             children: pattern.children,
             patternToUser: SVGTransform(patternToUser),
-            x: pattern.x,
-            y: pattern.y,
-            step: CGSize(width: pattern.width, height: pattern.height),
+            x: x,
+            y: y,
+            step: step,
             contentMatrix: SVGTransform(patternContentMatrix(pattern, referencingBBox: referencingBBox)),
-            tileLocalContent: pattern.patternContentUnits == .userSpaceOnUse && pattern.viewBox == nil
+            tileLocalContent: tileLocalContent
         )
     }
 
