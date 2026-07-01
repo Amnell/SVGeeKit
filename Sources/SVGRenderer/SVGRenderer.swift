@@ -515,7 +515,22 @@ public enum SVGRenderTree {
             }
             let resolved = resolvePaintServer(server, bbox: bbox, ctx: ctx)
             if case .none = resolved {
-                if let fallback { return .color(fallback) }
+                let useFallback: Bool = {
+                    switch server {
+                    case .pattern(let p):
+                        // Zero-size patterns without a viewBox are empty paint
+                        // servers and use the ICC fallback (pservers-pattern-03-f).
+                        // A viewBox with zero tile size paints nothing instead
+                        // (pservers-pattern-09-f pattern3).
+                        if p.width <= 0 || p.height <= 0 {
+                            return p.viewBox == nil
+                        }
+                        return false
+                    default:
+                        return true
+                    }
+                }()
+                if useFallback, let fallback { return .color(fallback) }
                 return .none
             }
             return resolved

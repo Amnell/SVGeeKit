@@ -215,7 +215,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         var viewBox: CGRect?
         var children: [SVGElement] = []
 
-        func materialized() -> SVGPattern {
+        func materialized(hasInvalidHref: Bool = false) -> SVGPattern {
             SVGPattern(
                 x: x ?? 0,
                 y: y ?? 0,
@@ -225,7 +225,8 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
                 patternContentUnits: patternContentUnits ?? .userSpaceOnUse,
                 transform: transform ?? .identity,
                 viewBox: viewBox,
-                children: children
+                children: children,
+                hasInvalidHref: hasInvalidHref
             )
         }
 
@@ -992,7 +993,10 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             }
         }
         for (id, partial) in pendingPatterns {
-            paintServers[id] = .pattern(partial.materialized())
+            let invalidHref = patternHrefs.contains { entry in
+                entry.id == id && pendingPatterns[entry.href] == nil
+            }
+            paintServers[id] = .pattern(partial.materialized(hasInvalidHref: invalidHref))
         }
     }
 

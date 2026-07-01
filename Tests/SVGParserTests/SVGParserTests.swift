@@ -664,6 +664,43 @@ struct SVGParserTests {
         #expect(p2.patternUnits == .objectBoundingBox)
         #expect(p2.viewBox == nil)
         #expect(p2.children.count == 1)
+        #expect(p2.hasInvalidHref)
+    }
+
+    @Test func validPatternHrefDoesNotSetInvalidHrefFlag() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100">
+          <pattern id="p1" patternUnits="userSpaceOnUse" width="100" height="100" viewBox="0 0 10 10">
+            <circle cx="5" cy="5" r="1" fill="red"/>
+          </pattern>
+          <pattern id="p3" patternUnits="userSpaceOnUse" width="0" height="0" viewBox="0 0 10 10">
+            <circle cx="5" cy="5" r="1.7" fill="red"/>
+          </pattern>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .pattern(let p3) = doc.paintServers["p3"] else {
+            Issue.record("expected pattern p3"); return
+        }
+        #expect(!p3.hasInvalidHref)
+    }
+
+    /// pservers-pattern-09-f `pattern2`: invalid `xlink:href` with default zero dims.
+    @Test func invalidPatternHrefKeepsDefaultZeroDimensions() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="480" height="360">
+          <pattern id="pattern2" xlink:href="#invalidlink">
+            <circle cx="50" cy="50" r="20" fill="red"/>
+          </pattern>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .pattern(let p2) = doc.paintServers["pattern2"] else {
+            Issue.record("expected pattern2"); return
+        }
+        #expect(p2.width == 0)
+        #expect(p2.height == 0)
+        #expect(p2.hasInvalidHref)
     }
 
     @Test func parsesPaintServerFallbackColor() throws {

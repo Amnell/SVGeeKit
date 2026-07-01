@@ -17,6 +17,11 @@ public struct SVGPattern: Equatable, Sendable {
     public var transform: SVGTransform
     public var viewBox: CGRect?
     public var children: [SVGElement]
+    /// True when the pattern declared an `xlink:href` that did not resolve
+    /// to another pattern in the document (SVG 1.1 §13.4.3). Referencing
+    /// such a pattern with an ICC fallback colour uses the fallback; a valid
+    /// pattern with zero tile size simply paints nothing.
+    public var hasInvalidHref: Bool
 
     public init(
         x: CGFloat = 0,
@@ -27,7 +32,8 @@ public struct SVGPattern: Equatable, Sendable {
         patternContentUnits: SVGPatternUnits = .userSpaceOnUse,
         transform: SVGTransform = .identity,
         viewBox: CGRect? = nil,
-        children: [SVGElement] = []
+        children: [SVGElement] = [],
+        hasInvalidHref: Bool = false
     ) {
         self.x = x
         self.y = y
@@ -38,6 +44,7 @@ public struct SVGPattern: Equatable, Sendable {
         self.transform = transform
         self.viewBox = viewBox
         self.children = children
+        self.hasInvalidHref = hasInvalidHref
     }
 }
 

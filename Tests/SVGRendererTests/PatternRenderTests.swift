@@ -106,4 +106,82 @@ struct PatternRenderTests {
     // DRAFT watermark at top; body is four lime circles over red reference pattern.
     #expect(diff.mismatchedFraction < 0.05)
   }
+
+  /// A zero-size pattern with a `viewBox` paints nothing; ICC fallback is
+  /// not applied (pservers-pattern-09-f `pattern3`).
+  @Test func zeroSizePatternWithViewBoxDoesNotUseFallback() throws {
+    let svg = """
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+      <pattern id="p" patternUnits="userSpaceOnUse" width="0" height="0" viewBox="0 0 10 10">
+        <circle cx="5" cy="5" r="4" fill="red"/>
+      </pattern>
+      <rect x="0" y="0" width="20" height="20" fill="url(#p) lime"/>
+    </svg>
+    """
+    let doc = try SVGParser().parse(string: svg)
+    let image = try SVGRasterizer.rasterize(doc, pixelSize: CGSize(width: 20, height: 20))
+    let center = Self.pixel(in: image, x: 10, y: 10)
+    #expect(center.red < 80)
+    #expect(center.green < 80)
+  }
+
+  /// Zero-size patterns without a `viewBox` use ICC fallback
+  /// (pservers-pattern-03-f, pservers-pattern-09-f `pattern2`).
+  @Test func zeroSizePatternWithoutViewBoxUsesFallback() throws {
+    let svg = """
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+      <pattern id="p" patternUnits="userSpaceOnUse" width="0" height="0">
+        <circle cx="10" cy="10" r="4" fill="red"/>
+      </pattern>
+      <rect x="0" y="0" width="20" height="20" fill="url(#p) lime"/>
+    </svg>
+    """
+    let doc = try SVGParser().parse(string: svg)
+    let image = try SVGRasterizer.rasterize(doc, pixelSize: CGSize(width: 20, height: 20))
+    let center = Self.pixel(in: image, x: 10, y: 10)
+    #expect(center.green > 200)
+    #expect(center.red < 80)
+  }
+
+  /// Invalid `xlink:href` with default zero dimensions also uses fallback when
+  /// there is no `viewBox` (pservers-pattern-09-f `pattern2`).
+  @Test func invalidHrefZeroSizePatternUsesFallback() throws {
+    let svg = """
+    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="20" height="20">
+      <pattern id="p" xlink:href="#invalidlink">
+        <circle cx="10" cy="10" r="4" fill="red"/>
+      </pattern>
+      <rect x="0" y="0" width="20" height="20" fill="url(#p) lime"/>
+    </svg>
+    """
+    let doc = try SVGParser().parse(string: svg)
+    let image = try SVGRasterizer.rasterize(doc, pixelSize: CGSize(width: 20, height: 20))
+    let center = Self.pixel(in: image, x: 10, y: 10)
+    #expect(center.green > 200)
+    #expect(center.red < 80)
+  }
+
+  @Test func w3cPattern09MatchesReference() throws {
+    let diff = try diffAgainstW3C(testId: "pservers-pattern-09-f")
+    // DRAFT watermark; left rect is lime fallback, right rect is unfilled.
+    #expect(diff.mismatchedFraction < 0.05)
+  }
+
+  private static func pixel(in image: CGImage, x: Int, y: Int)
+    -> (red: Int, green: Int, blue: Int, alpha: Int) {
+    var data = [UInt8](repeating: 0, count: 4)
+    let colorSpace = CGColorSpaceCreateDeviceRGB()
+    let bitmapInfo = CGBitmapInfo.byteOrder32Big.rawValue
+                   | CGImageAlphaInfo.premultipliedLast.rawValue
+    let ctx = data.withUnsafeMutableBytes { buffer -> CGContext? in
+      guard let base = buffer.baseAddress else { return nil }
+      return CGContext(
+        data: base, width: 1, height: 1, bitsPerComponent: 8,
+        bytesPerRow: 4, space: colorSpace, bitmapInfo: bitmapInfo
+      )
+    }
+    ctx?.translateBy(x: CGFloat(-x), y: CGFloat(-(image.height - 1 - y)))
+    ctx?.draw(image, in: CGRect(x: 0, y: 0, width: image.width, height: image.height))
+    return (Int(data[0]), Int(data[1]), Int(data[2]), Int(data[3]))
+  }
 }
