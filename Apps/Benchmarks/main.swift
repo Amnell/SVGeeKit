@@ -237,7 +237,7 @@ struct Benchmarks {
               --warmup N       Untimed warmup iterations per case (default 1)
           -f, --filter STR     Only run cases whose id contains STR
               --top N          Print N slowest cases (default 10)
-              --no-rasterize   Skip the SwiftUI ImageRenderer phase
+              --no-rasterize   Skip the CG rasterizer phase
           -h, --help           Show this help
         """)
     }

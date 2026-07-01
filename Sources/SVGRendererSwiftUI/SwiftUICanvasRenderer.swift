@@ -6,7 +6,8 @@ import SVGRenderer
 #if canImport(SwiftUI)
 
 /// SwiftUI `GraphicsContext`-based implementation of `SVGRendererBackend`.
-/// Used directly inside `Canvas { ctx, _ in ... }` and indirectly by `Rasterizer`.
+/// Used by `SVGImageView` for live Canvas rendering; `SVGRasterizer` uses
+/// `CGContextRenderer` + `SVGGradientDrawing` for snapshot output.
 public struct SwiftUICanvasRenderer {
 
     public init() {}
@@ -43,13 +44,11 @@ public struct SwiftUICanvasRenderer {
 
             case .fillPath(let cgPath, let paint, let opacity, let evenOdd):
                 guard let shading = shading(for: paint, opacity: opacity) else { continue }
-                // Radial gradients resolved from objectBoundingBox carry a
-                // non-identity gradientTransform (the OBB→userSpace mapping).
-                // Apply it to the context so the backend's circular gradient
-                // is stretched into the correct ellipse; inverse-transform the
-                // path so it clips to the original screen-space shape.
-                if case .radialGradient(let g) = paint, !g.transform.matrix.isIdentity {
-                    let tx = g.transform.matrix
+                // Gradients with a non-identity gradientTransform (including the
+                // OBB→userSpace mapping for objectBoundingBox units) are painted
+                // in gradient space: transform the context, inverse-transform
+                // the path so it still clips in screen space.
+                if let tx = gradientPaintTransform(paint) {
                     context.drawLayer { layerCtx in
                         layerCtx.concatenate(tx)
                         layerCtx.fill(
@@ -84,7 +83,18 @@ public struct SwiftUICanvasRenderer {
                     dash: dashArray,
                     dashPhase: dashPhase
                 )
-                context.stroke(Path(cgPath), with: shading, style: style)
+                if let tx = gradientPaintTransform(paint) {
+                    context.drawLayer { layerCtx in
+                        layerCtx.concatenate(tx)
+                        layerCtx.stroke(
+                            Path(cgPath).applying(tx.inverted()),
+                            with: shading,
+                            style: style
+                        )
+                    }
+                } else {
+                    context.stroke(Path(cgPath), with: shading, style: style)
+                }
 
             case .clipToPath(let cgPath, _):
                 context.clip(to: Path(cgPath))
@@ -121,6 +131,17 @@ public struct SwiftUICanvasRenderer {
         }
     }
 
+    private func gradientPaintTransform(_ paint: SVGPaint) -> CGAffineTransform? {
+        switch paint {
+        case .linearGradient(let g) where !g.transform.matrix.isIdentity:
+            return g.transform.matrix
+        case .radialGradient(let g) where !g.transform.matrix.isIdentity:
+            return g.transform.matrix
+        default:
+            return nil
+        }
+    }
+
     private func shading(for paint: SVGPaint, opacity: CGFloat) -> GraphicsContext.Shading? {
         switch paint {
         case .none:
@@ -143,20 +164,7 @@ public struct SwiftUICanvasRenderer {
             return nil
         case .linearGradient(let g):
             guard !g.stops.isEmpty else { return nil }
-            let stops = g.stops
-                .sorted { $0.offset < $1.offset }
-                .map { stop in
-                    Gradient.Stop(
-                        color: Color(
-                            .sRGB,
-                            red: Double(stop.color.red),
-                            green: Double(stop.color.green),
-                            blue: Double(stop.color.blue),
-                            opacity: Double(stop.color.alpha * opacity)
-                        ),
-                        location: stop.offset
-                    )
-                }
+            let stops = Self.gradientStops(g.stops, paintOpacity: opacity)
             let options: GraphicsContext.GradientOptions
             switch g.spreadMethod {
             case .pad: options = []
@@ -171,20 +179,7 @@ public struct SwiftUICanvasRenderer {
             )
         case .radialGradient(let g):
             guard !g.stops.isEmpty else { return nil }
-            let stops = g.stops
-                .sorted { $0.offset < $1.offset }
-                .map { stop in
-                    Gradient.Stop(
-                        color: Color(
-                            .sRGB,
-                            red: Double(stop.color.red),
-                            green: Double(stop.color.green),
-                            blue: Double(stop.color.blue),
-                            opacity: Double(stop.color.alpha * opacity)
-                        ),
-                        location: stop.offset
-                    )
-                }
+            let stops = Self.gradientStops(g.stops, paintOpacity: opacity)
             let options: GraphicsContext.GradientOptions
             switch g.spreadMethod {
             case .pad: options = []
@@ -199,6 +194,31 @@ public struct SwiftUICanvasRenderer {
                 options: options
             )
         }
+    }
+
+    /// SVG composites stop-color and stop-opacity over content below. SwiftUI
+    /// premultiplies during interpolation, so keep straight sRGB + opacity and
+    /// zero chroma on fully-transparent stops to avoid hue bleed (grad-05-b).
+    private static func gradientStops(
+        _ stops: [SVGGradientStop],
+        paintOpacity: CGFloat
+    ) -> [Gradient.Stop] {
+        stops
+            .sorted { $0.offset < $1.offset }
+            .map { stop in
+                let a = Double(stop.color.alpha * paintOpacity)
+                let useChroma = a > 0
+                return Gradient.Stop(
+                    color: Color(
+                        .sRGB,
+                        red: useChroma ? Double(stop.color.red) : 0,
+                        green: useChroma ? Double(stop.color.green) : 0,
+                        blue: useChroma ? Double(stop.color.blue) : 0,
+                        opacity: a
+                    ),
+                    location: stop.offset
+                )
+            }
     }
 
     private func lineCap(_ c: SVGLineCap) -> CGLineCap {

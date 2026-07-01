@@ -14,6 +14,7 @@ SVGeeKit is a Swift package for iOS 17+ / macOS 14+ that **parses and renders st
 4. **Add tests for every new element / attribute.** Each new SVG feature lands together with at least one W3C-style test file under `Tests/SVGConformanceTests/Resources/W3C-SVG-1.1/svg/`.
 5. **Always read a W3C test's embedded metadata before implementing it.** Every W3C SVG file carries a `<d:SVGTestCase>` block with `<d:testDescription>` (what the test exercises) and `<d:passCriteria>` (the exact visual outcome that counts as a pass — e.g. "four green circles visible, no red"). Read these *before* touching code: they tell you what the correct render is, independent of any existing baseline. Never infer correctness from a `__PartialSnapshots__` baseline alone — those are auto-captured and unverified, so they can enshrine a bug.
 6. **Update [docs/conformance/report.md](docs/conformance/report.md)** is auto-generated — don't hand-edit; re-run the test suite to regenerate `conformance-report.json`.
+7. **Baseline promotion always requires human verification.** Promoting a partial baseline to `__Snapshots__/` (`APPROVE_SNAPSHOTS=<id>`) or re-approving a drifted real baseline (`APPROVE_SNAPSHOTS=1`) must only happen after a human has visually confirmed the render against the W3C test's `passCriteria`. Do not run approval commands or commit promoted `__Snapshots__/` on your own — wait for explicit user confirmation.
 
 ## Where to start (by task)
 
@@ -34,7 +35,7 @@ swift test                                               # run all tests
 swift test --filter ConformanceSuite                     # conformance only
 swift test --filter SVGParserTests                       # parser unit tests only
 
-# Snapshot approval
+# Snapshot approval (human-verified only — see ground rule 7)
 APPROVE_SNAPSHOTS=1 swift test                           # re-approve drifted real baselines
 APPROVE_SNAPSHOTS=<id1>,<id2> swift test --filter ConformanceSuite  # promote specific partial baselines
 ```
@@ -44,7 +45,7 @@ APPROVE_SNAPSHOTS=<id1>,<id2> swift test --filter ConformanceSuite  # promote sp
 Conformance tests use two baseline directories:
 
 - **`Tests/__Snapshots__/`** — verified, gate-kept. A mismatch fails CI. Written by `APPROVE_SNAPSHOTS=1` or the Viewer Approve button.
-- **`Tests/__PartialSnapshots__/`** — auto-tracked. Written automatically on first render; silently updated when the render changes; never fails CI. Promotes to `__Snapshots__/` only via explicit per-ID approval.
+- **`Tests/__PartialSnapshots__/`** — auto-tracked. Written automatically on first render; silently updated when the render changes; never fails CI. Promotes to `__Snapshots__/` only via explicit per-ID approval after human visual verification.
 
 This means every non-skipped, renderable test is tracked for regressions from the first run, while `passed` stays a trustworthy signal.
 
@@ -57,7 +58,7 @@ Sources/
   SVGCore/              # value-type model (SVGDocument, SVGRect, SVGPaint, …)
   SVGParser/            # XMLParser-based reader → SVGCore
   SVGRenderer/          # backend-neutral protocol + render-tree lowering
-  SVGRendererSwiftUI/   # SwiftUI Canvas backend + ImageRenderer rasterizer
+  SVGRendererSwiftUI/   # SwiftUI Canvas backend + Core Graphics rasterizer
   SVGKit/               # umbrella re-export (public API)
   SVGConformance/       # test-support: suite index, snapshot diff, report
 Tests/

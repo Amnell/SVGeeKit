@@ -617,6 +617,26 @@ struct SVGParserTests {
         #expect(r2.paint.fill == .paintServer(id: "B"))
     }
 
+    @Test func parsesGradientStopOpacity() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg">
+          <linearGradient id="g">
+            <stop offset="0" stop-color="red" stop-opacity="1"/>
+            <stop offset="0.5" stop-color="blue" stop-opacity="0"/>
+            <stop offset="1" stop-color="lime" stop-opacity="0.5"/>
+          </linearGradient>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .linearGradient(let g) = doc.paintServers["g"] else {
+            Issue.record("expected linearGradient"); return
+        }
+        #expect(g.stops.count == 3)
+        #expect(g.stops[0].color.alpha == 1)
+        #expect(g.stops[1].color.alpha == 0)
+        #expect(g.stops[2].color.alpha == 0.5)
+    }
+
     @Test func parsesPatternWithChildrenAndHrefMerge() throws {
         let svg = """
         <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100">
@@ -641,6 +661,34 @@ struct SVGParserTests {
         #expect(p2.y == 30)
         #expect(p2.width == 100)
         #expect(p2.viewBox == CGRect(x: 0, y: 0, width: 10, height: 10))
+    }
+
+    /// pservers-grad-03-b: pattern with xlink:href and no children inherits parent content.
+    @Test func patternHrefInheritsChildrenWhenEmpty() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="480" height="360">
+          <pattern id="Pat3a" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+            <rect x="0" y="0" width="10" height="10" fill="#9933DD"/>
+            <rect x="10" y="0" width="10" height="10" fill="green"/>
+          </pattern>
+          <pattern id="Pat3b" xlink:href="#Pat3a" width="20" height="20"/>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+
+        guard case .pattern(let a) = doc.paintServers["Pat3a"] else {
+            Issue.record("expected Pat3a"); return
+        }
+        guard case .pattern(let b) = doc.paintServers["Pat3b"] else {
+            Issue.record("expected Pat3b"); return
+        }
+        #expect(a.children.count == 2)
+        #expect(b.children.count == 2)
+        #expect(b.width == 20)
+        #expect(b.height == 20)
+        #expect(b.patternUnits == .userSpaceOnUse)
+        #expect(b.x == 0)
+        #expect(b.y == 0)
     }
 
     @Test func invalidPatternHrefDoesNotMergeAttributes() throws {

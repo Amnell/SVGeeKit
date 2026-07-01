@@ -549,10 +549,18 @@ public enum SVGRenderTree {
             guard !g.stops.isEmpty else { return .none }
             var concrete = g
             if g.units == .objectBoundingBox {
-                concrete.x1 = bbox.minX + g.x1 * bbox.width
-                concrete.y1 = bbox.minY + g.y1 * bbox.height
-                concrete.x2 = bbox.minX + g.x2 * bbox.width
-                concrete.y2 = bbox.minY + g.y2 * bbox.height
+                // Lines (and other 1-D geometry) have a degenerate bbox; OBB
+                // gradients are undefined and the ICC fallback applies
+                // (pservers-grad-17-b, pservers-grad-20-b).
+                guard bbox.width > 0, bbox.height > 0 else { return .none }
+                // Map gradient coordinates through the bounding-box affine
+                // transform (same as radial gradients). Baking endpoints into user
+                // space would keep stop lines perpendicular in user space instead
+                // of skewing them when width ≠ height (pservers-grad-04-b).
+                let obbToUser = CGAffineTransform(translationX: bbox.minX, y: bbox.minY)
+                    .scaledBy(x: bbox.width, y: bbox.height)
+                let gt = g.transform.matrix
+                concrete.transform = SVGTransform(gt.isIdentity ? obbToUser : obbToUser.concatenating(gt))
                 concrete.units = .userSpaceOnUse
             }
             return .linearGradient(concrete)

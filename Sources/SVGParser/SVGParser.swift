@@ -230,8 +230,8 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             )
         }
 
-        /// SVG 1.1 §13.4.3: inherit attributes from the referenced pattern;
-        /// children are never inherited via xlink:href.
+        /// SVG 1.1 §13.4.3: inherit attributes from the referenced pattern.
+        /// Content children are inherited only when this pattern defines none of its own.
         func merged(with parent: PartialPattern) -> PartialPattern {
             var m = self
             if m.x == nil { m.x = parent.x }
@@ -242,6 +242,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             if m.patternContentUnits == nil { m.patternContentUnits = parent.patternContentUnits }
             if m.transform == nil { m.transform = parent.transform }
             if m.viewBox == nil { m.viewBox = parent.viewBox }
+            if m.children.isEmpty { m.children = parent.children }
             return m
         }
     }

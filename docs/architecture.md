@@ -42,9 +42,10 @@
 ### `SVGRendererSwiftUI`
 - Depends on `SVGCore` + `SVGRenderer`.
 - Two surfaces:
-  - `SVGImageView: View` — public SwiftUI view used by app code.
-  - `SVGRasterizer.rasterize(_:pixelSize:scale:)` — `@MainActor`, returns `CGImage`. Used by the conformance harness.
-- Translates each `SVGRenderCommand` to `GraphicsContext` calls; state-stack semantics mirror `CGContextSaveGState`/`RestoreGState`.
+  - `SVGImageView: View` — public SwiftUI view; uses `SwiftUICanvasRenderer` for live `Canvas` rendering.
+  - `SVGRasterizer.rasterize(_:pixelSize:scale:)` — returns `CGImage` via `CGContextRenderer` + `SVGGradientDrawing`. Used by the conformance harness.
+- `SwiftUICanvasRenderer` translates each `SVGRenderCommand` to `GraphicsContext` calls.
+- `CGContextRenderer` mirrors the same command stream for snapshot output; gradients use sRGB stop interpolation with independent alpha (matching W3C reference PNGs).
 
 ### `SVGKit`
 - Umbrella that re-exports everything an app needs.
@@ -59,8 +60,8 @@
 
 1. Parse SVG bytes → `SVGDocument`.
 2. Lower the document into `[SVGRenderCommand]` via `SVGRenderTree.lower`. This applies the document-level `viewBox` → intrinsic-size transform once.
-3. The renderer backend executes the command stream into its native graphics context.
-4. The conformance harness wraps this entire path with `ImageRenderer` to obtain a comparable `CGImage`.
+3. The renderer backend executes the command stream into its native graphics context (`SwiftUICanvasRenderer` for views, `CGContextRenderer` for snapshots).
+4. `SVGRasterizer` renders into a flipped `CGContext` bitmap (top-left origin, premultiplied RGBA).
 
 ## Adding a new backend (Phase 4)
 
