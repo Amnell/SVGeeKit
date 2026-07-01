@@ -42,6 +42,32 @@ import SVGRendererSwiftUI
         #expect(green.g > green.b)
     }
 
+    @Test func structUse09ShowsNestedSymbolStrokes() throws {
+        let svgURL = Self.repoRoot
+            .appendingPathComponent("Tests/SVGConformanceTests/Resources/W3C-SVG-1.1/svg/struct-use-09-b.svg")
+        let data = try Data(contentsOf: svgURL)
+        var doc = try SVGParser().parse(data: data, baseURL: svgURL.deletingLastPathComponent())
+        doc.intrinsicSize = doc.intrinsicSize ?? doc.viewBox?.size
+
+        #expect(doc.definitions["rects"] != nil)
+        #expect(doc.definitions["rect1"] != nil)
+
+        let image = try SVGRasterizer.rasterize(doc, pixelSize: CGSize(width: 480, height: 360), scale: 1)
+
+        // Five nested stroke rings centered at (240, 180): black, gold, orange, purple, slateblue.
+        let outer = samplePixel(image, x: 240, y: 92)   // top edge of outer black stroke
+        let gold = samplePixel(image, x: 240, y: 102)
+        let orange = samplePixel(image, x: 240, y: 114)
+        let purple = samplePixel(image, x: 240, y: 126)
+        let inner = samplePixel(image, x: 240, y: 138)
+
+        #expect(outer.r < 40 && outer.g < 40 && outer.b < 40)
+        #expect(gold.r > 180 && gold.g > 150 && gold.b < 80)
+        #expect(orange.r > 200 && orange.g > 100 && orange.b < 80)
+        #expect(purple.r > 80 && purple.g < 80 && purple.b > 80)
+        #expect(inner.r < 120 && inner.g < 120 && inner.b > 120)
+    }
+
     @Test func useInClipPathAppliesGeometry() throws {
         let svg = """
         <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100">

@@ -934,6 +934,45 @@ struct SVGParserTests {
         #expect(u.origin == CGPoint(x: 10, y: 10))
     }
 
+    @Test func symbolInDefsRegistersChildrenAndNestedUse() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100">
+          <defs>
+            <symbol id="inner" overflow="visible">
+              <rect x="-10" y="-10" width="20" height="20" fill="none" stroke="red"/>
+            </symbol>
+            <symbol id="outer" overflow="visible">
+              <use xlink:href="#inner"/>
+              <rect x="-20" y="-20" width="40" height="40" fill="none" stroke="blue"/>
+            </symbol>
+          </defs>
+          <use x="50" y="50" xlink:href="#outer"/>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+
+        guard case .group(let inner) = doc.definitions["inner"] else {
+            Issue.record("expected inner symbol as group"); return
+        }
+        #expect(inner.children.count == 1)
+
+        guard case .group(let outer) = doc.definitions["outer"] else {
+            Issue.record("expected outer symbol as group"); return
+        }
+        #expect(outer.children.count == 2)
+        guard case .use(let u) = outer.children[0] else {
+            Issue.record("expected use in outer symbol"); return
+        }
+        #expect(u.href == "inner")
+
+        #expect(doc.root.children.count == 1)
+        guard case .use(let sceneUse) = doc.root.children[0] else {
+            Issue.record("expected scene use"); return
+        }
+        #expect(sceneUse.href == "outer")
+        #expect(sceneUse.origin == CGPoint(x: 50, y: 50))
+    }
+
     @Test func parsesMaskRegionAndAppliesRef() throws {
         let svg = """
         <svg xmlns="http://www.w3.org/2000/svg" width="480" height="360">

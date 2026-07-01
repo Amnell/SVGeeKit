@@ -158,6 +158,8 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
 
     /// Nesting depth of `<defs>` — content here is not part of the render tree.
     private var defsDepth: Int = 0
+    /// `<g>` / `<symbol>` opened inside `<defs>` — their children are kept for definitions.
+    private var definitionContainerDepth: Int = 0
 
     /// `id` attributes for groups currently being parsed.
     private var groupIdStack: [String?] = []
@@ -275,7 +277,8 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         switch elementName {
         case "svg":
             handleSVGRoot(attributes: attributeDict, parser: parser)
-        case "g":
+        case "g", "symbol":
+            if defsDepth > 0 { definitionContainerDepth += 1 }
             let transform = transform(from: attributeDict, parser: parser) ?? .identity
             let clipRef = parseClipPathRef(attributeDict)
             let maskR = parseMaskRef(attributeDict)
@@ -354,11 +357,14 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         case "svg":
             guard let root = groupStack.popLast() else { return }
             document?.root = root
-        case "g":
+        case "g", "symbol":
             let id = groupIdStack.popLast().flatMap { $0 }
             guard let finished = groupStack.popLast() else { return }
             registerDefinition(id: id, element: .group(finished))
-            appendChild(.group(finished))
+            if defsDepth == 0 {
+                appendChild(.group(finished))
+            }
+            if defsDepth > 0 { definitionContainerDepth -= 1 }
         case "text":
             flushActiveTextRun()
             guard var finished = textStack.popLast() else { return }
@@ -834,11 +840,10 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             clipPathStack[clipPathStack.count - 1].children.append(element)
         } else if !maskStack.isEmpty {
             maskStack[maskStack.count - 1].children.append(element)
+        } else if !groupStack.isEmpty, defsDepth == 0 || definitionContainerDepth > 0 {
+            groupStack[groupStack.count - 1].children.append(element)
         } else if defsDepth > 0 {
             return
-        } else {
-            guard !groupStack.isEmpty else { return }
-            groupStack[groupStack.count - 1].children.append(element)
         }
     }
 
