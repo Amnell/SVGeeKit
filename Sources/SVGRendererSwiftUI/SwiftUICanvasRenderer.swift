@@ -62,6 +62,18 @@ public struct SwiftUICanvasRenderer {
                     context.fill(Path(cgPath), with: shading, style: FillStyle(eoFill: evenOdd))
                 }
 
+            case .fillTiled(let cgPath, let tileCommands, let pattern, let opacity, let evenOdd):
+                context.drawLayer { layer in
+                    layer.opacity *= opacity
+                    layer.clip(to: Path(cgPath), style: FillStyle(eoFill: evenOdd))
+                    tilePattern(
+                        pattern,
+                        tileCommands: tileCommands,
+                        clipBounds: cgPath.boundingBoxOfPath,
+                        context: &layer
+                    )
+                }
+
             case .strokePath(let cgPath, let paint, let opacity, let width, let cap, let join, let miterLimit, let dashArray, let dashPhase):
                 guard let shading = shading(for: paint, opacity: opacity) else { continue }
                 let style = StrokeStyle(
@@ -125,6 +137,9 @@ public struct SwiftUICanvasRenderer {
         case .paintServer:
             // Unresolved server reference (lowering left it as-is, e.g. on
             // text where bbox isn't known). Treat as no paint.
+            return nil
+        case .pattern:
+            // Patterns are lowered to `.fillTiled` before reaching the backend.
             return nil
         case .linearGradient(let g):
             guard !g.stops.isEmpty else { return nil }
@@ -199,6 +214,67 @@ public struct SwiftUICanvasRenderer {
         case .miter: return .miter
         case .round: return .round
         case .bevel: return .bevel
+        }
+    }
+
+    /// Tile `tileCommands` across `clipBounds` using the resolved pattern grid.
+    private func tilePattern(
+        _ pattern: SVGResolvedPattern,
+        tileCommands: [SVGRenderCommand],
+        clipBounds: CGRect,
+        context: inout GraphicsContext
+    ) {
+        let step = pattern.step
+        guard step.width > 0, step.height > 0 else { return }
+
+        let tileClip = CGRect(x: 0, y: 0, width: step.width, height: step.height)
+
+        if pattern.tileLocalContent {
+            // Grid may be transformed (patternTransform); compute tile indices in pattern space.
+            let inv = pattern.patternToUser.matrix.inverted()
+            let localBounds = clipBounds.applying(inv)
+            let startI = Int(floor((localBounds.minX - pattern.x) / step.width)) - 1
+            let endI = Int(ceil((localBounds.maxX - pattern.x) / step.width)) + 1
+            let startJ = Int(floor((localBounds.minY - pattern.y) / step.height)) - 1
+            let endJ = Int(ceil((localBounds.maxY - pattern.y) / step.height)) + 1
+
+            for j in startJ...endJ {
+                for i in startI...endI {
+                    context.drawLayer { tile in
+                        tile.concatenate(pattern.patternToUser.matrix)
+                        tile.concatenate(CGAffineTransform(
+                            translationX: pattern.x + CGFloat(i) * step.width,
+                            y: pattern.y + CGFloat(j) * step.height
+                        ))
+                        tile.clip(to: Path(tileClip))
+                        self.execute(tileCommands, context: &tile)
+                    }
+                }
+            }
+            return
+        }
+
+        // Tile indices are computed in pattern coordinate space.
+        let inv = pattern.patternToUser.matrix.inverted()
+        let localBounds = clipBounds.applying(inv)
+
+        let startI = Int(floor((localBounds.minX - pattern.x) / step.width)) - 1
+        let endI = Int(ceil((localBounds.maxX - pattern.x) / step.width)) + 1
+        let startJ = Int(floor((localBounds.minY - pattern.y) / step.height)) - 1
+        let endJ = Int(ceil((localBounds.maxY - pattern.y) / step.height)) + 1
+
+        for j in startJ...endJ {
+            for i in startI...endI {
+                context.drawLayer { tile in
+                    tile.concatenate(pattern.patternToUser.matrix)
+                    tile.concatenate(CGAffineTransform(
+                        translationX: pattern.x + CGFloat(i) * step.width,
+                        y: pattern.y + CGFloat(j) * step.height
+                    ))
+                    tile.concatenate(pattern.contentMatrix.matrix)
+                    self.execute(tileCommands, context: &tile)
+                }
+            }
         }
     }
 }

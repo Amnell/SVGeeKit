@@ -19,6 +19,16 @@ public enum SVGRenderCommand: Equatable, Sendable {
     /// Fill `path` with `paint` using the given fill-opacity and rule.
     case fillPath(CGPath, paint: SVGPaint, opacity: CGFloat, evenOdd: Bool)
 
+    /// Fill `path` with a tiled pattern. `tileCommands` draw one tile in
+    /// tile-local space; `pattern` supplies the tiling grid geometry.
+    case fillTiled(
+        CGPath,
+        tileCommands: [SVGRenderCommand],
+        pattern: SVGResolvedPattern,
+        opacity: CGFloat,
+        evenOdd: Bool
+    )
+
     /// Stroke `path` with the given paint and stroke parameters.
     case strokePath(
         CGPath,
@@ -438,7 +448,12 @@ public enum SVGRenderTree {
         let resolvedFill = resolvePaint(paint.fill, bbox: bbox, ctx: ctx)
         let resolvedStroke = resolvePaint(paint.stroke, bbox: bbox, ctx: ctx)
 
-        if case .none = resolvedFill {} else {
+        if case .pattern(let pat) = resolvedFill {
+            emitTiledFill(
+                path, pattern: pat, opacity: paint.fillOpacity,
+                evenOdd: paint.fillRule == .evenodd, ctx: ctx, into: &painted
+            )
+        } else if case .none = resolvedFill {} else {
             painted.append(.fillPath(
                 path,
                 paint: resolvedFill,
@@ -446,7 +461,21 @@ public enum SVGRenderTree {
                 evenOdd: paint.fillRule == .evenodd
             ))
         }
-        if case .none = resolvedStroke {} else {
+        if case .pattern(let pat) = resolvedStroke {
+            let outline = path.copy(
+                strokingWithWidth: paint.strokeWidth,
+                lineCap: cgLineCap(paint.lineCap),
+                lineJoin: cgLineJoin(paint.lineJoin),
+                miterLimit: paint.miterLimit
+            )
+            emitTiledFill(
+                outline, pattern: pat, opacity: paint.strokeOpacity,
+                evenOdd: false, ctx: ctx, into: &painted
+            )
+            var stampPaint = paint
+            stampPaint.stroke = resolvedStroke
+            emitZeroLengthCapStamps(path: path, paint: stampPaint, into: &painted)
+        } else if case .none = resolvedStroke {} else {
             painted.append(.strokePath(
                 path,
                 paint: resolvedStroke,
@@ -475,10 +504,46 @@ public enum SVGRenderTree {
     /// Convert `.paintServer` references into concrete paint cases with the
     /// gradient endpoints baked into user space against `bbox`. Returns the
     /// input unchanged for colors and `.none`; returns `.none` for dangling
-    /// or stop-less references.
+    /// or stop-less references. Uses the optional fallback paint when the
+    /// server is missing or invalid (SVG 1.1 §13.2.4).
     private static func resolvePaint(_ paint: SVGPaint, bbox: CGRect, ctx: Context) -> SVGPaint {
-        guard case .paintServer(let id) = paint else { return paint }
-        guard let server = ctx.paintServers[id] else { return .none }
+        switch paint {
+        case .paintServer(let id, let fallback):
+            guard let server = ctx.paintServers[id] else {
+                if let fallback { return .color(fallback) }
+                return .none
+            }
+            let resolved = resolvePaintServer(server, bbox: bbox, ctx: ctx)
+            if case .none = resolved {
+                let useFallback: Bool = {
+                    switch server {
+                    case .pattern(let p):
+                        // Zero-size patterns without a viewBox are empty paint
+                        // servers and use the ICC fallback (pservers-pattern-03-f).
+                        // A viewBox with zero tile size paints nothing instead
+                        // (pservers-pattern-09-f pattern3).
+                        if p.width <= 0 || p.height <= 0 {
+                            return p.viewBox == nil
+                        }
+                        return false
+                    default:
+                        return true
+                    }
+                }()
+                if useFallback, let fallback { return .color(fallback) }
+                return .none
+            }
+            return resolved
+        default:
+            return paint
+        }
+    }
+
+    private static func resolvePaintServer(
+        _ server: SVGPaintServer,
+        bbox: CGRect,
+        ctx: Context
+    ) -> SVGPaint {
         switch server {
         case .linearGradient(let g):
             guard !g.stops.isEmpty else { return .none }
@@ -495,13 +560,6 @@ public enum SVGRenderTree {
             guard !g.stops.isEmpty else { return .none }
             var concrete = g
             if g.units == .objectBoundingBox {
-                // SVG 1.1 §13.4.2: for objectBoundingBox, the gradient's own
-                // coordinate system is [0,1]×[0,1] mapped to the bbox via
-                // translate(bbox.origin) scale(bbox.size). Folding that into
-                // concrete.transform lets the backend scale the context
-                // non-uniformly, which naturally produces an ellipse on
-                // non-square bboxes (correct per spec). Converting cx/cy/r
-                // individually with avgDim would incorrectly force a circle.
                 let obbToUser = CGAffineTransform(translationX: bbox.minX, y: bbox.minY)
                     .scaledBy(x: bbox.width, y: bbox.height)
                 let gt = g.transform.matrix
@@ -509,6 +567,119 @@ public enum SVGRenderTree {
                 concrete.units = .userSpaceOnUse
             }
             return .radialGradient(concrete)
+        case .pattern(let p):
+            guard p.width > 0, p.height > 0 else { return .none }
+            guard let resolved = resolvePattern(p, referencingBBox: bbox, ctx: ctx) else { return .none }
+            return .pattern(resolved)
+        }
+    }
+
+    private static func resolvePattern(
+        _ pattern: SVGPattern,
+        referencingBBox: CGRect,
+        ctx: Context
+    ) -> SVGResolvedPattern? {
+        let tileLocalContent = pattern.patternContentUnits == .userSpaceOnUse && pattern.viewBox == nil
+        var x = pattern.x
+        var y = pattern.y
+        var step = CGSize(width: pattern.width, height: pattern.height)
+        let patternToUser: CGAffineTransform
+
+        if tileLocalContent {
+            // Children repeat in tile-local user coordinates `(0,0)…(step)`.
+            // Bake `objectBoundingBox` geometry into user space so a circle at
+            // `(50,50)` lands in the centre of each `width=0.5` tile on a 200×200 rect.
+            patternToUser = pattern.transform.matrix
+            if pattern.patternUnits == .objectBoundingBox {
+                guard !referencingBBox.isNull, !referencingBBox.isEmpty else { return nil }
+                x = referencingBBox.minX + pattern.x * referencingBBox.width
+                y = referencingBBox.minY + pattern.y * referencingBBox.height
+                step = CGSize(
+                    width: pattern.width * referencingBBox.width,
+                    height: pattern.height * referencingBBox.height
+                )
+            }
+        } else {
+            switch pattern.patternUnits {
+            case .userSpaceOnUse:
+                patternToUser = pattern.transform.matrix
+            case .objectBoundingBox:
+                guard !referencingBBox.isNull, !referencingBBox.isEmpty else { return nil }
+                let obb = CGAffineTransform(translationX: referencingBBox.minX, y: referencingBBox.minY)
+                    .scaledBy(x: referencingBBox.width, y: referencingBBox.height)
+                patternToUser = obb.concatenating(pattern.transform.matrix)
+            }
+        }
+
+        return SVGResolvedPattern(
+            children: pattern.children,
+            patternToUser: SVGTransform(patternToUser),
+            x: x,
+            y: y,
+            step: step,
+            contentMatrix: SVGTransform(patternContentMatrix(pattern, referencingBBox: referencingBBox)),
+            tileLocalContent: tileLocalContent
+        )
+    }
+
+    /// Maps pattern content coordinates into tile-local `(0,0)…(width,height)`.
+    private static func patternContentMatrix(
+        _ pattern: SVGPattern,
+        referencingBBox: CGRect
+    ) -> CGAffineTransform {
+        if pattern.patternContentUnits == .userSpaceOnUse, pattern.viewBox == nil {
+            return .identity
+        }
+        var t = CGAffineTransform.identity
+        if pattern.patternContentUnits == .objectBoundingBox,
+           !referencingBBox.isNull, !referencingBBox.isEmpty {
+            t = CGAffineTransform(translationX: referencingBBox.minX, y: referencingBBox.minY)
+                .scaledBy(x: referencingBBox.width, y: referencingBBox.height)
+        }
+        if let vb = pattern.viewBox, vb.width > 0, vb.height > 0 {
+            let vbMap = CGAffineTransform(translationX: -vb.minX, y: -vb.minY)
+                .scaledBy(x: pattern.width / vb.width, y: pattern.height / vb.height)
+            t = pattern.patternContentUnits == .objectBoundingBox
+                ? t.concatenating(vbMap)
+                : vbMap
+        }
+        return t
+    }
+
+    private static func emitTiledFill(
+        _ path: CGPath,
+        pattern: SVGResolvedPattern,
+        opacity: CGFloat,
+        evenOdd: Bool,
+        ctx: Context,
+        into commands: inout [SVGRenderCommand]
+    ) {
+        var tileCommands: [SVGRenderCommand] = []
+        for child in pattern.children {
+            lower(element: child, ctx: ctx, into: &tileCommands)
+        }
+        commands.append(.fillTiled(
+            path,
+            tileCommands: tileCommands,
+            pattern: pattern,
+            opacity: opacity,
+            evenOdd: evenOdd
+        ))
+    }
+
+    private static func cgLineCap(_ cap: SVGLineCap) -> CGLineCap {
+        switch cap {
+        case .butt: return .butt
+        case .round: return .round
+        case .square: return .square
+        }
+    }
+
+    private static func cgLineJoin(_ join: SVGLineJoin) -> CGLineJoin {
+        switch join {
+        case .miter: return .miter
+        case .round: return .round
+        case .bevel: return .bevel
         }
     }
 

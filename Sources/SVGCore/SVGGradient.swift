@@ -95,4 +95,5 @@ public struct SVGRadialGradient: Equatable, Sendable {
 public enum SVGPaintServer: Equatable, Sendable {
     case linearGradient(SVGLinearGradient)
     case radialGradient(SVGRadialGradient)
+    case pattern(SVGPattern)
 }

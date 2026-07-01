@@ -34,6 +34,7 @@ public struct SVGParser {
             throw SVGParseError(kind: .missingRoot, line: nil, column: nil)
         }
         delegate.resolveGradientHrefs()
+        delegate.resolvePatternHrefs()
         delegate.resolvePendingFontHrefs()
         document.baseURL = baseURL
         document.paintServers = delegate.paintServers
@@ -138,6 +139,12 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
     /// Resolved in a final pass once the whole document has been parsed.
     private var gradientHrefs: [(id: String, href: String)] = []
 
+    /// Partial `<pattern>` definitions currently open.
+    private var patternStack: [PartialPattern] = []
+    /// Patterns keyed by id, merged via xlink:href before materialization.
+    private var pendingPatterns: [String: PartialPattern] = [:]
+    private var patternHrefs: [(id: String, href: String)] = []
+
     /// Partial `<clipPath>` definitions currently open.
     private var clipPathStack: [PartialClipPath] = []
     /// Completed clip paths keyed by id.
@@ -195,6 +202,50 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         var children: [SVGElement] = []
     }
 
+    struct PartialPattern: Equatable {
+        var id: String?
+        var href: String?
+        var x: CGFloat?
+        var y: CGFloat?
+        var width: CGFloat?
+        var height: CGFloat?
+        var patternUnits: SVGPatternUnits?
+        var patternContentUnits: SVGPatternUnits?
+        var transform: SVGTransform?
+        var viewBox: CGRect?
+        var children: [SVGElement] = []
+
+        func materialized(hasInvalidHref: Bool = false) -> SVGPattern {
+            SVGPattern(
+                x: x ?? 0,
+                y: y ?? 0,
+                width: width ?? 0,
+                height: height ?? 0,
+                patternUnits: patternUnits ?? .objectBoundingBox,
+                patternContentUnits: patternContentUnits ?? .userSpaceOnUse,
+                transform: transform ?? .identity,
+                viewBox: viewBox,
+                children: children,
+                hasInvalidHref: hasInvalidHref
+            )
+        }
+
+        /// SVG 1.1 §13.4.3: inherit attributes from the referenced pattern;
+        /// children are never inherited via xlink:href.
+        func merged(with parent: PartialPattern) -> PartialPattern {
+            var m = self
+            if m.x == nil { m.x = parent.x }
+            if m.y == nil { m.y = parent.y }
+            if m.width == nil { m.width = parent.width }
+            if m.height == nil { m.height = parent.height }
+            if m.patternUnits == nil { m.patternUnits = parent.patternUnits }
+            if m.patternContentUnits == nil { m.patternContentUnits = parent.patternContentUnits }
+            if m.transform == nil { m.transform = parent.transform }
+            if m.viewBox == nil { m.viewBox = parent.viewBox }
+            return m
+        }
+    }
+
     func parser(
         _ parser: XMLParser,
         didStartElement elementName: String,
@@ -242,6 +293,8 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             handleLinearGradientStart(attributes: attributeDict)
         case "radialGradient":
             handleRadialGradientStart(attributes: attributeDict)
+        case "pattern":
+            handlePatternStart(attributes: attributeDict, parser: parser)
         case "stop":
             handleStop(attributes: attributeDict, currentColor: elementPaint.color)
         case "clipPath":
@@ -330,6 +383,8 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             finalizeLinearGradient()
         case "radialGradient":
             finalizeRadialGradient()
+        case "pattern":
+            finalizePattern()
         case "clipPath":
             finalizeClipPath()
         case "mask":
@@ -685,7 +740,9 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
     // MARK: - Helpers
 
     private func appendChild(_ element: SVGElement) {
-        if !clipPathStack.isEmpty {
+        if !patternStack.isEmpty {
+            patternStack[patternStack.count - 1].children.append(element)
+        } else if !clipPathStack.isEmpty {
             clipPathStack[clipPathStack.count - 1].children.append(element)
         } else if !maskStack.isEmpty {
             maskStack[maskStack.count - 1].children.append(element)
@@ -806,13 +863,27 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             return .color(currentColor)
         }
         if trimmed.lowercased().hasPrefix("url(") {
-            let body = trimmed.dropFirst(4)
-            guard let close = body.firstIndex(of: ")") else { return nil }
-            var ref = String(body[..<close]).trimmingCharacters(in: .whitespaces)
+            guard let openEnd = trimmed.index(trimmed.startIndex, offsetBy: 4, limitedBy: trimmed.endIndex) else {
+                return nil
+            }
+            let afterOpen = trimmed[openEnd...]
+            guard let close = afterOpen.firstIndex(of: ")") else { return nil }
+            var ref = String(afterOpen[..<close]).trimmingCharacters(in: .whitespaces)
             ref = ref.trimmingCharacters(in: CharacterSet(charactersIn: "'\""))
             if ref.hasPrefix("#") { ref = String(ref.dropFirst()) }
             guard !ref.isEmpty else { return nil }
-            return .paintServer(id: ref)
+            let afterClose = afterOpen.index(after: close)
+            let remainder = afterClose < afterOpen.endIndex
+                ? String(afterOpen[afterClose...]).trimmingCharacters(in: .whitespaces)
+                : ""
+            let fallback: SVGColor? = {
+                guard !remainder.isEmpty else { return nil }
+                if case .color(let c) = resolvePaint(remainder, currentColor: currentColor) ?? .none {
+                    return c
+                }
+                return nil
+            }()
+            return .paintServer(id: ref, fallback: fallback)
         }
         return AttributeParsers.color(trimmed)
     }
@@ -865,7 +936,71 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             .replacingOccurrences(of: "\t", with: "")
     }
 
-    // MARK: - Paint servers
+    // MARK: - Patterns
+
+    private func handlePatternStart(attributes: [String: String], parser: XMLParser) {
+        var partial = PartialPattern()
+        partial.id = attributes["id"]
+        partial.href = attributes["xlink:href"] ?? attributes["href"]
+        partial.x = attributes["x"].flatMap { AttributeParsers.length($0)?.resolved() }
+        partial.y = attributes["y"].flatMap { AttributeParsers.length($0)?.resolved() }
+        partial.width = attributes["width"].flatMap { AttributeParsers.length($0)?.resolved() }
+        partial.height = attributes["height"].flatMap { AttributeParsers.length($0)?.resolved() }
+        if let u = attributes["patternUnits"]?.trimmingCharacters(in: .whitespaces),
+           let units = SVGPatternUnits(rawValue: u) {
+            partial.patternUnits = units
+        }
+        if let u = attributes["patternContentUnits"]?.trimmingCharacters(in: .whitespaces),
+           let units = SVGPatternUnits(rawValue: u) {
+            partial.patternContentUnits = units
+        }
+        if let raw = attributes["patternTransform"],
+           let t = AttributeParsers.transform(raw) {
+            partial.transform = t
+        }
+        if let raw = attributes["viewBox"] {
+            partial.viewBox = AttributeParsers.viewBox(raw)
+        }
+        patternStack.append(partial)
+    }
+
+    private func finalizePattern() {
+        guard let partial = patternStack.popLast() else { return }
+        guard let id = partial.id else { return }
+        pendingPatterns[id] = partial
+        if var href = partial.href {
+            if href.hasPrefix("#") { href = String(href.dropFirst()) }
+            patternHrefs.append((id: id, href: href))
+        }
+    }
+
+    /// Resolve pattern `xlink:href` chains and merge attributes per SVG 1.1
+    /// §13.4.3: child's own values win; parent supplies unset attributes.
+    fileprivate func resolvePatternHrefs() {
+        var changed = true
+        var iterations = 0
+        while changed && iterations < 16 {
+            changed = false
+            iterations += 1
+            for (id, href) in patternHrefs {
+                guard let child = pendingPatterns[id],
+                      let parent = pendingPatterns[href] else { continue }
+                let merged = child.merged(with: parent)
+                if merged != child {
+                    pendingPatterns[id] = merged
+                    changed = true
+                }
+            }
+        }
+        for (id, partial) in pendingPatterns {
+            let invalidHref = patternHrefs.contains { entry in
+                entry.id == id && pendingPatterns[entry.href] == nil
+            }
+            paintServers[id] = .pattern(partial.materialized(hasInvalidHref: invalidHref))
+        }
+    }
+
+    // MARK: - Paint servers (gradients)
 
     fileprivate func handleLinearGradientStart(attributes: [String: String]) {
         var p = PartialGradient()
@@ -1113,6 +1248,8 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
                         var merged = child; merged.stops = parent.stops
                         paintServers[id] = .linearGradient(merged); changed = true
                     }
+                case (.pattern, _), (_, .pattern):
+                    break
                 }
             }
         }
