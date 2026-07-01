@@ -29,6 +29,31 @@ Derive your expected output from them, then confirm the W3C reference PNG at
 > the target — partial baselines are auto-captured from the *current* (possibly
 > buggy) renderer and are explicitly unverified. If the partial baseline
 > disagrees with the pass criteria, the renderer is wrong, not the criteria.
+> A `partialBaseline` report row with `diffMaxChannel: 0` only means actual
+> matches the partial baseline — **not** that the render is correct.
+
+## 1b. Styling features (CSS) — parser-only path
+
+Many `styling-*` tests need **no new element type** and **no renderer changes**.
+Resolve styles into `SVGPaintProperties` / `SVGFont` at parse time instead.
+
+| What | Where |
+| --- | --- |
+| `<style>` text capture | `SAXDelegate` — `foundCharacters` **and** `foundCDATA` (W3C tests use CDATA) |
+| Stylesheet parsing | `Sources/SVGParser/CSSStylesheet.swift` |
+| Cascade into paint | `mergePaint(into:from:parser:)` in `SVGParser.swift` |
+| Cascade into font | `mergeFont(into:from:)` — extend when a test needs font props from CSS |
+
+**Paint cascade order** (low → high priority):
+
+1. Inherited paint from ancestors
+2. Matching `<style>` class rules (document order; later rules override)
+3. Inline `style="..."` attribute
+4. Presentation attributes (`fill="…"`, `stroke-width="…"`, …) — win
+
+Add a focused parser unit test under `Tests/SVGParserTests/` that asserts
+resolved `paint` on shapes — no rendering required. See
+[docs/styling-rollout.md](styling-rollout.md) for chapter status and next tests.
 
 ## 2. Extend the model in `SVGCore`
 
@@ -76,6 +101,8 @@ APPROVE_SNAPSHOTS=1 swift test --filter ConformanceSuite
 - Open the resulting `Tests/__Snapshots__/<test-id>/baseline.png` and verify it
   matches the W3C reference (`Tests/SVGConformanceTests/Resources/W3C-SVG-1.1/png/<test-id>.png`)
   closely enough. The Viewer app (Phase 2) automates this side-by-side view.
+  For a quick programmatic check before promoting, see `diffAgainstW3C(testId:)`
+  in `Tests/SVGRendererTests/PatternRenderTests.swift`.
 - Commit the baseline PNG alongside the code change.
 
 ## 8. Verify no other chapters regressed

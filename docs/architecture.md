@@ -32,6 +32,7 @@
 - Single public entry point: `SVGParser().parse(data:)` / `parse(string:)`.
 - Uses `XMLParser` (SAX). New elements are handled inside `SAXDelegate.didStartElement(...)`.
 - Reports source-located `SVGParseError`s rather than silently swallowing.
+- **CSS styling** is resolved at parse time into `SVGPaintProperties` / `SVGFont` — see `CSSStylesheet.swift` and `mergePaint` / `mergeFont`. Paint cascade (low → high): inherited → `<style>` class rules → inline `style=""` → presentation attributes. No renderer changes needed for basic paint props.
 
 ### `SVGRenderer`
 - Depends on `SVGCore`. **No SwiftUI/AppKit/UIKit.**
