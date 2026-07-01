@@ -272,7 +272,12 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         attributes attributeDict: [String: String] = [:]
     ) {
         let inheritedPaint = paintStack.last ?? SVGPaintProperties()
-        let elementPaint = mergePaint(into: inheritedPaint, from: attributeDict, parser: parser)
+        let elementPaint = mergePaint(
+            into: inheritedPaint,
+            elementName: elementName,
+            from: attributeDict,
+            parser: parser
+        )
         paintStack.append(elementPaint)
 
         let inheritedFont = fontStack.last ?? SVGFont()
@@ -700,7 +705,12 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         flushActiveTextRun()
         let (inheritedFont, inheritedPaint) = tspanStyleStack.last!
         let runFont = mergeFont(into: inheritedFont, from: attributes)
-        let runPaint = mergePaint(into: inheritedPaint, from: attributes, parser: parser)
+        let runPaint = mergePaint(
+            into: inheritedPaint,
+            elementName: "tspan",
+            from: attributes,
+            parser: parser
+        )
         var run = SVGTextRun(string: leadingWhitespace, font: runFont, paint: runPaint)
         applyTspanPositionAttributes(attributes, to: &run)
         if run.preserveSpace == false {
@@ -887,22 +897,27 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
 
     private func mergePaint(
         into inherited: SVGPaintProperties,
+        elementName: String,
         from attributes: [String: String],
         parser: XMLParser
     ) -> SVGPaintProperties {
         var p = inherited
 
+        let classes: Set<String>
         if let classAttr = attributes["class"] {
-            let classes = Set(
-                classAttr.split(whereSeparator: \.isWhitespace).map(String.init)
-            )
-            let classDeclarations = stylesheet.declarations(matchingClasses: classes)
-            for (name, value) in classDeclarations where name == "color" {
-                applyPaintProperty(name: name, value: value, into: &p, parser: parser)
-            }
-            for (name, value) in classDeclarations where name != "color" {
-                applyPaintProperty(name: name, value: value, into: &p, parser: parser)
-            }
+            classes = Set(classAttr.split(whereSeparator: \.isWhitespace).map(String.init))
+        } else {
+            classes = []
+        }
+        let stylesheetDeclarations = stylesheet.declarations(
+            matchingElement: elementName,
+            classes: classes
+        )
+        for (name, value) in stylesheetDeclarations where name == "color" {
+            applyPaintProperty(name: name, value: value, into: &p, parser: parser)
+        }
+        for (name, value) in stylesheetDeclarations where name != "color" {
+            applyPaintProperty(name: name, value: value, into: &p, parser: parser)
         }
 
         // Collect (name, value) declarations from `style="..."` first then

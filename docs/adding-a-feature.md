@@ -101,8 +101,8 @@ APPROVE_SNAPSHOTS=1 swift test --filter ConformanceSuite
 - Open the resulting `Tests/__Snapshots__/<test-id>/baseline.png` and verify it
   matches the W3C reference (`Tests/SVGConformanceTests/Resources/W3C-SVG-1.1/png/<test-id>.png`)
   closely enough. The Viewer app (Phase 2) automates this side-by-side view.
-  For a quick programmatic check before promoting, see `diffAgainstW3C(testId:)`
-  in `Tests/SVGRendererTests/PatternRenderTests.swift`.
+  For a quick programmatic check before promoting, see `W3CReferenceDiff.diff(testId:w3cResourcesRoot:)`
+  in `Sources/SVGConformance/W3CReferenceDiff.swift`.
 - Commit the baseline PNG alongside the code change.
 
 ## 8. Verify no other chapters regressed

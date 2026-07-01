@@ -1251,4 +1251,67 @@ struct SVGParserTests {
         }
         #expect(second.paint.strokeWidth == 5)
     }
+
+    @Test func appliesTypeAndClassStylesFromStyleElement() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+          <defs>
+            <style type="text/css">
+              rect { fill: green }
+              .warning { fill: green }
+              .bar { fill: green }
+            </style>
+          </defs>
+          <g style="fill: red">
+            <rect x="10" y="10" width="30" height="30"/>
+            <circle class="warning" cx="60" cy="25" r="15"/>
+            <polygon class="foo bar baz" points="80,10 95,40 65,40"/>
+          </g>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .group(let g) = doc.root.children[0] else {
+            Issue.record("expected group"); return
+        }
+        guard case .rect(let rect) = g.children[0],
+              case .circle(let circle) = g.children[1],
+              case .polygon(let polygon) = g.children[2] else {
+            Issue.record("expected rect, circle, polygon"); return
+        }
+        for (label, shape) in [("rect", rect.paint), ("circle", circle.paint), ("polygon", polygon.paint)] {
+            guard case .color(let fill) = shape.fill else {
+                Issue.record("expected green fill on \(label)"); return
+            }
+            #expect(fill.green > 0.4 && fill.red < 0.1, "expected green fill on \(label)")
+        }
+    }
+
+    @Test func stylingCss01bRectsGetGreenFillFromTypeSelector() throws {
+        let repoRoot = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+        let svgURL = repoRoot
+            .appendingPathComponent("Tests/SVGConformanceTests/Resources/W3C-SVG-1.1/svg/styling-css-01-b.svg")
+        let data = try Data(contentsOf: svgURL)
+        let doc = try SVGParser().parse(data: data, baseURL: svgURL.deletingLastPathComponent())
+
+        var rects: [SVGRect] = []
+        func collectRects(_ el: SVGElement) {
+            switch el {
+            case .rect(let r): rects.append(r)
+            case .group(let g): g.children.forEach(collectRects)
+            default: break
+            }
+        }
+        collectRects(.group(SVGGroup(children: doc.root.children)))
+
+        #expect(rects.count >= 2)
+        for (index, rect) in rects.enumerated() where rect.paint.fill != .none {
+            guard case .color(let fill) = rect.paint.fill else {
+                Issue.record("rect \(index) expected color fill"); return
+            }
+            #expect(fill.green > 0.4 && fill.red < 0.1, "rect \(index) expected green from type selector")
+        }
+    }
 }

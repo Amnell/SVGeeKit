@@ -40,7 +40,15 @@ swift test --filter 'appliesClassStylesFromStyleElement' # filter by parser unit
 # Snapshot approval (human-verified only — see ground rule 7)
 APPROVE_SNAPSHOTS=1 swift test                           # re-approve drifted real baselines
 APPROVE_SNAPSHOTS=<id1>,<id2> swift test --filter ConformanceSuite  # promote specific partial baselines
+
+# Optional W3C reference pre-check (does not touch baselines)
+swift test --filter stylingCss01bMatchesW3CReference
 ```
+
+**W3C reference diff helper:** `W3CReferenceDiff` in `Sources/SVGConformance/W3CReferenceDiff.swift`
+renders a bundled test case and diffs against `W3C-SVG-1.1/png/<test-id>.png`. Useful before
+promoting a partial baseline — a large diff against the W3C PNG is a red flag even when
+`diffMaxChannel: 0` against `__PartialSnapshots__`.
 
 Conformance cases are one parametrized `render(_:)` test — **filter by suite name** (`ConformanceSuite`), not by test id. To run or promote a single W3C test, use `APPROVE_SNAPSHOTS=<test-id>` with `--filter ConformanceSuite`.
 

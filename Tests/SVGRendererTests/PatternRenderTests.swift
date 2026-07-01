@@ -16,21 +16,8 @@ struct PatternRenderTests {
     .standardizedFileURL
 
   private func diffAgainstW3C(testId: String) throws -> SVGSnapshotDiffer.DiffResult {
-    let svgURL = Self.w3cRoot.appendingPathComponent("svg/\(testId).svg")
-    let refURL = Self.w3cRoot.appendingPathComponent("png/\(testId).png")
-    let data = try Data(contentsOf: svgURL)
-    let doc = try SVGParser().parse(data: data, baseURL: svgURL.deletingLastPathComponent())
-    let actual = try SVGRasterizer.rasterize(doc, pixelSize: CGSize(width: 480, height: 360))
-    guard let ref = SVGSnapshotDiffer.loadPNG(refURL) else {
-      throw PatternTestError.unableToLoadReference
-    }
-    return try SVGSnapshotDiffer.diff(
-      actual, ref,
-      tolerance: SVGSnapshotDiffer.Tolerance(perChannel: 4, pixelFraction: 0.05)
-    )
+    try W3CReferenceDiff.diff(testId: testId, w3cResourcesRoot: Self.w3cRoot)
   }
-
-  enum PatternTestError: Error { case unableToLoadReference }
 
   @Test func rendersPatternFillRect() throws {
     let svg = """

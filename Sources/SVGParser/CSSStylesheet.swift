@@ -1,32 +1,46 @@
 import Foundation
 
-/// A single CSS class selector rule (e.g. `.foo.bar { fill: red; }`).
-struct CSSClassRule {
-    /// All listed classes must be present on the element.
-    let requiredClasses: Set<String>
+/// A CSS selector supported by the incremental stylesheet parser.
+enum CSSSelector: Equatable {
+    /// Element type selector (e.g. `rect { }`).
+    case type(String)
+    /// Class selector — all listed classes must be present (e.g. `.foo.bar { }`).
+    case classes(Set<String>)
+}
+
+/// A single rule from an author `<style>` block.
+struct CSSRule {
+    let selector: CSSSelector
     let declarations: [(name: String, value: String)]
 }
 
 /// Accumulated author stylesheet rules from `<style>` elements.
 struct CSSStylesheet {
-    private(set) var classRules: [CSSClassRule] = []
+    private(set) var rules: [CSSRule] = []
 
     mutating func append(css text: String) {
-        classRules.append(contentsOf: CSSStylesheet.parseClassRules(from: text))
+        rules.append(contentsOf: CSSStylesheet.parseRules(from: text))
     }
 
-    /// Declarations from all matching class rules, in document order.
-    func declarations(matchingClasses classes: Set<String>) -> [(name: String, value: String)] {
+    /// Declarations from all matching rules, in document order.
+    func declarations(matchingElement elementName: String, classes: Set<String>) -> [(name: String, value: String)] {
         var result: [(name: String, value: String)] = []
-        for rule in classRules where rule.requiredClasses.isSubset(of: classes) {
-            result.append(contentsOf: rule.declarations)
+        for rule in rules {
+            switch rule.selector {
+            case .type(let name) where name == elementName:
+                result.append(contentsOf: rule.declarations)
+            case .classes(let required) where required.isSubset(of: classes):
+                result.append(contentsOf: rule.declarations)
+            default:
+                break
+            }
         }
         return result
     }
 
-  private static func parseClassRules(from text: String) -> [CSSClassRule] {
+    private static func parseRules(from text: String) -> [CSSRule] {
         let stripped = removeComments(from: text)
-        var rules: [CSSClassRule] = []
+        var rules: [CSSRule] = []
 
         for block in stripped.split(separator: "}", omittingEmptySubsequences: true) {
             guard let open = block.firstIndex(of: "{") else { continue }
@@ -34,22 +48,40 @@ struct CSSStylesheet {
                 .trimmingCharacters(in: .whitespacesAndNewlines)
             let body = block[block.index(after: open)...]
                 .trimmingCharacters(in: .whitespacesAndNewlines)
-            guard selector.hasPrefix(".") else { continue }
 
-            let classNames = selector
-                .split(whereSeparator: { $0 == "." || $0.isWhitespace })
-                .map(String.init)
-                .filter { !$0.isEmpty }
-            guard !classNames.isEmpty else { continue }
-
-            rules.append(
-                CSSClassRule(
-                    requiredClasses: Set(classNames),
-                    declarations: parseDeclarations(body)
+            if selector.hasPrefix(".") {
+                let classNames = selector
+                    .split(whereSeparator: { $0 == "." || $0.isWhitespace })
+                    .map(String.init)
+                    .filter { !$0.isEmpty }
+                guard !classNames.isEmpty else { continue }
+                rules.append(
+                    CSSRule(
+                        selector: .classes(Set(classNames)),
+                        declarations: parseDeclarations(body)
+                    )
                 )
-            )
+            } else if isSimpleTypeSelector(selector) {
+                rules.append(
+                    CSSRule(
+                        selector: .type(String(selector)),
+                        declarations: parseDeclarations(body)
+                    )
+                )
+            }
         }
         return rules
+    }
+
+    /// True for a single identifier with no combinators or pseudo-classes.
+    private static func isSimpleTypeSelector<S: StringProtocol>(_ selector: S) -> Bool {
+        guard !selector.isEmpty else { return false }
+        for ch in selector where ch == " " || ch == ">" || ch == "+" || ch == "~"
+            || ch == ":" || ch == "#" || ch == "." || ch == "["
+        {
+            return false
+        }
+        return true
     }
 
     private static func removeComments(from text: String) -> String {

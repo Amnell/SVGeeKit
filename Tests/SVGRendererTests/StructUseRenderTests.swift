@@ -54,12 +54,14 @@ import SVGRendererSwiftUI
 
         let image = try SVGRasterizer.rasterize(doc, pixelSize: CGSize(width: 480, height: 360), scale: 1)
 
-        // Five nested stroke rings centered at (240, 180): black, gold, orange, purple, slateblue.
-        let outer = samplePixel(image, x: 240, y: 92)   // top edge of outer black stroke
-        let gold = samplePixel(image, x: 240, y: 102)
-        let orange = samplePixel(image, x: 240, y: 114)
-        let purple = samplePixel(image, x: 240, y: 126)
-        let inner = samplePixel(image, x: 240, y: 138)
+        // Five nested stroke rings centered at (240, 180). The outermost black
+        // stroke is invisible on the black canvas; visible bands (outside → in)
+        // are gold, orange, purple, slateblue at roughly y ≈ 99, 109, 119, 129.
+        let outer = samplePixel(image, x: 240, y: 93)   // clear background above gold
+        let gold = samplePixel(image, x: 240, y: 99)
+        let orange = samplePixel(image, x: 240, y: 109)
+        let purple = samplePixel(image, x: 240, y: 119)
+        let inner = samplePixel(image, x: 240, y: 129)
 
         #expect(outer.r < 40 && outer.g < 40 && outer.b < 40)
         #expect(gold.r > 180 && gold.g > 150 && gold.b < 80)

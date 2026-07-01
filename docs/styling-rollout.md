@@ -20,7 +20,7 @@ for the implementation recipe.
 | Presentation attributes | Mostly works (`styling-pres-01-t` passed) |
 | Inline `style="..."` | Works (`styling-css-07-f` passed) |
 | `<style>` class selectors (`.foo`, `.foo.bar`) | Implemented (`styling-class-01-f` — partial baseline pending promotion) |
-| `<style>` type selectors (`rect { }`) | Not yet (`styling-css-01-b`, …) |
+| `<style>` type selectors (`rect { }`) | Implemented (`styling-css-01-b` — partial baseline pending promotion) |
 | `mergeFont` + stylesheet | Not wired — extend when a test needs font props from CSS |
 | Inheritance / specificity edge cases | Mostly `partialBaseline` — treat as unverified |
 
@@ -45,7 +45,7 @@ Read each test's `<d:passCriteria>` before picking one:
 
 | Test | Exercises | Likely work |
 | --- | --- | --- |
-| `styling-css-01-b` | Type + class selectors in `<style>` | Add type-selector parsing to `CSSStylesheet` |
+| `styling-css-01-b` | Type + class selectors in `<style>` | Done — type selectors in `CSSStylesheet` |
 | `styling-css-02-b` … `styling-css-06-b` | Further `<style>` rules | Extend stylesheet parser incrementally |
 | `styling-pres-02-f` … `styling-pres-05-f` | Presentation attribute edge cases | Parser cascade / `mergePaint` |
 | `styling-inherit-01-b` | Property inheritance | Inheritance in `mergePaint` / group stack |
@@ -58,6 +58,8 @@ Read each test's `<d:passCriteria>` before picking one:
 3. **Verify visually** — compare `Tests/__SnapshotResults__/<id>/actual.png` against
    `Tests/SVGConformanceTests/Resources/W3C-SVG-1.1/png/<id>.png` and the test's
    `<d:passCriteria>`. A `partialBaseline` row with zero diff is **not** sufficient.
+   Optional programmatic pre-check: `W3CReferenceDiff.diff(testId:w3cResourcesRoot:)`
+   in `Sources/SVGConformance/W3CReferenceDiff.swift` (see `CSSStylingRenderTests`).
 4. **Promote** — `APPROVE_SNAPSHOTS=<id> swift test --filter ConformanceSuite` after human review.
 
 ## Anti-patterns

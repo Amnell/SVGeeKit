@@ -54,7 +54,8 @@ swift test --filter ConformanceSuite
 3. Open the Viewer (`swift run Viewer`). Inspect each `partialBaseline` test:
    - Render looks correct vs. the W3C reference PNG → click **Approve** (promotes to `__Snapshots__`, deletes partial).
    - Render looks wrong → fix the code and repeat.
-   - Optional programmatic pre-check: `diffAgainstW3C(testId:)` in `Tests/SVGRendererTests/PatternRenderTests.swift` diffs against `W3C-SVG-1.1/png/<test-id>.png` without touching baselines.
+   - Optional programmatic pre-check: `W3CReferenceDiff.diff(testId:w3cResourcesRoot:)`
+     in `Sources/SVGConformance/W3CReferenceDiff.swift` (see `CSSStylingRenderTests`).
 4. Commit both the code and the updated `__Snapshots__/` entries together. Optionally commit the `__PartialSnapshots__/` for tests not yet promoted.
 
 ## When a real baseline mismatches (CI red)
