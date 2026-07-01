@@ -167,6 +167,12 @@ struct PatternRenderTests {
     #expect(diff.mismatchedFraction < 0.05)
   }
 
+  @Test func w3cGrad03PatternHrefMatchesReference() throws {
+    let diff = try diffAgainstW3C(testId: "pservers-grad-03-b")
+    // Label text uses SVGFreeSans vs reference font; pattern tiles must match.
+    #expect(diff.mismatchedFraction < 0.12)
+  }
+
   private static func pixel(in image: CGImage, x: Int, y: Int)
     -> (red: Int, green: Int, blue: Int, alpha: Int) {
     var data = [UInt8](repeating: 0, count: 4)

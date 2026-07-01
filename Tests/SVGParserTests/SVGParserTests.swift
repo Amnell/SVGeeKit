@@ -643,6 +643,34 @@ struct SVGParserTests {
         #expect(p2.viewBox == CGRect(x: 0, y: 0, width: 10, height: 10))
     }
 
+    /// pservers-grad-03-b: pattern with xlink:href and no children inherits parent content.
+    @Test func patternHrefInheritsChildrenWhenEmpty() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="480" height="360">
+          <pattern id="Pat3a" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+            <rect x="0" y="0" width="10" height="10" fill="#9933DD"/>
+            <rect x="10" y="0" width="10" height="10" fill="green"/>
+          </pattern>
+          <pattern id="Pat3b" xlink:href="#Pat3a" width="20" height="20"/>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+
+        guard case .pattern(let a) = doc.paintServers["Pat3a"] else {
+            Issue.record("expected Pat3a"); return
+        }
+        guard case .pattern(let b) = doc.paintServers["Pat3b"] else {
+            Issue.record("expected Pat3b"); return
+        }
+        #expect(a.children.count == 2)
+        #expect(b.children.count == 2)
+        #expect(b.width == 20)
+        #expect(b.height == 20)
+        #expect(b.patternUnits == .userSpaceOnUse)
+        #expect(b.x == 0)
+        #expect(b.y == 0)
+    }
+
     @Test func invalidPatternHrefDoesNotMergeAttributes() throws {
         let svg = """
         <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100">
