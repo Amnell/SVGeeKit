@@ -112,6 +112,70 @@ public enum SVGSnapshotDiffer {
         return CGImageSourceCreateImageAtIndex(src, 0, nil)
     }
 
+    /// Premultiplied RGBA image: transparent where images match, red elsewhere.
+    public static func makeDiffHighlightImage(
+        expected: CGImage,
+        actual: CGImage,
+        tolerance: Tolerance = .exact,
+        highlightAlpha: CGFloat = 0.75
+    ) throws -> CGImage {
+        guard expected.width == actual.width, expected.height == actual.height else {
+            throw DiffError.sizeMismatch(
+                expected: CGSize(width: expected.width, height: expected.height),
+                actual: CGSize(width: actual.width, height: actual.height)
+            )
+        }
+        let expectedPixels = try readRGBA(from: expected)
+        let actualPixels = try readRGBA(from: actual)
+        let alpha = UInt8(max(0, min(255, Int((highlightAlpha * 255).rounded()))))
+        let premultipliedRed = UInt8((Int(alpha) * 255 + 127) / 255)
+
+        var pixels = [UInt8](repeating: 0, count: expectedPixels.count)
+        let count = expectedPixels.count / 4
+        for i in 0..<count {
+            let off = i * 4
+            var pixelExceeds = false
+            for c in 0..<4 {
+                let a = expectedPixels[off + c]
+                let b = actualPixels[off + c]
+                let d: UInt8 = a > b ? a - b : b - a
+                if d > tolerance.perChannel { pixelExceeds = true }
+            }
+            if pixelExceeds {
+                pixels[off] = premultipliedRed
+                pixels[off + 1] = 0
+                pixels[off + 2] = 0
+                pixels[off + 3] = alpha
+            }
+        }
+        return try makeRGBAImage(pixels: pixels, width: expected.width, height: expected.height)
+    }
+
+    private static func makeRGBAImage(pixels: [UInt8], width: Int, height: Int) throws -> CGImage {
+        let bytesPerPixel = 4
+        let bytesPerRow = width * bytesPerPixel
+        let colorSpace = CGColorSpaceCreateDeviceRGB()
+        let bitmapInfo = CGBitmapInfo.byteOrder32Big.rawValue
+                      | CGImageAlphaInfo.premultipliedLast.rawValue
+        guard let provider = CGDataProvider(data: Data(pixels) as CFData),
+              let image = CGImage(
+                  width: width,
+                  height: height,
+                  bitsPerComponent: 8,
+                  bitsPerPixel: 32,
+                  bytesPerRow: bytesPerRow,
+                  space: colorSpace,
+                  bitmapInfo: CGBitmapInfo(rawValue: bitmapInfo),
+                  provider: provider,
+                  decode: nil,
+                  shouldInterpolate: false,
+                  intent: .defaultIntent
+              ) else {
+            throw DiffError.unableToReadPixels
+        }
+        return image
+    }
+
     private static func readRGBA(from image: CGImage) throws -> [UInt8] {
         let width = image.width
         let height = image.height

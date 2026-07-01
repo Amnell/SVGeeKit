@@ -244,36 +244,94 @@ private struct MetadataChips: View {
 private struct DiffTile: View {
     let row: TestRow
 
+    enum DiffTarget: String, CaseIterable, Identifiable {
+        case baseline = "Approved baseline"
+        case reference = "W3C reference"
+        var id: String { rawValue }
+    }
+
+    @State private var target: DiffTarget = .baseline
+
+    private var comparisonURL: URL? {
+        switch target {
+        case .baseline: return row.baselineURL
+        case .reference: return row.referenceURL
+        }
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text("Diff overlay").font(.headline)
+            HStack {
+                Text("Diff highlight").font(.headline)
+                Spacer()
+                Picker("", selection: $target) {
+                    ForEach(DiffTarget.allCases) { option in
+                        Text(option.rawValue).tag(option)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .labelsHidden()
+                .fixedSize()
+            }
+            Text("Our render vs. \(target.rawValue.lowercased())")
+                .font(.caption)
+                .foregroundStyle(.secondary)
             ZStack {
                 CheckerboardBackground()
-                if let baseline = row.baselineURL.flatMap({ NSImage(contentsOf: $0) }),
-                   let actual = row.actualURL.flatMap({ NSImage(contentsOf: $0) }) {
-                    Image(nsImage: actual)
-                        .resizable()
-                        .interpolation(.none)
-                        .scaledToFit()
-                        .opacity(0.5)
-                        .overlay {
-                            Image(nsImage: baseline)
-                                .resizable()
-                                .interpolation(.none)
-                                .scaledToFit()
-                                .blendMode(.difference)
-                                .opacity(0.5)
-                        }
-                } else {
-                    Text("Need both baseline and render")
-                        .foregroundStyle(.secondary)
-                        .padding(8)
-                }
+                diffContent
             }
             .frame(maxWidth: .infinity, minHeight: 220)
             .overlay(RoundedRectangle(cornerRadius: 6).stroke(.separator))
             .clipShape(RoundedRectangle(cornerRadius: 6))
         }
+    }
+
+    @ViewBuilder
+    private var diffContent: some View {
+        if let comparisonURL,
+           let actualURL = row.actualURL,
+           let expected = SVGSnapshotDiffer.loadPNG(comparisonURL),
+           let actual = SVGSnapshotDiffer.loadPNG(actualURL) {
+            if let highlight = try? SVGSnapshotDiffer.makeDiffHighlightImage(
+                expected: expected,
+                actual: actual
+            ) {
+                Image(nsImage: nsImage(from: highlight))
+                    .resizable()
+                    .interpolation(.none)
+                    .scaledToFit()
+            } else {
+                VStack(spacing: 4) {
+                    Text("Size mismatch")
+                        .foregroundStyle(.secondary)
+                    Text("render \(actual.width)×\(actual.height) vs \(target.rawValue.lowercased()) \(expected.width)×\(expected.height)")
+                        .font(.caption.monospacedDigit())
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                }
+                .padding(8)
+            }
+        } else {
+            Text(missingText)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .padding(8)
+        }
+    }
+
+    private var missingText: String {
+        if row.actualURL == nil { return "Need a render" }
+        switch target {
+        case .baseline: return "Need an approved baseline"
+        case .reference: return "W3C reference not vendored"
+        }
+    }
+
+    private func nsImage(from cgImage: CGImage) -> NSImage {
+        NSImage(
+            cgImage: cgImage,
+            size: NSSize(width: cgImage.width, height: cgImage.height)
+        )
     }
 }
 
