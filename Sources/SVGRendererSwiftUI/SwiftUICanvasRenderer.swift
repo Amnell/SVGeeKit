@@ -96,8 +96,12 @@ public struct SwiftUICanvasRenderer {
                     context.stroke(Path(cgPath), with: shading, style: style)
                 }
 
-            case .clipToPath(let cgPath, _):
-                context.clip(to: Path(cgPath))
+            case .clipToPath(let cgPath, let evenOdd):
+                // Core Graphics treats an empty clip path as a no-op; match that so
+                // Canvas and SVGRasterizer stay in sync until `<use>`-in-clipPath
+                // is implemented (otherwise unresolved clips are empty paths).
+                guard !cgPath.isEmpty else { continue }
+                context.clip(to: Path(cgPath), style: FillStyle(eoFill: evenOdd))
 
             case .maskedContent(let maskCommands, let region, let contentCommands):
                 // SVG masking: the content is composited through the mask, where

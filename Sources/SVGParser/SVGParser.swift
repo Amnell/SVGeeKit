@@ -155,6 +155,9 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
     /// Completed masks keyed by id.
     fileprivate var masks: [String: SVGMask] = [:]
 
+    /// Nesting depth of `<defs>` — content here is not part of the render tree.
+    private var defsDepth: Int = 0
+
     /// SVG `<font id="…">` tables and CSS `<font-face>` bindings.
     var fonts: [String: SVGFontDefinition] = [:]
     var fontFaces: [SVGFontFace] = []
@@ -302,6 +305,8 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             handleClipPathStart(attributes: attributeDict, parser: parser)
         case "mask":
             handleMaskStart(attributes: attributeDict)
+        case "defs":
+            defsDepth += 1
         case "font-face" where !svgFontStack.isEmpty:
             handleSVGFontFaceMetrics(attributes: attributeDict)
         case "font-face":
@@ -390,6 +395,8 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             finalizeClipPath()
         case "mask":
             finalizeMask()
+        case "defs":
+            if defsDepth > 0 { defsDepth -= 1 }
         case "font-face" where !svgFontStack.isEmpty:
             break
         case "font-face":
@@ -747,6 +754,8 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             clipPathStack[clipPathStack.count - 1].children.append(element)
         } else if !maskStack.isEmpty {
             maskStack[maskStack.count - 1].children.append(element)
+        } else if defsDepth > 0 {
+            return
         } else {
             guard !groupStack.isEmpty else { return }
             groupStack[groupStack.count - 1].children.append(element)

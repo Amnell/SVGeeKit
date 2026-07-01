@@ -835,6 +835,51 @@ struct SVGParserTests {
         #expect(g.clipPathRef == "clip2")
     }
 
+    @Test func defsChildrenAreNotInRenderTree() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="480" height="360">
+          <g>
+            <defs>
+              <rect x="0" y="0" width="480" height="360" fill="red"/>
+            </defs>
+            <rect x="140" y="80" width="200" height="200" fill="lime"/>
+            <defs>
+              <rect x="160" y="100" width="160" height="160" fill="red"/>
+            </defs>
+          </g>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .group(let g) = doc.root.children.first else {
+            Issue.record("expected group"); return
+        }
+        #expect(g.children.count == 1)
+        guard case .rect(let visible) = g.children[0] else {
+            Issue.record("expected visible rect"); return
+        }
+        if case .color(let c) = visible.paint.fill {
+            #expect(c.green == 1)
+        } else {
+            Issue.record("expected lime fill")
+        }
+    }
+
+    @Test func defsClipPathChildrenAreStillRegistered() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+          <defs>
+            <clipPath id="clip">
+              <rect x="10" y="10" width="80" height="80"/>
+            </clipPath>
+          </defs>
+          <rect x="0" y="0" width="100" height="100" fill="blue" clip-path="url(#clip)"/>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        #expect(doc.clipPaths["clip"]?.children.count == 1)
+        #expect(doc.root.children.count == 1)
+    }
+
     @Test func parsesMaskRegionAndAppliesRef() throws {
         let svg = """
         <svg xmlns="http://www.w3.org/2000/svg" width="480" height="360">
