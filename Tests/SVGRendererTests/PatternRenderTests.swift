@@ -173,6 +173,48 @@ struct PatternRenderTests {
     #expect(diff.mismatchedFraction < 0.12)
   }
 
+  @Test func w3cGrad04MatchesReference() throws {
+    let diff = try diffAgainstW3C(testId: "pservers-grad-04-b")
+    // Two 30px labels + a revision line render in SVGFreeSans vs. the reference
+    // font, so the text drives most of the mismatch. Gradient geometry is
+    // asserted precisely in objectBoundingBoxDiagonalLinearGradientSkewsStopLines;
+    // this is only a coarse regression guard on the overall render.
+    #expect(diff.mismatchedFraction < 0.2)
+  }
+
+  /// objectBoundingBox diagonal linear gradients map stop lines through the
+  /// bounding-box affine transform (not just remapped endpoints).
+  @Test func objectBoundingBoxDiagonalLinearGradientSkewsStopLines() throws {
+    let svg = """
+    <svg xmlns="http://www.w3.org/2000/svg" width="400" height="40" viewBox="0 0 400 40">
+      <linearGradient id="g" gradientUnits="objectBoundingBox" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="red"/>
+        <stop offset="1" stop-color="blue"/>
+      </linearGradient>
+      <rect width="400" height="40" fill="url(#g)"/>
+    </svg>
+    """
+    let doc = try SVGParser().parse(string: svg)
+    let commands = SVGRenderTree.lower(doc)
+    guard let fill = commands.first(where: {
+      if case .fillPath = $0 { return true }
+      return false
+    }), case .fillPath(_, let paint, _, _) = fill,
+      case .linearGradient(let g) = paint else {
+      Issue.record("expected fillPath with linearGradient"); return
+    }
+    #expect(g.transform.matrix.a == 400)
+    #expect(g.transform.matrix.d == 40)
+    #expect(g.x1 == 0 && g.y1 == 0 && g.x2 == 1 && g.y2 == 1)
+
+    let image = try SVGRasterizer.rasterize(doc, pixelSize: CGSize(width: 400, height: 40))
+    // Endpoint baking would project (200,10) to ~52% along the user-space
+    // diagonal; the OBB affine maps the same point to ~38% in gradient space.
+    let p = Self.pixel(in: image, x: 200, y: 10)
+    #expect(p.red > 140)
+    #expect(p.blue < 110)
+  }
+
   private static func pixel(in image: CGImage, x: Int, y: Int)
     -> (red: Int, green: Int, blue: Int, alpha: Int) {
     var data = [UInt8](repeating: 0, count: 4)

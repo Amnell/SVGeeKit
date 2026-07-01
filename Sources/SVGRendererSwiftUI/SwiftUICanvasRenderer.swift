@@ -43,13 +43,11 @@ public struct SwiftUICanvasRenderer {
 
             case .fillPath(let cgPath, let paint, let opacity, let evenOdd):
                 guard let shading = shading(for: paint, opacity: opacity) else { continue }
-                // Radial gradients resolved from objectBoundingBox carry a
-                // non-identity gradientTransform (the OBB→userSpace mapping).
-                // Apply it to the context so the backend's circular gradient
-                // is stretched into the correct ellipse; inverse-transform the
-                // path so it clips to the original screen-space shape.
-                if case .radialGradient(let g) = paint, !g.transform.matrix.isIdentity {
-                    let tx = g.transform.matrix
+                // Gradients with a non-identity gradientTransform (including the
+                // OBB→userSpace mapping for objectBoundingBox units) are painted
+                // in gradient space: transform the context, inverse-transform
+                // the path so it still clips in screen space.
+                if let tx = gradientPaintTransform(paint) {
                     context.drawLayer { layerCtx in
                         layerCtx.concatenate(tx)
                         layerCtx.fill(
@@ -84,7 +82,18 @@ public struct SwiftUICanvasRenderer {
                     dash: dashArray,
                     dashPhase: dashPhase
                 )
-                context.stroke(Path(cgPath), with: shading, style: style)
+                if let tx = gradientPaintTransform(paint) {
+                    context.drawLayer { layerCtx in
+                        layerCtx.concatenate(tx)
+                        layerCtx.stroke(
+                            Path(cgPath).applying(tx.inverted()),
+                            with: shading,
+                            style: style
+                        )
+                    }
+                } else {
+                    context.stroke(Path(cgPath), with: shading, style: style)
+                }
 
             case .clipToPath(let cgPath, _):
                 context.clip(to: Path(cgPath))
@@ -118,6 +127,17 @@ public struct SwiftUICanvasRenderer {
                 }
                 context.opacity = savedOpacity
             }
+        }
+    }
+
+    private func gradientPaintTransform(_ paint: SVGPaint) -> CGAffineTransform? {
+        switch paint {
+        case .linearGradient(let g) where !g.transform.matrix.isIdentity:
+            return g.transform.matrix
+        case .radialGradient(let g) where !g.transform.matrix.isIdentity:
+            return g.transform.matrix
+        default:
+            return nil
         }
     }
 
