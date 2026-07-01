@@ -104,11 +104,11 @@ public enum SVGRenderTree {
         let hasClip = group.clipPathRef != nil
         let needsState = hasClip || group.transform.matrix != .identity
         if needsState { inner.append(.pushState) }
-        if let clipRef = group.clipPathRef, let clipDef = ctx.clipPaths[clipRef] {
-            inner.append(.clipToPath(lowerToClipPath(clipDef, bbox: nil, ctx: ctx), evenOdd: false))
-        }
         if group.transform.matrix != .identity {
             inner.append(.concatenate(group.transform))
+        }
+        if let clipRef = group.clipPathRef, let clipDef = ctx.clipPaths[clipRef] {
+            inner.append(.clipToPath(lowerToClipPath(clipDef, bbox: nil, ctx: ctx), evenOdd: false))
         }
         for child in group.children {
             lower(element: child, ctx: ctx, into: &inner)
