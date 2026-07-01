@@ -1217,4 +1217,38 @@ struct SVGParserTests {
         }
         #expect(ascii.glyphs[Unicode.Scalar("A")]?.commands != nil)
     }
+
+    @Test func appliesClassStylesFromStyleElement() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+          <style type="text/css"><![CDATA[
+            .testClass { fill: blue; }
+            .testClass2 { stroke: orange; }
+          ]]></style>
+          <rect x="10" y="10" width="50" height="50" class="testClass"/>
+          <rect x="60" y="60" width="30" height="30" class="testClass testClass2" stroke-width="5"/>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .rect(let first) = doc.root.children[0],
+              case .rect(let second) = doc.root.children[1] else {
+            Issue.record("expected two rects"); return
+        }
+        if case .color(let fill) = first.paint.fill {
+            #expect(fill.blue == 1 && fill.red == 0)
+        } else {
+            Issue.record("expected blue fill from class")
+        }
+        if case .color(let fill) = second.paint.fill {
+            #expect(fill.blue == 1)
+        } else {
+            Issue.record("expected blue fill from shared class")
+        }
+        if case .color(let stroke) = second.paint.stroke {
+            #expect(stroke.red == 1 && stroke.green > 0.5 && stroke.blue == 0)
+        } else {
+            Issue.record("expected orange stroke from second class")
+        }
+        #expect(second.paint.strokeWidth == 5)
+    }
 }

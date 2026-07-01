@@ -174,6 +174,11 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
     var svgFontStack: [PartialSVGFont] = []
     var pendingFontHrefs: [String] = []
 
+    /// Author stylesheet rules from `<style type="text/css">` elements.
+    private var stylesheet = CSSStylesheet()
+    /// Character data buffer while a `<style>` element is open.
+    private var styleTextBuffer: String?
+
     struct PartialGradient {
         enum Kind { case linear, radial }
         var kind: Kind = .linear
@@ -320,6 +325,11 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             handleMaskStart(attributes: attributeDict)
         case "defs":
             defsDepth += 1
+        case "style":
+            let type = attributeDict["type"]?.trimmingCharacters(in: .whitespaces).lowercased()
+            if type == nil || type == "text/css" {
+                styleTextBuffer = ""
+            }
         case "font-face" where !svgFontStack.isEmpty:
             handleSVGFontFaceMetrics(attributes: attributeDict)
         case "font-face":
@@ -340,8 +350,18 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
     }
 
     func parser(_ parser: XMLParser, foundCharacters string: String) {
+        if styleTextBuffer != nil {
+            styleTextBuffer?.append(string)
+            return
+        }
         guard activeTextRun != nil else { return }
         activeTextRun?.string.append(string)
+    }
+
+    func parser(_ parser: XMLParser, foundCDATA CDATABlock: Data) {
+        guard styleTextBuffer != nil,
+              let string = String(data: CDATABlock, encoding: .utf8) else { return }
+        styleTextBuffer?.append(string)
     }
 
     func parser(
@@ -415,6 +435,11 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             finalizeMask()
         case "defs":
             if defsDepth > 0 { defsDepth -= 1 }
+        case "style":
+            if let buffer = styleTextBuffer {
+                stylesheet.append(css: buffer)
+                styleTextBuffer = nil
+            }
         case "font-face" where !svgFontStack.isEmpty:
             break
         case "font-face":
@@ -866,6 +891,19 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         parser: XMLParser
     ) -> SVGPaintProperties {
         var p = inherited
+
+        if let classAttr = attributes["class"] {
+            let classes = Set(
+                classAttr.split(whereSeparator: \.isWhitespace).map(String.init)
+            )
+            let classDeclarations = stylesheet.declarations(matchingClasses: classes)
+            for (name, value) in classDeclarations where name == "color" {
+                applyPaintProperty(name: name, value: value, into: &p, parser: parser)
+            }
+            for (name, value) in classDeclarations where name != "color" {
+                applyPaintProperty(name: name, value: value, into: &p, parser: parser)
+            }
+        }
 
         // Collect (name, value) declarations from `style="..."` first then
         // attributes, so style is the lower-priority source like SVG 1.1
