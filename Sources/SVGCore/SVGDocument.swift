@@ -16,6 +16,8 @@ public struct SVGDocument: Equatable, Sendable {
     public var fontFaces: [SVGFontFace]
     /// SVG `<font id="…">` tables keyed by id.
     public var fonts: [String: SVGFontDefinition]
+    /// Elements with `id` collected from `<defs>` (not part of the render tree).
+    public var definitions: [String: SVGElement]
 
     public init(
         viewBox: CGRect? = nil,
@@ -26,7 +28,8 @@ public struct SVGDocument: Equatable, Sendable {
         clipPaths: [String: SVGClipPath] = [:],
         masks: [String: SVGMask] = [:],
         fontFaces: [SVGFontFace] = [],
-        fonts: [String: SVGFontDefinition] = [:]
+        fonts: [String: SVGFontDefinition] = [:],
+        definitions: [String: SVGElement] = [:]
     ) {
         self.viewBox = viewBox
         self.intrinsicSize = intrinsicSize
@@ -37,6 +40,7 @@ public struct SVGDocument: Equatable, Sendable {
         self.masks = masks
         self.fontFaces = fontFaces
         self.fonts = fonts
+        self.definitions = definitions
     }
 
     /// Resolve `href` against `baseURL`. Absolute URLs are returned unchanged;
@@ -167,6 +171,34 @@ public enum SVGElement: Equatable, Sendable {
     case polygon(SVGPolygon)
     case path(SVGPath)
     case text(SVGText)
+    case use(SVGUse)
+}
+
+/// Instance of a definition via `<use xlink:href="#id" …>`.
+public struct SVGUse: Equatable, Sendable {
+    public var href: String
+    public var origin: CGPoint
+    public var size: CGSize?
+    public var paint: SVGPaintProperties
+    /// Presentation attribute names specified on the `<use>` element itself.
+    public var explicitPresentation: Set<String>
+    public var transform: SVGTransform
+
+    public init(
+        href: String,
+        origin: CGPoint = .zero,
+        size: CGSize? = nil,
+        paint: SVGPaintProperties = .init(),
+        explicitPresentation: Set<String> = [],
+        transform: SVGTransform = .identity
+    ) {
+        self.href = href
+        self.origin = origin
+        self.size = size
+        self.paint = paint
+        self.explicitPresentation = explicitPresentation
+        self.transform = transform
+    }
 }
 
 /// Normalized path-data segments. The parser resolves `d=` (relative,

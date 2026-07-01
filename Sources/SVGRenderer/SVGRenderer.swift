@@ -74,7 +74,8 @@ public enum SVGRenderTree {
             clipPaths: document.clipPaths,
             masks: document.masks,
             fonts: document.fonts,
-            fontFaces: document.fontFaces
+            fontFaces: document.fontFaces,
+            definitions: document.definitions
         )
         commands.append(.pushState)
         if let viewBox = document.viewBox, let size = document.intrinsicSize {
@@ -95,6 +96,7 @@ public enum SVGRenderTree {
         let masks: [String: SVGMask]
         let fonts: [String: SVGFontDefinition]
         let fontFaces: [SVGFontFace]
+        let definitions: [String: SVGElement]
     }
 
     private static func lower(group: SVGGroup, ctx: Context, into commands: inout [SVGRenderCommand]) {
@@ -188,6 +190,45 @@ public enum SVGRenderTree {
             lower(path: p, ctx: ctx, into: &commands)
         case .text(let t):
             lower(text: t, ctx: ctx, into: &commands)
+        case .use(let u):
+            lower(use: u, ctx: ctx, into: &commands)
+        }
+    }
+
+    private static func lower(use: SVGUse, ctx: Context, into commands: inout [SVGRenderCommand]) {
+        guard let (element, placement) = expandUse(use, definitions: ctx.definitions, chain: []) else { return }
+        var inner: [SVGRenderCommand] = []
+        inner.append(.pushState)
+        if placement != .identity {
+            inner.append(.concatenate(SVGTransform(placement)))
+        }
+        lower(element: element, ctx: ctx, into: &inner)
+        inner.append(.popState)
+        commands.append(contentsOf: inner)
+    }
+
+    /// Resolve a `<use>` to instanced geometry and a placement transform.
+    private static func expandUse(
+        _ use: SVGUse,
+        definitions: [String: SVGElement],
+        chain: Set<String>
+    ) -> (SVGElement, CGAffineTransform)? {
+        guard !chain.contains(use.href) else { return nil }
+        var chain = chain
+        chain.insert(use.href)
+        guard let def = definitions[use.href] else { return nil }
+        let placement = SVGUseExpansion.placementTransform(for: use)
+        switch def {
+        case .use(let inner):
+            guard let (resolved, innerPlacement) = expandUse(inner, definitions: definitions, chain: chain) else {
+                return nil
+            }
+            var instanced = SVGUseExpansion.instanceElement(resolved, use: inner)
+            instanced = SVGUseExpansion.instanceElement(instanced, use: use)
+            return (instanced, placement.concatenating(innerPlacement))
+        default:
+            let instanced = SVGUseExpansion.instanceElement(def, use: use)
+            return (instanced, placement)
         }
     }
 
@@ -335,7 +376,6 @@ public enum SVGRenderTree {
     /// When `clipPathUnits="objectBoundingBox"` and a `bbox` is supplied, the
     /// clip coordinates (in [0,1] space) are mapped to that bounding box.
     private static func lowerToClipPath(_ clipDef: SVGClipPath, bbox: CGRect?, ctx: Context) -> CGPath {
-        // OBB clips: compose translate(bbox.origin)+scale(bbox.size) on each path.
         let obbTransform: CGAffineTransform? = (clipDef.units == .objectBoundingBox)
             ? bbox.map { b in
                 CGAffineTransform(translationX: b.minX, y: b.minY)
@@ -344,67 +384,103 @@ public enum SVGRenderTree {
             : nil
         let combined = CGMutablePath()
         for element in clipDef.children {
-            switch element {
-            case .rect(let r):
-                let cgRect = CGRect(origin: r.origin, size: r.size)
-                let p: CGPath = r.cornerRadii == .zero
-                    ? CGPath(rect: cgRect, transform: nil)
-                    : CGPath(roundedRect: cgRect, cornerWidth: r.cornerRadii.width,
-                             cornerHeight: r.cornerRadii.height, transform: nil)
-                var tx = r.transform.matrix
-                if let obb = obbTransform { tx = tx.isIdentity ? obb : tx.concatenating(obb) }
-                combined.addPath(p, transform: tx)
-            case .circle(let c):
-                guard c.radius > 0 else { break }
-                let bounds = CGRect(
-                    x: c.center.x - c.radius, y: c.center.y - c.radius,
-                    width: c.radius * 2, height: c.radius * 2
-                )
-                let p = CGPath(ellipseIn: bounds, transform: nil)
-                var tx = c.transform.matrix
-                if let obb = obbTransform { tx = tx.isIdentity ? obb : tx.concatenating(obb) }
-                combined.addPath(p, transform: tx)
-            case .ellipse(let e):
-                guard e.radii.width > 0, e.radii.height > 0 else { break }
-                let bounds = CGRect(
-                    x: e.center.x - e.radii.width, y: e.center.y - e.radii.height,
-                    width: e.radii.width * 2, height: e.radii.height * 2
-                )
-                let p = CGPath(ellipseIn: bounds, transform: nil)
-                var tx = e.transform.matrix
-                if let obb = obbTransform { tx = tx.isIdentity ? obb : tx.concatenating(obb) }
-                combined.addPath(p, transform: tx)
-            case .path(let sp):
-                let cg = CGMutablePath()
-                for cmd in sp.commands {
-                    switch cmd {
-                    case .moveTo(let pt):    cg.move(to: pt)
-                    case .lineTo(let pt):    cg.addLine(to: pt)
-                    case .quadTo(let c, let end): cg.addQuadCurve(to: end, control: c)
-                    case .cubicTo(let c1, let c2, let end): cg.addCurve(to: end, control1: c1, control2: c2)
-                    case .close:             cg.closeSubpath()
-                    }
-                }
-                var tx = sp.transform.matrix
-                if let obb = obbTransform { tx = tx.isIdentity ? obb : tx.concatenating(obb) }
-                combined.addPath(cg, transform: tx)
-            case .polyline(let pl):
-                if let p = polylinePath(points: pl.points, closed: false) {
-                    var tx = pl.transform.matrix
-                    if let obb = obbTransform { tx = tx.isIdentity ? obb : tx.concatenating(obb) }
-                    combined.addPath(p, transform: tx)
-                }
-            case .polygon(let pg):
-                if let p = polylinePath(points: pg.points, closed: true) {
-                    var tx = pg.transform.matrix
-                    if let obb = obbTransform { tx = tx.isIdentity ? obb : tx.concatenating(obb) }
-                    combined.addPath(p, transform: tx)
-                }
-            default:
-                break
-            }
+            combined.addPath(
+                clipPathGeometry(for: element, transform: .identity, obbTransform: obbTransform, ctx: ctx, chain: [])
+            )
         }
         return combined
+    }
+
+    private static func clipPathGeometry(
+        for element: SVGElement,
+        transform: CGAffineTransform,
+        obbTransform: CGAffineTransform?,
+        ctx: Context,
+        chain: Set<String>
+    ) -> CGPath {
+        switch element {
+        case .use(let u):
+            guard !chain.contains(u.href) else { return CGMutablePath() }
+            guard let (resolved, placement) = expandUse(u, definitions: ctx.definitions, chain: chain) else {
+                return CGMutablePath()
+            }
+            var nextChain = chain
+            nextChain.insert(u.href)
+            return clipPathGeometry(
+                for: resolved,
+                transform: transform.concatenating(placement),
+                obbTransform: obbTransform,
+                ctx: ctx,
+                chain: nextChain
+            )
+        case .group(let g):
+            let path = CGMutablePath()
+            var gtx = transform
+            if g.transform.matrix != .identity {
+                gtx = gtx.concatenating(g.transform.matrix)
+            }
+            for child in g.children {
+                path.addPath(
+                    clipPathGeometry(for: child, transform: gtx, obbTransform: obbTransform, ctx: ctx, chain: chain)
+                )
+            }
+            return path
+        case .rect(let r):
+            let cgRect = CGRect(origin: r.origin, size: r.size)
+            let p: CGPath = r.cornerRadii == .zero
+                ? CGPath(rect: cgRect, transform: nil)
+                : CGPath(roundedRect: cgRect, cornerWidth: r.cornerRadii.width,
+                         cornerHeight: r.cornerRadii.height, transform: nil)
+            var tx = transform.concatenating(r.transform.matrix)
+            if let obb = obbTransform { tx = tx.isIdentity ? obb : tx.concatenating(obb) }
+            return p.copy(using: &tx) ?? p
+        case .circle(let c):
+            guard c.radius > 0 else { return CGMutablePath() }
+            let bounds = CGRect(
+                x: c.center.x - c.radius, y: c.center.y - c.radius,
+                width: c.radius * 2, height: c.radius * 2
+            )
+            let p = CGPath(ellipseIn: bounds, transform: nil)
+            var tx = transform.concatenating(c.transform.matrix)
+            if let obb = obbTransform { tx = tx.isIdentity ? obb : tx.concatenating(obb) }
+            return p.copy(using: &tx) ?? p
+        case .ellipse(let e):
+            guard e.radii.width > 0, e.radii.height > 0 else { return CGMutablePath() }
+            let bounds = CGRect(
+                x: e.center.x - e.radii.width, y: e.center.y - e.radii.height,
+                width: e.radii.width * 2, height: e.radii.height * 2
+            )
+            let p = CGPath(ellipseIn: bounds, transform: nil)
+            var tx = transform.concatenating(e.transform.matrix)
+            if let obb = obbTransform { tx = tx.isIdentity ? obb : tx.concatenating(obb) }
+            return p.copy(using: &tx) ?? p
+        case .path(let sp):
+            let cg = CGMutablePath()
+            for cmd in sp.commands {
+                switch cmd {
+                case .moveTo(let pt):    cg.move(to: pt)
+                case .lineTo(let pt):    cg.addLine(to: pt)
+                case .quadTo(let c, let end): cg.addQuadCurve(to: end, control: c)
+                case .cubicTo(let c1, let c2, let end): cg.addCurve(to: end, control1: c1, control2: c2)
+                case .close:             cg.closeSubpath()
+                }
+            }
+            var tx = transform.concatenating(sp.transform.matrix)
+            if let obb = obbTransform { tx = tx.isIdentity ? obb : tx.concatenating(obb) }
+            return cg.copy(using: &tx) ?? cg
+        case .polyline(let pl):
+            guard let p = polylinePath(points: pl.points, closed: false) else { return CGMutablePath() }
+            var tx = transform.concatenating(pl.transform.matrix)
+            if let obb = obbTransform { tx = tx.isIdentity ? obb : tx.concatenating(obb) }
+            return p.copy(using: &tx) ?? p
+        case .polygon(let pg):
+            guard let p = polylinePath(points: pg.points, closed: true) else { return CGMutablePath() }
+            var tx = transform.concatenating(pg.transform.matrix)
+            if let obb = obbTransform { tx = tx.isIdentity ? obb : tx.concatenating(obb) }
+            return p.copy(using: &tx) ?? p
+        case .line, .text:
+            return CGMutablePath()
+        }
     }
 
     private static func polylinePath(points: [CGPoint], closed: Bool) -> CGPath? {

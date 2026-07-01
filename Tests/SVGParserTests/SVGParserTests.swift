@@ -880,6 +880,60 @@ struct SVGParserTests {
         #expect(doc.root.children.count == 1)
     }
 
+    @Test func parsesInternalUseReference() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100">
+          <defs>
+            <rect id="r" x="0" y="0" width="10" height="10" fill="red"/>
+          </defs>
+          <use xlink:href="#r" x="20" y="30" fill="lime"/>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+
+        guard case .rect(let def) = doc.definitions["r"] else {
+            Issue.record("expected rect definition"); return
+        }
+        #expect(def.size == CGSize(width: 10, height: 10))
+
+        #expect(doc.root.children.count == 1)
+        guard case .use(let u) = doc.root.children[0] else {
+            Issue.record("expected use in scene graph"); return
+        }
+        #expect(u.href == "r")
+        #expect(u.origin == CGPoint(x: 20, y: 30))
+        #expect(u.explicitPresentation.contains("fill"))
+        if case .color(let c) = u.paint.fill {
+            #expect(c.green == 1)
+        } else {
+            Issue.record("expected lime fill override on use")
+        }
+    }
+
+    @Test func useInClipPathIsRegistered() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100">
+          <defs>
+            <rect id="shape" x="0" y="0" width="50" height="50"/>
+            <clipPath id="clip">
+              <use xlink:href="#shape" x="10" y="10"/>
+            </clipPath>
+          </defs>
+          <rect x="0" y="0" width="100" height="100" fill="blue" clip-path="url(#clip)"/>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard let clip = doc.clipPaths["clip"] else {
+            Issue.record("expected clipPath"); return
+        }
+        #expect(clip.children.count == 1)
+        guard case .use(let u) = clip.children[0] else {
+            Issue.record("expected use in clipPath"); return
+        }
+        #expect(u.href == "shape")
+        #expect(u.origin == CGPoint(x: 10, y: 10))
+    }
+
     @Test func parsesMaskRegionAndAppliesRef() throws {
         let svg = """
         <svg xmlns="http://www.w3.org/2000/svg" width="480" height="360">

@@ -42,6 +42,7 @@ public struct SVGParser {
         document.masks = delegate.masks
         document.fonts = delegate.fonts
         document.fontFaces = delegate.fontFaces
+        document.definitions = delegate.definitions
         return document
     }
 
@@ -158,6 +159,12 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
     /// Nesting depth of `<defs>` — content here is not part of the render tree.
     private var defsDepth: Int = 0
 
+    /// `id` attributes for groups currently being parsed.
+    private var groupIdStack: [String?] = []
+
+    /// Elements with `id` inside `<defs>`, keyed for `<use>` resolution.
+    fileprivate var definitions: [String: SVGElement] = [:]
+
     /// SVG `<font id="…">` tables and CSS `<font-face>` bindings.
     var fonts: [String: SVGFontDefinition] = [:]
     var fontFaces: [SVGFontFace] = []
@@ -272,7 +279,10 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             let transform = transform(from: attributeDict, parser: parser) ?? .identity
             let clipRef = parseClipPathRef(attributeDict)
             let maskR = parseMaskRef(attributeDict)
+            groupIdStack.append(attributeDict["id"])
             groupStack.append(SVGGroup(transform: transform, opacity: elementPaint.opacity, clipPathRef: clipRef, maskRef: maskR))
+        case "use":
+            handleUse(attributes: attributeDict, paint: elementPaint, parser: parser)
         case "rect":
             handleRect(attributes: attributeDict, paint: elementPaint, parser: parser)
         case "circle":
@@ -345,7 +355,9 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             guard let root = groupStack.popLast() else { return }
             document?.root = root
         case "g":
+            let id = groupIdStack.popLast().flatMap { $0 }
             guard let finished = groupStack.popLast() else { return }
+            registerDefinition(id: id, element: .group(finished))
             appendChild(.group(finished))
         case "text":
             flushActiveTextRun()
@@ -489,6 +501,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             paint: paint,
             transform: transform(from: attributes, parser: parser) ?? .identity
         )
+        registerDefinition(id: attributes["id"], element: .rect(rect))
         appendChild(.rect(rect))
     }
 
@@ -502,6 +515,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             paint: paint,
             transform: transform(from: attributes, parser: parser) ?? .identity
         )
+        registerDefinition(id: attributes["id"], element: .circle(circle))
         appendChild(.circle(circle))
     }
 
@@ -516,6 +530,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             paint: paint,
             transform: transform(from: attributes, parser: parser) ?? .identity
         )
+        registerDefinition(id: attributes["id"], element: .ellipse(ellipse))
         appendChild(.ellipse(ellipse))
     }
 
@@ -530,6 +545,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             paint: paint,
             transform: transform(from: attributes, parser: parser) ?? .identity
         )
+        registerDefinition(id: attributes["id"], element: .line(line))
         appendChild(.line(line))
     }
 
@@ -540,6 +556,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             paint: paint,
             transform: transform(from: attributes, parser: parser) ?? .identity
         )
+        registerDefinition(id: attributes["id"], element: .polyline(polyline))
         appendChild(.polyline(polyline))
     }
 
@@ -550,6 +567,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             paint: paint,
             transform: transform(from: attributes, parser: parser) ?? .identity
         )
+        registerDefinition(id: attributes["id"], element: .polygon(polygon))
         appendChild(.polygon(polygon))
     }
 
@@ -562,6 +580,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             paint: paint,
             transform: transform(from: attributes, parser: parser) ?? .identity
         )
+        registerDefinition(id: attributes["id"], element: .path(path))
         appendChild(.path(path))
     }
 
@@ -746,6 +765,67 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
     }
 
     // MARK: - Helpers
+
+    private var registersAsDefinition: Bool {
+        defsDepth > 0 && clipPathStack.isEmpty && patternStack.isEmpty && maskStack.isEmpty
+    }
+
+    private func registerDefinition(id: String?, element: SVGElement) {
+        guard registersAsDefinition, let id, !id.isEmpty else { return }
+        definitions[id] = element
+    }
+
+    private func handleUse(
+        attributes: [String: String],
+        paint: SVGPaintProperties,
+        parser: XMLParser
+    ) {
+        guard let href = parseFragmentRef(attributes) else { return }
+        let x = attributes["x"].map { resolveLength($0, axis: .x) } ?? 0
+        let y = attributes["y"].map { resolveLength($0, axis: .y) } ?? 0
+        let size: CGSize? = {
+            guard let w = attributes["width"], let h = attributes["height"] else { return nil }
+            return CGSize(width: resolveLength(w, axis: .x), height: resolveLength(h, axis: .y))
+        }()
+        let use = SVGUse(
+            href: href,
+            origin: CGPoint(x: x, y: y),
+            size: size,
+            paint: paint,
+            explicitPresentation: presentationAttributeKeys(from: attributes),
+            transform: transform(from: attributes, parser: parser) ?? .identity
+        )
+        registerDefinition(id: attributes["id"], element: .use(use))
+        appendChild(.use(use))
+    }
+
+    private func presentationAttributeKeys(from attributes: [String: String]) -> Set<String> {
+        let paintNames: Set<String> = [
+            "fill", "fill-opacity", "fill-rule", "stroke", "stroke-opacity", "stroke-width",
+            "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-dasharray",
+            "stroke-dashoffset", "opacity", "color", "visibility", "clip-path", "mask"
+        ]
+        var keys = Set(attributes.keys.filter { paintNames.contains($0) })
+        if let style = attributes["style"] {
+            for pair in style.split(separator: ";") {
+                let parts = pair.split(separator: ":", maxSplits: 1).map {
+                    $0.trimmingCharacters(in: .whitespaces)
+                }
+                guard parts.count == 2 else { continue }
+                keys.insert(parts[0])
+            }
+        }
+        return keys
+    }
+
+    /// Internal `#id` fragment from `xlink:href` / `href` (phase 1).
+    private func parseFragmentRef(_ attributes: [String: String]) -> String? {
+        guard let raw = attributes["xlink:href"] ?? attributes["href"] else { return nil }
+        let trimmed = raw.trimmingCharacters(in: .whitespaces)
+        guard trimmed.hasPrefix("#") else { return nil }
+        let id = String(trimmed.dropFirst())
+        return id.isEmpty ? nil : id
+    }
 
     private func appendChild(_ element: SVGElement) {
         if !patternStack.isEmpty {

@@ -40,6 +40,20 @@ APPROVE_SNAPSHOTS=1 swift test                           # re-approve drifted re
 APPROVE_SNAPSHOTS=<id1>,<id2> swift test --filter ConformanceSuite  # promote specific partial baselines
 ```
 
+## Troubleshooting
+
+**Test runner segfault (signal 11).** Stale build artifacts can cause the SwiftPM test helper to crash, especially after large refactors or when many parametrized conformance cases run at once. Before debugging code, do a full clean:
+
+```sh
+rm -rf .build
+swift package clean
+# If you use Xcode for the Viewer app or open the package there:
+rm -rf ~/Library/Developer/Xcode/DerivedData/*SVGeeKit*
+swift test
+```
+
+If tests pass after a clean, the crash was environmental — not a logic bug in the renderer.
+
 ## Two-tier snapshot system
 
 Conformance tests use two baseline directories:
