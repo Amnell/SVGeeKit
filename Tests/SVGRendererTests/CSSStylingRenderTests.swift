@@ -27,4 +27,9 @@ struct CSSStylingRenderTests {
         let diff = try W3CReferenceDiff.diff(testId: "styling-css-03-b", w3cResourcesRoot: Self.w3cRoot)
         #expect(diff.mismatchedFraction < 0.12)
     }
+
+    @Test func stylingCss04fMatchesW3CReference() throws {
+        let diff = try W3CReferenceDiff.diff(testId: "styling-css-04-f", w3cResourcesRoot: Self.w3cRoot)
+        #expect(diff.mismatchedFraction < 0.12)
+    }
 }

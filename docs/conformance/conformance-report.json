@@ -3340,10 +3340,9 @@
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-css-04-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/styling-css-04-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "partialBaseline",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/styling-css-04-f\/baseline.png",
+    "detail" : "promoted from partial baseline",
+    "status" : "passed",
     "tag" : "styling",
     "testId" : "styling-css-04-f"
   },
@@ -3440,8 +3439,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-pres-03-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/styling-pres-03-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "partial baseline updated (17800 px changed)",
+    "diffMaxChannel" : 255,
+    "mismatchedFraction" : 0.10300925925925926,
     "status" : "partialBaseline",
     "tag" : "styling",
     "testId" : "styling-pres-03-f"
@@ -3449,8 +3449,9 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-pres-04-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/styling-pres-04-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
+    "detail" : "partial baseline updated (35090 px changed)",
+    "diffMaxChannel" : 255,
+    "mismatchedFraction" : 0.20306712962962964,
     "status" : "partialBaseline",
     "tag" : "styling",
     "testId" : "styling-pres-04-f"

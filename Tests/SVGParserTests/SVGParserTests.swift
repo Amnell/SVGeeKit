@@ -1421,4 +1421,85 @@ struct SVGParserTests {
             #expect(fill.green > 0.4 && fill.red < 0.1, "shape \(index) expected green fill")
         }
     }
+
+    @Test func stylingCss04fGridUsesExpectedColumnColors() throws {
+        let repoRoot = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+        let svgURL = repoRoot
+            .appendingPathComponent("Tests/SVGConformanceTests/Resources/W3C-SVG-1.1/svg/styling-css-04-f.svg")
+        let data = try Data(contentsOf: svgURL)
+        let doc = try SVGParser().parse(data: data, baseURL: svgURL.deletingLastPathComponent())
+
+        var contentRects: [SVGRect] = []
+        func collectRects(_ el: SVGElement) {
+            switch el {
+            case .rect(let rect):
+                // Skip outer frame and any non-grid rectangles.
+                let x = rect.origin.x
+                let y = rect.origin.y
+                if abs(rect.size.width - 67.5) < 0.01,
+                   abs(rect.size.height - 67.5) < 0.01,
+                   x >= 30, x <= 380, y >= 70, y <= 210
+                {
+                    contentRects.append(rect)
+                }
+            case .group(let g):
+                g.children.forEach(collectRects)
+            default:
+                break
+            }
+        }
+        collectRects(.group(SVGGroup(children: doc.root.children)))
+
+        #expect(contentRects.count == 18)
+
+        let expectedColumns: [(x: CGFloat, color: String)] = [
+            (30, "blue"),
+            (100, "green"),
+            (170, "orange"),
+            (240, "gold"),
+            (310, "purple"),
+            (380, "silver"),
+        ]
+        let expectedRows: [CGFloat] = [70, 140, 210]
+
+        func rectAt(x: CGFloat, y: CGFloat) -> SVGRect? {
+            for rect in contentRects {
+                if abs(rect.origin.x - x) < 0.01 && abs(rect.origin.y - y) < 0.01 {
+                    return rect
+                }
+            }
+            return nil
+        }
+
+        for column in expectedColumns {
+            for row in expectedRows {
+                guard let rect = rectAt(x: column.x, y: row) else {
+                    Issue.record("missing rect at x=\(column.x), y=\(row)"); return
+                }
+                guard case .color(let fill) = rect.paint.fill else {
+                    Issue.record("expected color fill at x=\(column.x), y=\(row)"); return
+                }
+                switch column.color {
+                case "blue":
+                    #expect(fill.blue > 0.45 && fill.red < 0.2 && fill.green < 0.3, "x=\(column.x), y=\(row) expected blue")
+                case "green":
+                    #expect(fill.green > 0.35 && fill.red < 0.2 && fill.blue < 0.2, "x=\(column.x), y=\(row) expected green")
+                case "orange":
+                    #expect(fill.red > 0.6 && fill.green > 0.2 && fill.green < 0.7 && fill.blue < 0.15, "x=\(column.x), y=\(row) expected orange")
+                case "gold":
+                    #expect(fill.red > 0.6 && fill.green > 0.45 && fill.blue < 0.2, "x=\(column.x), y=\(row) expected gold")
+                case "purple":
+                    #expect(fill.red > 0.35 && fill.blue > 0.35 && fill.green < 0.25, "x=\(column.x), y=\(row) expected purple")
+                case "silver":
+                    #expect(fill.red > 0.65 && fill.green > 0.65 && fill.blue > 0.65, "x=\(column.x), y=\(row) expected silver")
+                    #expect(abs(fill.red - fill.green) < 0.15 && abs(fill.green - fill.blue) < 0.15, "x=\(column.x), y=\(row) expected near-gray silver")
+                default:
+                    Issue.record("unexpected column color \(column.color)")
+                }
+            }
+        }
+    }
 }

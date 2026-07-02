@@ -164,9 +164,9 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
     /// `id` attributes for groups currently being parsed.
     private var groupIdStack: [String?] = []
     /// Open XML element metadata for CSS selector matching.
-    private var cssElementStack: [CSSNodeSummary] = []
+    private var cssElementStack: [CSSNodeContext] = []
     /// Completed direct children for each open XML element.
-    private var cssChildStack: [[CSSNodeSummary]] = []
+    private var cssChildStack: [[CSSNodeContext]] = []
 
     /// Elements with `id` inside `<defs>`, keyed for `<use>` resolution.
     fileprivate var definitions: [String: SVGElement] = [:]
@@ -357,19 +357,17 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             break
         }
 
-        let classes: Set<String>
-        if let classAttr = attributeDict["class"] {
-            classes = Set(classAttr.split(whereSeparator: \.isWhitespace).map(String.init))
-        } else {
-            classes = []
-        }
-        cssElementStack.append(
-            CSSNodeSummary(
-                elementName: elementName,
-                elementId: attributeDict["id"],
-                classes: classes
-            )
+        let classes = Set((attributeDict["class"] ?? "").split(whereSeparator: \.isWhitespace).map(String.init))
+        let node = CSSNodeContext(
+            elementName: elementName,
+            elementId: attributeDict["id"],
+            attributes: attributeDict,
+            classes: classes,
+            isFirstChild: cssChildStack.last?.isEmpty ?? true,
+            parent: cssElementStack.last,
+            previousSibling: cssChildStack.last?.last
         )
+        cssElementStack.append(node)
         cssChildStack.append([])
     }
 
@@ -927,55 +925,49 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         parser: XMLParser
     ) -> SVGPaintProperties {
         var p = inherited
-
-        let classes: Set<String>
-        if let classAttr = attributes["class"] {
-            classes = Set(classAttr.split(whereSeparator: \.isWhitespace).map(String.init))
-        } else {
-            classes = []
+        func applyDeclarations(_ declarations: [(String, String)]) {
+            // Two passes: `color` first (so `fill="currentColor"` can resolve
+            // against it on the same element), then everything else.
+            for (name, value) in declarations where name == "color" {
+                applyPaintProperty(name: name, value: value, into: &p, parser: parser)
+            }
+            for (name, value) in declarations where name != "color" {
+                applyPaintProperty(name: name, value: value, into: &p, parser: parser)
+            }
         }
-        let stylesheetDeclarations = stylesheet.declarations(
-            matching: CSSElementContext(
-                elementName: elementName,
-                elementId: attributes["id"],
-                attributes: attributes,
-                classes: classes,
-                ancestors: cssElementStack,
-                parent: cssElementStack.last,
-                previousSibling: cssChildStack.last?.last,
-                isFirstChild: cssChildStack.last?.isEmpty ?? true
-            )
+
+        // 1) Presentation attributes (specificity 0).
+        let presentationDeclarations = attributes
+            .filter { $0.key != "style" }
+            .map { ($0.key, $0.value) }
+        applyDeclarations(presentationDeclarations)
+
+        let classes = Set((attributes["class"] ?? "").split(whereSeparator: \.isWhitespace).map(String.init))
+        let cssNode = CSSNodeContext(
+            elementName: elementName,
+            elementId: attributes["id"],
+            attributes: attributes,
+            classes: classes,
+            isFirstChild: cssChildStack.last?.isEmpty ?? true,
+            parent: cssElementStack.last,
+            previousSibling: cssChildStack.last?.last
         )
-        for (name, value) in stylesheetDeclarations where name == "color" {
-            applyPaintProperty(name: name, value: value, into: &p, parser: parser)
-        }
-        for (name, value) in stylesheetDeclarations where name != "color" {
-            applyPaintProperty(name: name, value: value, into: &p, parser: parser)
-        }
+        let stylesheetDeclarations = stylesheet.declarations(
+            matching: cssNode
+        )
+        // 2) Author stylesheet rules (specificity + source order).
+        applyDeclarations(stylesheetDeclarations)
 
-        // Collect (name, value) declarations from `style="..."` first then
-        // attributes, so style is the lower-priority source like SVG 1.1
-        // presentation attributes.
-        var declarations: [(String, String)] = []
+        // 3) Inline `style` (highest author specificity).
+        var inlineStyleDeclarations: [(String, String)] = []
         if let style = attributes["style"] {
             for pair in style.split(separator: ";") {
                 let parts = pair.split(separator: ":", maxSplits: 1).map { $0.trimmingCharacters(in: .whitespaces) }
                 guard parts.count == 2 else { continue }
-                declarations.append((parts[0], parts[1]))
+                inlineStyleDeclarations.append((parts[0], parts[1]))
             }
         }
-        for (key, value) in attributes where key != "style" {
-            declarations.append((key, value))
-        }
-
-        // Two passes: `color` first (so `fill="currentColor"` can resolve
-        // against it on the same element), then everything else.
-        for (name, value) in declarations where name == "color" {
-            applyPaintProperty(name: name, value: value, into: &p, parser: parser)
-        }
-        for (name, value) in declarations where name != "color" {
-            applyPaintProperty(name: name, value: value, into: &p, parser: parser)
-        }
+        applyDeclarations(inlineStyleDeclarations)
         return p
     }
 

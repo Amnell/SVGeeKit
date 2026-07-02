@@ -1,52 +1,82 @@
 import Foundation
 
-/// A CSS selector supported by the incremental stylesheet parser.
-enum CSSSelector: Equatable {
-    /// Element type selector (e.g. `rect { }`).
+enum CSSCombinator: Equatable {
+    case descendant
+    case child
+    case adjacentSibling
+}
+
+enum CSSAttributeOperator: Equatable {
+    case equals
+    case includes
+    case dashPrefix
+}
+
+enum CSSSimpleSelector: Equatable {
+    case universal
     case type(String)
-    /// Class selector — all listed classes must be present (e.g. `.foo.bar { }`).
-    case classes(Set<String>)
-    /// ID selector (e.g. `#one { }`).
     case id(String)
-    /// Attribute selector — `value` nil means presence only (e.g. `[points]` or `[transform="scale(2)"]`).
-    case attribute(name: String, value: String?)
-    /// `:first-child` pseudo-class.
+    case `class`(String)
+    case attribute(name: String, op: CSSAttributeOperator?, value: String?)
     case firstChild
-    /// Descendant combinator (e.g. `#x [points] { }`).
-    indirect case descendant(ancestor: CSSSelector, descendant: CSSSelector)
-    /// Child combinator (e.g. `.mummy > .thischild { }`).
-    indirect case child(parent: CSSSelector, child: CSSSelector)
-    /// Adjacent sibling combinator (e.g. `.primus + .secundus { }`).
-    indirect case adjacent(left: CSSSelector, right: CSSSelector)
+}
+
+struct CSSCompoundSelector: Equatable {
+    let simpleSelectors: [CSSSimpleSelector]
+}
+
+/// Selector chain represented left-to-right and evaluated right-to-left.
+struct CSSSelector: Equatable {
+    let compounds: [CSSCompoundSelector]
+    let combinators: [CSSCombinator]
+}
+
+struct CSSSpecificity: Equatable, Comparable {
+    let a: Int  // ID selectors
+    let b: Int  // class/attribute/pseudo-class selectors
+    let c: Int  // type selectors
+
+    static func < (lhs: CSSSpecificity, rhs: CSSSpecificity) -> Bool {
+        if lhs.a != rhs.a { return lhs.a < rhs.a }
+        if lhs.b != rhs.b { return lhs.b < rhs.b }
+        return lhs.c < rhs.c
+    }
+}
+
+/// Lightweight node context used for selector matching.
+final class CSSNodeContext {
+    let elementName: String
+    let elementId: String?
+    let attributes: [String: String]
+    let classes: Set<String>
+    let isFirstChild: Bool
+    weak var parent: CSSNodeContext?
+    var previousSibling: CSSNodeContext?
+
+    init(
+        elementName: String,
+        elementId: String?,
+        attributes: [String: String],
+        classes: Set<String>,
+        isFirstChild: Bool,
+        parent: CSSNodeContext?,
+        previousSibling: CSSNodeContext?
+    ) {
+        self.elementName = elementName
+        self.elementId = elementId
+        self.attributes = attributes
+        self.classes = classes
+        self.isFirstChild = isFirstChild
+        self.parent = parent
+        self.previousSibling = previousSibling
+    }
 }
 
 /// A single rule from an author `<style>` block.
 struct CSSRule {
     let selector: CSSSelector
+    let specificity: CSSSpecificity
     let declarations: [(name: String, value: String)]
-}
-
-/// Context used to match stylesheet rules against an element.
-struct CSSElementContext: Equatable {
-    var elementName: String
-    var elementId: String?
-    var attributes: [String: String]
-    var classes: Set<String>
-    /// Ancestors from outermost to innermost.
-    var ancestors: [CSSNodeSummary]
-    /// Immediate parent of the current element.
-    var parent: CSSNodeSummary?
-    /// Previous sibling of the current element.
-    var previousSibling: CSSNodeSummary?
-    /// Whether this element is the first child under its parent.
-    var isFirstChild: Bool
-}
-
-/// Minimal node metadata used by selector matching.
-struct CSSNodeSummary: Equatable {
-    var elementName: String
-    var elementId: String?
-    var classes: Set<String>
 }
 
 /// Accumulated author stylesheet rules from `<style>` elements.
@@ -58,60 +88,83 @@ struct CSSStylesheet {
     }
 
     /// Declarations from all matching rules, in document order.
-    func declarations(matching context: CSSElementContext) -> [(name: String, value: String)] {
+    func declarations(matching node: CSSNodeContext) -> [(name: String, value: String)] {
+        let matched = rules.enumerated()
+            .filter { _, rule in matches(rule.selector, node: node) }
+            .sorted { lhs, rhs in
+                if lhs.element.specificity != rhs.element.specificity {
+                    return lhs.element.specificity < rhs.element.specificity
+                }
+                // Same specificity: later source order wins, so apply earlier first.
+                return lhs.offset < rhs.offset
+            }
+
         var result: [(name: String, value: String)] = []
-        for rule in rules where matches(rule.selector, context: context) {
+        for (_, rule) in matched {
             result.append(contentsOf: rule.declarations)
         }
         return result
     }
 
-    private func matches(_ selector: CSSSelector, context: CSSElementContext) -> Bool {
-        switch selector {
-        case .type(let name):
-            return name == context.elementName
-        case .classes(let required):
-            return required.isSubset(of: context.classes)
-        case .id(let id):
-            return context.elementId == id
-        case .attribute(let name, let value):
-            guard let attrValue = context.attributes[name] else { return false }
-            if let value { return attrValue == value }
-            return true
-        case .firstChild:
-            return context.isFirstChild
-        case .descendant(let ancestor, let descendant):
-            guard matches(descendant, context: context) else { return false }
-            return ancestorMatches(ancestor, context: context)
-        case .child(let parent, let child):
-            guard matches(child, context: context), let parentNode = context.parent else { return false }
-            return matches(selector: parent, node: parentNode)
-        case .adjacent(let left, let right):
-            guard matches(right, context: context), let previous = context.previousSibling else { return false }
-            return matches(selector: left, node: previous)
-        }
+    private func matches(_ selector: CSSSelector, node: CSSNodeContext) -> Bool {
+        guard !selector.compounds.isEmpty,
+              selector.combinators.count + 1 == selector.compounds.count else { return false }
+        return matches(selector: selector, compoundIndex: selector.compounds.count - 1, node: node)
     }
 
-    private func ancestorMatches(_ selector: CSSSelector, context: CSSElementContext) -> Bool {
-        for ancestor in context.ancestors {
-            if matches(selector: selector, node: ancestor) {
-                return true
+    private func matches(selector: CSSSelector, compoundIndex index: Int, node: CSSNodeContext) -> Bool {
+        guard matches(selector.compounds[index], node: node) else { return false }
+        guard index > 0 else { return true }
+
+        let combinator = selector.combinators[index - 1]
+        switch combinator {
+        case .child:
+            guard let parent = node.parent else { return false }
+            return matches(selector: selector, compoundIndex: index - 1, node: parent)
+        case .adjacentSibling:
+            guard let previous = node.previousSibling else { return false }
+            return matches(selector: selector, compoundIndex: index - 1, node: previous)
+        case .descendant:
+            var ancestor = node.parent
+            while let candidate = ancestor {
+                if matches(selector: selector, compoundIndex: index - 1, node: candidate) {
+                    return true
+                }
+                ancestor = candidate.parent
             }
-        }
-        return false
-    }
-
-    private func matches(selector: CSSSelector, node: CSSNodeSummary) -> Bool {
-        switch selector {
-        case .type(let name):
-            return node.elementName == name
-        case .classes(let required):
-            return required.isSubset(of: node.classes)
-        case .id(let id):
-            return node.elementId == id
-        case .attribute, .firstChild, .descendant, .child, .adjacent:
             return false
         }
+    }
+
+    private func matches(_ compound: CSSCompoundSelector, node: CSSNodeContext) -> Bool {
+        for simple in compound.simpleSelectors {
+            switch simple {
+            case .universal:
+                continue
+            case .type(let name):
+                if node.elementName != name { return false }
+            case .id(let id):
+                if node.elementId != id { return false }
+            case .class(let name):
+                if !node.classes.contains(name) { return false }
+            case .firstChild:
+                if !node.isFirstChild { return false }
+            case .attribute(let name, let op, let value):
+                guard let attrValue = node.attributes[name] else { return false }
+                guard let op else { continue }
+                guard let value else { return false }
+                switch op {
+                case .equals:
+                    if attrValue != value { return false }
+                case .includes:
+                    let tokens = attrValue.split(whereSeparator: \.isWhitespace).map(String.init)
+                    if !tokens.contains(value) { return false }
+                case .dashPrefix:
+                    if attrValue != value && !attrValue.hasPrefix("\(value)-") { return false }
+                }
+            }
+        }
+        return true
     }
 
     private static func parseRules(from text: String) -> [CSSRule] {
@@ -129,124 +182,229 @@ struct CSSStylesheet {
             for part in selectorText.split(separator: ",", omittingEmptySubsequences: true) {
                 let trimmed = part.trimmingCharacters(in: .whitespacesAndNewlines)
                 guard let selector = parseSelector(trimmed) else { continue }
-                rules.append(CSSRule(selector: selector, declarations: declarations))
+                rules.append(
+                    CSSRule(
+                        selector: selector,
+                        specificity: specificity(of: selector),
+                        declarations: declarations
+                    )
+                )
             }
         }
         return rules
     }
 
     private static func parseSelector(_ raw: String) -> CSSSelector? {
-        let normalized = normalizeCombinatorSpacing(raw)
-        let tokens = normalized.split(whereSeparator: \.isWhitespace).map(String.init)
+        let tokens = tokenizeSelector(raw)
+        guard !tokens.isEmpty else { return nil }
 
-        if tokens.count == 3,
-            let left = parseSimpleSelector(tokens[0]),
-            let right = parseSimpleSelector(tokens[2])
-        {
-            switch tokens[1] {
+        var compounds: [CSSCompoundSelector] = []
+        var combinators: [CSSCombinator] = []
+
+        for token in tokens {
+            switch token {
             case ">":
-                return .child(parent: left, child: right)
+                combinators.append(.child)
             case "+":
-                return .adjacent(left: left, right: right)
+                combinators.append(.adjacentSibling)
+            case " ":
+                combinators.append(.descendant)
             default:
-                return nil
+                guard let compound = parseCompoundSelector(token) else { return nil }
+                compounds.append(compound)
             }
         }
-        if tokens.count == 2,
-            let ancestor = parseSimpleSelector(tokens[0]),
-            let descendant = parseSimpleSelector(tokens[1])
-        {
-            return .descendant(ancestor: ancestor, descendant: descendant)
-        }
-        return parseSimpleSelector(normalized)
+        guard !compounds.isEmpty, compounds.count == combinators.count + 1 else { return nil }
+        return CSSSelector(compounds: compounds, combinators: combinators)
     }
 
-    private static func parseSimpleSelector(_ raw: String) -> CSSSelector? {
+    private static func parseCompoundSelector(_ raw: String) -> CSSCompoundSelector? {
         let selector = raw.trimmingCharacters(in: .whitespacesAndNewlines)
-        if selector.hasPrefix("#") {
-            let id = String(selector.dropFirst())
-            guard !id.isEmpty, isSimpleIdentifier(id) else { return nil }
-            return .id(id)
+        guard !selector.isEmpty else { return nil }
+        var simple: [CSSSimpleSelector] = []
+        var index = selector.startIndex
+
+        while index < selector.endIndex {
+            let ch = selector[index]
+            if ch == "*" {
+                simple.append(.universal)
+                index = selector.index(after: index)
+                continue
+            }
+            if ch == "#" {
+                let start = selector.index(after: index)
+                let end = readIdentifierEnd(selector, from: start)
+                guard end > start else { return nil }
+                simple.append(.id(String(selector[start..<end])))
+                index = end
+                continue
+            }
+            if ch == "." {
+                let start = selector.index(after: index)
+                let end = readIdentifierEnd(selector, from: start)
+                guard end > start else { return nil }
+                simple.append(.class(String(selector[start..<end])))
+                index = end
+                continue
+            }
+            if ch == ":" {
+                let suffix = selector[index...]
+                if suffix.hasPrefix(":first-child") {
+                    simple.append(.firstChild)
+                    index = selector.index(index, offsetBy: 12)
+                    continue
+                }
+                return nil
+            }
+            if ch == "[" {
+                guard let close = selector[index...].firstIndex(of: "]") else { return nil }
+                let inner = String(selector[selector.index(after: index)..<close])
+                guard let attr = parseAttributeSelector(inner) else { return nil }
+                simple.append(attr)
+                index = selector.index(after: close)
+                continue
+            }
+
+            let end = readIdentifierEnd(selector, from: index)
+            guard end > index else { return nil }
+            simple.append(.type(String(selector[index..<end])))
+            index = end
         }
-        if selector.hasPrefix(".") {
-            let classNames = selector
-                .split(whereSeparator: { $0 == "." || $0.isWhitespace })
-                .map(String.init)
-                .filter { !$0.isEmpty }
-            guard !classNames.isEmpty else { return nil }
-            return .classes(Set(classNames))
-        }
-        if selector.hasPrefix("["), selector.hasSuffix("]") {
-            return parseAttributeSelector(selector)
-        }
-        if selector == ":first-child" {
-            return .firstChild
-        }
-        if isSimpleTypeSelector(selector) {
-            return .type(selector)
-        }
-        return nil
+
+        return simple.isEmpty ? nil : CSSCompoundSelector(simpleSelectors: simple)
     }
 
-    private static func normalizeCombinatorSpacing(_ selector: String) -> String {
-        var out = ""
-        var i = selector.startIndex
-        while i < selector.endIndex {
-            let ch = selector[i]
+    private static func parseAttributeSelector(_ raw: String) -> CSSSimpleSelector? {
+        let content = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        if let range = content.range(of: "~=") {
+            let name = content[..<range.lowerBound].trimmingCharacters(in: .whitespaces)
+            let value = content[range.upperBound...].trimmingCharacters(in: .whitespaces)
+            guard !name.isEmpty, !value.isEmpty else { return nil }
+            return .attribute(name: String(name), op: .includes, value: unquote(value))
+        }
+        if let range = content.range(of: "|=") {
+            let name = content[..<range.lowerBound].trimmingCharacters(in: .whitespaces)
+            let value = content[range.upperBound...].trimmingCharacters(in: .whitespaces)
+            guard !name.isEmpty, !value.isEmpty else { return nil }
+            return .attribute(name: String(name), op: .dashPrefix, value: unquote(value))
+        }
+        if let range = content.range(of: "=") {
+            let name = content[..<range.lowerBound].trimmingCharacters(in: .whitespaces)
+            let value = content[range.upperBound...].trimmingCharacters(in: .whitespaces)
+            guard !name.isEmpty, !value.isEmpty else { return nil }
+            return .attribute(name: String(name), op: .equals, value: unquote(value))
+        }
+        return content.isEmpty ? nil : .attribute(name: content, op: nil, value: nil)
+    }
+
+    private static func tokenizeSelector(_ raw: String) -> [String] {
+        var tokens: [String] = []
+        var buffer = ""
+        var i = raw.startIndex
+        var inBrackets = false
+        var quote: Character?
+
+        func flushBuffer() {
+            let trimmed = buffer.trimmingCharacters(in: .whitespacesAndNewlines)
+            if !trimmed.isEmpty { tokens.append(trimmed) }
+            buffer = ""
+        }
+
+        while i < raw.endIndex {
+            let ch = raw[i]
+            if quote != nil {
+                buffer.append(ch)
+                if ch == quote { quote = nil }
+                i = raw.index(after: i)
+                continue
+            }
+            if inBrackets {
+                buffer.append(ch)
+                if ch == "\"" || ch == "'" {
+                    quote = ch
+                } else if ch == "]" {
+                    inBrackets = false
+                }
+                i = raw.index(after: i)
+                continue
+            }
+            if ch == "[" {
+                inBrackets = true
+                buffer.append(ch)
+                i = raw.index(after: i)
+                continue
+            }
             if ch == ">" || ch == "+" {
-                while out.last?.isWhitespace == true { out.removeLast() }
-                out.append(" ")
-                out.append(ch)
-                out.append(" ")
-                i = selector.index(after: i)
-                while i < selector.endIndex, selector[i].isWhitespace {
-                    i = selector.index(after: i)
+                flushBuffer()
+                tokens.append(String(ch))
+                i = raw.index(after: i)
+                while i < raw.endIndex, raw[i].isWhitespace {
+                    i = raw.index(after: i)
                 }
                 continue
             }
-            out.append(ch)
-            i = selector.index(after: i)
-        }
-        return out.trimmingCharacters(in: .whitespacesAndNewlines)
-    }
-
-    private static func parseAttributeSelector(_ raw: String) -> CSSSelector? {
-        let inner = raw.dropFirst().dropLast()
-        if let eq = inner.firstIndex(of: "=") {
-            let name = inner[..<eq].trimmingCharacters(in: .whitespaces)
-            var value = String(inner[inner.index(after: eq)...])
-                .trimmingCharacters(in: .whitespaces)
-            if (value.hasPrefix("\"") && value.hasSuffix("\""))
-                || (value.hasPrefix("'") && value.hasSuffix("'"))
-            {
-                value = String(value.dropFirst().dropLast())
+            if ch.isWhitespace {
+                flushBuffer()
+                var j = raw.index(after: i)
+                while j < raw.endIndex, raw[j].isWhitespace {
+                    j = raw.index(after: j)
+                }
+                if j < raw.endIndex, raw[j] != ">", raw[j] != "+", !tokens.isEmpty,
+                   tokens.last != " ", tokens.last != ">", tokens.last != "+"
+                {
+                    tokens.append(" ")
+                }
+                i = j
+                continue
             }
-            guard !name.isEmpty else { return nil }
-            return .attribute(name: String(name), value: value)
+            buffer.append(ch)
+            i = raw.index(after: i)
         }
-        let name = inner.trimmingCharacters(in: .whitespaces)
-        guard !name.isEmpty else { return nil }
-        return .attribute(name: String(name), value: nil)
+        flushBuffer()
+        return tokens
     }
 
-    /// True for a single identifier with no combinators or pseudo-classes.
-    private static func isSimpleTypeSelector<S: StringProtocol>(_ selector: S) -> Bool {
-        guard !selector.isEmpty else { return false }
-        for ch in selector where ch == " " || ch == ">" || ch == "+" || ch == "~"
-            || ch == ":" || ch == "#" || ch == "." || ch == "["
+    private static func readIdentifierEnd(_ text: String, from start: String.Index) -> String.Index {
+        var i = start
+        while i < text.endIndex {
+            let ch = text[i]
+            if ch.isLetter || ch.isNumber || ch == "-" || ch == "_" {
+                i = text.index(after: i)
+                continue
+            }
+            break
+        }
+        return i
+    }
+
+    private static func unquote(_ value: String) -> String {
+        if (value.hasPrefix("\"") && value.hasSuffix("\""))
+            || (value.hasPrefix("'") && value.hasSuffix("'"))
         {
-            return false
+            return String(value.dropFirst().dropLast())
         }
-        return true
+        return value
     }
 
-    private static func isSimpleIdentifier(_ text: String) -> Bool {
-        guard let first = text.first else { return false }
-        guard first.isLetter || first == "-" || first == "_" else { return false }
-        for ch in text.dropFirst() where !ch.isLetter && !ch.isNumber && ch != "-" && ch != "_" {
-            return false
+    private static func specificity(of selector: CSSSelector) -> CSSSpecificity {
+        var a = 0
+        var b = 0
+        var c = 0
+        for compound in selector.compounds {
+            for simple in compound.simpleSelectors {
+                switch simple {
+                case .id:
+                    a += 1
+                case .class, .attribute, .firstChild:
+                    b += 1
+                case .type:
+                    c += 1
+                case .universal:
+                    break
+                }
+            }
         }
-        return true
+        return CSSSpecificity(a: a, b: b, c: c)
     }
 
     private static func removeComments(from text: String) -> String {
