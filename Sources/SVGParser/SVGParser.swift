@@ -910,8 +910,13 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             classes = []
         }
         let stylesheetDeclarations = stylesheet.declarations(
-            matchingElement: elementName,
-            classes: classes
+            matching: CSSElementContext(
+                elementName: elementName,
+                elementId: attributes["id"],
+                attributes: attributes,
+                classes: classes,
+                ancestorIds: groupIdStack.compactMap { $0 }
+            )
         )
         for (name, value) in stylesheetDeclarations where name == "color" {
             applyPaintProperty(name: name, value: value, into: &p, parser: parser)

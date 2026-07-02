@@ -1314,4 +1314,80 @@ struct SVGParserTests {
             #expect(fill.green > 0.4 && fill.red < 0.1, "rect \(index) expected green from type selector")
         }
     }
+
+    @Test func appliesIdAndAttributeStylesFromStyleElement() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+          <defs>
+            <style type="text/css">
+              #one, #two { fill: green }
+              [transform="scale(2)"] { fill: green }
+              #x [points] { fill: green }
+            </style>
+          </defs>
+          <g style="fill: red">
+            <rect id="one" x="10" y="10" width="20" height="20"/>
+            <rect id="two" x="40" y="10" width="20" height="20"/>
+            <circle transform="scale(2)" cx="70" cy="20" r="10"/>
+          </g>
+          <g style="fill: red" id="x">
+            <polygon points="10,50 30,70 50,50"/>
+          </g>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .group(let body) = doc.root.children[0] else {
+            Issue.record("expected body group"); return
+        }
+        guard case .rect(let one) = body.children[0],
+              case .rect(let two) = body.children[1],
+              case .circle(let circle) = body.children[2] else {
+            Issue.record("expected rects and circle"); return
+        }
+        guard case .group(let xGroup) = doc.root.children[1],
+              case .polygon(let polygon) = xGroup.children[0] else {
+            Issue.record("expected polygon in #x group"); return
+        }
+        for (label, shape) in [
+            ("#one", one.paint), ("#two", two.paint),
+            ("[transform]", circle.paint), ("#x [points]", polygon.paint),
+        ] {
+            guard case .color(let fill) = shape.fill else {
+                Issue.record("expected green fill on \(label)"); return
+            }
+            #expect(fill.green > 0.4 && fill.red < 0.1, "expected green fill on \(label)")
+        }
+    }
+
+    @Test func stylingCss02bShapesGetGreenFillFromSelectors() throws {
+        let repoRoot = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+        let svgURL = repoRoot
+            .appendingPathComponent("Tests/SVGConformanceTests/Resources/W3C-SVG-1.1/svg/styling-css-02-b.svg")
+        let data = try Data(contentsOf: svgURL)
+        let doc = try SVGParser().parse(data: data, baseURL: svgURL.deletingLastPathComponent())
+
+        var paintedShapes: [SVGPaintProperties] = []
+        func collectPaintedShapes(_ el: SVGElement) {
+            switch el {
+            case .rect(let r) where r.paint.fill != .none: paintedShapes.append(r.paint)
+            case .circle(let c) where c.paint.fill != .none: paintedShapes.append(c.paint)
+            case .polygon(let p) where p.paint.fill != .none: paintedShapes.append(p.paint)
+            case .group(let g): g.children.forEach(collectPaintedShapes)
+            default: break
+            }
+        }
+        collectPaintedShapes(.group(SVGGroup(children: doc.root.children)))
+
+        // Six content shapes (excluding test-frame rect and revision text).
+        #expect(paintedShapes.count >= 6)
+        for (index, paint) in paintedShapes.prefix(6).enumerated() {
+            guard case .color(let fill) = paint.fill else {
+                Issue.record("shape \(index) expected color fill"); return
+            }
+            #expect(fill.green > 0.4 && fill.red < 0.1, "shape \(index) expected green fill")
+        }
+    }
 }
