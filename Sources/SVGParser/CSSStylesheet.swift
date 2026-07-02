@@ -10,8 +10,14 @@ enum CSSSelector: Equatable {
     case id(String)
     /// Attribute selector — `value` nil means presence only (e.g. `[points]` or `[transform="scale(2)"]`).
     case attribute(name: String, value: String?)
+    /// `:first-child` pseudo-class.
+    case firstChild
     /// Descendant combinator (e.g. `#x [points] { }`).
     indirect case descendant(ancestor: CSSSelector, descendant: CSSSelector)
+    /// Child combinator (e.g. `.mummy > .thischild { }`).
+    indirect case child(parent: CSSSelector, child: CSSSelector)
+    /// Adjacent sibling combinator (e.g. `.primus + .secundus { }`).
+    indirect case adjacent(left: CSSSelector, right: CSSSelector)
 }
 
 /// A single rule from an author `<style>` block.
@@ -26,8 +32,21 @@ struct CSSElementContext: Equatable {
     var elementId: String?
     var attributes: [String: String]
     var classes: Set<String>
-    /// `id` values from ancestor `<g>` / `<symbol>` elements, outermost first.
-    var ancestorIds: [String]
+    /// Ancestors from outermost to innermost.
+    var ancestors: [CSSNodeSummary]
+    /// Immediate parent of the current element.
+    var parent: CSSNodeSummary?
+    /// Previous sibling of the current element.
+    var previousSibling: CSSNodeSummary?
+    /// Whether this element is the first child under its parent.
+    var isFirstChild: Bool
+}
+
+/// Minimal node metadata used by selector matching.
+struct CSSNodeSummary: Equatable {
+    var elementName: String
+    var elementId: String?
+    var classes: Set<String>
 }
 
 /// Accumulated author stylesheet rules from `<style>` elements.
@@ -59,23 +78,38 @@ struct CSSStylesheet {
             guard let attrValue = context.attributes[name] else { return false }
             if let value { return attrValue == value }
             return true
+        case .firstChild:
+            return context.isFirstChild
         case .descendant(let ancestor, let descendant):
             guard matches(descendant, context: context) else { return false }
             return ancestorMatches(ancestor, context: context)
+        case .child(let parent, let child):
+            guard matches(child, context: context), let parentNode = context.parent else { return false }
+            return matches(selector: parent, node: parentNode)
+        case .adjacent(let left, let right):
+            guard matches(right, context: context), let previous = context.previousSibling else { return false }
+            return matches(selector: left, node: previous)
         }
     }
 
     private func ancestorMatches(_ selector: CSSSelector, context: CSSElementContext) -> Bool {
+        for ancestor in context.ancestors {
+            if matches(selector: selector, node: ancestor) {
+                return true
+            }
+        }
+        return false
+    }
+
+    private func matches(selector: CSSSelector, node: CSSNodeSummary) -> Bool {
         switch selector {
+        case .type(let name):
+            return node.elementName == name
+        case .classes(let required):
+            return required.isSubset(of: node.classes)
         case .id(let id):
-            return context.ancestorIds.contains(id)
-        case .classes:
-            // Ancestor class matching is not needed for styling-css-02-b; defer until a test requires it.
-            return false
-        case .type:
-            // Ancestor type matching is not needed for styling-css-02-b; defer until a test requires it.
-            return false
-        case .attribute, .descendant:
+            return node.elementId == id
+        case .attribute, .firstChild, .descendant, .child, .adjacent:
             return false
         }
     }
@@ -102,14 +136,29 @@ struct CSSStylesheet {
     }
 
     private static func parseSelector(_ raw: String) -> CSSSelector? {
-        let parts = raw.split(whereSeparator: \.isWhitespace).map(String.init)
-        if parts.count == 2,
-            let ancestor = parseSimpleSelector(parts[0]),
-            let descendant = parseSimpleSelector(parts[1])
+        let normalized = normalizeCombinatorSpacing(raw)
+        let tokens = normalized.split(whereSeparator: \.isWhitespace).map(String.init)
+
+        if tokens.count == 3,
+            let left = parseSimpleSelector(tokens[0]),
+            let right = parseSimpleSelector(tokens[2])
+        {
+            switch tokens[1] {
+            case ">":
+                return .child(parent: left, child: right)
+            case "+":
+                return .adjacent(left: left, right: right)
+            default:
+                return nil
+            }
+        }
+        if tokens.count == 2,
+            let ancestor = parseSimpleSelector(tokens[0]),
+            let descendant = parseSimpleSelector(tokens[1])
         {
             return .descendant(ancestor: ancestor, descendant: descendant)
         }
-        return parseSimpleSelector(raw)
+        return parseSimpleSelector(normalized)
     }
 
     private static func parseSimpleSelector(_ raw: String) -> CSSSelector? {
@@ -130,10 +179,35 @@ struct CSSStylesheet {
         if selector.hasPrefix("["), selector.hasSuffix("]") {
             return parseAttributeSelector(selector)
         }
+        if selector == ":first-child" {
+            return .firstChild
+        }
         if isSimpleTypeSelector(selector) {
             return .type(selector)
         }
         return nil
+    }
+
+    private static func normalizeCombinatorSpacing(_ selector: String) -> String {
+        var out = ""
+        var i = selector.startIndex
+        while i < selector.endIndex {
+            let ch = selector[i]
+            if ch == ">" || ch == "+" {
+                while out.last?.isWhitespace == true { out.removeLast() }
+                out.append(" ")
+                out.append(ch)
+                out.append(" ")
+                i = selector.index(after: i)
+                while i < selector.endIndex, selector[i].isWhitespace {
+                    i = selector.index(after: i)
+                }
+                continue
+            }
+            out.append(ch)
+            i = selector.index(after: i)
+        }
+        return out.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
     private static func parseAttributeSelector(_ raw: String) -> CSSSelector? {

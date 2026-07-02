@@ -3305,7 +3305,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-class-01-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/styling-class-01-f\/baseline.png",
-    "detail" : "promoted from partial baseline",
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "passed",
     "tag" : "styling",
     "testId" : "styling-class-01-f"
@@ -3322,17 +3323,18 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-css-02-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/styling-css-02-b\/baseline.png",
-    "detail" : "promoted from partial baseline",
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "passed",
     "tag" : "styling",
     "testId" : "styling-css-02-b"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-css-03-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/styling-css-03-b\/baseline.png",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/styling-css-03-b\/baseline.png",
     "diffMaxChannel" : 0,
     "mismatchedFraction" : 0,
-    "status" : "partialBaseline",
+    "status" : "passed",
     "tag" : "styling",
     "testId" : "styling-css-03-b"
   },

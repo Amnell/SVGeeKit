@@ -22,4 +22,9 @@ struct CSSStylingRenderTests {
         let diff = try W3CReferenceDiff.diff(testId: "styling-css-02-b", w3cResourcesRoot: Self.w3cRoot)
         #expect(diff.mismatchedFraction < 0.12)
     }
+
+    @Test func stylingCss03bMatchesW3CReference() throws {
+        let diff = try W3CReferenceDiff.diff(testId: "styling-css-03-b", w3cResourcesRoot: Self.w3cRoot)
+        #expect(diff.mismatchedFraction < 0.12)
+    }
 }

@@ -163,6 +163,10 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
 
     /// `id` attributes for groups currently being parsed.
     private var groupIdStack: [String?] = []
+    /// Open XML element metadata for CSS selector matching.
+    private var cssElementStack: [CSSNodeSummary] = []
+    /// Completed direct children for each open XML element.
+    private var cssChildStack: [[CSSNodeSummary]] = []
 
     /// Elements with `id` inside `<defs>`, keyed for `<use>` resolution.
     fileprivate var definitions: [String: SVGElement] = [:]
@@ -352,6 +356,21 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         default:
             break
         }
+
+        let classes: Set<String>
+        if let classAttr = attributeDict["class"] {
+            classes = Set(classAttr.split(whereSeparator: \.isWhitespace).map(String.init))
+        } else {
+            classes = []
+        }
+        cssElementStack.append(
+            CSSNodeSummary(
+                elementName: elementName,
+                elementId: attributeDict["id"],
+                classes: classes
+            )
+        )
+        cssChildStack.append([])
     }
 
     func parser(_ parser: XMLParser, foundCharacters string: String) {
@@ -453,6 +472,12 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             finalizeSVGFont()
         default:
             break
+        }
+
+        guard let finished = cssElementStack.popLast() else { return }
+        _ = cssChildStack.popLast()
+        if !cssChildStack.isEmpty {
+            cssChildStack[cssChildStack.count - 1].append(finished)
         }
     }
 
@@ -915,7 +940,10 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
                 elementId: attributes["id"],
                 attributes: attributes,
                 classes: classes,
-                ancestorIds: groupIdStack.compactMap { $0 }
+                ancestors: cssElementStack,
+                parent: cssElementStack.last,
+                previousSibling: cssChildStack.last?.last,
+                isFirstChild: cssChildStack.last?.isEmpty ?? true
             )
         )
         for (name, value) in stylesheetDeclarations where name == "color" {

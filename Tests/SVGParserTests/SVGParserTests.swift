@@ -1390,4 +1390,35 @@ struct SVGParserTests {
             #expect(fill.green > 0.4 && fill.red < 0.1, "shape \(index) expected green fill")
         }
     }
+
+    @Test func stylingCss03bShapesGetGreenFillFromSelectors() throws {
+        let repoRoot = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+        let svgURL = repoRoot
+            .appendingPathComponent("Tests/SVGConformanceTests/Resources/W3C-SVG-1.1/svg/styling-css-03-b.svg")
+        let data = try Data(contentsOf: svgURL)
+        let doc = try SVGParser().parse(data: data, baseURL: svgURL.deletingLastPathComponent())
+
+        var paintedShapes: [SVGPaintProperties] = []
+        func collectPaintedShapes(_ el: SVGElement) {
+            switch el {
+            case .rect(let r) where r.paint.fill != .none: paintedShapes.append(r.paint)
+            case .circle(let c) where c.paint.fill != .none: paintedShapes.append(c.paint)
+            case .polygon(let p) where p.paint.fill != .none: paintedShapes.append(p.paint)
+            case .group(let g): g.children.forEach(collectPaintedShapes)
+            default: break
+            }
+        }
+        collectPaintedShapes(.group(SVGGroup(children: doc.root.children)))
+
+        #expect(paintedShapes.count >= 6)
+        for (index, paint) in paintedShapes.prefix(6).enumerated() {
+            guard case .color(let fill) = paint.fill else {
+                Issue.record("shape \(index) expected color fill"); return
+            }
+            #expect(fill.green > 0.4 && fill.red < 0.1, "shape \(index) expected green fill")
+        }
+    }
 }
