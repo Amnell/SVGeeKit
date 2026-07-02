@@ -1,6 +1,8 @@
 import Foundation
 import Observation
 import SVGConformance
+import SVGCore
+import SVGParser
 
 /// One row in the Viewer UI, combining the discovered test case with its latest
 /// run record so the UI can render everything without reloading from disk.
@@ -14,6 +16,8 @@ struct TestRow: Identifiable {
     let expectedReferenceURL: URL
     let svgSource: String
     let metadata: SVGTestMetadata
+    /// Whether the SVG actually carries inline `<script>` blocks or event handlers.
+    let hasScripts: Bool
 
     var status: SVGConformanceStatus { record.status }
     var tag: String { record.tag }
@@ -132,6 +136,10 @@ final class TestStore {
         let expectedReference = RepoLayout.suiteRoot
             .appendingPathComponent("png", isDirectory: true)
             .appendingPathComponent("\(testCase.id).png")
+        let hasScripts = Self.detectScripts(
+            data: svgData,
+            baseURL: testCase.svgURL.deletingLastPathComponent()
+        )
 
         return TestRow(
             id: testCase.id,
@@ -142,7 +150,18 @@ final class TestStore {
             referenceURL: testCase.referencePNGURL,
             expectedReferenceURL: expectedReference,
             svgSource: svgSource,
-            metadata: metadata
+            metadata: metadata,
+            hasScripts: hasScripts
         )
+    }
+
+    private static func detectScripts(data: Data, baseURL: URL) -> Bool {
+        guard let document = try? SVGParser().parse(data: data, baseURL: baseURL) else {
+            return false
+        }
+        let metadata = document.scriptMetadata
+        return !metadata.blocks.isEmpty
+            || !metadata.handlersByElementID.isEmpty
+            || !metadata.rootHandlers.isEmpty
     }
 }

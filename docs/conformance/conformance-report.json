@@ -2349,8 +2349,10 @@
     "testId" : "render-groups-03-t"
   },
   {
-    "detail" : "feature family not yet supported by SVGeeKit",
-    "status" : "skipped",
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/script-handle-01-b\/actual.png",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/script-handle-01-b\/baseline.png",
+    "detail" : "promoted from partial baseline",
+    "status" : "passed",
     "tag" : "script",
     "testId" : "script-handle-01-b"
   },
@@ -3341,7 +3343,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-css-04-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/styling-css-04-f\/baseline.png",
-    "detail" : "promoted from partial baseline",
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "passed",
     "tag" : "styling",
     "testId" : "styling-css-04-f"
@@ -3439,9 +3442,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-pres-03-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/styling-pres-03-f\/baseline.png",
-    "detail" : "partial baseline updated (17800 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.10300925925925926,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "styling",
     "testId" : "styling-pres-03-f"
@@ -3449,9 +3451,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-pres-04-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/styling-pres-04-f\/baseline.png",
-    "detail" : "partial baseline updated (35090 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.20306712962962964,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "styling",
     "testId" : "styling-pres-04-f"
@@ -3847,11 +3848,8 @@
     "testId" : "text-tspan-01-b"
   },
   {
-    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/text-tspan-02-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/text-tspan-02-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "feature family not yet supported by SVGeeKit",
+    "status" : "skipped",
     "tag" : "text",
     "testId" : "text-tspan-02-b"
   },

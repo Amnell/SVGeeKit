@@ -26,6 +26,7 @@ struct ContentView: View {
                 } detail: {
                     if let row = store.selectedRow {
                         TestDetailView(row: row)
+                            .id(row.id)
                     } else if store.isLoading {
                         ProgressView("Running conformance suite…")
                             .frame(maxWidth: .infinity, maxHeight: .infinity)

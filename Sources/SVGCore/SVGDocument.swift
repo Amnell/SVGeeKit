@@ -18,6 +18,8 @@ public struct SVGDocument: Equatable, Sendable {
     public var fonts: [String: SVGFontDefinition]
     /// Elements with `id` collected from `<defs>` (not part of the render tree).
     public var definitions: [String: SVGElement]
+    /// Inline scripts, event handlers, and element id index captured at parse time.
+    public var scriptMetadata: SVGScriptMetadata
 
     public init(
         viewBox: CGRect? = nil,
@@ -29,7 +31,8 @@ public struct SVGDocument: Equatable, Sendable {
         masks: [String: SVGMask] = [:],
         fontFaces: [SVGFontFace] = [],
         fonts: [String: SVGFontDefinition] = [:],
-        definitions: [String: SVGElement] = [:]
+        definitions: [String: SVGElement] = [:],
+        scriptMetadata: SVGScriptMetadata = SVGScriptMetadata()
     ) {
         self.viewBox = viewBox
         self.intrinsicSize = intrinsicSize
@@ -41,6 +44,7 @@ public struct SVGDocument: Equatable, Sendable {
         self.fontFaces = fontFaces
         self.fonts = fonts
         self.definitions = definitions
+        self.scriptMetadata = scriptMetadata
     }
 
     /// Resolve `href` against `baseURL`. Absolute URLs are returned unchanged;
@@ -74,24 +78,30 @@ public struct SVGDocument: Equatable, Sendable {
 
 /// A grouping container. Used for the implicit root and for `<g>`.
 public struct SVGGroup: Equatable, Sendable {
+    public var id: String?
     public var transform: SVGTransform
     /// Group-level opacity (`opacity` presentation attribute on `<g>`).
     /// Children are composited as a unit before this opacity is applied,
     /// so overlapping children don't show through each other.
     public var opacity: CGFloat
+    public var visibility: SVGVisibility
     public var clipPathRef: String?
     public var maskRef: String?
     public var children: [SVGElement]
 
     public init(
+        id: String? = nil,
         transform: SVGTransform = .identity,
         opacity: CGFloat = 1,
+        visibility: SVGVisibility = .visible,
         clipPathRef: String? = nil,
         maskRef: String? = nil,
         children: [SVGElement] = []
     ) {
+        self.id = id
         self.transform = transform
         self.opacity = opacity
+        self.visibility = visibility
         self.clipPathRef = clipPathRef
         self.maskRef = maskRef
         self.children = children
@@ -443,6 +453,7 @@ public struct SVGTextRun: Equatable, Sendable {
 }
 
 public struct SVGText: Equatable, Sendable {
+    public var id: String?
     public var origin: CGPoint
     public var runs: [SVGTextRun]
     /// Element-level font (cascade result on `<text>`); also supplies `text-anchor`.
@@ -457,12 +468,14 @@ public struct SVGText: Equatable, Sendable {
     }
 
     public init(
+        id: String? = nil,
         origin: CGPoint,
         runs: [SVGTextRun],
         font: SVGFont = SVGFont(),
         paint: SVGPaintProperties = .init(),
         transform: SVGTransform = .identity
     ) {
+        self.id = id
         self.origin = origin
         self.runs = runs
         self.font = font
@@ -478,6 +491,7 @@ public struct SVGText: Equatable, Sendable {
         transform: SVGTransform = .identity
     ) {
         self.init(
+            id: nil,
             origin: origin,
             runs: [SVGTextRun(string: string, font: font, paint: paint)],
             font: font,

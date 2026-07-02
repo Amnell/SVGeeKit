@@ -1,6 +1,7 @@
 import AppKit
 import SwiftUI
 import SVGConformance
+import SVGScript
 
 struct TestDetailView: View {
     let row: TestRow
@@ -12,6 +13,10 @@ struct TestDetailView: View {
                 header
                 if !row.metadata.isEmpty {
                     metadataSection
+                }
+                if row.hasScripts {
+                    InteractiveScriptPreview(svgURL: row.testCase.svgURL)
+                        .id(row.id)
                 }
                 tilesGrid
                 sourceSection
@@ -332,6 +337,66 @@ private struct DiffTile: View {
             cgImage: cgImage,
             size: NSSize(width: cgImage.width, height: cgImage.height)
         )
+    }
+}
+
+private struct InteractiveScriptPreview: View {
+    let svgURL: URL
+    @State private var loadError: String?
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("Interactive script preview").font(.headline)
+            Text("Click the render to dispatch SVG event handlers (see operator script above).")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            ZStack {
+                Color.white
+                if let loadError {
+                    Text(loadError)
+                        .foregroundStyle(.red)
+                        .font(.callout)
+                        .padding(8)
+                } else {
+                    InteractiveScriptCanvas(svgURL: svgURL, loadError: $loadError)
+                }
+            }
+            .frame(maxWidth: .infinity, minHeight: 280)
+            .overlay(RoundedRectangle(cornerRadius: 6).stroke(.separator))
+            .clipShape(RoundedRectangle(cornerRadius: 6))
+        }
+    }
+}
+
+private struct InteractiveScriptCanvas: View {
+    let svgURL: URL
+    @Binding var loadError: String?
+    @State private var scriptView: SVGScriptImageView?
+
+    var body: some View {
+        Group {
+            if let scriptView {
+                scriptView
+            } else {
+                ProgressView()
+            }
+        }
+        .frame(maxWidth: .infinity, minHeight: 280)
+        .id(svgURL)
+        .task(id: svgURL) {
+            scriptView = nil
+            loadError = nil
+            do {
+                let data = try Data(contentsOf: svgURL)
+                scriptView = try SVGScriptImageView(
+                    data: data,
+                    baseURL: svgURL.deletingLastPathComponent()
+                )
+            } catch {
+                loadError = String(describing: error)
+                scriptView = nil
+            }
+        }
     }
 }
 

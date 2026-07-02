@@ -1,0 +1,75 @@
+#if canImport(JavaScriptCore) && canImport(SwiftUI)
+import CoreGraphics
+import SwiftUI
+import SVGCore
+import SVGRenderer
+import SVGRendererSwiftUI
+
+/// SwiftUI view that renders a scriptable SVG and forwards pointer clicks to ECMAScript handlers.
+public struct SVGScriptImageView: View {
+
+  @State private var scriptDocument: SVGScriptDocument
+  private let intrinsicSize: CGSize?
+
+  public init(data: Data, baseURL: URL? = nil) throws {
+    let doc = try SVGScriptDocument(data: data, baseURL: baseURL)
+    let sized = Self.sizedDocument(doc.document)
+    _scriptDocument = State(initialValue: SVGScriptDocument(document: sized))
+    intrinsicSize = sized.intrinsicSize ?? sized.viewBox?.size
+  }
+
+  public init(scriptDocument: SVGScriptDocument) {
+    let sized = Self.sizedDocument(scriptDocument.document)
+    _scriptDocument = State(initialValue: SVGScriptDocument(document: sized))
+    intrinsicSize = sized.intrinsicSize ?? sized.viewBox?.size
+  }
+
+  public var body: some View {
+    GeometryReader { proxy in
+      Canvas { context, size in
+        var ctx = context
+        applyContainerTransform(into: &ctx, canvasSize: size)
+        // Observe revision so Canvas re-draws after script mutations.
+        let _ = scriptDocument.contentRevision
+        let commands = SVGRenderTree.lower(scriptDocument.document)
+        SwiftUICanvasRenderer().execute(commands, context: &ctx)
+      }
+      .contentShape(Rectangle())
+      .onTapGesture { location in
+        let point = userSpacePoint(location: location, canvasSize: proxy.size)
+        scriptDocument.dispatchClick(at: point)
+      }
+    }
+    .aspectRatio(intrinsicSize.map { $0.width / $0.height } ?? 4 / 3, contentMode: .fit)
+    .frame(maxWidth: .infinity)
+    .task {
+      scriptDocument.dispatchLoad()
+    }
+  }
+
+  private func applyContainerTransform(into context: inout GraphicsContext, canvasSize: CGSize) {
+    guard let intrinsic = intrinsicSize, intrinsic.width > 0, intrinsic.height > 0 else { return }
+    guard canvasSize != intrinsic else { return }
+    let sx = canvasSize.width / intrinsic.width
+    let sy = canvasSize.height / intrinsic.height
+    context.scaleBy(x: sx, y: sy)
+  }
+
+  private func userSpacePoint(location: CGPoint, canvasSize: CGSize) -> CGPoint {
+    guard let intrinsic = intrinsicSize, intrinsic.width > 0, intrinsic.height > 0 else {
+      return location
+    }
+    let sx = intrinsic.width / canvasSize.width
+    let sy = intrinsic.height / canvasSize.height
+    return CGPoint(x: location.x * sx, y: location.y * sy)
+  }
+
+  private static func sizedDocument(_ document: SVGDocument) -> SVGDocument {
+    if document.intrinsicSize != nil { return document }
+    var copy = document
+    copy.intrinsicSize = document.viewBox?.size
+    return copy
+  }
+}
+
+#endif

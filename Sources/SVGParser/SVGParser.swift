@@ -43,6 +43,8 @@ public struct SVGParser {
         document.fonts = delegate.fonts
         document.fontFaces = delegate.fontFaces
         document.definitions = delegate.definitions
+        document.scriptMetadata = delegate.scriptMetadata
+        document.scriptMetadata.elementIndex = SVGDocument.buildElementIndex(root: document.root)
         return document
     }
 
@@ -161,7 +163,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
     /// `<g>` / `<symbol>` opened inside `<defs>` — their children are kept for definitions.
     private var definitionContainerDepth: Int = 0
 
-    /// `id` attributes for groups currently being parsed.
+    /// `id` attributes for groups currently being parsed (legacy stack; id is stored on `SVGGroup`).
     private var groupIdStack: [String?] = []
     /// Open XML element metadata for CSS selector matching.
     private var cssElementStack: [CSSNodeContext] = []
@@ -182,6 +184,24 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
     private var stylesheet = CSSStylesheet()
     /// Character data buffer while a `<style>` element is open.
     private var styleTextBuffer: String?
+
+    /// Inline `<script>` capture.
+    private var scriptTextBuffer: String?
+    private var scriptType: String?
+    fileprivate var scriptMetadata = SVGScriptMetadata()
+
+    private static let eventAttributeNames: [(String, String)] = [
+        ("onload", "load"),
+        ("onclick", "click"),
+        ("onmousedown", "mousedown"),
+        ("onmouseup", "mouseup"),
+        ("onmouseover", "mouseover"),
+        ("onmousemove", "mousemove"),
+        ("onmouseout", "mouseout"),
+        ("onfocusin", "focusin"),
+        ("onfocusout", "focusout"),
+        ("onactivate", "activate"),
+    ]
 
     struct PartialGradient {
         enum Kind { case linear, radial }
@@ -297,7 +317,15 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             let clipRef = parseClipPathRef(attributeDict)
             let maskR = parseMaskRef(attributeDict)
             groupIdStack.append(attributeDict["id"])
-            groupStack.append(SVGGroup(transform: transform, opacity: elementPaint.opacity, clipPathRef: clipRef, maskRef: maskR))
+            groupStack.append(SVGGroup(
+                id: attributeDict["id"],
+                transform: transform,
+                opacity: elementPaint.opacity,
+                visibility: elementPaint.visibility,
+                clipPathRef: clipRef,
+                maskRef: maskR
+            ))
+            captureEventHandlers(elementName: elementName, attributes: attributeDict)
         case "use":
             handleUse(attributes: attributeDict, paint: elementPaint, parser: parser)
         case "rect":
@@ -339,6 +367,9 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             if type == nil || type == "text/css" {
                 styleTextBuffer = ""
             }
+        case "script":
+            scriptType = attributeDict["type"]
+            scriptTextBuffer = ""
         case "font-face" where !svgFontStack.isEmpty:
             handleSVGFontFaceMetrics(attributes: attributeDict)
         case "font-face":
@@ -376,14 +407,24 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             styleTextBuffer?.append(string)
             return
         }
+        if scriptTextBuffer != nil {
+            scriptTextBuffer?.append(string)
+            return
+        }
         guard activeTextRun != nil else { return }
         activeTextRun?.string.append(string)
     }
 
     func parser(_ parser: XMLParser, foundCDATA CDATABlock: Data) {
-        guard styleTextBuffer != nil,
-              let string = String(data: CDATABlock, encoding: .utf8) else { return }
-        styleTextBuffer?.append(string)
+        if styleTextBuffer != nil,
+           let string = String(data: CDATABlock, encoding: .utf8) {
+            styleTextBuffer?.append(string)
+            return
+        }
+        if scriptTextBuffer != nil,
+           let string = String(data: CDATABlock, encoding: .utf8) {
+            scriptTextBuffer?.append(string)
+        }
     }
 
     func parser(
@@ -400,13 +441,19 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             guard let root = groupStack.popLast() else { return }
             document?.root = root
         case "g", "symbol":
-            let id = groupIdStack.popLast().flatMap { $0 }
+            _ = groupIdStack.popLast()
             guard let finished = groupStack.popLast() else { return }
-            registerDefinition(id: id, element: .group(finished))
+            registerDefinition(id: finished.id, element: .group(finished))
             if defsDepth == 0 {
                 appendChild(.group(finished))
             }
             if defsDepth > 0 { definitionContainerDepth -= 1 }
+        case "script":
+            if let source = scriptTextBuffer {
+                scriptMetadata.blocks.append(SVGScriptBlock(type: scriptType, source: source))
+            }
+            scriptTextBuffer = nil
+            scriptType = nil
         case "text":
             flushActiveTextRun()
             guard var finished = textStack.popLast() else { return }
@@ -493,8 +540,8 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
 
     private func handleSVGRoot(attributes: [String: String], parser: XMLParser) {
         let viewBox = attributes["viewBox"].flatMap { AttributeParsers.viewBox($0) }
-        let width = attributes["width"].flatMap { AttributeParsers.length($0)?.resolved() }
-        let height = attributes["height"].flatMap { AttributeParsers.length($0)?.resolved() }
+        let width = rootLength(attributes["width"])
+        let height = rootLength(attributes["height"])
 
         let intrinsic: CGSize? = {
             if let w = width, let h = height { return CGSize(width: w, height: h) }
@@ -509,7 +556,32 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         }
 
         document = SVGDocument(viewBox: viewBox, intrinsicSize: intrinsic, root: SVGGroup())
-        groupStack.append(SVGGroup())
+        groupStack.append(SVGGroup(id: attributes["id"]))
+        scriptMetadata.contentScriptType = attributes["contentScriptType"]
+        captureEventHandlers(elementName: "svg", attributes: attributes)
+    }
+
+    /// Root `width`/`height` for intrinsic sizing. Percentages are ignored because
+    /// there is no viewport yet — `viewBox` supplies the fallback (W3C suite pattern).
+    private func rootLength(_ raw: String?) -> CGFloat? {
+        guard let raw, let len = AttributeParsers.length(raw) else { return nil }
+        guard len.unit != .percent else { return nil }
+        return len.resolved()
+    }
+
+    private func captureEventHandlers(elementName: String, attributes: [String: String]) {
+        var handlers: [SVGEventHandler] = []
+        for (attribute, event) in Self.eventAttributeNames {
+            if let body = attributes[attribute], !body.isEmpty {
+                handlers.append(SVGEventHandler(event: event, script: body))
+            }
+        }
+        guard !handlers.isEmpty else { return }
+        if elementName == "svg" {
+            scriptMetadata.rootHandlers.append(contentsOf: handlers)
+        } else if let id = attributes["id"], !id.isEmpty {
+            scriptMetadata.handlersByElementID[id, default: []].append(contentsOf: handlers)
+        }
     }
     /// Resolves a length attribute against the current viewport. Percentages on
     /// the x/y axes use the viewport's width/height; "length" axis percentages
@@ -652,6 +724,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         let x = resolveLength(attributes["x"], axis: .x)
         let y = resolveLength(attributes["y"], axis: .y)
         let text = SVGText(
+            id: attributes["id"],
             origin: CGPoint(x: x, y: y),
             runs: [],
             font: font,

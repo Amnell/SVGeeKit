@@ -4,7 +4,7 @@ SVGeeKit is a Swift package for iOS 17+ / macOS 14+ that **parses and renders st
 
 ## Ground rules
 
-1. **No animation, no interactivity, no DOM mutation.** The library is purely static today (`<animate*>`, `<script>`, hit-testing, pointer events are out of scope).
+1. **Static by default; scripting is opt-in.** The core library parses and renders static SVG (`SVGKit`). Optional `SVGScript` adds JavaScriptCore-backed event handlers and DOM attribute mutation (`<animate*>`, hit-testing beyond scripting, pointer events without scripts remain out of scope).
 2. **Parser and renderer are strictly separated.**
    - `SVGCore` defines pure value-type model data — no I/O, no rendering, no `SwiftUI`.
    - `SVGParser` only writes model values; it never touches a renderer.
@@ -22,6 +22,7 @@ SVGeeKit is a Swift package for iOS 17+ / macOS 14+ that **parses and renders st
 | --- | --- |
 | Add a new SVG element | [docs/adding-a-feature.md](docs/adding-a-feature.md) |
 | CSS / class / `<style>` styling | [docs/styling-rollout.md](docs/styling-rollout.md), `Sources/SVGParser/CSSStylesheet.swift` |
+| ECMAScript / event handlers | [docs/script-rollout.md](docs/script-rollout.md), `Sources/SVGScript/` |
 | Text / SVG fonts (phased rollout) | [docs/font-rollout-plan.md](docs/font-rollout-plan.md) |
 | Understand module boundaries | [docs/architecture.md](docs/architecture.md) |
 | Re-approve / debug a snapshot | [docs/snapshot-workflow.md](docs/snapshot-workflow.md) |

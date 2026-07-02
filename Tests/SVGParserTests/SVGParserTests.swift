@@ -1503,3 +1503,38 @@ struct SVGParserTests {
         }
     }
 }
+
+@Suite("SVGParser — script metadata")
+struct SVGParserScriptTests {
+
+    @Test func parsesScriptHandle01Metadata() throws {
+        let repo = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+        let url = repo.appendingPathComponent(
+            "SVGConformanceTests/Resources/W3C-SVG-1.1/svg/script-handle-01-b.svg"
+        )
+        let data = try Data(contentsOf: url)
+        let doc = try SVGParser().parse(data: data, baseURL: url.deletingLastPathComponent())
+        #expect(doc.scriptMetadata.blocks.count == 1)
+        #expect(doc.scriptMetadata.elementIndex["target"] != nil)
+        #expect(doc.scriptMetadata.elementIndex["testPassed"] != nil)
+        #expect(doc.scriptMetadata.handlersByElementID["target"]?.contains(where: { $0.event == "click" }) == true)
+    }
+
+    @Test func parsesGroupVisibility() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10">
+          <g id="hidden" visibility="hidden">
+            <rect width="10" height="10"/>
+          </g>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .group(let group) = doc.root.children.first else {
+            Issue.record("expected group"); return
+        }
+        #expect(group.id == "hidden")
+        #expect(group.visibility == .hidden)
+    }
+}

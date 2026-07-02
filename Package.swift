@@ -13,6 +13,7 @@ let package = Package(
         .library(name: "SVGParser", targets: ["SVGParser"]),
         .library(name: "SVGRenderer", targets: ["SVGRenderer"]),
         .library(name: "SVGRendererSwiftUI", targets: ["SVGRendererSwiftUI"]),
+        .library(name: "SVGScript", targets: ["SVGScript"]),
         .library(name: "SVGConformance", targets: ["SVGConformance"])
     ],
     targets: [
@@ -24,6 +25,11 @@ let package = Package(
             dependencies: ["SVGCore", "SVGRenderer"]
         ),
         .target(
+            name: "SVGScript",
+            dependencies: ["SVGCore", "SVGParser", "SVGRenderer", "SVGRendererSwiftUI"],
+            linkerSettings: [.linkedFramework("JavaScriptCore")]
+        ),
+        .target(
             name: "SVGKit",
             dependencies: ["SVGCore", "SVGParser", "SVGRenderer", "SVGRendererSwiftUI"]
         ),
@@ -33,7 +39,7 @@ let package = Package(
         ),
         .executableTarget(
             name: "Viewer",
-            dependencies: ["SVGKit", "SVGConformance"],
+            dependencies: ["SVGKit", "SVGConformance", "SVGScript"],
             path: "Apps/Viewer"
         ),
         .executableTarget(
@@ -55,6 +61,13 @@ let package = Package(
             dependencies: ["SVGConformance"],
             resources: [
                 .copy("Resources/W3C-SVG-1.1")
+            ]
+        ),
+        .testTarget(
+            name: "SVGScriptTests",
+            dependencies: ["SVGScript", "SVGRendererSwiftUI", "SVGConformance"],
+            resources: [
+                .copy("../SVGConformanceTests/Resources/W3C-SVG-1.1")
             ]
         )
     ]
