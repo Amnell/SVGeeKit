@@ -1,5 +1,6 @@
 import CoreGraphics
 import Foundation
+import SVGAnimation
 import SVGCore
 import SVGParser
 import SVGRendererSwiftUI
@@ -119,12 +120,14 @@ public struct SVGConformanceRunner {
             )
         }
 
+        let renderDocument = Self.documentForRender(testCase: testCase, document: document)
+
         let actualImage: CGImage
         let actualURL = options.resultsDirectory
             .appendingPathComponent(testCase.id, isDirectory: true)
             .appendingPathComponent("actual.png")
         do {
-            actualImage = try SVGRasterizer.rasterize(document, pixelSize: options.outputSize)
+            actualImage = try SVGRasterizer.rasterize(renderDocument, pixelSize: options.outputSize)
             try SVGSnapshotDiffer.writePNG(actualImage, to: actualURL)
         } catch {
             return SVGConformanceRecord(
@@ -213,6 +216,19 @@ public struct SVGConformanceRunner {
                           detail: "partial baseline created",
                           baseline: partialURL, actual: actualURL, result: nil)
         }
+    }
+
+    /// Rasterizes at an explicit `sampleAt`, or at the end of the SMIL timeline when
+    /// the document carries declarative animations and no override is set.
+    private static func documentForRender(testCase: SVGTestCase, document: SVGDocument) -> SVGDocument {
+        if let sampleAt = testCase.sampleAt {
+            return SVGAnimationEngine.sample(document: document, at: sampleAt)
+        }
+        if SVGAnimationEngine.containsAnimations(in: document) {
+            let end = SVGAnimationEngine.suggestedDuration(in: document)
+            return SVGAnimationEngine.sample(document: document, at: end)
+        }
+        return document
     }
 
     private func record(

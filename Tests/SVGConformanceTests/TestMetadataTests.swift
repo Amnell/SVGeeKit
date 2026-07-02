@@ -28,6 +28,24 @@ struct TestMetadataSuite {
         ])
     }
 
+    @Test func capturesListItemsInPassCriteria() throws {
+        let url = try Paths.suiteRoot()
+            .appendingPathComponent("svg/animate-elem-25-t.svg")
+        let m = SVGTestMetadata.extract(from: url)
+
+        // The `<p>` intro plus each `<li>` bullet should be captured; the
+        // `<ul>` list items used to be dropped entirely.
+        #expect(m.passCriteriaParagraphs.count == 3)
+        #expect(m.passCriteriaParagraphs.first == "The test is passed if:")
+        #expect(m.passCriteriaParagraphs.dropFirst().allSatisfy { $0.hasPrefix("• ") })
+        #expect(m.passCriteriaParagraphs.contains {
+            $0.hasPrefix("• the left yellow rectangle animates its height from 100 to 50")
+        })
+        #expect(m.passCriteriaParagraphs.contains {
+            $0.hasPrefix("• the right yellow rectangle animates its height from 100 to 50")
+        })
+    }
+
     @Test func returnsTitleAndDescForInHouseFixture() throws {
         let url = try Paths.suiteRoot()
             .appendingPathComponent("svg/shapes-rect-basic-01.svg")
@@ -39,6 +57,33 @@ struct TestMetadataSuite {
         #expect(m.passCriteriaParagraphs.isEmpty)
         #expect(m.operatorScriptParagraphs.isEmpty)
         #expect(m.author == nil)
+    }
+
+    @Test func animateElemTestsAreNotSkipped() throws {
+        let index = try SVGTestSuiteIndex(rootDirectory: Paths.suiteRoot())
+        let elemCases = index.cases.filter { $0.id.hasPrefix("animate-elem-") }
+        #expect(elemCases.count == 68)
+        #expect(elemCases.allSatisfy { !$0.isSkipped })
+    }
+
+    @Test func excludedAnimateFamiliesStaySkipped() throws {
+        let index = try SVGTestSuiteIndex(rootDirectory: Paths.suiteRoot())
+        let excluded = [
+            "animate-dom-01-f",
+            "animate-dom-02-f",
+            "animate-script-elem-01-b",
+            "animate-struct-dom-01-b",
+            "animate-interact-events-01-t",
+            "animate-interact-pevents-01-t",
+            "animate-interact-pevents-02-t",
+            "animate-interact-pevents-03-t",
+            "animate-interact-pevents-04-t",
+            "animate-pservers-grad-01-b"
+        ]
+        for id in excluded {
+            let testCase = try #require(index.cases.first { $0.id == id })
+            #expect(testCase.isSkipped, "expected \(id) to stay skipped")
+        }
     }
 
     @Test func emptyForMinimalDocument() {

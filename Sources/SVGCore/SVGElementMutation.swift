@@ -63,86 +63,184 @@ extension SVGDocument {
   }
 
   private static func applyAttribute(name: String, value: String, to element: SVGElement) throws -> SVGElement {
-    switch (name.lowercased(), element) {
-      case ("visibility", .group(var group)):
+    let key = name.lowercased()
+    switch element {
+    case .group(var group):
+      switch key {
+      case "visibility":
         guard let visibility = SVGVisibility(rawValue: value.lowercased()) else {
           throw SVGElementMutationError.unsupportedAttribute(name)
         }
         group.visibility = visibility
-        if visibility == .hidden {
-          Self.hideDescendants(in: &group)
-        } else if visibility == .visible {
-          Self.showDescendants(in: &group)
-        }
+        if visibility == .hidden { hideDescendants(in: &group) }
+        else if visibility == .visible { showDescendants(in: &group) }
         return .group(group)
-      case ("visibility", .rect(var rect)):
-        guard let visibility = SVGVisibility(rawValue: value.lowercased()) else {
-          throw SVGElementMutationError.unsupportedAttribute(name)
-        }
-        rect.paint.visibility = visibility
-        return .rect(rect)
-      case ("visibility", .circle(var circle)):
-        guard let visibility = SVGVisibility(rawValue: value.lowercased()) else {
-          throw SVGElementMutationError.unsupportedAttribute(name)
-        }
-        circle.paint.visibility = visibility
-        return .circle(circle)
-      case ("visibility", .ellipse(var ellipse)):
-        guard let visibility = SVGVisibility(rawValue: value.lowercased()) else {
-          throw SVGElementMutationError.unsupportedAttribute(name)
-        }
-        ellipse.paint.visibility = visibility
-        return .ellipse(ellipse)
-      case ("visibility", .line(var line)):
-        guard let visibility = SVGVisibility(rawValue: value.lowercased()) else {
-          throw SVGElementMutationError.unsupportedAttribute(name)
-        }
-        line.paint.visibility = visibility
-        return .line(line)
-      case ("visibility", .polyline(var polyline)):
-        guard let visibility = SVGVisibility(rawValue: value.lowercased()) else {
-          throw SVGElementMutationError.unsupportedAttribute(name)
-        }
-        polyline.paint.visibility = visibility
-        return .polyline(polyline)
-      case ("visibility", .polygon(var polygon)):
-        guard let visibility = SVGVisibility(rawValue: value.lowercased()) else {
-          throw SVGElementMutationError.unsupportedAttribute(name)
-        }
-        polygon.paint.visibility = visibility
-        return .polygon(polygon)
-      case ("visibility", .path(var pathEl)):
-        guard let visibility = SVGVisibility(rawValue: value.lowercased()) else {
-          throw SVGElementMutationError.unsupportedAttribute(name)
-        }
-        pathEl.paint.visibility = visibility
-        return .path(pathEl)
-      case ("visibility", .text(var text)):
-        guard let visibility = SVGVisibility(rawValue: value.lowercased()) else {
-          throw SVGElementMutationError.unsupportedAttribute(name)
-        }
-        text.paint.visibility = visibility
-        for index in text.runs.indices {
-          text.runs[index].paint.visibility = visibility
-        }
-        return .text(text)
-      case ("fill", .rect(var rect)):
-        rect.paint.fill = try Self.parseFill(value)
-        return .rect(rect)
-      case ("fill", .circle(var circle)):
-        circle.paint.fill = try Self.parseFill(value)
-        return .circle(circle)
-      case ("fill", .text(var text)):
-        text.paint.fill = try Self.parseFill(value)
-        for index in text.runs.indices {
-          text.runs[index].paint.fill = text.paint.fill
-        }
-        return .text(text)
-      case ("fill", .group):
-        throw SVGElementMutationError.unsupportedAttribute(name)
+      case "display":
+        return try applyAttribute(name: "visibility", value: displayToVisibility(value), to: .group(group))
+      case "opacity":
+        group.opacity = try parseOpacity(value)
+        return .group(group)
       default:
         throw SVGElementMutationError.unsupportedAttribute(name)
       }
+    case .rect(var rect):
+      if try applyPaintAttribute(key: key, value: value, paint: &rect.paint) {
+        return .rect(rect)
+      }
+      switch key {
+      case "x": rect.origin.x = try parseLength(value); return .rect(rect)
+      case "y": rect.origin.y = try parseLength(value); return .rect(rect)
+      case "width": rect.size.width = try parseLength(value); return .rect(rect)
+      case "height": rect.size.height = try parseLength(value); return .rect(rect)
+      default: throw SVGElementMutationError.unsupportedAttribute(name)
+      }
+    case .circle(var circle):
+      if try applyPaintAttribute(key: key, value: value, paint: &circle.paint) {
+        return .circle(circle)
+      }
+      switch key {
+      case "cx": circle.center.x = try parseLength(value); return .circle(circle)
+      case "cy": circle.center.y = try parseLength(value); return .circle(circle)
+      case "r": circle.radius = try parseLength(value); return .circle(circle)
+      default: throw SVGElementMutationError.unsupportedAttribute(name)
+      }
+    case .ellipse(var ellipse):
+      if try applyPaintAttribute(key: key, value: value, paint: &ellipse.paint) {
+        return .ellipse(ellipse)
+      }
+      switch key {
+      case "cx": ellipse.center.x = try parseLength(value); return .ellipse(ellipse)
+      case "cy": ellipse.center.y = try parseLength(value); return .ellipse(ellipse)
+      case "rx": ellipse.radii.width = try parseLength(value); return .ellipse(ellipse)
+      case "ry": ellipse.radii.height = try parseLength(value); return .ellipse(ellipse)
+      default: throw SVGElementMutationError.unsupportedAttribute(name)
+      }
+    case .line(var line):
+      if try applyPaintAttribute(key: key, value: value, paint: &line.paint) {
+        return .line(line)
+      }
+      switch key {
+      case "x1": line.start.x = try parseLength(value); return .line(line)
+      case "y1": line.start.y = try parseLength(value); return .line(line)
+      case "x2": line.end.x = try parseLength(value); return .line(line)
+      case "y2": line.end.y = try parseLength(value); return .line(line)
+      default: throw SVGElementMutationError.unsupportedAttribute(name)
+      }
+    case .polyline(var polyline):
+      if try applyPaintAttribute(key: key, value: value, paint: &polyline.paint) {
+        return .polyline(polyline)
+      }
+      throw SVGElementMutationError.unsupportedAttribute(name)
+    case .polygon(var polygon):
+      if try applyPaintAttribute(key: key, value: value, paint: &polygon.paint) {
+        return .polygon(polygon)
+      }
+      throw SVGElementMutationError.unsupportedAttribute(name)
+    case .path(var pathEl):
+      if try applyPaintAttribute(key: key, value: value, paint: &pathEl.paint) {
+        return .path(pathEl)
+      }
+      throw SVGElementMutationError.unsupportedAttribute(name)
+    case .text(var text):
+      if key == "x" {
+        text.origin.x = try parseLength(value)
+        return .text(text)
+      }
+      if key == "y" {
+        text.origin.y = try parseLength(value)
+        return .text(text)
+      }
+      if try applyPaintAttribute(key: key, value: value, paint: &text.paint) {
+        for index in text.runs.indices {
+          switch key {
+          case "fill": text.runs[index].paint.fill = text.paint.fill
+          case "opacity": text.runs[index].paint.opacity = text.paint.opacity
+          case "visibility": text.runs[index].paint.visibility = text.paint.visibility
+          default: break
+          }
+        }
+        return .text(text)
+      }
+      throw SVGElementMutationError.unsupportedAttribute(name)
+    case .use(var use):
+      if try applyPaintAttribute(key: key, value: value, paint: &use.paint) {
+        return .use(use)
+      }
+      switch key {
+      case "x": use.origin.x = try parseLength(value); return .use(use)
+      case "y": use.origin.y = try parseLength(value); return .use(use)
+      case "width":
+        let width = try parseLength(value)
+        let height = use.size?.height ?? width
+        use.size = CGSize(width: width, height: height)
+        return .use(use)
+      case "height":
+        let height = try parseLength(value)
+        let width = use.size?.width ?? height
+        use.size = CGSize(width: width, height: height)
+        return .use(use)
+      default: throw SVGElementMutationError.unsupportedAttribute(name)
+      }
+    }
+  }
+
+  @discardableResult
+  private static func applyPaintAttribute(
+    key: String,
+    value: String,
+    paint: inout SVGPaintProperties
+  ) throws -> Bool {
+    switch key {
+    case "visibility":
+      guard let visibility = SVGVisibility(rawValue: value.lowercased()) else {
+        throw SVGElementMutationError.unsupportedAttribute(key)
+      }
+      paint.visibility = visibility
+      return true
+    case "display":
+      paint.visibility = SVGVisibility(rawValue: displayToVisibility(value)) ?? paint.visibility
+      return true
+    case "opacity":
+      paint.opacity = try parseOpacity(value)
+      return true
+    case "fill":
+      paint.fill = try parseFill(value)
+      return true
+    case "fill-opacity":
+      paint.fillOpacity = try parseOpacity(value)
+      return true
+    case "stroke":
+      paint.stroke = try parseFill(value)
+      return true
+    case "stroke-opacity":
+      paint.strokeOpacity = try parseOpacity(value)
+      return true
+    case "stroke-width":
+      paint.strokeWidth = try parseLength(value)
+      return true
+    default:
+      return false
+    }
+  }
+
+  private static func displayToVisibility(_ value: String) -> String {
+    value.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == "none" ? "hidden" : "visible"
+  }
+
+  private static func parseLength(_ value: String) throws -> CGFloat {
+    let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
+    if let number = Double(trimmed) {
+      return CGFloat(number)
+    }
+    throw SVGElementMutationError.unsupportedAttribute(trimmed)
+  }
+
+  private static func parseOpacity(_ value: String) throws -> CGFloat {
+    let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
+    if let number = Double(trimmed) {
+      return CGFloat(number)
+    }
+    throw SVGElementMutationError.unsupportedAttribute(trimmed)
   }
 
   private mutating func mutate(
@@ -178,7 +276,26 @@ extension SVGDocument {
     if let color = SVGColorParser.parse(trimmed) {
       return .color(color)
     }
+    if trimmed.hasPrefix("rgb("), trimmed.hasSuffix(")") {
+      let inner = trimmed.dropFirst(4).dropLast()
+      let parts = inner.split(separator: ",").compactMap { parseColorComponent(String($0)) }
+      guard parts.count == 3 else {
+        throw SVGElementMutationError.unsupportedAttribute("fill")
+      }
+      return .color(SVGColor(red: parts[0], green: parts[1], blue: parts[2]))
+    }
     throw SVGElementMutationError.unsupportedAttribute("fill")
+  }
+
+  private static func parseColorComponent(_ raw: String) -> CGFloat? {
+    let trimmed = raw.trimmingCharacters(in: .whitespaces)
+    if trimmed.hasSuffix("%"), let value = Double(trimmed.dropLast()) {
+      return CGFloat(value / 100)
+    }
+    if let value = Double(trimmed) {
+      return CGFloat(value > 1 ? value / 255 : value)
+    }
+    return nil
   }
 
   private static func hideDescendants(in group: inout SVGGroup) {

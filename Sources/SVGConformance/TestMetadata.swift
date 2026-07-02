@@ -90,9 +90,12 @@ private final class MetadataDelegate: NSObject, XMLParserDelegate {
 
     /// Which W3C section we're currently inside (paragraphs are routed here).
     private var currentSection: Section?
-    /// Depth inside the current `<p>` element. Treat nested `<p>` text as
+    /// Depth inside the current `<p>` / `<li>` element. Treat nested text as
     /// belonging to the outermost one (no W3C test uses nesting in practice).
     private var paragraphDepth = 0
+    /// Whether the currently-buffered paragraph originated from a `<li>`, so it
+    /// can be rendered with a bullet prefix.
+    private var isListItem = false
     /// Generic root-level capture for `<title>` / `<desc>`.
     private var rootCapture: RootCapture?
     private var buffer = ""
@@ -157,9 +160,15 @@ private final class MetadataDelegate: NSObject, XMLParserDelegate {
             version = version ?? attributeDict["version"]
         case "passCriteria":
             currentSection = .passCriteria
-        case "p", "Paragraph":
+        case "p", "Paragraph", "li":
+            // Capture list items (`<li>`) as standalone paragraphs so pass
+            // criteria expressed as `<ul>` bullet lists aren't dropped. They
+            // never nest inside a `<p>` in practice, but guard anyway.
             if currentSection != nil {
-                if paragraphDepth == 0 { buffer.removeAll(keepingCapacity: true) }
+                if paragraphDepth == 0 {
+                    buffer.removeAll(keepingCapacity: true)
+                    isListItem = (local == "li")
+                }
                 paragraphDepth += 1
             }
         default:
@@ -198,12 +207,14 @@ private final class MetadataDelegate: NSObject, XMLParserDelegate {
         }
 
         switch local {
-        case "p", "Paragraph":
+        case "p", "Paragraph", "li":
             guard paragraphDepth > 0 else { return }
             paragraphDepth -= 1
             guard paragraphDepth == 0, let section = currentSection else { return }
-            let text = buffer
+            // Prefix list items with a bullet so they read as a list.
+            let text = isListItem ? "• " + buffer : buffer
             buffer.removeAll(keepingCapacity: true)
+            isListItem = false
             switch section {
             case .testDescription: testDescriptionParagraphs.append(text)
             case .operatorScript: operatorScriptParagraphs.append(text)

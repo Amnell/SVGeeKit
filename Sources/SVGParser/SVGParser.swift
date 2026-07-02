@@ -52,6 +52,7 @@ public struct SVGParser {
         document.definitions = delegate.definitions
         document.scriptMetadata = delegate.scriptMetadata
         document.scriptMetadata.elementIndex = SVGDocument.buildElementIndex(root: document.root)
+        document.animationMetadata = delegate.animationMetadata
         return document
     }
 
@@ -213,6 +214,17 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
     private var scriptTextBuffer: String?
     private var scriptType: String?
     fileprivate var scriptMetadata = SVGScriptMetadata()
+    fileprivate var animationMetadata = SVGAnimationMetadata()
+
+    private struct PendingAnimatable {
+        var element: SVGElement
+        var animations: [SVGTimedAnimation]
+        var definitionID: String?
+    }
+
+    private var pendingAnimatable: PendingAnimatable?
+    private var groupAnimationStack: [[SVGTimedAnimation]] = []
+    private var rootAnimationBuffer: [SVGTimedAnimation] = []
 
     private static let eventAttributeNames: [(String, String)] = [
         ("onload", "load"),
@@ -344,6 +356,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             let clipRef = parseClipPathRef(attributeDict)
             let maskR = parseMaskRef(attributeDict)
             groupIdStack.append(attributeDict["id"])
+            groupAnimationStack.append([])
             groupStack.append(SVGGroup(
                 id: attributeDict["id"],
                 transform: transform,
@@ -420,6 +433,13 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             handleGlyph(attributes: attributeDict, missing: false)
         case "missing-glyph":
             handleGlyph(attributes: attributeDict, missing: true)
+        case "animate", "set", "animateTransform", "animateMotion":
+            if let timed = AnimationAttributeParser.timedAnimation(
+                elementName: elementName,
+                attributes: attributeDict
+            ) {
+                appendCapturedAnimation(timed)
+            }
         default:
             break
         }
@@ -476,16 +496,20 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         case "switch":
             finalizeSwitch()
         case "svg":
+            animationMetadata.rootAnimations = rootAnimationBuffer
             guard let root = groupStack.popLast() else { return }
             document?.root = root
         case "g", "symbol":
             _ = groupIdStack.popLast()
-            guard let finished = groupStack.popLast() else { return }
+            guard var finished = groupStack.popLast() else { return }
+            finished.animations = groupAnimationStack.popLast() ?? []
             registerDefinition(id: finished.id, element: .group(finished))
             if defsDepth == 0 {
                 appendChild(.group(finished))
             }
             if defsDepth > 0 { definitionContainerDepth -= 1 }
+        case "rect", "circle", "ellipse", "line", "polyline", "polygon", "path", "use":
+            finalizeAnimatableShape()
         case "script":
             if let source = scriptTextBuffer {
                 scriptMetadata.blocks.append(SVGScriptBlock(type: scriptType, source: source))
@@ -673,7 +697,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             transform: transform(from: attributes, parser: parser) ?? .identity
         )
         registerDefinition(id: attributes["id"], element: .rect(rect))
-        appendChild(.rect(rect))
+        beginAnimatableShape(.rect(rect), definitionID: attributes["id"])
     }
 
     private func handleCircle(attributes: [String: String], paint: SVGPaintProperties, parser: XMLParser) {
@@ -687,7 +711,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             transform: transform(from: attributes, parser: parser) ?? .identity
         )
         registerDefinition(id: attributes["id"], element: .circle(circle))
-        appendChild(.circle(circle))
+        beginAnimatableShape(.circle(circle), definitionID: attributes["id"])
     }
 
     private func handleEllipse(attributes: [String: String], paint: SVGPaintProperties, parser: XMLParser) {
@@ -702,7 +726,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             transform: transform(from: attributes, parser: parser) ?? .identity
         )
         registerDefinition(id: attributes["id"], element: .ellipse(ellipse))
-        appendChild(.ellipse(ellipse))
+        beginAnimatableShape(.ellipse(ellipse), definitionID: attributes["id"])
     }
 
     private func handleLine(attributes: [String: String], paint: SVGPaintProperties, parser: XMLParser) {
@@ -717,7 +741,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             transform: transform(from: attributes, parser: parser) ?? .identity
         )
         registerDefinition(id: attributes["id"], element: .line(line))
-        appendChild(.line(line))
+        beginAnimatableShape(.line(line), definitionID: attributes["id"])
     }
 
     private func handlePolyline(attributes: [String: String], paint: SVGPaintProperties, parser: XMLParser) {
@@ -728,7 +752,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             transform: transform(from: attributes, parser: parser) ?? .identity
         )
         registerDefinition(id: attributes["id"], element: .polyline(polyline))
-        appendChild(.polyline(polyline))
+        beginAnimatableShape(.polyline(polyline), definitionID: attributes["id"])
     }
 
     private func handlePolygon(attributes: [String: String], paint: SVGPaintProperties, parser: XMLParser) {
@@ -739,7 +763,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             transform: transform(from: attributes, parser: parser) ?? .identity
         )
         registerDefinition(id: attributes["id"], element: .polygon(polygon))
-        appendChild(.polygon(polygon))
+        beginAnimatableShape(.polygon(polygon), definitionID: attributes["id"])
     }
 
     private func handlePath(attributes: [String: String], paint: SVGPaintProperties, parser: XMLParser) {
@@ -752,7 +776,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             transform: transform(from: attributes, parser: parser) ?? .identity
         )
         registerDefinition(id: attributes["id"], element: .path(path))
-        appendChild(.path(path))
+        beginAnimatableShape(.path(path), definitionID: attributes["id"])
     }
 
     private func handleTextStart(
@@ -947,6 +971,41 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         defsDepth > 0 && clipPathStack.isEmpty && patternStack.isEmpty && maskStack.isEmpty
     }
 
+    private func beginAnimatableShape(_ element: SVGElement, definitionID: String?) {
+        pendingAnimatable = PendingAnimatable(
+            element: element,
+            animations: [],
+            definitionID: definitionID
+        )
+    }
+
+    private func finalizeAnimatableShape() {
+        guard let pending = pendingAnimatable else { return }
+        pendingAnimatable = nil
+        var element = pending.element
+        element.setAnimations(pending.animations)
+        if let id = pending.definitionID, !id.isEmpty {
+            definitions[id] = element
+        }
+        appendChild(element)
+    }
+
+    private func appendCapturedAnimation(_ animation: SVGTimedAnimation) {
+        if var pending = pendingAnimatable {
+            pending.animations.append(animation)
+            pendingAnimatable = pending
+            return
+        }
+        if !groupAnimationStack.isEmpty {
+            groupAnimationStack[groupAnimationStack.count - 1].append(animation)
+            return
+        }
+        rootAnimationBuffer.append(animation)
+        if let id = animation.id, !id.isEmpty {
+            animationMetadata.index[id] = rootAnimationBuffer.count - 1
+        }
+    }
+
     private func registerDefinition(id: String?, element: SVGElement) {
         guard registersAsDefinition, let id, !id.isEmpty else { return }
         definitions[id] = element
@@ -973,7 +1032,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             transform: transform(from: attributes, parser: parser) ?? .identity
         )
         registerDefinition(id: attributes["id"], element: .use(use))
-        appendChild(.use(use))
+        beginAnimatableShape(.use(use), definitionID: attributes["id"])
     }
 
     private func presentationAttributeKeys(from attributes: [String: String]) -> Set<String> {

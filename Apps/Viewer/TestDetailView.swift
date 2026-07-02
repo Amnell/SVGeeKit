@@ -1,6 +1,9 @@
 import AppKit
 import SwiftUI
+import SVGAnimation
 import SVGConformance
+import SVGCore
+import SVGParser
 import SVGScript
 
 struct TestDetailView: View {
@@ -17,6 +20,13 @@ struct TestDetailView: View {
                 if row.hasScripts {
                     InteractiveScriptPreview(svgURL: row.testCase.svgURL)
                         .id(row.id)
+                }
+                if row.hasAnimations {
+                    InteractiveAnimationPreview(
+                        svgURL: row.testCase.svgURL,
+                        sampleAt: row.testCase.sampleAt
+                    )
+                    .id("\(row.id)-animation")
                 }
                 tilesGrid
                 sourceSection
@@ -337,6 +347,70 @@ private struct DiffTile: View {
             cgImage: cgImage,
             size: NSSize(width: cgImage.width, height: cgImage.height)
         )
+    }
+}
+
+private struct InteractiveAnimationPreview: View {
+    let svgURL: URL
+    let sampleAt: Double?
+    @State private var loadError: String?
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("Animation preview").font(.headline)
+            Text("Scrub the timeline or press play to sample SMIL animations.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            if let loadError {
+                Text(loadError)
+                    .foregroundStyle(.red)
+                    .font(.callout)
+                    .padding(8)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(Color.white, in: RoundedRectangle(cornerRadius: 6))
+                    .overlay(RoundedRectangle(cornerRadius: 6).stroke(.separator))
+            } else {
+                InteractiveAnimationCanvas(
+                    svgURL: svgURL,
+                    sampleAt: sampleAt,
+                    loadError: $loadError
+                )
+            }
+        }
+    }
+}
+
+private struct InteractiveAnimationCanvas: View {
+    let svgURL: URL
+    let sampleAt: Double?
+    @Binding var loadError: String?
+    @State private var document: SVGDocument?
+
+    var body: some View {
+        Group {
+            if let document {
+                SVGAnimationImageView(document: document, initialTime: sampleAt)
+            } else {
+                ProgressView()
+                    .frame(maxWidth: .infinity, minHeight: 220)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .id(svgURL)
+        .task(id: svgURL) {
+            document = nil
+            loadError = nil
+            do {
+                let data = try Data(contentsOf: svgURL)
+                document = try SVGParser().parse(
+                    data: data,
+                    baseURL: svgURL.deletingLastPathComponent()
+                )
+            } catch {
+                loadError = String(describing: error)
+                document = nil
+            }
+        }
     }
 }
 

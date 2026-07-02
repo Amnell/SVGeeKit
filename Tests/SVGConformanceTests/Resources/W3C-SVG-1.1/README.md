@@ -40,7 +40,7 @@ filename (e.g. `paths-data-01-t.svg` → `paths`).
 ```json
 {
   "skipReason": "feature family not yet supported",
-  "skipTags": ["filters", "text", "fonts", "animate", "script", "interact", "masking", "linking", "extend"],
+  "skipTags": ["filters", "text", "fonts", "script", "interact", "masking", "linking", "extend"],
   "tests": {
     "filters-blend-01-b": { "skip": "explicit per-test note" },
     "interact-events-01-t": { "tag": "interact" }

@@ -1,7 +1,10 @@
 import AppKit
 import SwiftUI
 import UniformTypeIdentifiers
+import SVGAnimation
+import SVGCore
 import SVGKit
+import SVGParser
 
 struct DropZoneView: View {
     @State private var state: LoadState = .empty
@@ -184,6 +187,10 @@ private struct LoadedSVGView: View {
         document.intrinsicSize ?? document.viewBox?.size ?? CGSize(width: 480, height: 360)
     }
 
+    private var hasAnimations: Bool {
+        SVGAnimationEngine.containsAnimations(in: document)
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
@@ -231,11 +238,18 @@ private struct LoadedSVGView: View {
             : [GridItem(.flexible())]
         return LazyVGrid(columns: columns, spacing: 16) {
             if showLiveCanvas {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("SVGImageView (live SwiftUI Canvas)").font(.headline)
-                    CheckerboardTile {
-                        SVGImageView(document: document)
-                            .frame(width: intrinsic.width, height: intrinsic.height)
+                if hasAnimations {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("SVGAnimationImageView (live SMIL)").font(.headline)
+                        SVGAnimationImageView(document: document)
+                    }
+                } else {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("SVGImageView (live SwiftUI Canvas)").font(.headline)
+                        CheckerboardTile {
+                            SVGImageView(document: document)
+                                .frame(width: intrinsic.width, height: intrinsic.height)
+                        }
                     }
                 }
             }

@@ -1,5 +1,6 @@
 import Foundation
 import Observation
+import SVGAnimation
 import SVGConformance
 import SVGCore
 import SVGParser
@@ -18,6 +19,8 @@ struct TestRow: Identifiable {
     let metadata: SVGTestMetadata
     /// Whether the SVG actually carries inline `<script>` blocks or event handlers.
     let hasScripts: Bool
+    /// Whether the SVG carries declarative SMIL (`<animate>`, `<set>`, …).
+    let hasAnimations: Bool
 
     var status: SVGConformanceStatus { record.status }
     var tag: String { record.tag }
@@ -140,6 +143,10 @@ final class TestStore {
             data: svgData,
             baseURL: testCase.svgURL.deletingLastPathComponent()
         )
+        let hasAnimations = Self.detectAnimations(
+            data: svgData,
+            baseURL: testCase.svgURL.deletingLastPathComponent()
+        )
 
         return TestRow(
             id: testCase.id,
@@ -151,7 +158,8 @@ final class TestStore {
             expectedReferenceURL: expectedReference,
             svgSource: svgSource,
             metadata: metadata,
-            hasScripts: hasScripts
+            hasScripts: hasScripts,
+            hasAnimations: hasAnimations
         )
     }
 
@@ -163,5 +171,12 @@ final class TestStore {
         return !metadata.blocks.isEmpty
             || !metadata.handlersByElementID.isEmpty
             || !metadata.rootHandlers.isEmpty
+    }
+
+    private static func detectAnimations(data: Data, baseURL: URL) -> Bool {
+        guard let document = try? SVGParser().parse(data: data, baseURL: baseURL) else {
+            return false
+        }
+        return SVGAnimationEngine.containsAnimations(in: document)
     }
 }

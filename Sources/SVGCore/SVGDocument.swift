@@ -20,6 +20,8 @@ public struct SVGDocument: Equatable, Sendable {
     public var definitions: [String: SVGElement]
     /// Inline scripts, event handlers, and element id index captured at parse time.
     public var scriptMetadata: SVGScriptMetadata
+    /// Root-level SMIL elements and id index for syncbase timing.
+    public var animationMetadata: SVGAnimationMetadata
 
     public init(
         viewBox: CGRect? = nil,
@@ -32,7 +34,8 @@ public struct SVGDocument: Equatable, Sendable {
         fontFaces: [SVGFontFace] = [],
         fonts: [String: SVGFontDefinition] = [:],
         definitions: [String: SVGElement] = [:],
-        scriptMetadata: SVGScriptMetadata = SVGScriptMetadata()
+        scriptMetadata: SVGScriptMetadata = SVGScriptMetadata(),
+        animationMetadata: SVGAnimationMetadata = SVGAnimationMetadata()
     ) {
         self.viewBox = viewBox
         self.intrinsicSize = intrinsicSize
@@ -45,6 +48,7 @@ public struct SVGDocument: Equatable, Sendable {
         self.fonts = fonts
         self.definitions = definitions
         self.scriptMetadata = scriptMetadata
+        self.animationMetadata = animationMetadata
     }
 
     /// Resolve `href` against `baseURL`. Absolute URLs are returned unchanged;
@@ -88,6 +92,7 @@ public struct SVGGroup: Equatable, Sendable {
     public var clipPathRef: String?
     public var maskRef: String?
     public var children: [SVGElement]
+    public var animations: [SVGTimedAnimation]
 
     public init(
         id: String? = nil,
@@ -96,7 +101,8 @@ public struct SVGGroup: Equatable, Sendable {
         visibility: SVGVisibility = .visible,
         clipPathRef: String? = nil,
         maskRef: String? = nil,
-        children: [SVGElement] = []
+        children: [SVGElement] = [],
+        animations: [SVGTimedAnimation] = []
     ) {
         self.id = id
         self.transform = transform
@@ -105,6 +111,7 @@ public struct SVGGroup: Equatable, Sendable {
         self.clipPathRef = clipPathRef
         self.maskRef = maskRef
         self.children = children
+        self.animations = animations
     }
 }
 
@@ -193,6 +200,7 @@ public struct SVGUse: Equatable, Sendable {
     /// Presentation attribute names specified on the `<use>` element itself.
     public var explicitPresentation: Set<String>
     public var transform: SVGTransform
+    public var animations: [SVGTimedAnimation]
 
     public init(
         href: String,
@@ -200,7 +208,8 @@ public struct SVGUse: Equatable, Sendable {
         size: CGSize? = nil,
         paint: SVGPaintProperties = .init(),
         explicitPresentation: Set<String> = [],
-        transform: SVGTransform = .identity
+        transform: SVGTransform = .identity,
+        animations: [SVGTimedAnimation] = []
     ) {
         self.href = href
         self.origin = origin
@@ -208,6 +217,7 @@ public struct SVGUse: Equatable, Sendable {
         self.paint = paint
         self.explicitPresentation = explicitPresentation
         self.transform = transform
+        self.animations = animations
     }
 }
 
@@ -225,15 +235,18 @@ public struct SVGPath: Equatable, Sendable {
     public var commands: [SVGPathCommand]
     public var paint: SVGPaintProperties
     public var transform: SVGTransform
+    public var animations: [SVGTimedAnimation]
 
     public init(
         commands: [SVGPathCommand],
         paint: SVGPaintProperties = .init(),
-        transform: SVGTransform = .identity
+        transform: SVGTransform = .identity,
+        animations: [SVGTimedAnimation] = []
     ) {
         self.commands = commands
         self.paint = paint
         self.transform = transform
+        self.animations = animations
     }
 }
 
@@ -243,19 +256,22 @@ public struct SVGRect: Equatable, Sendable {
     public var cornerRadii: CGSize
     public var paint: SVGPaintProperties
     public var transform: SVGTransform
+    public var animations: [SVGTimedAnimation]
 
     public init(
         origin: CGPoint,
         size: CGSize,
         cornerRadii: CGSize = .zero,
         paint: SVGPaintProperties = .init(),
-        transform: SVGTransform = .identity
+        transform: SVGTransform = .identity,
+        animations: [SVGTimedAnimation] = []
     ) {
         self.origin = origin
         self.size = size
         self.cornerRadii = cornerRadii
         self.paint = paint
         self.transform = transform
+        self.animations = animations
     }
 }
 
@@ -264,17 +280,20 @@ public struct SVGCircle: Equatable, Sendable {
     public var radius: CGFloat
     public var paint: SVGPaintProperties
     public var transform: SVGTransform
+    public var animations: [SVGTimedAnimation]
 
     public init(
         center: CGPoint,
         radius: CGFloat,
         paint: SVGPaintProperties = .init(),
-        transform: SVGTransform = .identity
+        transform: SVGTransform = .identity,
+        animations: [SVGTimedAnimation] = []
     ) {
         self.center = center
         self.radius = radius
         self.paint = paint
         self.transform = transform
+        self.animations = animations
     }
 }
 
@@ -283,17 +302,20 @@ public struct SVGEllipse: Equatable, Sendable {
     public var radii: CGSize
     public var paint: SVGPaintProperties
     public var transform: SVGTransform
+    public var animations: [SVGTimedAnimation]
 
     public init(
         center: CGPoint,
         radii: CGSize,
         paint: SVGPaintProperties = .init(),
-        transform: SVGTransform = .identity
+        transform: SVGTransform = .identity,
+        animations: [SVGTimedAnimation] = []
     ) {
         self.center = center
         self.radii = radii
         self.paint = paint
         self.transform = transform
+        self.animations = animations
     }
 }
 
@@ -302,17 +324,20 @@ public struct SVGLine: Equatable, Sendable {
     public var end: CGPoint
     public var paint: SVGPaintProperties
     public var transform: SVGTransform
+    public var animations: [SVGTimedAnimation]
 
     public init(
         start: CGPoint,
         end: CGPoint,
         paint: SVGPaintProperties = .init(),
-        transform: SVGTransform = .identity
+        transform: SVGTransform = .identity,
+        animations: [SVGTimedAnimation] = []
     ) {
         self.start = start
         self.end = end
         self.paint = paint
         self.transform = transform
+        self.animations = animations
     }
 }
 
@@ -320,15 +345,18 @@ public struct SVGPolyline: Equatable, Sendable {
     public var points: [CGPoint]
     public var paint: SVGPaintProperties
     public var transform: SVGTransform
+    public var animations: [SVGTimedAnimation]
 
     public init(
         points: [CGPoint],
         paint: SVGPaintProperties = .init(),
-        transform: SVGTransform = .identity
+        transform: SVGTransform = .identity,
+        animations: [SVGTimedAnimation] = []
     ) {
         self.points = points
         self.paint = paint
         self.transform = transform
+        self.animations = animations
     }
 }
 
@@ -336,15 +364,18 @@ public struct SVGPolygon: Equatable, Sendable {
     public var points: [CGPoint]
     public var paint: SVGPaintProperties
     public var transform: SVGTransform
+    public var animations: [SVGTimedAnimation]
 
     public init(
         points: [CGPoint],
         paint: SVGPaintProperties = .init(),
-        transform: SVGTransform = .identity
+        transform: SVGTransform = .identity,
+        animations: [SVGTimedAnimation] = []
     ) {
         self.points = points
         self.paint = paint
         self.transform = transform
+        self.animations = animations
     }
 }
 
@@ -461,6 +492,7 @@ public struct SVGText: Equatable, Sendable {
     /// Element-level paint on `<text>`.
     public var paint: SVGPaintProperties
     public var transform: SVGTransform
+    public var animations: [SVGTimedAnimation]
 
     /// Flattened character content across all runs.
     public var string: String {
@@ -473,7 +505,8 @@ public struct SVGText: Equatable, Sendable {
         runs: [SVGTextRun],
         font: SVGFont = SVGFont(),
         paint: SVGPaintProperties = .init(),
-        transform: SVGTransform = .identity
+        transform: SVGTransform = .identity,
+        animations: [SVGTimedAnimation] = []
     ) {
         self.id = id
         self.origin = origin
@@ -481,6 +514,7 @@ public struct SVGText: Equatable, Sendable {
         self.font = font
         self.paint = paint
         self.transform = transform
+        self.animations = animations
     }
 
     public init(

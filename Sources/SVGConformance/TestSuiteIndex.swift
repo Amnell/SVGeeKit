@@ -8,6 +8,8 @@ public struct SVGTestCase: Sendable, Hashable {
     public let tag: SVGFeatureTag
     public let isSkipped: Bool
     public let skipReason: String?
+    /// When set, sample declarative SMIL at this document time (seconds) before rasterizing.
+    public let sampleAt: Double?
 }
 
 /// Optional override entries that complement filename-derived tagging.
@@ -16,6 +18,8 @@ public struct SVGTestOverride: Codable, Sendable {
     public var skip: String?
     /// When `true`, overrides a matching `skipTags` entry and forces the test to run.
     public var run: Bool?
+    /// Document timeline offset (seconds) for SMIL sampling before render.
+    public var sampleAt: Double?
 }
 
 /// Top-level shape of `overrides.json`. The file may be either this object
@@ -79,7 +83,8 @@ public struct SVGTestSuiteIndex {
                 referencePNGURL: pngExists ? png : nil,
                 tag: tag,
                 isSkipped: skipped,
-                skipReason: reason
+                skipReason: reason,
+                sampleAt: overrideEntry?.sampleAt
             )
         }
     }

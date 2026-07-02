@@ -1502,6 +1502,26 @@ struct SVGParserTests {
             }
         }
     }
+
+    @Test func capturesAnimateChildrenOnRect() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+          <rect x="10" y="10" width="20" height="20">
+            <animate attributeName="width" from="20" to="40" dur="2s" begin="0s"/>
+          </rect>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .rect(let rect) = doc.root.children.first else {
+            Issue.record("expected rect"); return
+        }
+        #expect(rect.animations.count == 1)
+        guard case .animate(let animate) = rect.animations[0] else {
+            Issue.record("expected animate"); return
+        }
+        #expect(animate.attributeName == "width")
+        #expect(animate.timing.dur == 2)
+    }
 }
 
 @Suite("SVGParser — conditional processing")
