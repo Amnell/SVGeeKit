@@ -1504,6 +1504,95 @@ struct SVGParserTests {
     }
 }
 
+@Suite("SVGParser — conditional processing")
+struct SVGParserConditionalTests {
+
+    @Test func switchSelectsFirstMatchingRequiredExtensionsChild() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10">
+          <switch>
+            <rect fill="red" width="10" height="10" requiredExtensions="http://example.org/bogus"/>
+            <rect fill="green" y="5" width="10" height="5"/>
+            <rect fill="blue" x="5" width="5" height="10"/>
+          </switch>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        #expect(doc.root.children.count == 1)
+        guard case .rect(let rect) = doc.root.children[0] else {
+            Issue.record("expected single rect"); return
+        }
+        guard case .color(let fill) = rect.paint.fill else {
+            Issue.record("expected color fill"); return
+        }
+        #expect(fill.green > 0.4 && fill.red < 0.2 && fill.blue < 0.2)
+        #expect(rect.origin.y == 5)
+    }
+
+    @Test func switchSelectsSystemLanguageMatch() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10">
+          <switch>
+            <text systemLanguage="fr" y="1">French</text>
+            <text systemLanguage="en" y="2">English</text>
+            <text y="3">Fallback</text>
+          </switch>
+        </svg>
+        """
+        let context = SVGConditionalProcessingContext(preferredLanguages: ["en-US"])
+        let doc = try SVGParser(conditionalContext: context).parse(string: svg)
+        #expect(doc.root.children.count == 1)
+        guard case .text(let text) = doc.root.children[0] else {
+            Issue.record("expected text"); return
+        }
+        #expect(text.runs.map(\.string).joined() == "English")
+        #expect(text.origin.y == 2)
+    }
+
+    @Test func switchUsesDefaultChildWhenNoLanguageMatches() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10">
+          <switch>
+            <text systemLanguage="fr" y="1">French</text>
+            <text systemLanguage="de" y="2">German</text>
+            <g>
+              <text y="3">One</text>
+              <text y="4">Two</text>
+            </g>
+          </switch>
+        </svg>
+        """
+        let context = SVGConditionalProcessingContext(preferredLanguages: ["xx"])
+        let doc = try SVGParser(conditionalContext: context).parse(string: svg)
+        #expect(doc.root.children.count == 1)
+        guard case .group(let group) = doc.root.children[0] else {
+            Issue.record("expected default group"); return
+        }
+        #expect(group.children.count == 2)
+    }
+
+    @Test func switchSelectsRequiredFeaturesChild() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10">
+          <switch>
+            <rect fill="red" width="10" height="10"
+              requiredFeatures="http://www.w3.org/TR/SVG11/feature#SVGDOM"/>
+            <rect fill="green" width="10" height="10"
+              requiredFeatures="http://www.w3.org/TR/SVG11/feature#BasicText"/>
+          </switch>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .rect(let rect) = doc.root.children[0] else {
+            Issue.record("expected rect"); return
+        }
+        guard case .color(let fill) = rect.paint.fill else {
+            Issue.record("expected color fill"); return
+        }
+        #expect(fill.green > 0.4 && fill.red < 0.2)
+    }
+}
+
 @Suite("SVGParser — script metadata")
 struct SVGParserScriptTests {
 

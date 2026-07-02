@@ -8,12 +8,19 @@ import SVGCore
 /// nested `<g>` groups with `transform`, and `<rect>` shapes with basic painting.
 /// New element handling lives in `SAXDelegate.didStartElement(...)`.
 public struct SVGParser {
+    public var conditionalContext: SVGConditionalProcessingContext
 
-    public init() {}
+    public init() {
+        self.conditionalContext = .current()
+    }
+
+    public init(conditionalContext: SVGConditionalProcessingContext) {
+        self.conditionalContext = conditionalContext
+    }
 
     public func parse(data: Data, baseURL: URL? = nil) throws -> SVGDocument {
         let parser = XMLParser(data: data)
-        let delegate = SAXDelegate(baseURL: baseURL)
+        let delegate = SAXDelegate(baseURL: baseURL, conditionalContext: conditionalContext)
         parser.delegate = delegate
         parser.shouldProcessNamespaces = false
         parser.shouldReportNamespacePrefixes = false
@@ -98,12 +105,29 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
     enum Axis { case x, y, length }
 
     let baseURL: URL?
+    let conditionalContext: SVGConditionalProcessingContext
 
     var document: SVGDocument?
     var error: SVGParseError?
 
-    init(baseURL: URL? = nil) {
+    struct SwitchCandidate {
+        var attributes: [String: String]
+        var element: SVGElement
+    }
+
+    struct PartialSwitch {
+        var candidates: [SwitchCandidate] = []
+        /// Nesting depth of the direct-child element currently being built.
+        var childNestingDepth: Int = 0
+        var pendingAttributes: [String: String] = [:]
+    }
+
+    /// Open `<switch>` elements collecting conditional children.
+    private var switchStack: [PartialSwitch] = []
+
+    init(baseURL: URL? = nil, conditionalContext: SVGConditionalProcessingContext = .current()) {
         self.baseURL = baseURL
+        self.conditionalContext = conditionalContext
     }
 
     /// Viewport (in user-space units) used to resolve `%` lengths. Set when
@@ -309,9 +333,12 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         fontStack.append(elementFont)
 
         switch elementName {
+        case "switch":
+            switchStack.append(PartialSwitch())
         case "svg":
             handleSVGRoot(attributes: attributeDict, parser: parser)
         case "g", "symbol":
+            beginSwitchChildIfNeeded(attributes: attributeDict)
             if defsDepth > 0 { definitionContainerDepth += 1 }
             let transform = transform(from: attributeDict, parser: parser) ?? .identity
             let clipRef = parseClipPathRef(attributeDict)
@@ -327,22 +354,31 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             ))
             captureEventHandlers(elementName: elementName, attributes: attributeDict)
         case "use":
+            beginSwitchChildIfNeeded(attributes: attributeDict)
             handleUse(attributes: attributeDict, paint: elementPaint, parser: parser)
         case "rect":
+            beginSwitchChildIfNeeded(attributes: attributeDict)
             handleRect(attributes: attributeDict, paint: elementPaint, parser: parser)
         case "circle":
+            beginSwitchChildIfNeeded(attributes: attributeDict)
             handleCircle(attributes: attributeDict, paint: elementPaint, parser: parser)
         case "ellipse":
+            beginSwitchChildIfNeeded(attributes: attributeDict)
             handleEllipse(attributes: attributeDict, paint: elementPaint, parser: parser)
         case "line":
+            beginSwitchChildIfNeeded(attributes: attributeDict)
             handleLine(attributes: attributeDict, paint: elementPaint, parser: parser)
         case "polyline":
+            beginSwitchChildIfNeeded(attributes: attributeDict)
             handlePolyline(attributes: attributeDict, paint: elementPaint, parser: parser)
         case "polygon":
+            beginSwitchChildIfNeeded(attributes: attributeDict)
             handlePolygon(attributes: attributeDict, paint: elementPaint, parser: parser)
         case "path":
+            beginSwitchChildIfNeeded(attributes: attributeDict)
             handlePath(attributes: attributeDict, paint: elementPaint, parser: parser)
         case "text":
+            beginSwitchChildIfNeeded(attributes: attributeDict)
             handleTextStart(
                 attributes: attributeDict, paint: elementPaint, font: elementFont, parser: parser
             )
@@ -437,6 +473,8 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         fontStack.removeLast()
 
         switch elementName {
+        case "switch":
+            finalizeSwitch()
         case "svg":
             guard let root = groupStack.popLast() else { return }
             document?.root = root
@@ -518,6 +556,8 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         default:
             break
         }
+
+        endSwitchChildIfNeeded()
 
         guard let finished = cssElementStack.popLast() else { return }
         _ = cssChildStack.popLast()
@@ -964,7 +1004,50 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         return id.isEmpty ? nil : id
     }
 
+    private func beginSwitchChildIfNeeded(attributes: [String: String]) {
+        guard !switchStack.isEmpty else { return }
+        let index = switchStack.count - 1
+        if switchStack[index].childNestingDepth == 0 {
+            switchStack[index].pendingAttributes = attributes
+        }
+        switchStack[index].childNestingDepth += 1
+    }
+
+    private func endSwitchChildIfNeeded() {
+        guard !switchStack.isEmpty else { return }
+        let index = switchStack.count - 1
+        switchStack[index].childNestingDepth -= 1
+        if switchStack[index].childNestingDepth == 0 {
+            switchStack[index].pendingAttributes = [:]
+        }
+    }
+
+    private func finalizeSwitch() {
+        guard let finished = switchStack.popLast() else { return }
+        let winner = finished.candidates.first { candidate in
+            SVGConditionalProcessing.evaluate(
+                attributes: candidate.attributes,
+                context: conditionalContext
+            )
+        }
+        if let winner {
+            appendChild(winner.element)
+        }
+    }
+
     private func appendChild(_ element: SVGElement) {
+        if !switchStack.isEmpty {
+            let index = switchStack.count - 1
+            if switchStack[index].childNestingDepth == 1 {
+                switchStack[index].candidates.append(
+                    SwitchCandidate(
+                        attributes: switchStack[index].pendingAttributes,
+                        element: element
+                    )
+                )
+                return
+            }
+        }
         if !patternStack.isEmpty {
             patternStack[patternStack.count - 1].children.append(element)
         } else if !clipPathStack.isEmpty {

@@ -33,4 +33,16 @@ struct SVGCoreTests {
         let p = CGPoint(x: 1, y: 1).applying(c.matrix)
         #expect(p == CGPoint(x: 22, y: 2))
     }
+
+    @Test func systemLanguageMatchesPrimarySubtag() {
+        #expect(
+            SVGConditionalProcessing.evaluateSystemLanguage("en", preferredLanguages: ["en-US"])
+        )
+        #expect(
+            SVGConditionalProcessing.evaluateSystemLanguage("en,fr", preferredLanguages: ["sv-SE"]) == false
+        )
+        #expect(
+            SVGConditionalProcessing.evaluateSystemLanguage("he", preferredLanguages: ["iw-IL"])
+        )
+    }
 }
