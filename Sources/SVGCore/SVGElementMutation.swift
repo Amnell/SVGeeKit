@@ -26,7 +26,11 @@ extension SVGDocument {
           if let id = text.id, !id.isEmpty {
             index[id] = SVGElementPath(indices: path)
           }
-        case .rect, .circle, .ellipse, .line, .polyline, .polygon, .path, .use:
+        case .rect(let rect):
+          if let id = rect.id, !id.isEmpty {
+            index[id] = SVGElementPath(indices: path)
+          }
+        case .circle, .ellipse, .line, .polyline, .polygon, .path, .use:
           break
         }
       }

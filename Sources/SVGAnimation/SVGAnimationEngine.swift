@@ -85,12 +85,19 @@ public enum SVGAnimationEngine {
     }
 
     private static func collectAnimations(from document: SVGDocument) -> [TargetedAnimation] {
+        let elementIndex = document.scriptMetadata.elementIndex
         var results: [TargetedAnimation] = []
         func walk(_ elements: [SVGElement], prefix: [Int]) {
             for (offset, element) in elements.enumerated() {
                 let path = SVGElementPath(indices: prefix + [offset])
                 for animation in element.animations {
-                    results.append(TargetedAnimation(path: path, animation: animation))
+                    let targetPath = resolveTargetPath(
+                        for: animation,
+                        carrierPath: path,
+                        elementIndex: elementIndex
+                    )
+                    guard let targetPath else { continue }
+                    results.append(TargetedAnimation(path: targetPath, animation: animation))
                 }
                 if case .group(let group) = element {
                     walk(group.children, prefix: path.indices)
@@ -98,7 +105,27 @@ public enum SVGAnimationEngine {
             }
         }
         walk(document.root.children, prefix: [])
+        for animation in document.animationMetadata.rootAnimations {
+            if let targetPath = resolveTargetPath(
+                for: animation,
+                carrierPath: SVGElementPath(indices: []),
+                elementIndex: elementIndex
+            ) {
+                results.append(TargetedAnimation(path: targetPath, animation: animation))
+            }
+        }
         return results
+    }
+
+    private static func resolveTargetPath(
+        for animation: SVGTimedAnimation,
+        carrierPath: SVGElementPath,
+        elementIndex: [String: SVGElementPath]
+    ) -> SVGElementPath? {
+        if let href = animation.targetHref {
+            return elementIndex[href]
+        }
+        return carrierPath
     }
 
     private enum RepeatCount: Equatable {

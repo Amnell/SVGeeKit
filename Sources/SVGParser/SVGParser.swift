@@ -690,6 +690,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         }
 
         let rect = SVGRect(
+            id: attributes["id"],
             origin: CGPoint(x: x, y: y),
             size: CGSize(width: w, height: h),
             cornerRadii: radii,

@@ -322,6 +322,73 @@ struct SVGAnimationTests {
         return true
     }
 
+    @Test func animateElem27tRectHeightsAtNineSeconds() throws {
+        let url = try w3cURL("animate-elem-27-t")
+        let data = try Data(contentsOf: url)
+        let doc = try SVGParser().parse(data: data, baseURL: url.deletingLastPathComponent())
+        #expect(SVGAnimationEngine.suggestedDuration(in: doc) == 9)
+
+        let sampled = SVGAnimationEngine.sample(document: doc, at: 9)
+        let rect1 = try #require(try rect(id: "rect1", in: sampled))
+        let rect2 = try #require(try rect(id: "rect2", in: sampled))
+
+        #expect(abs(rect1.size.height - 40) < 0.5)
+        #expect(abs(rect2.size.height - 40) < 0.5)
+    }
+
+    @Test func animateElem27tHrefTargetsSiblingRect() throws {
+        let url = try w3cURL("animate-elem-27-t")
+        let data = try Data(contentsOf: url)
+        let doc = try SVGParser().parse(data: data, baseURL: url.deletingLastPathComponent())
+
+        let midLeft = SVGAnimationEngine.sample(document: doc, at: 4.5)
+        let rect1 = try #require(try rect(id: "rect1", in: midLeft))
+        #expect(rect1.size.height > 40)
+        #expect(rect1.size.height < 160)
+
+        let beforeRight = SVGAnimationEngine.sample(document: doc, at: 5)
+        let rect2 = try #require(try rect(id: "rect2", in: beforeRight))
+        #expect(abs(rect2.size.height - 160) < 0.5)
+    }
+
+    @Test func parsesAnimateHrefTarget() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 100 100">
+          <rect id="target" x="0" y="0" width="10" height="10"/>
+          <animate xlink:href="#target" attributeName="width" from="10" to="20" dur="1s" fill="freeze"/>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        #expect(doc.scriptMetadata.elementIndex["target"] != nil)
+        guard case .animate(let animate) = doc.animationMetadata.rootAnimations.first else {
+            Issue.record("expected animate on document root")
+            return
+        }
+        #expect(animate.targetHref == "target")
+
+        let sampled = SVGAnimationEngine.sample(document: doc, at: 1)
+        guard case .rect(let rect) = sampled.root.children.first else {
+            Issue.record("expected rect")
+            return
+        }
+        #expect(abs(rect.size.width - 20) < 0.01)
+    }
+
+    private func rect(id: String, in doc: SVGDocument) throws -> SVGRect? {
+        func walk(_ elements: [SVGElement]) -> SVGRect? {
+            for element in elements {
+                if case .rect(let rect) = element, rect.id == id {
+                    return rect
+                }
+                if case .group(let group) = element, let found = walk(group.children) {
+                    return found
+                }
+            }
+            return nil
+        }
+        return walk(doc.root.children)
+    }
+
     @Test func staticDocumentHasNoAnimations() throws {
         let svg = """
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10">

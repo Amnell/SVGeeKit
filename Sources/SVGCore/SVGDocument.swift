@@ -251,6 +251,7 @@ public struct SVGPath: Equatable, Sendable {
 }
 
 public struct SVGRect: Equatable, Sendable {
+    public var id: String?
     public var origin: CGPoint
     public var size: CGSize
     public var cornerRadii: CGSize
@@ -259,6 +260,7 @@ public struct SVGRect: Equatable, Sendable {
     public var animations: [SVGTimedAnimation]
 
     public init(
+        id: String? = nil,
         origin: CGPoint,
         size: CGSize,
         cornerRadii: CGSize = .zero,
@@ -266,6 +268,7 @@ public struct SVGRect: Equatable, Sendable {
         transform: SVGTransform = .identity,
         animations: [SVGTimedAnimation] = []
     ) {
+        self.id = id
         self.origin = origin
         self.size = size
         self.cornerRadii = cornerRadii

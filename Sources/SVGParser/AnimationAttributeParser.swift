@@ -6,6 +6,7 @@ enum AnimationAttributeParser {
         elementName: String,
         attributes: [String: String]
     ) -> SVGTimedAnimation? {
+        let targetHref = parseTargetHref(attributes)
         switch elementName {
         case "animate":
             guard let attributeName = attributes["attributeName"], !attributeName.isEmpty else {
@@ -16,6 +17,7 @@ enum AnimationAttributeParser {
                 timing: timingAttributes(from: attributes),
                 attributeName: attributeName,
                 attributeType: attributes["attributeType"],
+                targetHref: targetHref,
                 from: attributes["from"],
                 to: attributes["to"],
                 values: attributes["values"],
@@ -32,6 +34,7 @@ enum AnimationAttributeParser {
                 id: attributes["id"],
                 timing: timingAttributes(from: attributes),
                 attributeName: attributeName,
+                targetHref: targetHref,
                 to: to
             ))
         case "animateTransform":
@@ -77,5 +80,13 @@ enum AnimationAttributeParser {
             repeatCount: attributes["repeatCount"],
             fill: fill
         )
+    }
+
+    private static func parseTargetHref(_ attributes: [String: String]) -> String? {
+        guard let raw = attributes["xlink:href"] ?? attributes["href"] else { return nil }
+        var ref = raw.trimmingCharacters(in: .whitespaces)
+        ref = ref.trimmingCharacters(in: CharacterSet(charactersIn: "'\""))
+        if ref.hasPrefix("#") { ref = String(ref.dropFirst()) }
+        return ref.isEmpty ? nil : ref
     }
 }

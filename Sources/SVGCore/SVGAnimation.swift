@@ -73,6 +73,8 @@ public struct SVGAnimateElement: Equatable, Sendable, Codable {
     public var timing: SVGTimingAttributes
     public var attributeName: String
     public var attributeType: String?
+    /// Fragment id (`#rect1`) of the element to animate; nil targets the animation parent.
+    public var targetHref: String?
     public var from: String?
     public var to: String?
     public var values: String?
@@ -85,6 +87,7 @@ public struct SVGAnimateElement: Equatable, Sendable, Codable {
         timing: SVGTimingAttributes = SVGTimingAttributes(),
         attributeName: String,
         attributeType: String? = nil,
+        targetHref: String? = nil,
         from: String? = nil,
         to: String? = nil,
         values: String? = nil,
@@ -96,6 +99,7 @@ public struct SVGAnimateElement: Equatable, Sendable, Codable {
         self.timing = timing
         self.attributeName = attributeName
         self.attributeType = attributeType
+        self.targetHref = targetHref
         self.from = from
         self.to = to
         self.values = values
@@ -109,17 +113,21 @@ public struct SVGSetElement: Equatable, Sendable, Codable {
     public var id: String?
     public var timing: SVGTimingAttributes
     public var attributeName: String
+    /// Fragment id of the element to animate; nil targets the animation parent.
+    public var targetHref: String?
     public var to: String
 
     public init(
         id: String? = nil,
         timing: SVGTimingAttributes = SVGTimingAttributes(),
         attributeName: String,
+        targetHref: String? = nil,
         to: String
     ) {
         self.id = id
         self.timing = timing
         self.attributeName = attributeName
+        self.targetHref = targetHref
         self.to = to
     }
 }
@@ -215,6 +223,15 @@ public enum SVGTimedAnimation: Equatable, Sendable, Codable {
         case .set(let element): element.timing
         case .animateTransform(let element): element.timing
         case .animateMotion(let element): element.timing
+        }
+    }
+
+    /// Fragment id from `xlink:href` / `href`, when the animation targets another element.
+    public var targetHref: String? {
+        switch self {
+        case .animate(let element): element.targetHref
+        case .set(let element): element.targetHref
+        case .animateTransform, .animateMotion: nil
         }
     }
 }
