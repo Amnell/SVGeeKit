@@ -793,7 +793,8 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             runs: [],
             font: font,
             paint: paint,
-            transform: transform(from: attributes, parser: parser) ?? .identity
+            transform: transform(from: attributes, parser: parser) ?? .identity,
+            explicitPresentation: presentationAttributeKeys(from: attributes)
         )
         textStack.append(text)
         tspanStyleStack = [(font, paint)]
@@ -1041,7 +1042,10 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-dasharray",
             "stroke-dashoffset", "opacity", "color", "visibility", "clip-path", "mask"
         ]
-        var keys = Set(attributes.keys.filter { paintNames.contains($0) })
+        let fontNames: Set<String> = [
+            "font-family", "font-size", "font-weight", "font-style", "text-anchor"
+        ]
+        var keys = Set(attributes.keys.filter { paintNames.contains($0) || fontNames.contains($0) })
         if let style = attributes["style"] {
             for pair in style.split(separator: ";") {
                 let parts = pair.split(separator: ":", maxSplits: 1).map {

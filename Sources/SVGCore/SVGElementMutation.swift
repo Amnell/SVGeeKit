@@ -52,6 +52,12 @@ extension SVGDocument {
   }
 
   public mutating func setAttribute(at path: SVGElementPath, name: String, value: String) throws {
+    let key = name.lowercased()
+    if let element = element(at: path), case .group = element,
+       Self.inheritablePresentationAttributes.contains(key) {
+      try cascadeInheritableAttribute(at: path, name: key, value: value)
+      return
+    }
     if path.indices.isEmpty {
       let rootGroup = root
       let updated = try Self.applyAttribute(name: name, value: value, to: .group(rootGroup))
@@ -150,6 +156,14 @@ extension SVGDocument {
         text.origin.y = try parseLength(value)
         return .text(text)
       }
+      if key == "font-size" {
+        let size = try parseLength(value)
+        text.font.size = size
+        for index in text.runs.indices {
+          text.runs[index].font.size = size
+        }
+        return .text(text)
+      }
       if try applyPaintAttribute(key: key, value: value, paint: &text.paint) {
         for index in text.runs.indices {
           switch key {
@@ -241,6 +255,80 @@ extension SVGDocument {
       return CGFloat(number)
     }
     throw SVGElementMutationError.unsupportedAttribute(trimmed)
+  }
+
+  private static let inheritablePresentationAttributes: Set<String> = [
+    "fill", "fill-opacity", "fill-rule", "stroke", "stroke-opacity", "stroke-width",
+    "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-dasharray",
+    "stroke-dashoffset", "color", "opacity", "font-family", "font-size", "font-weight",
+    "font-style", "text-anchor"
+  ]
+
+  private mutating func cascadeInheritableAttribute(
+    at path: SVGElementPath,
+    name: String,
+    value: String
+  ) throws {
+    if path.indices.isEmpty {
+      var children = root.children
+      try Self.cascadeInheritableAttribute(into: &children, name: name, value: value)
+      root.children = children
+      return
+    }
+    var children = root.children
+    try Self.cascadeInheritableAttribute(
+      in: &children,
+      path: path.indices,
+      depth: 0,
+      name: name,
+      value: value
+    )
+    root.children = children
+  }
+
+  private static func cascadeInheritableAttribute(
+    in children: inout [SVGElement],
+    path: [Int],
+    depth: Int,
+    name: String,
+    value: String
+  ) throws {
+    let index = path[depth]
+    guard index >= 0, index < children.count else { throw SVGElementMutationError.notFound }
+    if depth == path.count - 1 {
+      guard case .group(var group) = children[index] else { throw SVGElementMutationError.notFound }
+      try cascadeInheritableAttribute(into: &group.children, name: name, value: value)
+      children[index] = .group(group)
+      return
+    }
+    guard case .group(var group) = children[index] else { throw SVGElementMutationError.notFound }
+    try cascadeInheritableAttribute(
+      in: &group.children,
+      path: path,
+      depth: depth + 1,
+      name: name,
+      value: value
+    )
+    children[index] = .group(group)
+  }
+
+  private static func cascadeInheritableAttribute(
+    into children: inout [SVGElement],
+    name: String,
+    value: String
+  ) throws {
+    for index in children.indices {
+      switch children[index] {
+      case .text(let text):
+        guard !text.explicitPresentation.contains(name) else { continue }
+        children[index] = try applyAttribute(name: name, value: value, to: .text(text))
+      case .group(var group):
+        try cascadeInheritableAttribute(into: &group.children, name: name, value: value)
+        children[index] = .group(group)
+      default:
+        break
+      }
+    }
   }
 
   private mutating func mutate(
@@ -399,15 +487,40 @@ enum SVGColorParser {
     case "blue": return SVGColor(red: 0, green: 0, blue: 1)
     case "lime": return SVGColor(red: 0, green: 1, blue: 0)
     default:
-      if value.hasPrefix("#"), value.count == 7 {
-        let hex = value.dropFirst()
-        guard let rgb = UInt32(hex, radix: 16) else { return nil }
-        return SVGColor(
-          red: CGFloat((rgb >> 16) & 0xFF) / 255,
-          green: CGFloat((rgb >> 8) & 0xFF) / 255,
-          blue: CGFloat(rgb & 0xFF) / 255
-        )
+      if value.hasPrefix("#") {
+        let hex = String(value.dropFirst())
+        if let color = parseHexColor(hex) {
+          return color
+        }
       }
+      return nil
+    }
+  }
+
+  private static func parseHexColor(_ hex: String) -> SVGColor? {
+    func byte(_ substring: Substring) -> CGFloat? {
+      guard let value = UInt32(substring, radix: 16) else { return nil }
+      return CGFloat(value) / 255
+    }
+    switch hex.count {
+    case 3:
+      let chars = Array(hex)
+      guard chars.count == 3,
+            let red = byte(Substring("\(chars[0])\(chars[0])")),
+            let green = byte(Substring("\(chars[1])\(chars[1])")),
+            let blue = byte(Substring("\(chars[2])\(chars[2])")) else {
+        return nil
+      }
+      return SVGColor(red: red, green: green, blue: blue)
+    case 6:
+      let start = hex.startIndex
+      guard let red = byte(hex[start..<hex.index(start, offsetBy: 2)]),
+            let green = byte(hex[hex.index(start, offsetBy: 2)..<hex.index(start, offsetBy: 4)]),
+            let blue = byte(hex[hex.index(start, offsetBy: 4)..<hex.index(start, offsetBy: 6)]) else {
+        return nil
+      }
+      return SVGColor(red: red, green: green, blue: blue)
+    default:
       return nil
     }
   }

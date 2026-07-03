@@ -145,7 +145,7 @@ public enum SVGAnimationEngine {
         let dur = element.timing.dur ?? 0
         guard dur > 0 else { return nil }
 
-        let calcMode = element.calcMode ?? (isDiscreteAttribute(element.attributeName) ? .discrete : .linear)
+        let calcMode = element.calcMode ?? defaultCalcMode(for: element)
         let valueList = parseValueList(element)
         let progress = min(1, active.iterationTime / dur)
         let raw = rawAnimatedValue(
@@ -347,6 +347,13 @@ public enum SVGAnimationEngine {
         return list
     }
 
+    private static func defaultCalcMode(for element: SVGAnimateElement) -> SVGCalcMode {
+        if element.attributeType?.lowercased() == "css" {
+            return .linear
+        }
+        return isDiscreteAttribute(element.attributeName) ? .discrete : .linear
+    }
+
     private static func isDiscreteAttribute(_ name: String) -> Bool {
         switch name.lowercased() {
         case "display", "visibility", "fill", "stroke":
@@ -427,17 +434,33 @@ public enum SVGAnimationEngine {
             guard parts.count == 3 else { return nil }
             return (parts[0], parts[1], parts[2], 1)
         }
-        if trimmed.hasPrefix("#"), trimmed.count == 7 {
-            let hex = trimmed.dropFirst()
-            guard let rgb = UInt32(hex, radix: 16) else { return nil }
-            return (
-                Double((rgb >> 16) & 0xFF) / 255,
-                Double((rgb >> 8) & 0xFF) / 255,
-                Double(rgb & 0xFF) / 255,
-                1
-            )
+        if trimmed.hasPrefix("#") {
+            let hex = String(trimmed.dropFirst())
+            if hex.count == 3 {
+                let chars = Array(hex)
+                guard chars.count == 3,
+                      let red = hexByte("\(chars[0])\(chars[0])"),
+                      let green = hexByte("\(chars[1])\(chars[1])"),
+                      let blue = hexByte("\(chars[2])\(chars[2])") else {
+                    return nil
+                }
+                return (red, green, blue, 1)
+            }
+            if hex.count == 6, let rgb = UInt32(hex, radix: 16) {
+                return (
+                    Double((rgb >> 16) & 0xFF) / 255,
+                    Double((rgb >> 8) & 0xFF) / 255,
+                    Double(rgb & 0xFF) / 255,
+                    1
+                )
+            }
         }
         return nil
+    }
+
+    private static func hexByte(_ raw: String) -> Double? {
+        guard let value = UInt32(raw, radix: 16) else { return nil }
+        return Double(value) / 255
     }
 
     private static func parseColorComponent(_ raw: String) -> Double? {
@@ -452,11 +475,18 @@ public enum SVGAnimationEngine {
     }
 
     private static func formatColor(_ color: SVGColor, template: String) -> String {
-        if template.hasPrefix("rgb(") {
-            let r = Int((color.red * 255).rounded())
-            let g = Int((color.green * 255).rounded())
-            let b = Int((color.blue * 255).rounded())
-            return "rgb(\(r),\(g),\(b))"
+        let trimmed = template.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmed.lowercased().hasPrefix("rgb(") {
+            let red = Int((color.red * 255).rounded())
+            let green = Int((color.green * 255).rounded())
+            let blue = Int((color.blue * 255).rounded())
+            return "rgb(\(red),\(green),\(blue))"
+        }
+        if trimmed.hasPrefix("#") {
+            let red = Int((color.red * 255).rounded())
+            let green = Int((color.green * 255).rounded())
+            let blue = Int((color.blue * 255).rounded())
+            return String(format: "#%02x%02x%02x", red, green, blue)
         }
         return template
     }

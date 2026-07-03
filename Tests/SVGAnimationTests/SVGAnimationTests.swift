@@ -208,6 +208,120 @@ struct SVGAnimationTests {
         return height
     }
 
+    @Test func animateElem03tInterpolatesFillAtMidpoint() throws {
+        let url = try w3cURL("animate-elem-03-t")
+        let data = try Data(contentsOf: url)
+        let doc = try SVGParser().parse(data: data, baseURL: url.deletingLastPathComponent())
+        let sampled = SVGAnimationEngine.sample(document: doc, at: 3)
+        let top = try #require(try textElements(in: sampled).first { abs($0.origin.y - 80) < 0.5 })
+        guard case .color(let color) = top.paint.fill else {
+            Issue.record("expected color fill")
+            return
+        }
+        // #00f → #070 at 50%: blue channel falls, green channel rises.
+        #expect(color.red < 0.05)
+        #expect(color.green > 0.15)
+        #expect(color.green < 0.35)
+        #expect(color.blue > 0.35)
+        #expect(color.blue < 0.65)
+    }
+
+    @Test func interpolatesHexFillColors() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10">
+          <rect width="10" height="10" fill="#00f">
+            <animate attributeType="CSS" attributeName="fill" begin="0s" dur="10s"
+              from="#00f" to="#070"/>
+          </rect>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        let mid = SVGAnimationEngine.sample(document: doc, at: 5)
+        guard case .rect(let rect) = mid.root.children.first,
+              case .color(let color) = rect.paint.fill else {
+            Issue.record("expected rect with color fill")
+            return
+        }
+        #expect(color.red < 0.05)
+        #expect(color.green > 0.15)
+        #expect(color.blue > 0.35)
+    }
+
+    @Test func animateElem03tInheritedPresentationAtSixSeconds() throws {
+        let url = try w3cURL("animate-elem-03-t")
+        let data = try Data(contentsOf: url)
+        let doc = try SVGParser().parse(data: data, baseURL: url.deletingLastPathComponent())
+        #expect(SVGAnimationEngine.suggestedDuration(in: doc) == 6)
+
+        let sampled = SVGAnimationEngine.sample(document: doc, at: 6)
+        let texts = try textElements(in: sampled)
+        #expect(texts.count == 3)
+
+        let top = try #require(texts.first { abs($0.origin.y - 80) < 0.5 })
+        let middle = try #require(texts.first { abs($0.origin.y - 155) < 0.5 })
+        let bottom = try #require(texts.first { abs($0.origin.y - 250) < 0.5 })
+
+        #expect(abs(top.font.size - 40) < 0.5)
+        #expect(top.explicitPresentation.contains("font-size"))
+        #expect(!top.explicitPresentation.contains("fill"))
+        #expect(try isGreenFill(top.paint.fill))
+
+        #expect(abs(middle.font.size - 60) < 0.5)
+        #expect(middle.explicitPresentation.contains("font-size"))
+        #expect(middle.explicitPresentation.contains("fill"))
+        #expect(try isBlueFill(middle.paint.fill))
+
+        #expect(abs(bottom.font.size - 80) < 0.5)
+        #expect(!bottom.explicitPresentation.contains("font-size"))
+        #expect(!bottom.explicitPresentation.contains("fill"))
+        #expect(try isGreenFill(bottom.paint.fill))
+
+        let image = try SVGRasterizer.rasterize(
+            sampled,
+            pixelSize: CGSize(width: 480, height: 360)
+        )
+        #expect(image.width == 480)
+        #expect(image.height == 360)
+    }
+
+    private func textElements(in doc: SVGDocument) throws -> [SVGText] {
+        var results: [SVGText] = []
+        func walk(_ elements: [SVGElement]) {
+            for element in elements {
+                if case .text(let text) = element, text.id != "revision" {
+                    results.append(text)
+                }
+                if case .group(let group) = element {
+                    walk(group.children)
+                }
+            }
+        }
+        walk(doc.root.children)
+        return results
+    }
+
+    private func isGreenFill(_ paint: SVGPaint) throws -> Bool {
+        guard case .color(let color) = paint else {
+            Issue.record("expected color fill")
+            return false
+        }
+        #expect(color.red < 0.05)
+        #expect(color.green > 0.4)
+        #expect(color.blue < 0.05)
+        return true
+    }
+
+    private func isBlueFill(_ paint: SVGPaint) throws -> Bool {
+        guard case .color(let color) = paint else {
+            Issue.record("expected color fill")
+            return false
+        }
+        #expect(color.red < 0.05)
+        #expect(color.green < 0.05)
+        #expect(color.blue > 0.9)
+        return true
+    }
+
     @Test func staticDocumentHasNoAnimations() throws {
         let svg = """
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10">

@@ -491,6 +491,8 @@ public struct SVGText: Equatable, Sendable {
     public var font: SVGFont
     /// Element-level paint on `<text>`.
     public var paint: SVGPaintProperties
+    /// Presentation attribute names specified on the `<text>` element itself.
+    public var explicitPresentation: Set<String>
     public var transform: SVGTransform
     public var animations: [SVGTimedAnimation]
 
@@ -506,7 +508,8 @@ public struct SVGText: Equatable, Sendable {
         font: SVGFont = SVGFont(),
         paint: SVGPaintProperties = .init(),
         transform: SVGTransform = .identity,
-        animations: [SVGTimedAnimation] = []
+        animations: [SVGTimedAnimation] = [],
+        explicitPresentation: Set<String> = []
     ) {
         self.id = id
         self.origin = origin
@@ -515,6 +518,7 @@ public struct SVGText: Equatable, Sendable {
         self.paint = paint
         self.transform = transform
         self.animations = animations
+        self.explicitPresentation = explicitPresentation
     }
 
     public init(
