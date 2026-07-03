@@ -91,6 +91,8 @@ public struct SVGGroup: Equatable, Sendable {
     public var visibility: SVGVisibility
     public var clipPathRef: String?
     public var maskRef: String?
+    /// Presentation attribute names specified on the `<g>` element itself.
+    public var explicitPresentation: Set<String>
     public var children: [SVGElement]
     public var animations: [SVGTimedAnimation]
 
@@ -102,7 +104,8 @@ public struct SVGGroup: Equatable, Sendable {
         clipPathRef: String? = nil,
         maskRef: String? = nil,
         children: [SVGElement] = [],
-        animations: [SVGTimedAnimation] = []
+        animations: [SVGTimedAnimation] = [],
+        explicitPresentation: Set<String> = []
     ) {
         self.id = id
         self.transform = transform
@@ -112,6 +115,7 @@ public struct SVGGroup: Equatable, Sendable {
         self.maskRef = maskRef
         self.children = children
         self.animations = animations
+        self.explicitPresentation = explicitPresentation
     }
 }
 
@@ -234,17 +238,21 @@ public enum SVGPathCommand: Equatable, Sendable {
 public struct SVGPath: Equatable, Sendable {
     public var commands: [SVGPathCommand]
     public var paint: SVGPaintProperties
+    /// Presentation attribute names specified on the `<path>` element itself.
+    public var explicitPresentation: Set<String>
     public var transform: SVGTransform
     public var animations: [SVGTimedAnimation]
 
     public init(
         commands: [SVGPathCommand],
         paint: SVGPaintProperties = .init(),
+        explicitPresentation: Set<String> = [],
         transform: SVGTransform = .identity,
         animations: [SVGTimedAnimation] = []
     ) {
         self.commands = commands
         self.paint = paint
+        self.explicitPresentation = explicitPresentation
         self.transform = transform
         self.animations = animations
     }
@@ -284,19 +292,23 @@ public struct SVGCircle: Equatable, Sendable {
     public var paint: SVGPaintProperties
     public var transform: SVGTransform
     public var animations: [SVGTimedAnimation]
+    /// Presentation attribute names specified on the `<circle>` element itself.
+    public var explicitPresentation: Set<String>
 
     public init(
         center: CGPoint,
         radius: CGFloat,
         paint: SVGPaintProperties = .init(),
         transform: SVGTransform = .identity,
-        animations: [SVGTimedAnimation] = []
+        animations: [SVGTimedAnimation] = [],
+        explicitPresentation: Set<String> = []
     ) {
         self.center = center
         self.radius = radius
         self.paint = paint
         self.transform = transform
         self.animations = animations
+        self.explicitPresentation = explicitPresentation
     }
 }
 

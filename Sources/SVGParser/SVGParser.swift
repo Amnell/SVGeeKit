@@ -363,7 +363,8 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
                 opacity: elementPaint.opacity,
                 visibility: elementPaint.visibility,
                 clipPathRef: clipRef,
-                maskRef: maskR
+                maskRef: maskR,
+                explicitPresentation: presentationAttributeKeys(from: attributeDict)
             ))
             captureEventHandlers(elementName: elementName, attributes: attributeDict)
         case "use":
@@ -709,7 +710,8 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             center: CGPoint(x: cx, y: cy),
             radius: r,
             paint: paint,
-            transform: transform(from: attributes, parser: parser) ?? .identity
+            transform: transform(from: attributes, parser: parser) ?? .identity,
+            explicitPresentation: presentationAttributeKeys(from: attributes)
         )
         registerDefinition(id: attributes["id"], element: .circle(circle))
         beginAnimatableShape(.circle(circle), definitionID: attributes["id"])
@@ -774,6 +776,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         let path = SVGPath(
             commands: commands,
             paint: paint,
+            explicitPresentation: presentationAttributeKeys(from: attributes),
             transform: transform(from: attributes, parser: parser) ?? .identity
         )
         registerDefinition(id: attributes["id"], element: .path(path))

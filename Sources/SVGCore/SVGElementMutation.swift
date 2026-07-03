@@ -327,8 +327,15 @@ extension SVGDocument {
         guard !text.explicitPresentation.contains(name) else { continue }
         children[index] = try applyAttribute(name: name, value: value, to: .text(text))
       case .group(var group):
+        guard !group.explicitPresentation.contains(name) else { continue }
         try cascadeInheritableAttribute(into: &group.children, name: name, value: value)
         children[index] = .group(group)
+      case .circle(let circle):
+        guard !circle.explicitPresentation.contains(name) else { continue }
+        children[index] = try applyAttribute(name: name, value: value, to: .circle(circle))
+      case .path(let path):
+        guard !path.explicitPresentation.contains(name) else { continue }
+        children[index] = try applyAttribute(name: name, value: value, to: .path(path))
       default:
         break
       }

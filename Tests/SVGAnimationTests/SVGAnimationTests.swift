@@ -322,6 +322,126 @@ struct SVGAnimationTests {
         return true
     }
 
+    @Test func animateElem28tInheritedStrokeAtFourSeconds() throws {
+        let url = try w3cURL("animate-elem-28-t")
+        let data = try Data(contentsOf: url)
+        let doc = try SVGParser().parse(data: data, baseURL: url.deletingLastPathComponent())
+        #expect(SVGAnimationEngine.suggestedDuration(in: doc) == 4)
+
+        let eyesGroup = try #require(group(id: "eyes", in: doc))
+        #expect(eyesGroup.explicitPresentation.contains("stroke"))
+
+        let sampled = SVGAnimationEngine.sample(document: doc, at: 4)
+        let face = try #require(faceCircle(in: sampled))
+        let smile = try #require(smilePath(in: sampled))
+        let eyes = eyePaths(in: sampled)
+        #expect(eyes.count == 2)
+
+        #expect(try isBlackStroke(face.paint.stroke))
+        #expect(try isBlackStroke(smile.paint.stroke))
+        for eye in eyes {
+            #expect(try isBlueStroke(eye.paint.stroke))
+        }
+
+        let image = try SVGRasterizer.rasterize(
+            sampled,
+            pixelSize: CGSize(width: 480, height: 360)
+        )
+        #expect(image.width == 480)
+        #expect(image.height == 360)
+    }
+
+    @Test func animateElem28tInterpolatesStrokeAtMidpoint() throws {
+        let url = try w3cURL("animate-elem-28-t")
+        let data = try Data(contentsOf: url)
+        let doc = try SVGParser().parse(data: data, baseURL: url.deletingLastPathComponent())
+        let sampled = SVGAnimationEngine.sample(document: doc, at: 2)
+        let face = try #require(faceCircle(in: sampled))
+        guard case .color(let color) = face.paint.stroke else {
+            Issue.record("expected stroke color")
+            return
+        }
+        #expect(color.red > 0.2)
+        #expect(color.green > 0.2)
+        #expect(color.blue < 0.1)
+    }
+
+    private func group(id: String, in doc: SVGDocument) -> SVGGroup? {
+        func walk(_ elements: [SVGElement]) -> SVGGroup? {
+            for element in elements {
+                if case .group(let group) = element {
+                    if group.id == id { return group }
+                    if let found = walk(group.children) { return found }
+                }
+            }
+            return nil
+        }
+        return walk(doc.root.children)
+    }
+
+    private func faceCircle(in doc: SVGDocument) -> SVGCircle? {
+        func walk(_ elements: [SVGElement]) -> SVGCircle? {
+            for element in elements {
+                if case .circle(let circle) = element, abs(circle.radius - 150) < 0.5 {
+                    return circle
+                }
+                if case .group(let group) = element, let found = walk(group.children) {
+                    return found
+                }
+            }
+            return nil
+        }
+        return walk(doc.root.children)
+    }
+
+    private func smilePath(in doc: SVGDocument) -> SVGPath? {
+        func walk(_ elements: [SVGElement]) -> SVGPath? {
+            for element in elements {
+                if case .path(let path) = element,
+                   path.commands.count >= 1,
+                   case .moveTo(let point) = path.commands[0],
+                   abs(point.x - 151) < 0.5, abs(point.y - 227) < 0.5 {
+                    return path
+                }
+                if case .group(let group) = element, let found = walk(group.children) {
+                    return found
+                }
+            }
+            return nil
+        }
+        return walk(doc.root.children)
+    }
+
+    private func eyePaths(in doc: SVGDocument) -> [SVGPath] {
+        guard let eyes = group(id: "eyes", in: doc) else { return [] }
+        return eyes.children.compactMap { element in
+            if case .path(let path) = element { return path }
+            return nil
+        }
+    }
+
+    private func isBlackStroke(_ paint: SVGPaint) throws -> Bool {
+        guard case .color(let color) = paint else {
+            Issue.record("expected stroke color")
+            return false
+        }
+        #expect(color.red < 0.05)
+        #expect(color.green < 0.05)
+        #expect(color.blue < 0.05)
+        return true
+    }
+
+    private func isBlueStroke(_ paint: SVGPaint) throws -> Bool {
+        guard case .color(let color) = paint else {
+            Issue.record("expected stroke color")
+            return false
+        }
+        #expect(color.red < 0.05)
+        #expect(color.green < 0.2)
+        #expect(color.blue > 0.3)
+        return true
+    }
+
     @Test func animateElem27tRectHeightsAtNineSeconds() throws {
         let url = try w3cURL("animate-elem-27-t")
         let data = try Data(contentsOf: url)
