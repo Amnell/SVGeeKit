@@ -86,6 +86,38 @@ struct TestMetadataSuite {
         }
     }
 
+    @Test func pathsDomTestsAreSkipped() throws {
+        let index = try SVGTestSuiteIndex(rootDirectory: Paths.suiteRoot())
+        let domCases = index.cases.filter { $0.id.hasPrefix("paths-dom-") }
+        #expect(domCases.count == 2)
+        #expect(domCases.allSatisfy { $0.isSkipped })
+        #expect(domCases.allSatisfy { $0.skipReason == "script-driven DOM mutation; out of scope" })
+    }
+
+    @Test func textDomTestsAreSkipped() throws {
+        let index = try SVGTestSuiteIndex(rootDirectory: Paths.suiteRoot())
+        let domCases = index.cases.filter { $0.id.hasPrefix("text-dom-") }
+        #expect(domCases.count == 5)
+        #expect(domCases.allSatisfy { $0.isSkipped })
+        #expect(domCases.allSatisfy { $0.skipReason == "DOM API mutation; out of scope" })
+    }
+
+    @Test func structDomTestsAreSkipped() throws {
+        let index = try SVGTestSuiteIndex(rootDirectory: Paths.suiteRoot())
+        let domCases = index.cases.filter { $0.id.hasPrefix("struct-dom-") }
+        #expect(domCases.count == 18)
+        #expect(domCases.allSatisfy { $0.isSkipped })
+        #expect(domCases.allSatisfy { $0.skipReason == "DOM API mutation; out of scope" })
+    }
+
+    @Test func typesDomTestsAreSkipped() throws {
+        let index = try SVGTestSuiteIndex(rootDirectory: Paths.suiteRoot())
+        let domCases = index.cases.filter { $0.id.hasPrefix("types-dom-") }
+        #expect(domCases.count == 13)
+        #expect(domCases.allSatisfy { $0.isSkipped })
+        #expect(domCases.allSatisfy { $0.skipReason == "DOM API mutation; out of scope" })
+    }
+
     @Test func emptyForMinimalDocument() {
         let svg = """
         <?xml version="1.0"?>
