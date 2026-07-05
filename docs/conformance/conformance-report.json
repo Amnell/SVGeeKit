@@ -230,7 +230,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/animate-elem-28-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/animate-elem-28-t\/baseline.png",
-    "detail" : "promoted from partial baseline",
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "passed",
     "tag" : "animate",
     "testId" : "animate-elem-28-t"
@@ -957,10 +958,11 @@
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-units-01-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/coords-units-01-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "partialBaseline",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/coords-units-01-b\/baseline.png",
+    "detail" : "baseline re-approved",
+    "diffMaxChannel" : 255,
+    "mismatchedFraction" : 0.013738425925925926,
+    "status" : "passed",
     "tag" : "coords",
     "testId" : "coords-units-01-b"
   },

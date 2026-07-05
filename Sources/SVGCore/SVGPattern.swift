@@ -65,6 +65,10 @@ public struct SVGResolvedPattern: Equatable, Sendable {
     /// and repeat identically in each cell (`patternContentUnits="userSpaceOnUse"`
     /// without `viewBox`).
     public var tileLocalContent: Bool
+    /// When true, pattern content uses the referencing element's bounding box
+    /// (`patternContentUnits="objectBoundingBox"` without `viewBox`). The OBB
+    /// content matrix is applied inside each translated tile cell.
+    public var boundingBoxContent: Bool
 
     public init(
         children: [SVGElement],
@@ -73,7 +77,8 @@ public struct SVGResolvedPattern: Equatable, Sendable {
         y: CGFloat,
         step: CGSize,
         contentMatrix: SVGTransform,
-        tileLocalContent: Bool
+        tileLocalContent: Bool,
+        boundingBoxContent: Bool = false
     ) {
         self.children = children
         self.patternToUser = patternToUser
@@ -82,5 +87,6 @@ public struct SVGResolvedPattern: Equatable, Sendable {
         self.step = step
         self.contentMatrix = contentMatrix
         self.tileLocalContent = tileLocalContent
+        self.boundingBoxContent = boundingBoxContent
     }
 }

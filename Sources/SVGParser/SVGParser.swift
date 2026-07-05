@@ -648,6 +648,22 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             scriptMetadata.handlersByElementID[id, default: []].append(contentsOf: handlers)
         }
     }
+    /// Resolves a paint-server coordinate (`gradient` / `pattern` attributes).
+    /// `objectBoundingBox` treats `%` as a bbox fraction (100% → 1.0);
+    /// `userSpaceOnUse` resolves `%` against the viewport like shape geometry.
+    private func resolvePaintServerLength(
+        _ raw: String?,
+        objectBoundingBox: Bool,
+        axis: Axis
+    ) -> CGFloat? {
+        guard let raw, let len = AttributeParsers.length(raw) else { return nil }
+        if objectBoundingBox {
+            if len.unit == .percent { return len.value / 100 }
+            return len.resolved()
+        }
+        return resolveLength(raw, axis: axis)
+    }
+
     /// Resolves a length attribute against the current viewport. Percentages on
     /// the x/y axes use the viewport's width/height; "length" axis percentages
     /// use the SVG 1.1 normalized diagonal sqrt((w² + h²) / 2). em/ex resolve
@@ -1338,14 +1354,15 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         var partial = PartialPattern()
         partial.id = attributes["id"]
         partial.href = attributes["xlink:href"] ?? attributes["href"]
-        partial.x = attributes["x"].flatMap { AttributeParsers.length($0)?.resolved() }
-        partial.y = attributes["y"].flatMap { AttributeParsers.length($0)?.resolved() }
-        partial.width = attributes["width"].flatMap { AttributeParsers.length($0)?.resolved() }
-        partial.height = attributes["height"].flatMap { AttributeParsers.length($0)?.resolved() }
         if let u = attributes["patternUnits"]?.trimmingCharacters(in: .whitespaces),
            let units = SVGPatternUnits(rawValue: u) {
             partial.patternUnits = units
         }
+        let obb = (partial.patternUnits ?? .objectBoundingBox) == .objectBoundingBox
+        partial.x = attributes["x"].flatMap { resolvePaintServerLength($0, objectBoundingBox: obb, axis: .x) }
+        partial.y = attributes["y"].flatMap { resolvePaintServerLength($0, objectBoundingBox: obb, axis: .y) }
+        partial.width = attributes["width"].flatMap { resolvePaintServerLength($0, objectBoundingBox: obb, axis: .x) }
+        partial.height = attributes["height"].flatMap { resolvePaintServerLength($0, objectBoundingBox: obb, axis: .y) }
         if let u = attributes["patternContentUnits"]?.trimmingCharacters(in: .whitespaces),
            let units = SVGPatternUnits(rawValue: u) {
             partial.patternContentUnits = units
@@ -1402,14 +1419,15 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         var p = PartialGradient()
         p.id = attributes["id"]
         p.href = attributes["xlink:href"] ?? attributes["href"]
-        p.x1 = attributes["x1"].flatMap { AttributeParsers.length($0)?.resolved() }
-        p.y1 = attributes["y1"].flatMap { AttributeParsers.length($0)?.resolved() }
-        p.x2 = attributes["x2"].flatMap { AttributeParsers.length($0)?.resolved() }
-        p.y2 = attributes["y2"].flatMap { AttributeParsers.length($0)?.resolved() }
         if let u = attributes["gradientUnits"]?.trimmingCharacters(in: .whitespaces),
            let units = SVGGradientUnits(rawValue: u) {
             p.units = units
         }
+        let obb = (p.units ?? .objectBoundingBox) == .objectBoundingBox
+        p.x1 = attributes["x1"].flatMap { resolvePaintServerLength($0, objectBoundingBox: obb, axis: .x) }
+        p.y1 = attributes["y1"].flatMap { resolvePaintServerLength($0, objectBoundingBox: obb, axis: .y) }
+        p.x2 = attributes["x2"].flatMap { resolvePaintServerLength($0, objectBoundingBox: obb, axis: .x) }
+        p.y2 = attributes["y2"].flatMap { resolvePaintServerLength($0, objectBoundingBox: obb, axis: .y) }
         if let s = attributes["spreadMethod"]?.trimmingCharacters(in: .whitespaces),
            let spread = SVGGradientSpread(rawValue: s) {
             p.spreadMethod = spread
@@ -1544,15 +1562,16 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         p.kind = .radial
         p.id = attributes["id"]
         p.href = attributes["xlink:href"] ?? attributes["href"]
-        p.cx = attributes["cx"].flatMap { AttributeParsers.length($0)?.resolved() }
-        p.cy = attributes["cy"].flatMap { AttributeParsers.length($0)?.resolved() }
-        p.fx = attributes["fx"].flatMap { AttributeParsers.length($0)?.resolved() }
-        p.fy = attributes["fy"].flatMap { AttributeParsers.length($0)?.resolved() }
-        p.r  = attributes["r"].flatMap  { AttributeParsers.length($0)?.resolved() }
         if let u = attributes["gradientUnits"]?.trimmingCharacters(in: .whitespaces),
            let units = SVGGradientUnits(rawValue: u) {
             p.units = units
         }
+        let obb = (p.units ?? .objectBoundingBox) == .objectBoundingBox
+        p.cx = attributes["cx"].flatMap { resolvePaintServerLength($0, objectBoundingBox: obb, axis: .x) }
+        p.cy = attributes["cy"].flatMap { resolvePaintServerLength($0, objectBoundingBox: obb, axis: .y) }
+        p.fx = attributes["fx"].flatMap { resolvePaintServerLength($0, objectBoundingBox: obb, axis: .x) }
+        p.fy = attributes["fy"].flatMap { resolvePaintServerLength($0, objectBoundingBox: obb, axis: .y) }
+        p.r  = attributes["r"].flatMap  { resolvePaintServerLength($0, objectBoundingBox: obb, axis: .length) }
         if let s = attributes["spreadMethod"]?.trimmingCharacters(in: .whitespaces),
            let spread = SVGGradientSpread(rawValue: s) {
             p.spreadMethod = spread

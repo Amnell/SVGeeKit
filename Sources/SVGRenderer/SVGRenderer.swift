@@ -664,16 +664,13 @@ public enum SVGRenderTree {
         ctx: Context
     ) -> SVGResolvedPattern? {
         let tileLocalContent = pattern.patternContentUnits == .userSpaceOnUse && pattern.viewBox == nil
+        let boundingBoxContent = pattern.patternContentUnits == .objectBoundingBox && pattern.viewBox == nil
         var x = pattern.x
         var y = pattern.y
         var step = CGSize(width: pattern.width, height: pattern.height)
-        let patternToUser: CGAffineTransform
+        var patternToUser = pattern.transform.matrix
 
-        if tileLocalContent {
-            // Children repeat in tile-local user coordinates `(0,0)…(step)`.
-            // Bake `objectBoundingBox` geometry into user space so a circle at
-            // `(50,50)` lands in the centre of each `width=0.5` tile on a 200×200 rect.
-            patternToUser = pattern.transform.matrix
+        if boundingBoxContent || tileLocalContent {
             if pattern.patternUnits == .objectBoundingBox {
                 guard !referencingBBox.isNull, !referencingBBox.isEmpty else { return nil }
                 x = referencingBBox.minX + pattern.x * referencingBBox.width
@@ -686,7 +683,7 @@ public enum SVGRenderTree {
         } else {
             switch pattern.patternUnits {
             case .userSpaceOnUse:
-                patternToUser = pattern.transform.matrix
+                break
             case .objectBoundingBox:
                 guard !referencingBBox.isNull, !referencingBBox.isEmpty else { return nil }
                 let obb = CGAffineTransform(translationX: referencingBBox.minX, y: referencingBBox.minY)
@@ -702,7 +699,8 @@ public enum SVGRenderTree {
             y: y,
             step: step,
             contentMatrix: SVGTransform(patternContentMatrix(pattern, referencingBBox: referencingBBox)),
-            tileLocalContent: tileLocalContent
+            tileLocalContent: tileLocalContent,
+            boundingBoxContent: boundingBoxContent
         )
     }
 

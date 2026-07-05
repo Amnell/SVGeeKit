@@ -310,7 +310,7 @@ struct CGContextRenderer {
 
         let tileClip = CGRect(x: 0, y: 0, width: step.width, height: step.height)
 
-        if pattern.tileLocalContent {
+        if pattern.tileLocalContent || pattern.boundingBoxContent {
             let inv = pattern.patternToUser.matrix.inverted()
             let localBounds = clipBounds.applying(inv)
             let startI = Int(floor((localBounds.minX - pattern.x) / step.width)) - 1
@@ -327,6 +327,9 @@ struct CGContextRenderer {
                         y: pattern.y + CGFloat(j) * step.height
                     ))
                     ctx.clip(to: tileClip)
+                    if pattern.boundingBoxContent {
+                        ctx.concatenate(pattern.contentMatrix.matrix)
+                    }
                     execute(tileCommands, in: ctx, gfx: &gfx)
                     ctx.restoreGState()
                 }

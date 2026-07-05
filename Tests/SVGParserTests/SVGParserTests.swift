@@ -1059,6 +1059,40 @@ struct SVGParserTests {
         #expect(b.stops.count == 2)
     }
 
+    @Test func parsesObjectBoundingBoxPaintServerPercentagesAsFractions() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="480" height="360" viewBox="0 0 480 360">
+          <linearGradient id="lg" gradientUnits="objectBoundingBox" x1="0%" y1="0%" x2="100%" y2="0%"/>
+          <radialGradient id="rg" gradientUnits="objectBoundingBox" cx="25%" cy="25%" r="25%"/>
+          <pattern id="p" patternUnits="objectBoundingBox" x="25%" y="25%" width="50%" height="50%"/>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+
+        guard case .linearGradient(let lg) = doc.paintServers["lg"] else {
+            Issue.record("expected linearGradient"); return
+        }
+        #expect(lg.x1 == 0)
+        #expect(lg.y1 == 0)
+        #expect(lg.x2 == 1)
+        #expect(lg.y2 == 0)
+
+        guard case .radialGradient(let rg) = doc.paintServers["rg"] else {
+            Issue.record("expected radialGradient"); return
+        }
+        #expect(rg.cx == 0.25)
+        #expect(rg.cy == 0.25)
+        #expect(rg.r == 0.25)
+
+        guard case .pattern(let p) = doc.paintServers["p"] else {
+            Issue.record("expected pattern"); return
+        }
+        #expect(p.x == 0.25)
+        #expect(p.y == 0.25)
+        #expect(p.width == 0.5)
+        #expect(p.height == 0.5)
+    }
+
     @Test func parseStoresBaseURL() throws {
         let base = URL(fileURLWithPath: "/tmp/svgeekit/tests/svg", isDirectory: true)
         let doc = try SVGParser().parse(

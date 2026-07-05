@@ -253,7 +253,7 @@ public struct SwiftUICanvasRenderer {
 
         let tileClip = CGRect(x: 0, y: 0, width: step.width, height: step.height)
 
-        if pattern.tileLocalContent {
+        if pattern.tileLocalContent || pattern.boundingBoxContent {
             // Grid may be transformed (patternTransform); compute tile indices in pattern space.
             let inv = pattern.patternToUser.matrix.inverted()
             let localBounds = clipBounds.applying(inv)
@@ -271,6 +271,9 @@ public struct SwiftUICanvasRenderer {
                             y: pattern.y + CGFloat(j) * step.height
                         ))
                         tile.clip(to: Path(tileClip))
+                        if pattern.boundingBoxContent {
+                            tile.concatenate(pattern.contentMatrix.matrix)
+                        }
                         self.execute(tileCommands, context: &tile)
                     }
                 }

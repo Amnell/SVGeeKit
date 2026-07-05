@@ -186,6 +186,34 @@ struct PatternRenderTests {
     #expect(diff.mismatchedFraction < 0.2)
   }
 
+  @Test func w3cCoordsUnits01BMatchesReference() throws {
+    let diff = try diffAgainstW3C(testId: "coords-units-01-b")
+    // Label text may differ (Arial vs SVGFreeSans); gradient/pattern tiles must match.
+    #expect(diff.mismatchedFraction < 0.12)
+  }
+
+  @Test func coordsUnits01BPatternFillsShowFuchsiaAtCenter() throws {
+    let w3cRoot = Self.w3cRoot
+    let svgURL = w3cRoot.appendingPathComponent("svg/coords-units-01-b.svg")
+    let data = try Data(contentsOf: svgURL)
+    let doc = try SVGParser().parse(data: data, baseURL: svgURL.deletingLastPathComponent())
+    let image = try SVGRasterizer.rasterize(doc, pixelSize: CGSize(width: 480, height: 360))
+
+    // Bottom row: percentage (≈30–80), fraction (≈180–230), user space (≈330–380).
+    // Each should show a 2×2 grid of fuchsia quarter-circles in the upper half of the rect.
+    for (name, xRange) in [("pct", 30..<80), ("frac", 180..<230), ("user", 330..<380)] {
+      var found = false
+      for y in 248..<272 {
+        for x in xRange {
+          let p = Self.pixel(in: image, x: x, y: y)
+          if p.red > 150 && p.blue > 100 { found = true; break }
+        }
+        if found { break }
+      }
+      #expect(found, "expected fuchsia pattern in \(name) band")
+    }
+  }
+
   /// pservers-grad-10-b reflect row: blue-lime-blue-lime across the bar.
   @Test func linearGradientReflectSpreadTiles() throws {
     let svg = """
