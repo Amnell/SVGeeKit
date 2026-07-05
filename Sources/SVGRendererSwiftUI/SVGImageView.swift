@@ -8,33 +8,40 @@ public struct SVGImageView: View {
 
     private let commands: [SVGRenderCommand]
     private let intrinsicSize: CGSize?
+    private let contentMode: SVGImageContentMode
 
-    public init(document: SVGDocument) {
+    public init(document: SVGDocument, contentMode: SVGImageContentMode = .fit) {
         let sized = SVGImageView.applyingIntrinsicSize(document)
         self.commands = SVGRenderTree.lower(sized)
         self.intrinsicSize = sized.intrinsicSize
+        self.contentMode = contentMode
     }
 
     public var body: some View {
+        canvas
+            .modifier(SVGImageLayoutModifier(
+                intrinsicSize: intrinsicSize,
+                contentMode: contentMode
+            ))
+    }
+
+    private var canvas: some View {
         Canvas { context, size in
             var ctx = context
             applyContainerTransform(into: &ctx, size: size)
             SwiftUICanvasRenderer().execute(commands, context: &ctx)
         }
-        .frame(
-            idealWidth: intrinsicSize?.width,
-            idealHeight: intrinsicSize?.height
-        )
     }
 
-    /// When the rendered canvas size differs from the document intrinsic size
-    /// (e.g. user-sized view), scale the entire command stream to fit.
+    /// Maps document coordinates into the canvas according to `contentMode`.
     private func applyContainerTransform(into context: inout GraphicsContext, size: CGSize) {
-        guard let intrinsic = intrinsicSize, intrinsic.width > 0, intrinsic.height > 0 else { return }
-        guard size != intrinsic else { return }
-        let sx = size.width / intrinsic.width
-        let sy = size.height / intrinsic.height
-        context.scaleBy(x: sx, y: sy)
+        guard let intrinsic = intrinsicSize else { return }
+        SVGImageContainerTransform.apply(
+            to: &context,
+            intrinsicSize: intrinsic,
+            canvasSize: size,
+            contentMode: contentMode
+        )
     }
 
     /// Document used for lowering must carry an intrinsic size so the viewBox

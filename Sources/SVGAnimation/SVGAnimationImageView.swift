@@ -8,18 +8,21 @@ import SVGRendererSwiftUI
 public struct SVGAnimationImageView: View {
     private let document: SVGDocument
     private let duration: Double
-    private let aspectRatio: CGFloat
+    private let contentMode: SVGImageContentMode
 
     @State private var isPlaying = true
     @State private var scrubTime: Double = 0
     @State private var playbackOrigin = Date.timeIntervalSinceReferenceDate
 
-    public init(document: SVGDocument, initialTime: Double? = nil) {
+    public init(
+        document: SVGDocument,
+        contentMode: SVGImageContentMode = .fit,
+        initialTime: Double? = nil
+    ) {
         let sized = Self.sizedDocument(document)
         self.document = sized
         self.duration = SVGAnimationEngine.suggestedDuration(in: sized)
-        let intrinsic = sized.intrinsicSize ?? sized.viewBox?.size
-        self.aspectRatio = intrinsic.map { $0.width / max($0.height, 1) } ?? (4 / 3)
+        self.contentMode = contentMode
         _scrubTime = State(initialValue: initialTime ?? 0)
         _isPlaying = State(initialValue: initialTime == nil)
         if let initialTime {
@@ -27,9 +30,14 @@ public struct SVGAnimationImageView: View {
         }
     }
 
-    public init(data: Data, baseURL: URL? = nil, initialTime: Double? = nil) throws {
+    public init(
+        data: Data,
+        baseURL: URL? = nil,
+        contentMode: SVGImageContentMode = .fit,
+        initialTime: Double? = nil
+    ) throws {
         let parsed = try SVGParser().parse(data: data, baseURL: baseURL)
-        self.init(document: parsed, initialTime: initialTime)
+        self.init(document: parsed, contentMode: contentMode, initialTime: initialTime)
     }
 
     public var body: some View {
@@ -89,9 +97,8 @@ public struct SVGAnimationImageView: View {
             TimelineView(.animation(minimumInterval: 1.0 / 30.0)) { context in
                 let time = playbackTime(at: context.date)
                 let sampled = SVGAnimationEngine.sample(document: document, at: time)
-                SVGImageView(document: sampled)
+                SVGImageView(document: sampled, contentMode: contentMode)
             }
-            .aspectRatio(aspectRatio, contentMode: .fit)
             .frame(maxWidth: .infinity)
         }
         .overlay(RoundedRectangle(cornerRadius: 6).stroke(.separator))

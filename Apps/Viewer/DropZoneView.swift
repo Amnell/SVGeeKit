@@ -5,6 +5,7 @@ import SVGAnimation
 import SVGCore
 import SVGKit
 import SVGParser
+import SVGRendererSwiftUI
 
 struct DropZoneView: View {
     @State private var state: LoadState = .empty
@@ -179,9 +180,46 @@ private struct LoadedSVGView: View {
     @Binding var showRaster: Bool
     @Binding var showSource: Bool
 
+    @AppStorage("viewer.svgContentMode") private var contentMode: SVGImageContentMode = .fit
+    @AppStorage("viewer.previewFramePreset") private var previewFramePreset: PreviewFramePreset = .square
     @State private var rasterScale: CGFloat = 1
     @State private var rasterImage: NSImage?
     @State private var rasterError: String?
+
+    private enum PreviewFramePreset: String, CaseIterable, Identifiable {
+        case intrinsic
+        case square
+        case wide
+        case tall
+
+        var id: Self { self }
+
+        var label: String {
+            switch self {
+            case .intrinsic: return "Intrinsic"
+            case .square: return "Square"
+            case .wide: return "Wide"
+            case .tall: return "Tall"
+            }
+        }
+
+        func size(for intrinsic: CGSize) -> CGSize {
+            switch self {
+            case .intrinsic:
+                return intrinsic
+            case .square:
+                return CGSize(width: 320, height: 320)
+            case .wide:
+                return CGSize(width: 400, height: 240)
+            case .tall:
+                return CGSize(width: 240, height: 400)
+            }
+        }
+    }
+
+    private var previewSize: CGSize {
+        previewFramePreset.size(for: intrinsic)
+    }
 
     private var intrinsic: CGSize {
         document.intrinsicSize ?? document.viewBox?.size ?? CGSize(width: 480, height: 360)
@@ -209,24 +247,47 @@ private struct LoadedSVGView: View {
     }
 
     private var intrinsicChips: some View {
-        HStack(spacing: 8) {
-            Chip(label: "size", value: "\(Int(intrinsic.width)) × \(Int(intrinsic.height))")
-            if let vb = document.viewBox {
-                Chip(label: "viewBox",
-                     value: "\(fmt(vb.minX)) \(fmt(vb.minY)) \(fmt(vb.width)) \(fmt(vb.height))")
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 8) {
+                Chip(label: "size", value: "\(Int(intrinsic.width)) × \(Int(intrinsic.height))")
+                if let vb = document.viewBox {
+                    Chip(label: "viewBox",
+                         value: "\(fmt(vb.minX)) \(fmt(vb.minY)) \(fmt(vb.width)) \(fmt(vb.height))")
+                }
+                Chip(label: "preview", value: "\(Int(previewSize.width)) × \(Int(previewSize.height))")
+                Spacer()
+                Picker("Raster scale", selection: $rasterScale) {
+                    Text("1×").tag(CGFloat(1))
+                    Text("2×").tag(CGFloat(2))
+                    Text("3×").tag(CGFloat(3))
+                }
+                .pickerStyle(.segmented)
+                .frame(width: 180)
+                .disabled(!showRaster)
+                .onChange(of: rasterScale) { _, _ in
+                    guard showRaster else { return }
+                    Task { await refreshRaster() }
+                }
             }
-            Spacer()
-            Picker("Raster scale", selection: $rasterScale) {
-                Text("1×").tag(CGFloat(1))
-                Text("2×").tag(CGFloat(2))
-                Text("3×").tag(CGFloat(3))
-            }
-            .pickerStyle(.segmented)
-            .frame(width: 180)
-            .disabled(!showRaster)
-            .onChange(of: rasterScale) { _, _ in
-                guard showRaster else { return }
-                Task { await refreshRaster() }
+
+            HStack(spacing: 12) {
+                Picker("Content mode", selection: $contentMode) {
+                    ForEach(SVGImageContentMode.allCases) { mode in
+                        Text(mode.label).tag(mode)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .frame(maxWidth: 280)
+
+                Picker("Preview frame", selection: $previewFramePreset) {
+                    ForEach(PreviewFramePreset.allCases) { preset in
+                        Text(preset.label).tag(preset)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .frame(maxWidth: 360)
+
+                Spacer()
             }
         }
     }
@@ -246,9 +307,9 @@ private struct LoadedSVGView: View {
                 } else {
                     VStack(alignment: .leading, spacing: 6) {
                         Text("SVGImageView (live SwiftUI Canvas)").font(.headline)
-                        CheckerboardTile {
-                            SVGImageView(document: document)
-                                .frame(width: intrinsic.width, height: intrinsic.height)
+                        CheckerboardTile(size: previewSize) {
+                            SVGImageView(document: document, contentMode: contentMode)
+                                .frame(width: previewSize.width, height: previewSize.height)
                         }
                     }
                 }
@@ -256,7 +317,7 @@ private struct LoadedSVGView: View {
             if showRaster {
                 VStack(alignment: .leading, spacing: 6) {
                     Text("Static PNG (SVGRasterizer)").font(.headline)
-                    CheckerboardTile {
+                    CheckerboardTile(size: previewSize) {
                         if let rasterImage {
                             Image(nsImage: rasterImage)
                                 .resizable()
@@ -324,6 +385,7 @@ private struct LoadedSVGView: View {
 }
 
 private struct CheckerboardTile<Content: View>: View {
+    let size: CGSize
     @ViewBuilder var content: () -> Content
 
     var body: some View {
@@ -331,7 +393,7 @@ private struct CheckerboardTile<Content: View>: View {
             Checkerboard()
             content()
         }
-        .frame(maxWidth: .infinity, minHeight: 280)
+        .frame(width: size.width, height: size.height)
         .overlay(RoundedRectangle(cornerRadius: 6).stroke(.separator))
         .clipShape(RoundedRectangle(cornerRadius: 6))
     }

@@ -10,18 +10,28 @@ public struct SVGScriptImageView: View {
 
   @State private var scriptDocument: SVGScriptDocument
   private let intrinsicSize: CGSize?
+  private let contentMode: SVGImageContentMode
 
-  public init(data: Data, baseURL: URL? = nil) throws {
+  public init(
+    data: Data,
+    baseURL: URL? = nil,
+    contentMode: SVGImageContentMode = .fit
+  ) throws {
     let doc = try SVGScriptDocument(data: data, baseURL: baseURL)
     let sized = Self.sizedDocument(doc.document)
     _scriptDocument = State(initialValue: SVGScriptDocument(document: sized))
     intrinsicSize = sized.intrinsicSize ?? sized.viewBox?.size
+    self.contentMode = contentMode
   }
 
-  public init(scriptDocument: SVGScriptDocument) {
+  public init(
+    scriptDocument: SVGScriptDocument,
+    contentMode: SVGImageContentMode = .fit
+  ) {
     let sized = Self.sizedDocument(scriptDocument.document)
     _scriptDocument = State(initialValue: SVGScriptDocument(document: sized))
     intrinsicSize = sized.intrinsicSize ?? sized.viewBox?.size
+    self.contentMode = contentMode
   }
 
   public var body: some View {
@@ -40,7 +50,10 @@ public struct SVGScriptImageView: View {
         scriptDocument.dispatchClick(at: point)
       }
     }
-    .aspectRatio(intrinsicSize.map { $0.width / $0.height } ?? 4 / 3, contentMode: .fit)
+    .modifier(SVGImageLayoutModifier(
+      intrinsicSize: intrinsicSize,
+      contentMode: contentMode
+    ))
     .frame(maxWidth: .infinity)
     .task {
       scriptDocument.dispatchLoad()
@@ -48,20 +61,25 @@ public struct SVGScriptImageView: View {
   }
 
   private func applyContainerTransform(into context: inout GraphicsContext, canvasSize: CGSize) {
-    guard let intrinsic = intrinsicSize, intrinsic.width > 0, intrinsic.height > 0 else { return }
-    guard canvasSize != intrinsic else { return }
-    let sx = canvasSize.width / intrinsic.width
-    let sy = canvasSize.height / intrinsic.height
-    context.scaleBy(x: sx, y: sy)
+    guard let intrinsic = intrinsicSize else { return }
+    SVGImageContainerTransform.apply(
+      to: &context,
+      intrinsicSize: intrinsic,
+      canvasSize: canvasSize,
+      contentMode: contentMode
+    )
   }
 
   private func userSpacePoint(location: CGPoint, canvasSize: CGSize) -> CGPoint {
-    guard let intrinsic = intrinsicSize, intrinsic.width > 0, intrinsic.height > 0 else {
+    guard let intrinsic = intrinsicSize,
+          let transform = SVGImageContainerTransform.compute(
+            intrinsicSize: intrinsic,
+            canvasSize: canvasSize,
+            contentMode: contentMode
+          ) else {
       return location
     }
-    let sx = intrinsic.width / canvasSize.width
-    let sy = intrinsic.height / canvasSize.height
-    return CGPoint(x: location.x * sx, y: location.y * sy)
+    return transform.userSpacePoint(from: location)
   }
 
   private static func sizedDocument(_ document: SVGDocument) -> SVGDocument {

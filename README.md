@@ -14,7 +14,7 @@ struct ContentView: View {
     @State private var document = try! SVGParser().parse(string: svgText)
 
     var body: some View {
-        SVGImageView(document: document)
+        SVGImageView(document: document, contentMode: .fit)
             .frame(width: 480, height: 360)
     }
 }
