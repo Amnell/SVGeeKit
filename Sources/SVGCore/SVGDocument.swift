@@ -193,6 +193,7 @@ public struct SVGSVGElement: Equatable, Sendable {
     public var origin: CGPoint
     public var size: CGSize
     public var viewBox: CGRect?
+    public var preserveAspectRatio: SVGPreserveAspectRatio
     public var overflow: SVGOverflow
     public var children: [SVGElement]
 
@@ -201,6 +202,7 @@ public struct SVGSVGElement: Equatable, Sendable {
         origin: CGPoint = .zero,
         size: CGSize = .zero,
         viewBox: CGRect? = nil,
+        preserveAspectRatio: SVGPreserveAspectRatio = .default,
         overflow: SVGOverflow = .hidden,
         children: [SVGElement] = []
     ) {
@@ -208,6 +210,7 @@ public struct SVGSVGElement: Equatable, Sendable {
         self.origin = origin
         self.size = size
         self.viewBox = viewBox
+        self.preserveAspectRatio = preserveAspectRatio
         self.overflow = overflow
         self.children = children
     }

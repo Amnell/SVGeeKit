@@ -44,6 +44,34 @@ enum AttributeParsers {
         return CGRect(x: nums[0], y: nums[1], width: nums[2], height: nums[3])
     }
 
+    static func preserveAspectRatio(_ s: String) -> SVGPreserveAspectRatio? {
+        let parts = s.trimmingCharacters(in: .whitespacesAndNewlines)
+            .split(whereSeparator: { $0.isWhitespace })
+            .map(String.init)
+        guard let alignToken = parts.first else { return nil }
+        let meetOrSlice: SVGPreserveAspectRatio.MeetOrSlice
+        if parts.count > 1, parts[1].lowercased() == "slice" {
+            meetOrSlice = .slice
+        } else {
+            meetOrSlice = .meet
+        }
+        let align: SVGPreserveAspectRatio.Align
+        switch alignToken.lowercased() {
+        case "none": align = .none
+        case "xminymin": align = .xMinYMin
+        case "xminymid": align = .xMinYMid
+        case "xminymax": align = .xMinYMax
+        case "xmidymin": align = .xMidYMin
+        case "xmidymid": align = .xMidYMid
+        case "xmidymax": align = .xMidYMax
+        case "xmaxymin": align = .xMaxYMin
+        case "xmaxymid": align = .xMaxYMid
+        case "xmaxymax": align = .xMaxYMax
+        default: return nil
+        }
+        return SVGPreserveAspectRatio(align: align, meetOrSlice: meetOrSlice)
+    }
+
     /// Parses the `points` attribute on `<polyline>` / `<polygon>` into x,y pairs.
     /// Trailing odd values are dropped to match permissive UA behavior.
     static func points(_ s: String) -> [CGPoint]? {

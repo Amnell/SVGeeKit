@@ -83,10 +83,11 @@ public enum SVGHitTester {
       local = local.concatenating(CGAffineTransform(translationX: svg.origin.x, y: svg.origin.y))
     }
     if let vb = svg.viewBox, svg.size.width > 0, svg.size.height > 0, vb.width > 0, vb.height > 0 {
-      let sx = svg.size.width / vb.width
-      let sy = svg.size.height / vb.height
-      var t = CGAffineTransform(scaleX: sx, y: sy)
-      t = t.translatedBy(x: -vb.origin.x, y: -vb.origin.y)
+      let t = SVGPreserveAspectRatio.viewBoxTransform(
+        viewBox: vb,
+        viewportSize: svg.size,
+        preserveAspectRatio: svg.preserveAspectRatio
+      )
       local = local.concatenating(t)
     }
     for (index, child) in svg.children.enumerated().reversed() {

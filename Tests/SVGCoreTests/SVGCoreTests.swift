@@ -45,4 +45,41 @@ struct SVGCoreTests {
             SVGConditionalProcessing.evaluateSystemLanguage("he", preferredLanguages: ["iw-IL"])
         )
     }
+
+    @Test func viewBoxTransformMeetAlignsAndScalesUniformly() {
+        let viewBox = CGRect(x: 0, y: 0, width: 30, height: 40)
+        let viewport = CGSize(width: 50, height: 30)
+        let par = SVGPreserveAspectRatio(align: .xMidYMid, meetOrSlice: .meet)
+        let t = SVGPreserveAspectRatio.viewBoxTransform(
+            viewBox: viewBox,
+            viewportSize: viewport,
+            preserveAspectRatio: par
+        )
+        #expect(CGPoint(x: 0, y: 0).applying(t) == CGPoint(x: 13.75, y: 0))
+        #expect(CGPoint(x: 30, y: 40).applying(t) == CGPoint(x: 36.25, y: 30))
+    }
+
+    @Test func viewBoxTransformSliceCentersContent() {
+        let viewBox = CGRect(x: 0, y: 0, width: 30, height: 40)
+        let viewport = CGSize(width: 30, height: 60)
+        let par = SVGPreserveAspectRatio(align: .xMidYMid, meetOrSlice: .slice)
+        let t = SVGPreserveAspectRatio.viewBoxTransform(
+            viewBox: viewBox,
+            viewportSize: viewport,
+            preserveAspectRatio: par
+        )
+        #expect(CGPoint(x: 15, y: 20).applying(t) == CGPoint(x: 15, y: 30))
+    }
+
+    @Test func viewBoxTransformNoneStretchesNonUniformly() {
+        let viewBox = CGRect(x: 0, y: 0, width: 30, height: 40)
+        let viewport = CGSize(width: 50, height: 30)
+        let par = SVGPreserveAspectRatio(align: .none, meetOrSlice: .meet)
+        let t = SVGPreserveAspectRatio.viewBoxTransform(
+            viewBox: viewBox,
+            viewportSize: viewport,
+            preserveAspectRatio: par
+        )
+        #expect(CGPoint(x: 30, y: 40).applying(t) == CGPoint(x: 50, y: 30))
+    }
 }

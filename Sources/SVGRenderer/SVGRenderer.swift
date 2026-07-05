@@ -112,29 +112,25 @@ public enum SVGRenderTree {
                 translationX: svg.origin.x, y: svg.origin.y
             ))))
         }
-        if let vb = svg.viewBox, svg.size.width > 0, svg.size.height > 0, vb.width > 0, vb.height > 0 {
-            let sx = svg.size.width / vb.width
-            let sy = svg.size.height / vb.height
-            var t = CGAffineTransform(scaleX: sx, y: sy)
-            t = t.translatedBy(x: -vb.origin.x, y: -vb.origin.y)
-            inner.append(.concatenate(SVGTransform(t)))
+        if svg.overflow == .hidden, svg.size.width > 0, svg.size.height > 0 {
+            inner.append(.clipToPath(
+                CGPath(rect: CGRect(origin: .zero, size: svg.size), transform: nil),
+                evenOdd: false
+            ))
         }
-        if svg.overflow == .hidden, let clipRect = svgClipRect(svg) {
-            inner.append(.clipToPath(CGPath(rect: clipRect, transform: nil), evenOdd: false))
+        if let vb = svg.viewBox, svg.size.width > 0, svg.size.height > 0, vb.width > 0, vb.height > 0 {
+            let t = SVGPreserveAspectRatio.viewBoxTransform(
+                viewBox: vb,
+                viewportSize: svg.size,
+                preserveAspectRatio: svg.preserveAspectRatio
+            )
+            inner.append(.concatenate(SVGTransform(t)))
         }
         for child in svg.children {
             lower(element: child, ctx: ctx, into: &inner)
         }
         inner.append(.popState)
         commands.append(contentsOf: inner)
-    }
-
-    private static func svgClipRect(_ svg: SVGSVGElement) -> CGRect? {
-        if let viewBox = svg.viewBox {
-            return viewBox
-        }
-        guard svg.size.width > 0, svg.size.height > 0 else { return nil }
-        return CGRect(origin: .zero, size: svg.size)
     }
 
     fileprivate struct Context {
@@ -481,10 +477,11 @@ public enum SVGRenderTree {
                 tx = tx.concatenating(CGAffineTransform(translationX: svg.origin.x, y: svg.origin.y))
             }
             if let vb = svg.viewBox, svg.size.width > 0, svg.size.height > 0, vb.width > 0, vb.height > 0 {
-                let sx = svg.size.width / vb.width
-                let sy = svg.size.height / vb.height
-                var t = CGAffineTransform(scaleX: sx, y: sy)
-                t = t.translatedBy(x: -vb.origin.x, y: -vb.origin.y)
+                let t = SVGPreserveAspectRatio.viewBoxTransform(
+                    viewBox: vb,
+                    viewportSize: svg.size,
+                    preserveAspectRatio: svg.preserveAspectRatio
+                )
                 tx = tx.concatenating(t)
             }
             for child in svg.children {

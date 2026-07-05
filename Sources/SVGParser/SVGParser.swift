@@ -290,6 +290,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         var origin: CGPoint = .zero
         var size: CGSize = .zero
         var viewBox: CGRect?
+        var preserveAspectRatio: SVGPreserveAspectRatio = .default
         var overflow: SVGOverflow = .hidden
         var groupStackDepth: Int = 0
         var children: [SVGElement] = []
@@ -659,6 +660,8 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         let width = resolveLength(attributes["width"], axis: .x, default: viewport.width)
         let height = resolveLength(attributes["height"], axis: .y, default: viewport.height)
         let viewBox = attributes["viewBox"].flatMap { AttributeParsers.viewBox($0) }
+        let preserveAspectRatio = attributes["preserveAspectRatio"]
+            .flatMap { AttributeParsers.preserveAspectRatio($0) } ?? .default
         let overflow = parseOverflow(attributes["overflow"])
         if let viewBox {
             viewport = viewBox.size
@@ -670,6 +673,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             origin: CGPoint(x: x, y: y),
             size: CGSize(width: width, height: height),
             viewBox: viewBox,
+            preserveAspectRatio: preserveAspectRatio,
             overflow: overflow,
             groupStackDepth: groupStack.count
         ))
@@ -685,6 +689,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             origin: partial.origin,
             size: partial.size,
             viewBox: partial.viewBox,
+            preserveAspectRatio: partial.preserveAspectRatio,
             overflow: partial.overflow,
             children: partial.children
         )

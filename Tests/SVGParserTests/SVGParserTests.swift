@@ -1714,4 +1714,21 @@ struct SVGParserScriptTests {
         }
         #expect(r.origin == CGPoint(x: 10, y: 10))
     }
+
+    @Test func parsesNestedSVGPreserveAspectRatio() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">
+          <svg x="0" y="0" width="50" height="30" viewBox="0 0 30 40"
+               preserveAspectRatio="xMaxYMax slice">
+            <rect x="0" y="0" width="30" height="40" fill="red"/>
+          </svg>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .svg(let inner) = doc.root.children.first else {
+            Issue.record("expected nested svg"); return
+        }
+        #expect(inner.preserveAspectRatio == SVGPreserveAspectRatio(align: .xMaxYMax, meetOrSlice: .slice))
+        #expect(inner.viewBox == CGRect(x: 0, y: 0, width: 30, height: 40))
+    }
 }
