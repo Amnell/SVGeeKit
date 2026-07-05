@@ -85,9 +85,56 @@ public enum SVGRenderTree {
             t = t.translatedBy(x: -viewBox.origin.x, y: -viewBox.origin.y)
             commands.append(.concatenate(SVGTransform(t)))
         }
+        if let clipRect = rootClipRect(document) {
+            commands.append(.clipToPath(CGPath(rect: clipRect, transform: nil), evenOdd: false))
+        }
         lower(group: document.root, ctx: ctx, into: &commands)
         commands.append(.popState)
         return commands
+    }
+
+    /// User-space clip rect for the outermost `<svg>` viewport (`overflow: hidden`).
+    private static func rootClipRect(_ document: SVGDocument) -> CGRect? {
+        if let viewBox = document.viewBox {
+            return viewBox
+        }
+        if let size = document.intrinsicSize, size.width > 0, size.height > 0 {
+            return CGRect(origin: .zero, size: size)
+        }
+        return nil
+    }
+
+    private static func lower(svg: SVGSVGElement, ctx: Context, into commands: inout [SVGRenderCommand]) {
+        var inner: [SVGRenderCommand] = []
+        inner.append(.pushState)
+        if svg.origin != .zero {
+            inner.append(.concatenate(SVGTransform(CGAffineTransform(
+                translationX: svg.origin.x, y: svg.origin.y
+            ))))
+        }
+        if let vb = svg.viewBox, svg.size.width > 0, svg.size.height > 0, vb.width > 0, vb.height > 0 {
+            let sx = svg.size.width / vb.width
+            let sy = svg.size.height / vb.height
+            var t = CGAffineTransform(scaleX: sx, y: sy)
+            t = t.translatedBy(x: -vb.origin.x, y: -vb.origin.y)
+            inner.append(.concatenate(SVGTransform(t)))
+        }
+        if svg.overflow == .hidden, let clipRect = svgClipRect(svg) {
+            inner.append(.clipToPath(CGPath(rect: clipRect, transform: nil), evenOdd: false))
+        }
+        for child in svg.children {
+            lower(element: child, ctx: ctx, into: &inner)
+        }
+        inner.append(.popState)
+        commands.append(contentsOf: inner)
+    }
+
+    private static func svgClipRect(_ svg: SVGSVGElement) -> CGRect? {
+        if let viewBox = svg.viewBox {
+            return viewBox
+        }
+        guard svg.size.width > 0, svg.size.height > 0 else { return nil }
+        return CGRect(origin: .zero, size: svg.size)
     }
 
     fileprivate struct Context {
@@ -174,6 +221,8 @@ public enum SVGRenderTree {
         switch element {
         case .group(let g):
             lower(group: g, ctx: ctx, into: &commands)
+        case .svg(let svg):
+            lower(svg: svg, ctx: ctx, into: &commands)
         case .rect(let r):
             lower(rect: r, ctx: ctx, into: &commands)
         case .circle(let c):
@@ -422,6 +471,25 @@ public enum SVGRenderTree {
             for child in g.children {
                 path.addPath(
                     clipPathGeometry(for: child, transform: gtx, obbTransform: obbTransform, ctx: ctx, chain: chain)
+                )
+            }
+            return path
+        case .svg(let svg):
+            let path = CGMutablePath()
+            var tx = transform
+            if svg.origin != .zero {
+                tx = tx.concatenating(CGAffineTransform(translationX: svg.origin.x, y: svg.origin.y))
+            }
+            if let vb = svg.viewBox, svg.size.width > 0, svg.size.height > 0, vb.width > 0, vb.height > 0 {
+                let sx = svg.size.width / vb.width
+                let sy = svg.size.height / vb.height
+                var t = CGAffineTransform(scaleX: sx, y: sy)
+                t = t.translatedBy(x: -vb.origin.x, y: -vb.origin.y)
+                tx = tx.concatenating(t)
+            }
+            for child in svg.children {
+                path.addPath(
+                    clipPathGeometry(for: child, transform: tx, obbTransform: obbTransform, ctx: ctx, chain: chain)
                 )
             }
             return path

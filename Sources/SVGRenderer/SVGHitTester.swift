@@ -72,6 +72,36 @@ public enum SVGHitTester {
     return nil
   }
 
+  private static func testSVGElement(
+    _ svg: SVGSVGElement,
+    pathPrefix: [Int],
+    transform: CGAffineTransform,
+    point: CGPoint
+  ) -> SVGHitResult? {
+    var local = transform
+    if svg.origin != .zero {
+      local = local.concatenating(CGAffineTransform(translationX: svg.origin.x, y: svg.origin.y))
+    }
+    if let vb = svg.viewBox, svg.size.width > 0, svg.size.height > 0, vb.width > 0, vb.height > 0 {
+      let sx = svg.size.width / vb.width
+      let sy = svg.size.height / vb.height
+      var t = CGAffineTransform(scaleX: sx, y: sy)
+      t = t.translatedBy(x: -vb.origin.x, y: -vb.origin.y)
+      local = local.concatenating(t)
+    }
+    for (index, child) in svg.children.enumerated().reversed() {
+      if let hit = testElement(
+        child,
+        path: SVGElementPath(indices: pathPrefix + [index]),
+        transform: local,
+        point: point
+      ) {
+        return hit
+      }
+    }
+    return nil
+  }
+
   private static func testElement(
     _ element: SVGElement,
     path: SVGElementPath,
@@ -81,6 +111,8 @@ public enum SVGHitTester {
     switch element {
     case .group(let group):
       return testGroup(group, pathPrefix: path.indices, transform: transform, point: point)
+    case .svg(let svg):
+      return testSVGElement(svg, pathPrefix: path.indices, transform: transform, point: point)
     case .rect(let rect):
       guard rect.paint.visibility == .visible, isFilled(rect.paint) else { return nil }
       let local = transform.concatenating(rect.transform.matrix)

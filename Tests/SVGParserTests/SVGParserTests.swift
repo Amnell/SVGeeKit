@@ -1680,4 +1680,38 @@ struct SVGParserScriptTests {
         #expect(group.id == "hidden")
         #expect(group.visibility == .hidden)
     }
+
+    @Test func parsesNestedSVGViewport() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="480" height="360" viewBox="0 0 480 360">
+          <g>
+            <svg x="115" y="100" width="250" height="160">
+              <g transform="translate(50,-15)">
+                <rect x="10" y="10" width="20" height="20" fill="#ff0000"/>
+              </g>
+            </svg>
+          </g>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .group(let g) = doc.root.children.first else {
+            Issue.record("expected group"); return
+        }
+        guard case .svg(let inner) = g.children.first else {
+            Issue.record("expected nested svg"); return
+        }
+        #expect(inner.origin == CGPoint(x: 115, y: 100))
+        #expect(inner.size == CGSize(width: 250, height: 160))
+        #expect(inner.overflow == .hidden)
+        #expect(inner.viewBox == nil)
+        guard case .group(let viewportGroup) = inner.children.first else {
+            Issue.record("expected group inside nested svg"); return
+        }
+        let transformedOrigin = CGPoint(x: 0, y: 0).applying(viewportGroup.transform.matrix)
+        #expect(transformedOrigin == CGPoint(x: 50, y: -15))
+        guard case .rect(let r) = viewportGroup.children.first else {
+            Issue.record("expected rect inside nested svg group"); return
+        }
+        #expect(r.origin == CGPoint(x: 10, y: 10))
+    }
 }

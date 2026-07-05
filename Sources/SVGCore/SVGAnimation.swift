@@ -272,6 +272,7 @@ extension SVGElement {
         get {
             switch self {
             case .group(let group): group.animations
+            case .svg: []
             case .rect(let rect): rect.animations
             case .circle(let circle): circle.animations
             case .ellipse(let ellipse): ellipse.animations
@@ -288,6 +289,8 @@ extension SVGElement {
             case .group(var group):
                 group.animations = newValue
                 self = .group(group)
+            case .svg:
+                break
             case .rect(var rect):
                 rect.animations = newValue
                 self = .rect(rect)

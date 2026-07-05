@@ -180,10 +180,44 @@ public struct SVGMask: Equatable, Sendable {
     }
 }
 
+/// `overflow` presentation attribute on `<svg>` (SVG 1.1 initial value: `hidden`).
+public enum SVGOverflow: String, Equatable, Sendable {
+    case hidden
+    case visible
+}
+
+/// A nested `<svg>` viewport. Establishes a new coordinate system and,
+/// when `overflow` is `hidden`, clips content to the viewport bounds.
+public struct SVGSVGElement: Equatable, Sendable {
+    public var id: String?
+    public var origin: CGPoint
+    public var size: CGSize
+    public var viewBox: CGRect?
+    public var overflow: SVGOverflow
+    public var children: [SVGElement]
+
+    public init(
+        id: String? = nil,
+        origin: CGPoint = .zero,
+        size: CGSize = .zero,
+        viewBox: CGRect? = nil,
+        overflow: SVGOverflow = .hidden,
+        children: [SVGElement] = []
+    ) {
+        self.id = id
+        self.origin = origin
+        self.size = size
+        self.viewBox = viewBox
+        self.overflow = overflow
+        self.children = children
+    }
+}
+
 /// Discriminated union of SVG elements supported by the model.
 /// Add new cases here as features land in Phase 3.
 public enum SVGElement: Equatable, Sendable {
     case group(SVGGroup)
+    case svg(SVGSVGElement)
     case rect(SVGRect)
     case circle(SVGCircle)
     case ellipse(SVGEllipse)

@@ -134,6 +134,12 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
     /// Viewport (in user-space units) used to resolve `%` lengths. Set when
     /// the root `<svg>` is opened: prefers viewBox, then width/height.
     private var viewport: CGSize = .zero
+    /// Saved parent viewports while a nested `<svg>` is open.
+    private var viewportStack: [CGSize] = []
+    /// Nesting depth of `<svg>` elements (1 = root).
+    private var svgNestingDepth: Int = 0
+    /// Partial nested `<svg>` elements currently open.
+    private var svgStack: [PartialSVGElement] = []
 
     /// Stack of partially-built groups. Top of stack receives new children.
     private var groupStack: [SVGGroup] = []
@@ -279,6 +285,16 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         var children: [SVGElement] = []
     }
 
+    struct PartialSVGElement {
+        var id: String?
+        var origin: CGPoint = .zero
+        var size: CGSize = .zero
+        var viewBox: CGRect?
+        var overflow: SVGOverflow = .hidden
+        var groupStackDepth: Int = 0
+        var children: [SVGElement] = []
+    }
+
     struct PartialPattern: Equatable {
         var id: String?
         var href: String?
@@ -348,7 +364,12 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         case "switch":
             switchStack.append(PartialSwitch())
         case "svg":
-            handleSVGRoot(attributes: attributeDict, parser: parser)
+            if svgNestingDepth == 0 {
+                handleSVGRoot(attributes: attributeDict, parser: parser)
+            } else {
+                handleNestedSVGStart(attributes: attributeDict)
+            }
+            svgNestingDepth += 1
         case "g", "symbol":
             beginSwitchChildIfNeeded(attributes: attributeDict)
             if defsDepth > 0 { definitionContainerDepth += 1 }
@@ -497,9 +518,14 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         case "switch":
             finalizeSwitch()
         case "svg":
-            animationMetadata.rootAnimations = rootAnimationBuffer
-            guard let root = groupStack.popLast() else { return }
-            document?.root = root
+            svgNestingDepth -= 1
+            if svgNestingDepth == 0 {
+                animationMetadata.rootAnimations = rootAnimationBuffer
+                guard let root = groupStack.popLast() else { return }
+                document?.root = root
+            } else {
+                finalizeNestedSVG()
+            }
         case "g", "symbol":
             _ = groupIdStack.popLast()
             guard var finished = groupStack.popLast() else { return }
@@ -624,6 +650,53 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         groupStack.append(SVGGroup(id: attributes["id"]))
         scriptMetadata.contentScriptType = attributes["contentScriptType"]
         captureEventHandlers(elementName: "svg", attributes: attributes)
+    }
+
+    private func handleNestedSVGStart(attributes: [String: String]) {
+        viewportStack.append(viewport)
+        let x = resolveLength(attributes["x"], axis: .x)
+        let y = resolveLength(attributes["y"], axis: .y)
+        let width = resolveLength(attributes["width"], axis: .x, default: viewport.width)
+        let height = resolveLength(attributes["height"], axis: .y, default: viewport.height)
+        let viewBox = attributes["viewBox"].flatMap { AttributeParsers.viewBox($0) }
+        let overflow = parseOverflow(attributes["overflow"])
+        if let viewBox {
+            viewport = viewBox.size
+        } else {
+            viewport = CGSize(width: width, height: height)
+        }
+        svgStack.append(PartialSVGElement(
+            id: attributes["id"],
+            origin: CGPoint(x: x, y: y),
+            size: CGSize(width: width, height: height),
+            viewBox: viewBox,
+            overflow: overflow,
+            groupStackDepth: groupStack.count
+        ))
+    }
+
+    private func finalizeNestedSVG() {
+        guard let partial = svgStack.popLast() else { return }
+        if let parentViewport = viewportStack.popLast() {
+            viewport = parentViewport
+        }
+        let svg = SVGSVGElement(
+            id: partial.id,
+            origin: partial.origin,
+            size: partial.size,
+            viewBox: partial.viewBox,
+            overflow: partial.overflow,
+            children: partial.children
+        )
+        appendChild(.svg(svg))
+    }
+
+    private func parseOverflow(_ raw: String?) -> SVGOverflow {
+        guard let raw else { return .hidden }
+        switch raw.trimmingCharacters(in: .whitespaces).lowercased() {
+        case "visible": return .visible
+        default: return .hidden
+        }
     }
 
     /// Root `width`/`height` for intrinsic sizing. Percentages are ignored because
@@ -1133,6 +1206,13 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         }
         if !patternStack.isEmpty {
             patternStack[patternStack.count - 1].children.append(element)
+        } else if !svgStack.isEmpty {
+            let svgIndex = svgStack.count - 1
+            if groupStack.count > svgStack[svgIndex].groupStackDepth {
+                groupStack[groupStack.count - 1].children.append(element)
+            } else {
+                svgStack[svgIndex].children.append(element)
+            }
         } else if !clipPathStack.isEmpty {
             clipPathStack[clipPathStack.count - 1].children.append(element)
         } else if !maskStack.isEmpty {

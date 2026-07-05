@@ -61,6 +61,9 @@ public enum SVGAnimationEngine {
             if case .group(let group) = element, walkForAnimations(group.children) {
                 return true
             }
+            if case .svg(let svg) = element, walkForAnimations(svg.children) {
+                return true
+            }
         }
         return false
     }
@@ -72,6 +75,9 @@ public enum SVGAnimationEngine {
                 results.append(contentsOf: element.animations)
                 if case .group(let group) = element {
                     walk(group.children)
+                }
+                if case .svg(let svg) = element {
+                    walk(svg.children)
                 }
             }
         }
@@ -101,6 +107,9 @@ public enum SVGAnimationEngine {
                 }
                 if case .group(let group) = element {
                     walk(group.children, prefix: path.indices)
+                }
+                if case .svg(let svg) = element {
+                    walk(svg.children, prefix: path.indices)
                 }
             }
         }

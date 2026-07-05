@@ -22,6 +22,11 @@ extension SVGDocument {
             index[id] = SVGElementPath(indices: path)
           }
           walk(group.children, prefix: path)
+        case .svg(let svg):
+          if let id = svg.id, !id.isEmpty {
+            index[id] = SVGElementPath(indices: path)
+          }
+          walk(svg.children, prefix: path)
         case .text(let text):
           if let id = text.id, !id.isEmpty {
             index[id] = SVGElementPath(indices: path)
@@ -49,8 +54,14 @@ extension SVGDocument {
       guard index >= 0, index < currentChildren.count else { return nil }
       element = currentChildren[index]
       guard depth < path.indices.count - 1 else { break }
-      guard case .group(let group) = element else { return nil }
-      currentChildren = group.children
+      switch element {
+      case .group(let group):
+        currentChildren = group.children
+      case .svg(let svg):
+        currentChildren = svg.children
+      default:
+        return nil
+      }
     }
     return element
   }
@@ -199,6 +210,8 @@ extension SVGDocument {
         return .use(use)
       default: throw SVGElementMutationError.unsupportedAttribute(name)
       }
+    case .svg:
+      throw SVGElementMutationError.unsupportedAttribute(name)
     }
   }
 
@@ -305,15 +318,28 @@ extension SVGDocument {
       children[index] = .group(group)
       return
     }
-    guard case .group(var group) = children[index] else { throw SVGElementMutationError.notFound }
-    try cascadeInheritableAttribute(
-      in: &group.children,
-      path: path,
-      depth: depth + 1,
-      name: name,
-      value: value
-    )
-    children[index] = .group(group)
+    switch children[index] {
+    case .group(var group):
+      try cascadeInheritableAttribute(
+        in: &group.children,
+        path: path,
+        depth: depth + 1,
+        name: name,
+        value: value
+      )
+      children[index] = .group(group)
+    case .svg(var svg):
+      try cascadeInheritableAttribute(
+        in: &svg.children,
+        path: path,
+        depth: depth + 1,
+        name: name,
+        value: value
+      )
+      children[index] = .svg(svg)
+    default:
+      throw SVGElementMutationError.notFound
+    }
   }
 
   private static func cascadeInheritableAttribute(
@@ -330,6 +356,9 @@ extension SVGDocument {
         guard !group.explicitPresentation.contains(name) else { continue }
         try cascadeInheritableAttribute(into: &group.children, name: name, value: value)
         children[index] = .group(group)
+      case .svg(var svg):
+        try cascadeInheritableAttribute(into: &svg.children, name: name, value: value)
+        children[index] = .svg(svg)
       case .circle(let circle):
         guard !circle.explicitPresentation.contains(name) else { continue }
         children[index] = try applyAttribute(name: name, value: value, to: .circle(circle))
@@ -364,9 +393,16 @@ extension SVGDocument {
       children[index] = try transform(children[index])
       return
     }
-    guard case .group(var group) = children[index] else { throw SVGElementMutationError.notFound }
-    try mutateChildren(&group.children, path: path, depth: depth + 1, transform: transform)
-    children[index] = .group(group)
+    switch children[index] {
+    case .group(var group):
+      try mutateChildren(&group.children, path: path, depth: depth + 1, transform: transform)
+      children[index] = .group(group)
+    case .svg(var svg):
+      try mutateChildren(&svg.children, path: path, depth: depth + 1, transform: transform)
+      children[index] = .svg(svg)
+    default:
+      throw SVGElementMutationError.notFound
+    }
   }
 
   private static func parseFill(_ value: String) throws -> SVGPaint {
@@ -415,6 +451,11 @@ extension SVGDocument {
       group.visibility = .hidden
       hideDescendants(in: &group)
       return .group(group)
+    case .svg(var svg):
+      for index in svg.children.indices {
+        svg.children[index] = hideElement(svg.children[index])
+      }
+      return .svg(svg)
     case .rect(var rect):
       rect.paint.visibility = .hidden
       return .rect(rect)
@@ -453,6 +494,11 @@ extension SVGDocument {
       group.visibility = .visible
       showDescendants(in: &group)
       return .group(group)
+    case .svg(var svg):
+      for index in svg.children.indices {
+        svg.children[index] = showElement(svg.children[index])
+      }
+      return .svg(svg)
     case .rect(var rect):
       rect.paint.visibility = .visible
       return .rect(rect)

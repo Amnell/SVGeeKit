@@ -15,6 +15,9 @@ enum SVGUseExpansion {
       var group = g
       group.children = g.children.map { instanceGroupChild($0, use: use, inheritedFill: inheritedFill) }
       return .group(group)
+    case .svg(var svg):
+      svg.children = svg.children.map { instanceGroupChild($0, use: use, inheritedFill: nil) }
+      return .svg(svg)
     default:
       return instanceGroupChild(element, use: use, inheritedFill: nil)
     }
@@ -28,6 +31,8 @@ enum SVGUseExpansion {
     switch element {
     case .group(let g):
       return instanceElement(.group(g), use: use)
+    case .svg(let svg):
+      return instanceElement(.svg(svg), use: use)
     case .rect(var r):
       r.paint = mergedInstancePaint(r.paint, use: use, inheritedFill: inheritedFill)
       return .rect(r)
@@ -120,7 +125,7 @@ enum SVGUseExpansion {
     case .polygon(let p): return p.paint.fill
     case .path(let p): return p.paint.fill
     case .text(let t): return t.paint.fill
-    case .group, .use: return nil
+    case .group, .svg, .use: return nil
     }
   }
 }
