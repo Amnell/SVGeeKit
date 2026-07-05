@@ -83,6 +83,8 @@ struct CSSRule {
 struct CSSStylesheet {
     private(set) var rules: [CSSRule] = []
 
+    var isEmpty: Bool { rules.isEmpty }
+
     mutating func append(css text: String) {
         rules.append(contentsOf: CSSStylesheet.parseRules(from: text))
     }

@@ -1294,21 +1294,23 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             .map { ($0.key, $0.value) }
         applyDeclarations(presentationDeclarations)
 
-        let classes = Set((attributes["class"] ?? "").split(whereSeparator: \.isWhitespace).map(String.init))
-        let cssNode = CSSNodeContext(
-            elementName: elementName,
-            elementId: attributes["id"],
-            attributes: attributes,
-            classes: classes,
-            isFirstChild: cssChildStack.last?.isEmpty ?? true,
-            parent: cssElementStack.last,
-            previousSibling: cssChildStack.last?.last
-        )
-        let stylesheetDeclarations = stylesheet.declarations(
-            matching: cssNode
-        )
-        // 2) Author stylesheet rules (specificity + source order).
-        applyDeclarations(stylesheetDeclarations)
+        if !stylesheet.isEmpty {
+            let classes = Set((attributes["class"] ?? "").split(whereSeparator: \.isWhitespace).map(String.init))
+            let cssNode = CSSNodeContext(
+                elementName: elementName,
+                elementId: attributes["id"],
+                attributes: attributes,
+                classes: classes,
+                isFirstChild: cssChildStack.last?.isEmpty ?? true,
+                parent: cssElementStack.last,
+                previousSibling: cssChildStack.last?.last
+            )
+            let stylesheetDeclarations = stylesheet.declarations(
+                matching: cssNode
+            )
+            // 2) Author stylesheet rules (specificity + source order).
+            applyDeclarations(stylesheetDeclarations)
+        }
 
         // 3) Inline `style` (highest author specificity).
         var inlineStyleDeclarations: [(String, String)] = []

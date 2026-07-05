@@ -10,22 +10,20 @@ enum PathDataParser {
     /// Returns nil for empty input. Returns the parsed commands even if the
     /// data ends mid-stream (matches permissive UA behavior).
     static func parse(_ raw: String) -> [SVGPathCommand]? {
-        let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return nil }
-
-        var scanner = PathScanner(input: trimmed)
+        var scanner = PathScanner(input: raw)
+        guard scanner.hasNumberOrCommand else { return nil }
         var out: [SVGPathCommand] = []
 
         var current = CGPoint.zero          // current point
         var subpathStart = CGPoint.zero     // for Z/z
         var lastCubicCtrl: CGPoint? = nil   // for S/s reflection
         var lastQuadCtrl: CGPoint? = nil    // for T/t reflection
-        var lastCommand: Character? = nil
+        var lastCommand: UInt8? = nil
 
         scanner.skipWhitespaceAndCommas()
         while let cmd = scanner.readCommand() {
-            let isRelative = cmd.isLowercase
-            let upper = Character(cmd.uppercased())
+            let isRelative = cmd >= 97 && cmd <= 122
+            let upper = isRelative ? cmd - 32 : cmd
 
             // M/m must come first; subsequent coordinate pairs after a moveto
             // are implicit linetos (per SVG path grammar).
@@ -34,7 +32,7 @@ enum PathDataParser {
                 if !isFirstIteration && !scanner.hasNumber { break }
 
                 switch upper {
-                case "M":
+                case 77: // M
                     guard let p = scanner.readPoint() else { return out }
                     let target = isRelative && lastCommand != nil
                         ? CGPoint(x: current.x + p.x, y: current.y + p.y)
@@ -50,7 +48,7 @@ enum PathDataParser {
                     lastCubicCtrl = nil
                     lastQuadCtrl = nil
 
-                case "L":
+                case 76: // L
                     guard let p = scanner.readPoint() else { return out }
                     let target = isRelative
                         ? CGPoint(x: current.x + p.x, y: current.y + p.y)
@@ -60,7 +58,7 @@ enum PathDataParser {
                     lastCubicCtrl = nil
                     lastQuadCtrl = nil
 
-                case "H":
+                case 72: // H
                     guard let x = scanner.readNumber() else { return out }
                     let target = CGPoint(
                         x: isRelative ? current.x + x : x,
@@ -71,7 +69,7 @@ enum PathDataParser {
                     lastCubicCtrl = nil
                     lastQuadCtrl = nil
 
-                case "V":
+                case 86: // V
                     guard let y = scanner.readNumber() else { return out }
                     let target = CGPoint(
                         x: current.x,
@@ -82,7 +80,7 @@ enum PathDataParser {
                     lastCubicCtrl = nil
                     lastQuadCtrl = nil
 
-                case "C":
+                case 67: // C
                     guard let c1 = scanner.readPoint(),
                           let c2 = scanner.readPoint(),
                           let end = scanner.readPoint() else { return out }
@@ -94,7 +92,7 @@ enum PathDataParser {
                     lastCubicCtrl = absC2
                     lastQuadCtrl = nil
 
-                case "S":
+                case 83: // S
                     guard let c2 = scanner.readPoint(),
                           let end = scanner.readPoint() else { return out }
                     let absC2 = isRelative ? c2.offset(by: current) : c2
@@ -113,7 +111,7 @@ enum PathDataParser {
                     lastCubicCtrl = absC2
                     lastQuadCtrl = nil
 
-                case "Q":
+                case 81: // Q
                     guard let c = scanner.readPoint(),
                           let end = scanner.readPoint() else { return out }
                     let absC = isRelative ? c.offset(by: current) : c
@@ -123,7 +121,7 @@ enum PathDataParser {
                     lastQuadCtrl = absC
                     lastCubicCtrl = nil
 
-                case "T":
+                case 84: // T
                     guard let end = scanner.readPoint() else { return out }
                     let absEnd = isRelative ? end.offset(by: current) : end
                     let absC: CGPoint
@@ -138,7 +136,7 @@ enum PathDataParser {
                     lastQuadCtrl = absC
                     lastCubicCtrl = nil
 
-                case "A":
+                case 65: // A
                     guard let rx = scanner.readNumber(),
                           let ry = scanner.readNumber(),
                           let xrot = scanner.readNumber(),
@@ -157,7 +155,7 @@ enum PathDataParser {
                     lastCubicCtrl = nil
                     lastQuadCtrl = nil
 
-                case "Z":
+                case 90: // Z
                     out.append(.close)
                     current = subpathStart
                     lastCubicCtrl = nil
@@ -170,7 +168,7 @@ enum PathDataParser {
                 isFirstIteration = false
                 lastCommand = cmd
                 scanner.skipWhitespaceAndCommas()
-            } while upper != "Z"  // Z takes no parameters; never iterates
+            } while upper != 90  // Z takes no parameters; never iterates
         }
 
         return out
@@ -296,30 +294,39 @@ enum PathDataParser {
 // MARK: - Scanner
 
 private struct PathScanner {
-    let input: String
-    private var index: String.Index
+    private let bytes: [UInt8]
+    private var index: Int
 
     init(input: String) {
-        self.input = input
-        self.index = input.startIndex
+        self.bytes = Array(input.utf8)
+        self.index = bytes.startIndex
+    }
+
+    var hasNumberOrCommand: Bool {
+        var i = index
+        while i < bytes.endIndex, isWhitespaceOrComma(bytes[i]) {
+            i += 1
+        }
+        guard i < bytes.endIndex else { return false }
+        let c = bytes[i]
+        return isNumberStart(c) || isLetter(c)
     }
 
     var hasNumber: Bool {
         var i = index
-        while i < input.endIndex, input[i].isWhitespace || input[i] == "," {
-            i = input.index(after: i)
+        while i < bytes.endIndex, isWhitespaceOrComma(bytes[i]) {
+            i += 1
         }
-        guard i < input.endIndex else { return false }
-        let c = input[i]
-        return c.isNumber || c == "-" || c == "+" || c == "."
+        guard i < bytes.endIndex else { return false }
+        return isNumberStart(bytes[i])
     }
 
-    mutating func readCommand() -> Character? {
+    mutating func readCommand() -> UInt8? {
         skipWhitespaceAndCommas()
-        guard index < input.endIndex else { return nil }
-        let c = input[index]
-        guard c.isLetter else { return nil }
-        index = input.index(after: index)
+        guard index < bytes.endIndex else { return nil }
+        let c = bytes[index]
+        guard isLetter(c) else { return nil }
+        index += 1
         return c
     }
 
@@ -331,14 +338,14 @@ private struct PathScanner {
     /// Arc flag: single 0 or 1 token (whitespace/comma-separated).
     mutating func readFlag() -> Bool? {
         skipWhitespaceAndCommas()
-        guard index < input.endIndex else { return nil }
-        let c = input[index]
-        if c == "0" {
-            index = input.index(after: index)
+        guard index < bytes.endIndex else { return nil }
+        let c = bytes[index]
+        if c == 48 {
+            index += 1
             return false
         }
-        if c == "1" {
-            index = input.index(after: index)
+        if c == 49 {
+            index += 1
             return true
         }
         return nil
@@ -347,42 +354,96 @@ private struct PathScanner {
     mutating func readNumber() -> CGFloat? {
         skipWhitespaceAndCommas()
         let start = index
-        if index < input.endIndex, input[index] == "+" || input[index] == "-" {
-            index = input.index(after: index)
-        }
-        var sawDot = false
-        while index < input.endIndex {
-            let ch = input[index]
-            if ch.isNumber {
-                index = input.index(after: index)
-            } else if ch == ".", !sawDot {
-                sawDot = true
-                index = input.index(after: index)
-            } else {
-                break
+
+        var sign = 1.0
+        if index < bytes.endIndex {
+            if bytes[index] == 45 {
+                sign = -1.0
+                index += 1
+            } else if bytes[index] == 43 {
+                index += 1
             }
         }
-        if index < input.endIndex, input[index] == "e" || input[index] == "E" {
-            index = input.index(after: index)
-            if index < input.endIndex, input[index] == "+" || input[index] == "-" {
-                index = input.index(after: index)
-            }
-            while index < input.endIndex, input[index].isNumber {
-                index = input.index(after: index)
+
+        var mantissa = 0.0
+        var sawDigit = false
+        while index < bytes.endIndex, isDigit(bytes[index]) {
+            sawDigit = true
+            mantissa = mantissa * 10.0 + Double(bytes[index] - 48)
+            index += 1
+        }
+
+        if index < bytes.endIndex, bytes[index] == 46 {
+            index += 1
+            var divisor = 10.0
+            while index < bytes.endIndex, isDigit(bytes[index]) {
+                sawDigit = true
+                mantissa += Double(bytes[index] - 48) / divisor
+                divisor *= 10.0
+                index += 1
             }
         }
-        let slice = input[start..<index]
-        guard !slice.isEmpty, let d = Double(slice) else {
+
+        guard sawDigit else {
             index = start
             return nil
         }
-        return CGFloat(d)
+
+        var exponent = 0
+        if index < bytes.endIndex, bytes[index] == 69 || bytes[index] == 101 {
+            let exponentStart = index
+            index += 1
+
+            var exponentSign = 1
+            if index < bytes.endIndex {
+                if bytes[index] == 45 {
+                    exponentSign = -1
+                    index += 1
+                } else if bytes[index] == 43 {
+                    index += 1
+                }
+            }
+
+            var sawExponentDigit = false
+            while index < bytes.endIndex, isDigit(bytes[index]) {
+                sawExponentDigit = true
+                exponent = exponent * 10 + Int(bytes[index] - 48)
+                index += 1
+            }
+
+            if sawExponentDigit {
+                exponent *= exponentSign
+            } else {
+                index = exponentStart
+            }
+        }
+
+        let value = exponent == 0
+            ? sign * mantissa
+            : sign * mantissa * pow(10.0, Double(exponent))
+        return CGFloat(value)
     }
 
     mutating func skipWhitespaceAndCommas() {
-        while index < input.endIndex, input[index].isWhitespace || input[index] == "," {
-            index = input.index(after: index)
+        while index < bytes.endIndex, isWhitespaceOrComma(bytes[index]) {
+            index += 1
         }
+    }
+
+    private func isNumberStart(_ byte: UInt8) -> Bool {
+        isDigit(byte) || byte == 45 || byte == 43 || byte == 46
+    }
+
+    private func isLetter(_ byte: UInt8) -> Bool {
+        (byte >= 65 && byte <= 90) || (byte >= 97 && byte <= 122)
+    }
+
+    private func isDigit(_ byte: UInt8) -> Bool {
+        byte >= 48 && byte <= 57
+    }
+
+    private func isWhitespaceOrComma(_ byte: UInt8) -> Bool {
+        byte == 44 || byte == 32 || byte == 9 || byte == 10 || byte == 13 || byte == 12
     }
 }
 
