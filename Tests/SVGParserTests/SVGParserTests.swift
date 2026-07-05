@@ -428,6 +428,38 @@ struct SVGParserTests {
         ])
     }
 
+    @Test func parsesPathNumberTokenizationAdjacentDecimals() throws {
+        // Illustrator emits runs like 82.4.3,0 meaning 82.4 then 0.3.
+        let cmds = PathDataParser.parse("M0,0 82.4.3,0")
+        #expect(cmds == [
+            .moveTo(CGPoint(x: 0, y: 0)),
+            .lineTo(CGPoint(x: 82.4, y: 0.3)),
+        ])
+    }
+
+    @Test func parsesIllustratorSmoothCubicFollowedByCubicContinuation() throws {
+        let fromS = PathDataParser.parse(
+            "M133.2,124.9s-66.1-38.4-66.1-38.4c-9.7,13.5-15.4,30.1-15.4,48,0,45.2,36.4,81.9,81.5,82.4"
+        )
+        #expect(fromS?.count == 4, "fromS got \(fromS?.count ?? -1)")
+
+        let withH0 = PathDataParser.parse(
+            "M133.2,124.9h0s-66.1-38.4-66.1-38.4c-9.7,13.5-15.4,30.1-15.4,48,0,45.2,36.4,81.9,81.5,82.4"
+        )
+        #expect(withH0?.count == 5, "withH0 got \(withH0?.count ?? -1)")
+
+        let withLH0 = PathDataParser.parse(
+            "M200.9,86.2l-67.7,38.7h0s-66.1-38.4-66.1-38.4c-9.7,13.5-15.4,30.1-15.4,48,0,45.2,36.4,81.9,81.5,82.4"
+        )
+        #expect(withLH0?.count == 6, "withLH0 got \(withLH0?.count ?? -1)")
+
+        let heart = PathDataParser.parse(
+            "M200.9,86.2l-67.7,38.7h0s-66.1-38.4-66.1-38.4c-9.7,13.5-15.4,30.1-15.4,48,0,45.2,36.4,81.9,81.5,82.4.3,0,.6,0,.9,0,45.5,0,82.4-36.9,82.4-82.4s-5.8-34.8-15.7-48.3Z"
+        )
+        #expect(heart?.last == .close, "heart got \(heart?.count ?? -1)")
+        #expect((heart?.count ?? 0) > 5)
+    }
+
     @Test func parsesPathCubicAndSmoothReflection() throws {
         // C produces cubic with absC2 = (40,40); S should reflect that around the
         // current point (50,50) → absC1 = (60,60).

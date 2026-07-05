@@ -350,8 +350,17 @@ private struct PathScanner {
         if index < input.endIndex, input[index] == "+" || input[index] == "-" {
             index = input.index(after: index)
         }
-        while index < input.endIndex, input[index].isNumber || input[index] == "." {
-            index = input.index(after: index)
+        var sawDot = false
+        while index < input.endIndex {
+            let ch = input[index]
+            if ch.isNumber {
+                index = input.index(after: index)
+            } else if ch == ".", !sawDot {
+                sawDot = true
+                index = input.index(after: index)
+            } else {
+                break
+            }
         }
         if index < input.endIndex, input[index] == "e" || input[index] == "E" {
             index = input.index(after: index)
