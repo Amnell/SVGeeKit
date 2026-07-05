@@ -131,7 +131,45 @@ public struct SwiftUICanvasRenderer {
                     self.execute(commands, context: &l)
                 }
                 context.opacity = savedOpacity
+
+            case .drawImage(let imageData, let viewport, let preserveAspectRatio, let opacity):
+                drawImage(
+                    imageData,
+                    viewport: viewport,
+                    preserveAspectRatio: preserveAspectRatio,
+                    opacity: opacity,
+                    context: &context
+                )
             }
+        }
+    }
+
+    private func drawImage(
+        _ data: Data,
+        viewport: CGRect,
+        preserveAspectRatio: SVGPreserveAspectRatio,
+        opacity: CGFloat,
+        context: inout GraphicsContext
+    ) {
+        guard let cgImage = SVGImageDecoder.cgImage(from: data) else { return }
+        let intrinsic = CGSize(width: cgImage.width, height: cgImage.height)
+        guard intrinsic.width > 0, intrinsic.height > 0 else { return }
+
+        let effective = SVGImageDecoder.effectiveViewport(viewport, intrinsicSize: intrinsic)
+        guard effective.width > 0, effective.height > 0 else { return }
+
+        let fit = SVGImageDecoder.fitTransform(
+            intrinsicSize: intrinsic,
+            viewport: effective,
+            preserveAspectRatio: preserveAspectRatio
+        )
+        let image = Image(decorative: cgImage, scale: 1, orientation: .down)
+
+        context.drawLayer { layer in
+            layer.opacity *= opacity
+            layer.clip(to: Path(effective))
+            layer.concatenate(fit)
+            layer.draw(image, in: CGRect(origin: .zero, size: intrinsic))
         }
     }
 

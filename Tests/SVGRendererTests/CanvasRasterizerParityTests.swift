@@ -29,6 +29,29 @@ import SVGRendererSwiftUI
         #expect(center.g > 200)
     }
 
+    private static let redPixelPNG = """
+    data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==
+    """
+
+    @MainActor
+    @Test func imageElementRendersIdenticallyInCGAndCanvas() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+             width="20" height="20">
+          <image x="5" y="5" width="10" height="10" xlink:href="\(Self.redPixelPNG)"/>
+        </svg>
+        """
+        var doc = try SVGParser().parse(string: svg)
+        doc.intrinsicSize = CGSize(width: 20, height: 20)
+        let size = CGSize(width: 20, height: 20)
+
+        let raster = try SVGRasterizer.rasterize(doc, pixelSize: size, scale: 1)
+        let canvas = try rasterizeCanvas(document: doc, size: size)
+
+        let diff = try SVGSnapshotDiffer.diff(raster, canvas, tolerance: .exact)
+        #expect(diff.matches)
+    }
+
     @MainActor
     private func rasterizeCanvas(document: SVGDocument, size: CGSize) throws -> CGImage {
         let view = SVGImageView(document: document)

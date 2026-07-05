@@ -35,6 +35,10 @@ extension SVGDocument {
           if let id = rect.id, !id.isEmpty {
             index[id] = SVGElementPath(indices: path)
           }
+        case .image(let image):
+          if let id = image.id, !id.isEmpty {
+            index[id] = SVGElementPath(indices: path)
+          }
         case .circle, .ellipse, .line, .polyline, .polygon, .path, .use:
           break
         }
@@ -208,6 +212,17 @@ extension SVGDocument {
         let width = use.size?.width ?? height
         use.size = CGSize(width: width, height: height)
         return .use(use)
+      default: throw SVGElementMutationError.unsupportedAttribute(name)
+      }
+    case .image(var image):
+      if try applyPaintAttribute(key: key, value: value, paint: &image.paint) {
+        return .image(image)
+      }
+      switch key {
+      case "x": image.origin.x = try parseLength(value); return .image(image)
+      case "y": image.origin.y = try parseLength(value); return .image(image)
+      case "width": image.size.width = try parseLength(value); return .image(image)
+      case "height": image.size.height = try parseLength(value); return .image(image)
       default: throw SVGElementMutationError.unsupportedAttribute(name)
       }
     case .svg:
@@ -485,6 +500,9 @@ extension SVGDocument {
       return .text(text)
     case .use:
       return element
+    case .image(var image):
+      image.paint.visibility = .hidden
+      return .image(image)
     }
   }
 
@@ -528,6 +546,9 @@ extension SVGDocument {
       return .text(text)
     case .use:
       return element
+    case .image(var image):
+      image.paint.visibility = .visible
+      return .image(image)
     }
   }
 }

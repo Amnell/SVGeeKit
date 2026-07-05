@@ -1,4 +1,5 @@
 import CoreGraphics
+import Foundation
 import SVGCore
 import SVGRenderer
 
@@ -111,8 +112,49 @@ struct CGContextRenderer {
                 ctx.setAlpha(gfx.alpha * opacity)
                 ctx.endTransparencyLayer()
                 ctx.restoreGState()
+
+            case .drawImage(let imageData, let viewport, let preserveAspectRatio, let opacity):
+                drawImage(
+                    imageData,
+                    viewport: viewport,
+                    preserveAspectRatio: preserveAspectRatio,
+                    opacity: opacity,
+                    gfx: gfx,
+                    in: ctx
+                )
             }
         }
+    }
+
+    // MARK: - Raster images
+
+    private func drawImage(
+        _ data: Data,
+        viewport: CGRect,
+        preserveAspectRatio: SVGPreserveAspectRatio,
+        opacity: CGFloat,
+        gfx: GfxState,
+        in ctx: CGContext
+    ) {
+        guard let cgImage = SVGImageDecoder.cgImage(from: data) else { return }
+        let intrinsic = CGSize(width: cgImage.width, height: cgImage.height)
+        guard intrinsic.width > 0, intrinsic.height > 0 else { return }
+
+        let effective = SVGImageDecoder.effectiveViewport(viewport, intrinsicSize: intrinsic)
+        guard effective.width > 0, effective.height > 0 else { return }
+
+        ctx.saveGState()
+        ctx.clip(to: effective)
+        ctx.concatenate(SVGImageDecoder.fitTransform(
+            intrinsicSize: intrinsic,
+            viewport: effective,
+            preserveAspectRatio: preserveAspectRatio
+        ))
+        ctx.translateBy(x: 0, y: intrinsic.height)
+        ctx.scaleBy(x: 1, y: -1)
+        ctx.setAlpha(gfx.alpha * opacity)
+        ctx.draw(cgImage, in: CGRect(origin: .zero, size: intrinsic))
+        ctx.restoreGState()
     }
 
     // MARK: - Paint

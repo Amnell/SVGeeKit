@@ -1,4 +1,5 @@
 @preconcurrency import CoreGraphics
+import Foundation
 import SVGCore
 
 /// Backend-neutral primitive emitted by the render-tree walker.
@@ -55,6 +56,14 @@ public enum SVGRenderCommand: Equatable, Sendable {
     /// content. `region`, when present, clips the mask to that rectangle so
     /// content outside it is fully masked out (SVG `maskUnits` region).
     case maskedContent(mask: [SVGRenderCommand], region: CGRect?, content: [SVGRenderCommand])
+
+    /// Draw a decoded raster image into `viewport` with `preserveAspectRatio` fitting.
+    case drawImage(
+        imageData: Data,
+        viewport: CGRect,
+        preserveAspectRatio: SVGPreserveAspectRatio,
+        opacity: CGFloat
+    )
 }
 
 /// A renderer consumes a render-command stream and draws it into its backend.
@@ -75,7 +84,8 @@ public enum SVGRenderTree {
             masks: document.masks,
             fonts: document.fonts,
             fontFaces: document.fontFaces,
-            definitions: document.definitions
+            definitions: document.definitions,
+            baseURL: document.baseURL
         )
         commands.append(.pushState)
         if let viewBox = document.viewBox, let size = document.intrinsicSize {
@@ -140,6 +150,7 @@ public enum SVGRenderTree {
         let fonts: [String: SVGFontDefinition]
         let fontFaces: [SVGFontFace]
         let definitions: [String: SVGElement]
+        let baseURL: URL?
     }
 
     private static func lower(group: SVGGroup, ctx: Context, into commands: inout [SVGRenderCommand]) {
@@ -237,7 +248,66 @@ public enum SVGRenderTree {
             lower(text: t, ctx: ctx, into: &commands)
         case .use(let u):
             lower(use: u, ctx: ctx, into: &commands)
+        case .image(let img):
+            lower(image: img, ctx: ctx, into: &commands)
         }
+    }
+
+    private static func lower(image: SVGImage, ctx: Context, into commands: inout [SVGRenderCommand]) {
+        guard image.paint.visibility == .visible else { return }
+        guard let imageData = SVGImageDataLoader.load(href: image.href, baseURL: ctx.baseURL) else { return }
+
+        let viewport = CGRect(origin: image.origin, size: image.size)
+        emitPaintedImage(
+            imageData: imageData,
+            viewport: viewport,
+            preserveAspectRatio: image.preserveAspectRatio,
+            paint: image.paint,
+            transform: image.transform,
+            ctx: ctx,
+            into: &commands
+        )
+    }
+
+    private static func emitPaintedImage(
+        imageData: Data,
+        viewport: CGRect,
+        preserveAspectRatio: SVGPreserveAspectRatio,
+        paint: SVGPaintProperties,
+        transform: SVGTransform,
+        ctx: Context,
+        into commands: inout [SVGRenderCommand]
+    ) {
+        let bbox = viewport.isNull || viewport.isEmpty
+            ? CGRect(origin: viewport.origin, size: CGSize(width: 1, height: 1))
+            : viewport
+
+        var painted: [SVGRenderCommand] = []
+        let hasClip = paint.clipPathRef != nil
+        let needsState = hasClip || transform.matrix != .identity || paint.opacity < 1
+        if needsState { painted.append(.pushState) }
+        if transform.matrix != .identity {
+            painted.append(.concatenate(transform))
+        }
+        if let clipRef = paint.clipPathRef, let clipDef = ctx.clipPaths[clipRef] {
+            painted.append(.clipToPath(lowerToClipPath(clipDef, bbox: bbox, ctx: ctx), evenOdd: false))
+        }
+        if paint.opacity < 1 {
+            painted.append(.beginOpacityLayer(paint.opacity))
+        }
+
+        painted.append(.drawImage(
+            imageData: imageData,
+            viewport: viewport,
+            preserveAspectRatio: preserveAspectRatio,
+            opacity: 1
+        ))
+
+        if paint.opacity < 1 { painted.append(.endOpacityLayer) }
+        if needsState { painted.append(.popState) }
+
+        guard let wrapped = applyMask(paint.maskRef, bbox: bbox, content: painted, ctx: ctx) else { return }
+        commands.append(contentsOf: wrapped)
     }
 
     private static func lower(use: SVGUse, ctx: Context, into commands: inout [SVGRenderCommand]) {
@@ -543,7 +613,7 @@ public enum SVGRenderTree {
             var tx = transform.concatenating(pg.transform.matrix)
             if let obb = obbTransform { tx = tx.isIdentity ? obb : tx.concatenating(obb) }
             return p.copy(using: &tx) ?? p
-        case .line, .text:
+        case .line, .text, .image:
             return CGMutablePath()
         }
     }

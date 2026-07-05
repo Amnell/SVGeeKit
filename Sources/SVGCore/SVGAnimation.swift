@@ -282,6 +282,7 @@ extension SVGElement {
             case .path(let path): path.animations
             case .text(let text): text.animations
             case .use(let use): use.animations
+            case .image: []
             }
         }
         set {
@@ -318,6 +319,8 @@ extension SVGElement {
             case .use(var use):
                 use.animations = newValue
                 self = .use(use)
+            case .image:
+                break
             }
         }
     }

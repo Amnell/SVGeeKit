@@ -392,6 +392,9 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         case "use":
             beginSwitchChildIfNeeded(attributes: attributeDict)
             handleUse(attributes: attributeDict, paint: elementPaint, parser: parser)
+        case "image":
+            beginSwitchChildIfNeeded(attributes: attributeDict)
+            handleImage(attributes: attributeDict, paint: elementPaint, parser: parser)
         case "rect":
             beginSwitchChildIfNeeded(attributes: attributeDict)
             handleRect(attributes: attributeDict, paint: elementPaint, parser: parser)
@@ -766,6 +769,31 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         default:
             return len.resolved()
         }
+    }
+
+    private func handleImage(attributes: [String: String], paint: SVGPaintProperties, parser: XMLParser) {
+        guard let href = attributes["xlink:href"] ?? attributes["href"] else { return }
+        let trimmed = href.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+
+        let x = attributes["x"].map { resolveLength($0, axis: .x) } ?? 0
+        let y = attributes["y"].map { resolveLength($0, axis: .y) } ?? 0
+        let width = attributes["width"].map { resolveLength($0, axis: .x) } ?? 0
+        let height = attributes["height"].map { resolveLength($0, axis: .y) } ?? 0
+        let preserveAspectRatio = attributes["preserveAspectRatio"]
+            .flatMap { AttributeParsers.preserveAspectRatio($0) } ?? .default
+
+        let image = SVGImage(
+            id: attributes["id"],
+            origin: CGPoint(x: x, y: y),
+            size: CGSize(width: width, height: height),
+            href: trimmed,
+            preserveAspectRatio: preserveAspectRatio,
+            paint: paint,
+            transform: transform(from: attributes, parser: parser) ?? .identity
+        )
+        registerDefinition(id: attributes["id"], element: .image(image))
+        appendChild(.image(image))
     }
 
     private func handleRect(attributes: [String: String], paint: SVGPaintProperties, parser: XMLParser) {

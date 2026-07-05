@@ -181,6 +181,16 @@ public enum SVGHitTester {
       }
     case .use:
       break
+    case .image(let image):
+      guard image.paint.visibility == .visible else { return nil }
+      let local = transform.concatenating(image.transform.matrix)
+      var bounds = CGRect(origin: image.origin, size: image.size)
+      if bounds.width <= 0 || bounds.height <= 0 {
+        bounds.size = CGSize(width: 1, height: 1)
+      }
+      if localContains(local, bounds: bounds, point: point) {
+        return SVGHitResult(path: path, element: element)
+      }
     }
     return nil
   }

@@ -17,4 +17,11 @@ struct ViewAttrRenderTests {
         // can produce large per-channel deltas on glyphs while smiley viewports match.
         #expect(diff.mismatchedFraction < 0.12)
     }
+
+    @Test func coordsViewattr02bMatchesW3CReference() throws {
+        let diff = try W3CReferenceDiff.diff(testId: "coords-viewattr-02-b", w3cResourcesRoot: Self.w3cRoot)
+        // Label text uses SVGFreeSans in the W3C reference; system font substitution
+        // can produce large per-channel deltas on glyphs while raster image viewports match.
+        #expect(diff.mismatchedFraction < 0.13)
+    }
 }

@@ -59,6 +59,9 @@ enum SVGUseExpansion {
       return .text(t)
     case .use:
       return element
+    case .image(var img):
+      img.paint = mergedInstancePaint(img.paint, use: use, inheritedFill: inheritedFill)
+      return .image(img)
     }
   }
 
@@ -125,7 +128,7 @@ enum SVGUseExpansion {
     case .polygon(let p): return p.paint.fill
     case .path(let p): return p.paint.fill
     case .text(let t): return t.paint.fill
-    case .group, .svg, .use: return nil
+    case .group, .svg, .use, .image: return nil
     }
   }
 }

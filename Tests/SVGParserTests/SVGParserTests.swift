@@ -1731,4 +1731,25 @@ struct SVGParserScriptTests {
         #expect(inner.preserveAspectRatio == SVGPreserveAspectRatio(align: .xMaxYMax, meetOrSlice: .slice))
         #expect(inner.viewBox == CGRect(x: 0, y: 0, width: 30, height: 40))
     }
+
+    @Test func parsesImageGeometryAndHref() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+             width="100" height="100">
+          <image x="10" y="20" width="30" height="40"
+                 preserveAspectRatio="xMidYMid meet"
+                 xlink:href="photo.png"/>
+        </svg>
+        """
+        let base = URL(fileURLWithPath: "/tmp/test/svg", isDirectory: true)
+        let doc = try SVGParser().parse(string: svg, baseURL: base)
+        guard case .image(let img) = doc.root.children.first else {
+            Issue.record("expected image"); return
+        }
+        #expect(img.origin == CGPoint(x: 10, y: 20))
+        #expect(img.size == CGSize(width: 30, height: 40))
+        #expect(img.href == "photo.png")
+        #expect(img.preserveAspectRatio == SVGPreserveAspectRatio(align: .xMidYMid, meetOrSlice: .meet))
+        #expect(doc.resolveURL(img.href)?.lastPathComponent == "photo.png")
+    }
 }

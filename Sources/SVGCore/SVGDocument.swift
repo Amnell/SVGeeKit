@@ -230,6 +230,7 @@ public enum SVGElement: Equatable, Sendable {
     case path(SVGPath)
     case text(SVGText)
     case use(SVGUse)
+    case image(SVGImage)
 }
 
 /// Instance of a definition via `<use xlink:href="#id" …>`.
