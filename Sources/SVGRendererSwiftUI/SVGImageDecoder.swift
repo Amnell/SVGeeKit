@@ -2,6 +2,7 @@ import CoreGraphics
 import Foundation
 import ImageIO
 import SVGCore
+import SVGRenderer
 
 #if canImport(AppKit) || canImport(UIKit)
 
@@ -10,18 +11,30 @@ enum SVGImageDecoder {
 
     private static let lock = NSLock()
     nonisolated(unsafe) private static var cache: [Data: CGImage] = [:]
+    nonisolated(unsafe) private static var failed: Set<Data> = []
 
     static func cgImage(from data: Data) -> CGImage? {
+        guard SVGImageDataLoader.isRasterData(data) else { return nil }
+
         lock.lock()
         if let cached = cache[data] {
             lock.unlock()
             return cached
         }
+        if failed.contains(data) {
+            lock.unlock()
+            return nil
+        }
         lock.unlock()
 
         guard let source = CGImageSourceCreateWithData(data as CFData, nil),
               let image = CGImageSourceCreateImageAtIndex(source, 0, nil)
-        else { return nil }
+        else {
+            lock.lock()
+            failed.insert(data)
+            lock.unlock()
+            return nil
+        }
 
         lock.lock()
         cache[data] = image
