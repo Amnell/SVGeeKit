@@ -39,7 +39,10 @@ struct SVGScriptTests {
   @Test func scriptHandle01bAfterClick() throws {
     let url = try w3cURL("script-handle-01-b")
     let data = try Data(contentsOf: url)
-    let scriptDoc = try SVGScriptDocument(data: data, baseURL: url.deletingLastPathComponent())
+    let scriptDoc = try SVGScriptDocument(
+      data: data,
+      options: SVGConformanceFixtureParsing.localFilesOptions(for: url)
+    )
     scriptDoc.dispatchLoad()
     scriptDoc.dispatchClick(at: CGPoint(x: 70, y: 170))
 
@@ -73,7 +76,10 @@ struct SVGScriptTests {
   @Test func scriptSpecify01fDoesNotRunBogusOnload() throws {
     let url = try w3cURL("script-specify-01-f")
     let data = try Data(contentsOf: url)
-    let scriptDoc = try SVGScriptDocument(data: data, baseURL: url.deletingLastPathComponent())
+    let scriptDoc = try SVGScriptDocument(
+      data: data,
+      options: SVGConformanceFixtureParsing.localFilesOptions(for: url)
+    )
     scriptDoc.dispatchLoad()
 
     let doc = scriptDoc.document

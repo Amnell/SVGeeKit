@@ -1138,6 +1138,12 @@ struct SVGParserTests {
         #expect(doc.resourcePolicy == .localFiles(baseURL: base))
     }
 
+    @Test func productionParserHasNoBaseURL() throws {
+        let doc = try SVGParser().parse(string: "<svg xmlns=\"http://www.w3.org/2000/svg\"/>")
+        #expect(doc.baseURL == nil)
+        #expect(doc.resourcePolicy == .restricted)
+    }
+
     @Test func resolveURLHandlesRelativeHrefs() throws {
         let base = URL(fileURLWithPath: "/tmp/svgeekit/tests/svg", isDirectory: true)
         let options = SVGParserOptions.localFiles(at: base)

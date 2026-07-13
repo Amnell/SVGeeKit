@@ -22,7 +22,7 @@ struct SVGImageDataLoaderTests {
     }
 
     @Test func loadReturnsDataForDataURI() {
-        let data = SVGImageDataLoader.load(href: Self.redPixelPNG, baseURL: nil)
+        let data = SVGImageDataLoader.load(href: Self.redPixelPNG, policy: .restricted)
         #expect(data != nil)
     }
 
@@ -37,14 +37,14 @@ struct SVGImageDataLoaderTests {
     @Test func rejectsSVGFileHrefWithoutReading() {
         let data = SVGImageDataLoader.load(
             href: "../images/rects.svg",
-            baseURL: URL(fileURLWithPath: "/tmp/svg", isDirectory: true)
+            policy: .localFiles(baseURL: URL(fileURLWithPath: "/tmp/svg", isDirectory: true))
         )
         #expect(data == nil)
     }
 
     @Test func rejectsSVGDataURI() {
         #expect(SVGImageDataLoader.isRasterDataURI(Self.svgDataURI) == false)
-        #expect(SVGImageDataLoader.load(href: Self.svgDataURI, baseURL: nil) == nil)
+        #expect(SVGImageDataLoader.load(href: Self.svgDataURI, policy: .restricted) == nil)
     }
 
     @Test func rejectsXMLPayload() {

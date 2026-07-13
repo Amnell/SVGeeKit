@@ -461,7 +461,7 @@ private struct InteractiveScriptCanvas: View {
                 let data = try Data(contentsOf: svgURL)
                 scriptView = try SVGScriptImageView(
                     data: data,
-                    baseURL: svgURL.deletingLastPathComponent()
+                    options: SVGConformanceFixtureParsing.localFilesOptions(for: svgURL)
                 )
             } catch {
                 loadError = String(describing: error)

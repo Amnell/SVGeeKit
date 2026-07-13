@@ -221,6 +221,22 @@ SVGConformanceFixtureParsing.parse(data:svgURL:)
 
 **Goal:** `SVGParser()` is secure with no parameters.
 
+### Breaking API changes (2026-07-13)
+
+Removed implicit local-file access via `baseURL`:
+
+| Removed | Replacement |
+| --- | --- |
+| `parse(data:baseURL:)` | `parse(data:)` (`.production`) or `parse(data:options:sourceURL:)` with `.localFiles(at:)` |
+| `parse(string:baseURL:)` | `parse(string:)` or explicit `SVGParserOptions.localFiles(at:)` |
+| `SVGParser.parse(data:baseURL:)` async | `SVGParser.parse(data:options:)` async |
+| `SVGScriptDocument(data:baseURL:)` | `SVGScriptDocument(data:options:)` |
+| `SVGScriptImageView(data:baseURL:)` | `SVGScriptImageView(data:options:)` |
+| `SVGAnimationImageView(data:baseURL:)` | `SVGAnimationImageView(data:options:)` |
+| `SVGImageDataLoader.load(href:baseURL:)` | `load(href:policy:)` |
+
+W3C / Viewer / benchmarks: use `SVGConformanceFixtureParsing.parse(data:svgURL:)`.
+
 ### Changes
 
 1. Remove or deprecate `parse(data:baseURL:)` — replace with `parse(data:options:)`.
@@ -235,8 +251,8 @@ SVGConformanceFixtureParsing.parse(data:svgURL:)
 
 ### Exit criteria
 
-- [ ] Default parser is production-safe
-- [ ] Breaking API change documented in plan / CHANGELOG
+- [x] Default parser is production-safe
+- [x] Breaking API change documented in plan / CHANGELOG
 
 ---
 

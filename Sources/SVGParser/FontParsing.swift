@@ -37,8 +37,9 @@ private enum ExternalFontCache {
             guard let data = try? Data(contentsOf: key),
                   let extDoc = try? SVGParser(options: parserOptions).parse(
                     data: data,
-                    options: .localFiles(at: parseBaseURL)
-                  ).document else {
+                    options: .localFiles(at: parseBaseURL),
+                    sourceURL: nil
+                  ) else {
                 return nil
             }
 

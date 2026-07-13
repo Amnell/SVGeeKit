@@ -32,11 +32,10 @@ public struct SVGAnimationImageView: View {
 
     public init(
         data: Data,
-        baseURL: URL? = nil,
+        options: SVGParserOptions = .production,
         contentMode: SVGImageContentMode = .fit,
         initialTime: Double? = nil
     ) throws {
-        let options = baseURL.map { SVGParserOptions.localFiles(at: $0) } ?? .production
         let parsed = try SVGParser(options: options).parse(
             data: data,
             options: options,

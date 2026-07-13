@@ -14,10 +14,10 @@ public struct SVGScriptImageView: View {
 
   public init(
     data: Data,
-    baseURL: URL? = nil,
+    options: SVGParserOptions = .production,
     contentMode: SVGImageContentMode = .fit
   ) throws {
-    let doc = try SVGScriptDocument(data: data, baseURL: baseURL)
+    let doc = try SVGScriptDocument(data: data, options: options)
     let sized = Self.sizedDocument(doc.document)
     _scriptDocument = State(initialValue: SVGScriptDocument(document: sized))
     intrinsicSize = sized.intrinsicSize ?? sized.viewBox?.size

@@ -20,8 +20,7 @@ public final class SVGScriptDocument {
   public private(set) var contentRevision: UInt = 0
   @ObservationIgnored private lazy var runtime: SVGScriptRuntime = SVGScriptRuntime(owner: self)
 
-  public init(data: Data, baseURL: URL? = nil) throws {
-    let options = baseURL.map { SVGParserOptions.localFiles(at: $0) } ?? .production
+  public init(data: Data, options: SVGParserOptions = .production) throws {
     let parsed = try SVGParser(options: options).parse(
       data: data,
       options: options,

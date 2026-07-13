@@ -24,12 +24,6 @@ public enum SVGImageDataLoader {
         }
     }
 
-    /// Backward-compatible loader using document policy.
-    static func load(href: String, baseURL: URL?) -> Data? {
-        let policy: SVGResourcePolicy = baseURL.map { .localFiles(baseURL: $0) } ?? .restricted
-        return load(href: href, policy: policy)
-    }
-
     /// Parses `data:[<mediatype>][;base64],<data>` into raw bytes.
     static func dataFromDataURI(_ uri: String) -> Data? {
         guard uri.lowercased().hasPrefix("data:") else { return nil }

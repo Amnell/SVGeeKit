@@ -54,33 +54,14 @@ public struct SVGParser {
         try parseWithReport(data: Data(string.utf8))
     }
 
-    public func parse(data: Data, baseURL: URL? = nil) throws -> SVGDocument {
-        try parse(data: data, baseURL: baseURL, sourceURL: nil, referencedImageContext: nil)
+    /// Parses SVG bytes under the parser's configured `options` (`.production` by default).
+    public func parse(data: Data) throws -> SVGDocument {
+        try parseWithReport(data: data).document
     }
 
-    /// Like `parse(data:baseURL:)` but records `sourceURL` so cyclic / self-referencing
-    /// `<image href="…svg">` links are detected when resolving nested SVG documents.
-    public func parse(data: Data, baseURL: URL?, sourceURL: URL) throws -> SVGDocument {
-        try parse(
-            data: data,
-            baseURL: baseURL,
-            sourceURL: sourceURL,
-            referencedImageContext: nil
-        )
-    }
-
-    func parse(
-        data: Data,
-        baseURL: URL?,
-        sourceURL: URL?,
-        referencedImageContext: SVGReferencedImageResolveContext?
-    ) throws -> SVGDocument {
-        try parseResult(
-            data: data,
-            resolvedOptions: Self.resolvedOptions(parserOptions: options, baseURL: baseURL),
-            sourceURL: sourceURL,
-            referencedImageContext: referencedImageContext
-        ).document
+    /// Parses an SVG string under the parser's configured `options` (`.production` by default).
+    public func parse(string: String) throws -> SVGDocument {
+        try parse(data: Data(string.utf8))
     }
 
     func parse(
@@ -95,6 +76,39 @@ public struct SVGParser {
             sourceURL: sourceURL,
             referencedImageContext: referencedImageContext
         ).document
+    }
+
+    /// Reads `url` and parses with explicit `.localFiles` at the file's parent directory.
+    ///
+    /// Dev / test convenience for on-disk fixtures. Production callers should use
+    /// `parse(data:)` with `.production` or `SVGConformanceFixtureParsing` for W3C files.
+    public func parse(url: URL) throws -> SVGDocument {
+        let data = try Data(contentsOf: url)
+        let base = url.deletingLastPathComponent()
+        let options = SVGParserOptions.localFiles(at: base)
+        return try parse(
+            data: data,
+            options: options,
+            sourceURL: url.standardizedFileURL,
+            referencedImageContext: nil
+        )
+    }
+
+    /// Async convenience: runs the synchronous `parse(data:)` on a detached task at
+    /// `userInitiated` priority so callers on the main actor don't block on large SVG files.
+    public static func parse(data: Data, options: SVGParserOptions = .production) async throws -> SVGDocument {
+        try await Task.detached(priority: .userInitiated) {
+            try SVGParser(options: options).parse(data: data)
+        }.value
+    }
+
+    /// Async convenience that reads `url` and parses, both off the main actor.
+    ///
+    /// Uses explicit `.localFiles` at the file's parent directory (see `parse(url:)`).
+    public static func parse(url: URL) async throws -> SVGDocument {
+        try await Task.detached(priority: .userInitiated) {
+            try SVGParser().parse(url: url)
+        }.value
     }
 
     private func parseResult(
@@ -154,42 +168,9 @@ public struct SVGParser {
         return SVGParseResult(document: document, report: SVGParseReport(warnings: warnings))
     }
 
-    private static func resolvedOptions(parserOptions: SVGParserOptions, baseURL: URL?) -> SVGParserOptions {
-        guard let baseURL else { return parserOptions }
-        return .localFiles(at: baseURL)
-    }
-
     private static func baseURL(for policy: SVGResourcePolicy) -> URL? {
         if case .localFiles(let baseURL) = policy { return baseURL }
         return nil
-    }
-
-    public func parse(string: String, baseURL: URL? = nil) throws -> SVGDocument {
-        try parse(data: Data(string.utf8), baseURL: baseURL)
-    }
-
-    /// Reads `url` and parses with explicit `.localFiles` at the file's parent directory.
-    public func parse(url: URL) throws -> SVGDocument {
-        let data = try Data(contentsOf: url)
-        let base = url.deletingLastPathComponent()
-        let options = SVGParserOptions.localFiles(at: base)
-        return try parse(data: data, options: options, sourceURL: url.standardizedFileURL)
-    }
-
-    /// Async convenience: runs the synchronous `parse(data:baseURL:)` on a detached
-    /// task at `userInitiated` priority so callers on the main actor don't
-    /// block their thread on large SVG files.
-    public static func parse(data: Data, baseURL: URL? = nil) async throws -> SVGDocument {
-        try await Task.detached(priority: .userInitiated) {
-            try SVGParser().parse(data: data, baseURL: baseURL)
-        }.value
-    }
-
-    /// Async convenience that reads `url` and parses, both off the main actor.
-    public static func parse(url: URL) async throws -> SVGDocument {
-        try await Task.detached(priority: .userInitiated) {
-            try SVGParser().parse(url: url)
-        }.value
     }
 }
 
