@@ -2,7 +2,7 @@
 
 A Swift package for rendering **static SVG** on iOS 17+ / macOS 14+, built incrementally against the W3C SVG 1.1 Second Edition test suite.
 
-> Phase 1 vertical slice. Supported today: `<svg>` root with `viewBox`, `<g>` grouping, and `<rect>` (with fill, stroke, rounded corners, opacity, transforms). More features land per the plan in `AGENTS.md`.
+> Static SVG renderer for iOS 17+ / macOS 14+. See the [production readiness plan](docs/production-readiness/README.md) for the supported feature profile and roadmap.
 
 ## Quick start
 
@@ -49,6 +49,16 @@ swift run -c release Benchmarks --help
 ```
 
 Output is a per-phase table (n / mean / median / p95 / max) plus the top-N slowest files.
+
+## Production readiness
+
+The v1 target is **self-contained static SVG 1.1** — no scripting, animation, or external
+resource fetch in the production API. Track progress in [docs/production-readiness/](docs/production-readiness/README.md):
+
+- [Static profile](docs/production-readiness/static-profile.md) — supported / unsupported subset
+- [Roadmap](docs/production-readiness/roadmap.md) — phased implementation checklist
+- [Security model](docs/production-readiness/security-model.md) — URI policy and parse limits
+- [Shipping checklist](docs/production-readiness/shipping-checklist.md) — release gates
 
 ## Contributing
 

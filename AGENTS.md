@@ -20,6 +20,7 @@ SVGeeKit is a Swift package for iOS 17+ / macOS 14+ that **parses and renders st
 
 | Task | Read first |
 | --- | --- |
+| Production scope / v1 roadmap | [docs/production-readiness/README.md](docs/production-readiness/README.md) |
 | Add a new SVG element | [docs/adding-a-feature.md](docs/adding-a-feature.md) |
 | CSS / class / `<style>` styling | [docs/styling-rollout.md](docs/styling-rollout.md), `Sources/SVGParser/CSSStylesheet.swift` |
 | ECMAScript / event handlers | [docs/script-rollout.md](docs/script-rollout.md), `Sources/SVGScript/` |
