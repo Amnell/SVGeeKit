@@ -88,6 +88,56 @@ import SVGRendererSwiftUI
     }
 
     @MainActor
+    @Test func svgDataInitRendersValidBytes() throws {
+        let image = try rasterize(
+            svgData: Data(Self.wideGreenRectSVG.utf8),
+            contentMode: .fit,
+            frameSize: CGSize(width: 200, height: 100)
+        )
+
+        let center = samplePixel(image, x: 100, y: 50)
+        #expect(center.g > 200)
+    }
+
+    @MainActor
+    @Test func svgDataInitNeverThrowsOnInvalidBytes() throws {
+        let image = try rasterize(
+            svgData: Data("not svg".utf8),
+            contentMode: .fit,
+            frameSize: CGSize(width: 100, height: 100)
+        )
+
+        let center = samplePixel(image, x: 50, y: 50)
+        #expect(center.r < 10 && center.g < 10 && center.b < 10)
+    }
+
+    @MainActor
+    @Test func svgDataInitSurfacesParseErrorBinding() {
+        var parseError: Error?
+        _ = SVGImageView(
+            svgData: Data("not svg".utf8),
+            parseError: Binding(get: { parseError }, set: { parseError = $0 })
+        )
+        #expect(parseError != nil)
+    }
+
+    @MainActor
+    private func rasterize(
+        svgData: Data,
+        contentMode: SVGImageContentMode,
+        frameSize: CGSize
+    ) throws -> CGImage {
+        let view = SVGImageView(svgData: svgData, contentMode: contentMode)
+            .frame(width: frameSize.width, height: frameSize.height)
+        let renderer = ImageRenderer(content: view)
+        renderer.proposedSize = ProposedViewSize(frameSize)
+        guard let image = renderer.cgImage else {
+            throw RasterizeError.noImage
+        }
+        return image
+    }
+
+    @MainActor
     private func rasterize(
         document: SVGDocument,
         contentMode: SVGImageContentMode,

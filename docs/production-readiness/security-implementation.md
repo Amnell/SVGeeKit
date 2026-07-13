@@ -282,8 +282,8 @@ Optional `parseError: Binding<Error?>` variant captures the `catch` error.
 
 ### Exit criteria
 
-- [ ] No throwing view initializer
-- [ ] Valid SVG still renders identically
+- [x] No throwing view initializer
+- [x] Valid SVG still renders identically
 
 ---
 

@@ -1,5 +1,6 @@
 import SwiftUI
 import SVGCore
+import SVGParser
 import SVGRenderer
 
 /// SwiftUI view that renders an `SVGDocument` into a `Canvas`.
@@ -14,6 +15,43 @@ public struct SVGImageView: View {
         let sized = SVGImageView.applyingIntrinsicSize(document)
         self.commands = SVGRenderTree.lower(sized)
         self.intrinsicSize = sized.intrinsicSize
+        self.contentMode = contentMode
+    }
+
+    /// Parse and render SVG bytes. Never throws — on parse failure the canvas is empty.
+    public init(
+        svgData: Data,
+        parser: SVGParser = SVGParser(),
+        contentMode: SVGImageContentMode = .fit
+    ) {
+        switch Self.parsedView(svgData: svgData, parser: parser, contentMode: contentMode) {
+        case .success(let view):
+            self = view
+        case .failure:
+            self.init(commands: [], intrinsicSize: nil, contentMode: contentMode)
+        }
+    }
+
+    /// Like `init(svgData:parser:contentMode:)` but records hard parse failures in `parseError`.
+    public init(
+        svgData: Data,
+        parser: SVGParser = SVGParser(),
+        contentMode: SVGImageContentMode = .fit,
+        parseError: Binding<Error?>
+    ) {
+        switch Self.parsedView(svgData: svgData, parser: parser, contentMode: contentMode) {
+        case .success(let view):
+            parseError.wrappedValue = nil
+            self = view
+        case .failure(let error):
+            parseError.wrappedValue = error
+            self.init(commands: [], intrinsicSize: nil, contentMode: contentMode)
+        }
+    }
+
+    private init(commands: [SVGRenderCommand], intrinsicSize: CGSize?, contentMode: SVGImageContentMode) {
+        self.commands = commands
+        self.intrinsicSize = intrinsicSize
         self.contentMode = contentMode
     }
 
@@ -42,6 +80,19 @@ public struct SVGImageView: View {
             canvasSize: size,
             contentMode: contentMode
         )
+    }
+
+    private static func parsedView(
+        svgData: Data,
+        parser: SVGParser,
+        contentMode: SVGImageContentMode
+    ) -> Result<SVGImageView, Error> {
+        do {
+            let document = try parser.parse(data: svgData)
+            return .success(SVGImageView(document: document, contentMode: contentMode))
+        } catch {
+            return .failure(error)
+        }
     }
 
     /// Document used for lowering must carry an intrinsic size so the viewBox

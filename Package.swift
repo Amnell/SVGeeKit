@@ -23,7 +23,7 @@ let package = Package(
         .target(name: "SVGRenderer", dependencies: ["SVGCore"]),
         .target(
             name: "SVGRendererSwiftUI",
-            dependencies: ["SVGCore", "SVGRenderer"]
+            dependencies: ["SVGCore", "SVGParser", "SVGRenderer"]
         ),
         .target(
             name: "SVGScript",

@@ -402,8 +402,8 @@ Integrators inspect `result.report.warnings` after a successful `try`. For Swift
 - [ ] `SVGConformanceRunner` → explicit `.localFiles(at:)` (still uses `baseURL` bridge)
 - [ ] `W3CReferenceDiff` → `.localFiles(at:)`
 - [ ] Viewer / Benchmarks → `.localFiles(at:)` when reading paths
-- [ ] `SVGImageView(svgData:)` — non-throwing init, empty canvas on parse failure
-- [ ] Optional `SVGImageView(…, parseError: Binding<Error?>)` for parent state
+- [x] `SVGImageView(svgData:)` — non-throwing init, empty canvas on parse failure
+- [x] Optional `SVGImageView(…, parseError: Binding<Error?>)` for parent state
 - [ ] Document in README: parser throws on hard failure; view never throws
 - [ ] Renderer audit: no `fatalError` / force-unwrap on user-controlled model data
 
