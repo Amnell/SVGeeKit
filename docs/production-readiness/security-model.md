@@ -404,7 +404,7 @@ Integrators inspect `result.report.warnings` after a successful `try`. For Swift
 - [x] Viewer / Benchmarks → `.localFiles(at:)` when reading paths
 - [x] `SVGImageView(svgData:)` — non-throwing init, empty canvas on parse failure
 - [x] Optional `SVGImageView(…, parseError: Binding<Error?>)` for parent state
-- [ ] Document in README: parser throws on hard failure; view never throws
+- [x] Document in README: parser throws on hard failure; view never throws
 - [x] Renderer audit: no `fatalError` / force-unwrap on user-controlled model data
 
 ### Phase 0c — hardening
