@@ -15,6 +15,7 @@ work lands. Re-run `swift test` to refresh conformance numbers in
 | --- | --- |
 | [static-profile.md](static-profile.md) | Supported / unsupported SVG subset (the public contract) |
 | [security-model.md](security-model.md) | External-resource policy, limits, parse modes |
+| [security-implementation.md](security-implementation.md) | **Step-by-step Phase 0 build plan** (start here for coding) |
 | [roadmap.md](roadmap.md) | Phased implementation checklist with conformance targets |
 | [filters-plan.md](filters-plan.md) | Optional post-v1 filter subset (blur, shadow, color matrix) |
 | [shipping-checklist.md](shipping-checklist.md) | API surface, docs, and release gates |

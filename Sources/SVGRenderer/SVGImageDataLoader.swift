@@ -1,4 +1,5 @@
 import Foundation
+import SVGCore
 
 /// Resolves `<image href="…">` to raw raster bytes without ImageIO.
 public enum SVGImageDataLoader {
@@ -7,17 +8,26 @@ public enum SVGImageDataLoader {
         "png", "jpg", "jpeg", "jpe", "gif", "webp", "bmp", "ico", "tif", "tiff"
     ]
 
-    /// Load raster image bytes from a `data:` URI or a file URL resolved against `baseURL`.
+    /// Load raster image bytes from a `data:` URI or a local file allowed by `policy`.
     /// Returns `nil` for non-raster hrefs (e.g. `.svg` files) without touching the filesystem.
-    static func load(href: String, baseURL: URL?) -> Data? {
-        if href.lowercased().hasPrefix("data:") {
-            guard isRasterDataURI(href) else { return nil }
-            return dataFromDataURI(href)
+    static func load(href: String, policy: SVGResourcePolicy) -> Data? {
+        switch SVGHrefResolver.classify(href: href, policy: policy) {
+        case .dataURI(let uri):
+            guard isRasterDataURI(uri) else { return nil }
+            return dataFromDataURI(uri)
+        case .localFile(let url):
+            guard isRasterFileURL(url) else { return nil }
+            guard let data = try? Data(contentsOf: url), isRasterData(data) else { return nil }
+            return data
+        case .fragment, .rejected:
+            return nil
         }
-        guard isRasterFileHref(href) else { return nil }
-        guard let url = resolveFileURL(href, baseURL: baseURL) else { return nil }
-        guard let data = try? Data(contentsOf: url), isRasterData(data) else { return nil }
-        return data
+    }
+
+    /// Backward-compatible loader using document policy.
+    static func load(href: String, baseURL: URL?) -> Data? {
+        let policy: SVGResourcePolicy = baseURL.map { .localFiles(baseURL: $0) } ?? .restricted
+        return load(href: href, policy: policy)
     }
 
     /// Parses `data:[<mediatype>][;base64],<data>` into raw bytes.
@@ -52,6 +62,10 @@ public enum SVGImageDataLoader {
         return rasterExtensions.contains(ext)
     }
 
+    private static func isRasterFileURL(_ url: URL) -> Bool {
+        rasterExtensions.contains(url.pathExtension.lowercased())
+    }
+
     /// Rejects XML/SVG payloads and accepts common raster magic numbers.
     public static func isRasterData(_ data: Data) -> Bool {
         guard data.count >= 4 else { return false }
@@ -76,31 +90,5 @@ public enum SVGImageDataLoader {
         return prefix.hasPrefix("<?xml")
             || prefix.hasPrefix("<svg")
             || prefix.hasPrefix("<!doctype")
-    }
-
-    private static func resolveFileURL(_ href: String, baseURL: URL?) -> URL? {
-        let trimmed = href.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return nil }
-        if let absolute = URL(string: trimmed), absolute.scheme != nil {
-            return absolute.isFileURL ? absolute : nil
-        }
-        guard let baseURL else { return URL(fileURLWithPath: trimmed) }
-        let (pathPart, fragment) = splitFragment(trimmed)
-        guard var resolved = URL(string: pathPart, relativeTo: baseURL)?.standardizedFileURL else {
-            return nil
-        }
-        if let fragment {
-            var components = URLComponents(url: resolved, resolvingAgainstBaseURL: false)
-            components?.fragment = fragment
-            resolved = components?.url ?? resolved
-        }
-        return resolved
-    }
-
-    private static func splitFragment(_ href: String) -> (String, String?) {
-        guard let hash = href.firstIndex(of: "#") else { return (href, nil) }
-        let pathPart = String(href[..<hash])
-        let fragment = String(href[href.index(after: hash)...])
-        return (pathPart, fragment.isEmpty ? nil : fragment)
     }
 }

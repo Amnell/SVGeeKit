@@ -6,8 +6,10 @@ public struct SVGDocument: Equatable, Sendable {
     public var viewBox: CGRect?
     public var intrinsicSize: CGSize?
     /// Directory containing the parsed SVG file, used to resolve relative
-    /// `xlink:href` / `href` values (e.g. external SVG fonts in Phase 2).
+    /// `xlink:href` / `href` values when `resourcePolicy` is `.localFiles`.
     public var baseURL: URL?
+    /// Active resource policy stamped at parse time; render paths consult this.
+    public var resourcePolicy: SVGResourcePolicy
     public var root: SVGGroup
     public var paintServers: [String: SVGPaintServer]
     public var clipPaths: [String: SVGClipPath]
@@ -27,6 +29,7 @@ public struct SVGDocument: Equatable, Sendable {
         viewBox: CGRect? = nil,
         intrinsicSize: CGSize? = nil,
         baseURL: URL? = nil,
+        resourcePolicy: SVGResourcePolicy = .restricted,
         root: SVGGroup = SVGGroup(),
         paintServers: [String: SVGPaintServer] = [:],
         clipPaths: [String: SVGClipPath] = [:],
@@ -40,6 +43,7 @@ public struct SVGDocument: Equatable, Sendable {
         self.viewBox = viewBox
         self.intrinsicSize = intrinsicSize
         self.baseURL = baseURL
+        self.resourcePolicy = resourcePolicy
         self.root = root
         self.paintServers = paintServers
         self.clipPaths = clipPaths

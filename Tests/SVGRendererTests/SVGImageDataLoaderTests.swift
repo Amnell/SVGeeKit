@@ -1,5 +1,6 @@
 import Testing
 import Foundation
+import SVGCore
 import SVGRenderer
 @testable import SVGRenderer
 
@@ -23,6 +24,14 @@ struct SVGImageDataLoaderTests {
     @Test func loadReturnsDataForDataURI() {
         let data = SVGImageDataLoader.load(href: Self.redPixelPNG, baseURL: nil)
         #expect(data != nil)
+    }
+
+    @Test func rejectsRelativeFileUnderRestrictedPolicy() {
+        let data = SVGImageDataLoader.load(
+            href: "pixel.png",
+            policy: .restricted
+        )
+        #expect(data == nil)
     }
 
     @Test func rejectsSVGFileHrefWithoutReading() {

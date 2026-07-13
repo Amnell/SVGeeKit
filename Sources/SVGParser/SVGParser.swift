@@ -8,14 +8,36 @@ import SVGCore
 /// nested `<g>` groups with `transform`, and `<rect>` shapes with basic painting.
 /// New element handling lives in `SAXDelegate.didStartElement(...)`.
 public struct SVGParser {
+    public var options: SVGParserOptions
     public var conditionalContext: SVGConditionalProcessingContext
 
-    public init() {
+    public init(options: SVGParserOptions = .production) {
+        self.options = options
         self.conditionalContext = .current()
     }
 
-    public init(conditionalContext: SVGConditionalProcessingContext) {
+    public init(conditionalContext: SVGConditionalProcessingContext, options: SVGParserOptions = .production) {
+        self.options = options
         self.conditionalContext = conditionalContext
+    }
+
+    public init(conditionalContext: SVGConditionalProcessingContext) {
+        self.options = .production
+        self.conditionalContext = conditionalContext
+    }
+
+    /// Parses SVG bytes and returns the document with any soft-failure warnings.
+    public func parseWithReport(data: Data) throws -> SVGParseResult {
+        try parseResult(data: data, resolvedOptions: options, sourceURL: nil, referencedImageContext: nil)
+    }
+
+    /// Parses with explicit options (overrides the parser's default `options`).
+    public func parse(data: Data, options: SVGParserOptions) throws -> SVGParseResult {
+        try parseResult(data: data, resolvedOptions: options, sourceURL: nil, referencedImageContext: nil)
+    }
+
+    public func parseWithReport(string: String) throws -> SVGParseResult {
+        try parseWithReport(data: Data(string.utf8))
     }
 
     public func parse(data: Data, baseURL: URL? = nil) throws -> SVGDocument {
@@ -25,7 +47,12 @@ public struct SVGParser {
     /// Like `parse(data:baseURL:)` but records `sourceURL` so cyclic / self-referencing
     /// `<image href="…svg">` links are detected when resolving nested SVG documents.
     public func parse(data: Data, baseURL: URL?, sourceURL: URL) throws -> SVGDocument {
-        try parse(data: data, baseURL: baseURL, sourceURL: sourceURL, referencedImageContext: nil)
+        try parse(
+            data: data,
+            baseURL: baseURL,
+            sourceURL: sourceURL,
+            referencedImageContext: nil
+        )
     }
 
     func parse(
@@ -34,8 +61,25 @@ public struct SVGParser {
         sourceURL: URL?,
         referencedImageContext: SVGReferencedImageResolveContext?
     ) throws -> SVGDocument {
+        try parseResult(
+            data: data,
+            resolvedOptions: Self.resolvedOptions(parserOptions: options, baseURL: baseURL),
+            sourceURL: sourceURL,
+            referencedImageContext: referencedImageContext
+        ).document
+    }
+
+    private func parseResult(
+        data: Data,
+        resolvedOptions: SVGParserOptions,
+        sourceURL: URL?,
+        referencedImageContext: SVGReferencedImageResolveContext?
+    ) throws -> SVGParseResult {
         let parser = XMLParser(data: data)
-        let delegate = SAXDelegate(baseURL: baseURL, conditionalContext: conditionalContext)
+        let delegate = SAXDelegate(
+            options: resolvedOptions,
+            conditionalContext: conditionalContext
+        )
         parser.delegate = delegate
         parser.shouldProcessNamespaces = false
         parser.shouldReportNamespacePrefixes = false
@@ -57,11 +101,19 @@ public struct SVGParser {
         }
         delegate.resolveGradientHrefs()
         delegate.resolvePatternHrefs()
-        delegate.resolvePendingFontHrefs()
-        document.baseURL = baseURL
+        try delegate.resolvePendingFontHrefs()
+        document.resourcePolicy = resolvedOptions.resourcePolicy
+        document.baseURL = Self.baseURL(for: resolvedOptions.resourcePolicy)
         let resolveContext = referencedImageContext
             ?? SVGReferencedImageResolveContext.topLevel(sourceURL: sourceURL)
-        SVGReferencedImageResolver.resolve(in: &document, context: resolveContext)
+        var warnings = delegate.parseWarnings
+        SVGReferencedImageResolver.resolve(
+            in: &document,
+            context: resolveContext,
+            policy: resolvedOptions.resourcePolicy,
+            parserOptions: resolvedOptions,
+            warnings: &warnings
+        )
         document.paintServers = delegate.paintServers
         document.clipPaths = delegate.clipPaths
         document.masks = delegate.masks
@@ -71,7 +123,17 @@ public struct SVGParser {
         document.scriptMetadata = delegate.scriptMetadata
         document.scriptMetadata.elementIndex = SVGDocument.buildElementIndex(root: document.root)
         document.animationMetadata = delegate.animationMetadata
-        return document
+        return SVGParseResult(document: document, report: SVGParseReport(warnings: warnings))
+    }
+
+    private static func resolvedOptions(parserOptions: SVGParserOptions, baseURL: URL?) -> SVGParserOptions {
+        guard let baseURL else { return parserOptions }
+        return .localFiles(at: baseURL)
+    }
+
+    private static func baseURL(for policy: SVGResourcePolicy) -> URL? {
+        if case .localFiles(let baseURL) = policy { return baseURL }
+        return nil
     }
 
     public func parse(string: String, baseURL: URL? = nil) throws -> SVGDocument {
@@ -128,11 +190,19 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
 
     enum Axis { case x, y, length }
 
-    let baseURL: URL?
+    let options: SVGParserOptions
     let conditionalContext: SVGConditionalProcessingContext
 
     var document: SVGDocument?
     var error: SVGParseError?
+    var parseWarnings: [SVGParseWarning] = []
+
+    private var resourcePolicy: SVGResourcePolicy { options.resourcePolicy }
+    private var failurePolicy: SVGFailurePolicy { options.failurePolicy }
+    private var baseURL: URL? {
+        if case .localFiles(let url) = options.resourcePolicy { return url }
+        return nil
+    }
 
     struct SwitchCandidate {
         var attributes: [String: String]
@@ -149,9 +219,16 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
     /// Open `<switch>` elements collecting conditional children.
     private var switchStack: [PartialSwitch] = []
 
-    init(baseURL: URL? = nil, conditionalContext: SVGConditionalProcessingContext = .current()) {
-        self.baseURL = baseURL
+    init(options: SVGParserOptions = .production, conditionalContext: SVGConditionalProcessingContext = .current()) {
+        self.options = options
         self.conditionalContext = conditionalContext
+    }
+
+    func recordWarning(_ warning: SVGParseWarning) throws {
+        parseWarnings.append(warning)
+        if failurePolicy == .throwOnWarning {
+            throw SVGParseError(kind: .policyViolation(warning.message), line: nil, column: nil)
+        }
     }
 
     /// Viewport (in user-space units) used to resolve `%` lengths. Set when

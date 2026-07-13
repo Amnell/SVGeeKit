@@ -388,18 +388,18 @@ Integrators inspect `result.report.warnings` after a successful `try`. For Swift
 
 ### Phase 0a — policy infrastructure
 
-- [ ] Add `SVGResourcePolicy`, `SVGParserOptions`, `SVGFailurePolicy`, `SVGHrefResolver`
-- [ ] `SVGParser(options:)` defaults to `.production` with `.warnAndContinue`
-- [ ] `parse(…) throws -> SVGParseResult` (document + report)
-- [ ] Store `resourcePolicy` on `SVGDocument` at end of parse
-- [ ] Route `SVGReferencedImageResolver`, `FontParsing`, `SVGImageDataLoader` through resolver
-- [ ] Path traversal guard for `.localFiles` (warn + skip)
-- [ ] Unit tests: production warns on relative href; localFiles accepts W3C font path
+- [x] Add `SVGResourcePolicy`, `SVGParserOptions`, `SVGFailurePolicy`, `SVGHrefResolver`
+- [x] `SVGParser(options:)` defaults to `.production` with `.warnAndContinue`
+- [x] `parseWithReport(…) throws -> SVGParseResult` (document + report)
+- [x] Store `resourcePolicy` on `SVGDocument` at end of parse
+- [x] Route `SVGReferencedImageResolver`, `FontParsing`, `SVGImageDataLoader` through resolver
+- [x] Path traversal guard for `.localFiles` (warn + skip; allows W3C `../resources/`)
+- [x] Unit tests: production warns on relative href; localFiles accepts co-located file
 - [ ] Unit tests: malformed XML throws; hostile input never traps (`fatalError`/force-unwrap)
 
 ### Phase 0b — caller migration & view layer
 
-- [ ] `SVGConformanceRunner` → `.localFiles(at:)` + `parse(…) throws`
+- [ ] `SVGConformanceRunner` → explicit `.localFiles(at:)` (still uses `baseURL` bridge)
 - [ ] `W3CReferenceDiff` → `.localFiles(at:)`
 - [ ] Viewer / Benchmarks → `.localFiles(at:)` when reading paths
 - [ ] `SVGImageView(svgData:)` — non-throwing init, empty canvas on parse failure

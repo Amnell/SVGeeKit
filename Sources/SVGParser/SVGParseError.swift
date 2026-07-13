@@ -5,6 +5,7 @@ public struct SVGParseError: Error, CustomStringConvertible, Sendable {
         case xml(String)
         case missingRoot
         case malformedAttribute(name: String, value: String, reason: String)
+        case policyViolation(String)
     }
 
     public let kind: Kind
@@ -20,6 +21,8 @@ public struct SVGParseError: Error, CustomStringConvertible, Sendable {
             return "SVG parse error\(location): no <svg> root element found"
         case .malformedAttribute(let name, let value, let reason):
             return "SVG parse error\(location): malformed attribute \(name)=\"\(value)\" — \(reason)"
+        case .policyViolation(let message):
+            return "SVG parse error\(location): \(message)"
         }
     }
 }

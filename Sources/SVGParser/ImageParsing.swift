@@ -37,45 +37,74 @@ enum SVGReferencedImageResolver {
 
     static func resolve(
         in document: inout SVGDocument,
-        context: SVGReferencedImageResolveContext
+        context: SVGReferencedImageResolveContext,
+        policy: SVGResourcePolicy,
+        parserOptions: SVGParserOptions,
+        warnings: inout [SVGParseWarning]
     ) {
         document.root = resolve(
             in: document.root,
-            baseURL: document.baseURL,
-            context: context
+            context: context,
+            policy: policy,
+            parserOptions: parserOptions,
+            warnings: &warnings
         )
     }
 
     private static func resolve(
         in group: SVGGroup,
-        baseURL: URL?,
-        context: SVGReferencedImageResolveContext
+        context: SVGReferencedImageResolveContext,
+        policy: SVGResourcePolicy,
+        parserOptions: SVGParserOptions,
+        warnings: inout [SVGParseWarning]
     ) -> SVGGroup {
         var updated = group
         updated.children = group.children.map {
-            resolve(element: $0, baseURL: baseURL, context: context)
+            resolve(
+                element: $0,
+                context: context,
+                policy: policy,
+                parserOptions: parserOptions,
+                warnings: &warnings
+            )
         }
         return updated
     }
 
     private static func resolve(
         element: SVGElement,
-        baseURL: URL?,
-        context: SVGReferencedImageResolveContext
+        context: SVGReferencedImageResolveContext,
+        policy: SVGResourcePolicy,
+        parserOptions: SVGParserOptions,
+        warnings: inout [SVGParseWarning]
     ) -> SVGElement {
         switch element {
         case .image(var image):
             image.referencedDocument = loadReferencedSVGDocument(
                 href: image.href,
-                baseURL: baseURL,
-                context: context
+                context: context,
+                policy: policy,
+                parserOptions: parserOptions,
+                warnings: &warnings
             )
             return .image(image)
         case .group(let group):
-            return .group(resolve(in: group, baseURL: baseURL, context: context))
+            return .group(resolve(
+                in: group,
+                context: context,
+                policy: policy,
+                parserOptions: parserOptions,
+                warnings: &warnings
+            ))
         case .svg(var svg):
             svg.children = svg.children.map {
-                resolve(element: $0, baseURL: baseURL, context: context)
+                resolve(
+                    element: $0,
+                    context: context,
+                    policy: policy,
+                    parserOptions: parserOptions,
+                    warnings: &warnings
+                )
             }
             return .svg(svg)
         default:
@@ -85,35 +114,37 @@ enum SVGReferencedImageResolver {
 
     private static func loadReferencedSVGDocument(
         href: String,
-        baseURL: URL?,
-        context: SVGReferencedImageResolveContext
+        context: SVGReferencedImageResolveContext,
+        policy: SVGResourcePolicy,
+        parserOptions: SVGParserOptions,
+        warnings: inout [SVGParseWarning]
     ) -> SVGDocument? {
         let trimmed = href.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return nil }
 
-        if trimmed.lowercased().hasPrefix("data:") {
-            guard isSVGDataURI(trimmed),
-                  let data = dataFromSVGDataURI(trimmed),
-                  let doc = try? SVGParser().parse(
-                    data: data,
-                    baseURL: baseURL,
-                    sourceURL: nil,
-                    referencedImageContext: context
-                  ) else {
+        switch SVGHrefResolver.classify(href: trimmed, policy: policy) {
+        case .dataURI(let uri):
+            guard isSVGDataURI(uri),
+                  let data = dataFromSVGDataURI(uri) else {
                 return nil
             }
-            return doc
+            return try? SVGParser(options: parserOptions).parseWithReport(data: data).document
+        case .localFile(let fileURL):
+            guard isSVGFileURL(fileURL) else { return nil }
+            let standardized = fileURL.standardizedFileURL
+            guard !isBlockedReference(standardized, context: context) else { return nil }
+            return ExternalSVGImageCache.document(
+                at: standardized,
+                parseBaseURL: standardized.deletingLastPathComponent(),
+                parserOptions: parserOptions,
+                parseContext: context.nestedLoad(of: standardized)
+            )
+        case .fragment:
+            return nil
+        case .rejected(let reason):
+            warnings.append(SVGHrefResolver.parseWarning(href: trimmed, reason: reason))
+            return nil
         }
-
-        guard isSVGFileHref(trimmed) else { return nil }
-        guard let resolved = resolveImageHref(trimmed, baseURL: baseURL) else { return nil }
-        let fileURL = resolved.standardizedFileURL
-        guard !isBlockedReference(fileURL, context: context) else { return nil }
-        return ExternalSVGImageCache.document(
-            at: fileURL,
-            parseBaseURL: fileURL.deletingLastPathComponent(),
-            parseContext: context.nestedLoad(of: fileURL)
-        )
     }
 
     /// Returns `true` when an href must not be loaded (self-reference or cycle).
@@ -129,10 +160,8 @@ enum SVGReferencedImageResolver {
         return false
     }
 
-    private static func isSVGFileHref(_ href: String) -> Bool {
-        let path = hrefPathComponent(href)
-        guard !path.isEmpty else { return false }
-        return URL(fileURLWithPath: path).pathExtension.lowercased() == "svg"
+    private static func isSVGFileURL(_ url: URL) -> Bool {
+        url.pathExtension.lowercased() == "svg"
     }
 
     private static func isSVGDataURI(_ uri: String) -> Bool {
@@ -154,36 +183,6 @@ enum SVGReferencedImageResolver {
         }
         return Data(payload.utf8)
     }
-
-    private static func hrefPathComponent(_ href: String) -> String {
-        href.split(separator: "#", maxSplits: 1).first.map(String.init) ?? href
-    }
-
-    private static func resolveImageHref(_ href: String, baseURL: URL?) -> URL? {
-        let trimmed = href.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return nil }
-        if let absolute = URL(string: trimmed), absolute.scheme != nil {
-            return absolute.isFileURL ? absolute : nil
-        }
-        guard let baseURL else { return URL(fileURLWithPath: trimmed) }
-        let pathPart = hrefPathComponent(trimmed)
-        let fragment = hrefFragment(trimmed)
-        guard var resolved = URL(string: pathPart, relativeTo: baseURL)?.standardizedFileURL else {
-            return nil
-        }
-        if let fragment {
-            var components = URLComponents(url: resolved, resolvingAgainstBaseURL: false)
-            components?.fragment = fragment
-            resolved = components?.url ?? resolved
-        }
-        return resolved
-    }
-
-    private static func hrefFragment(_ href: String) -> String? {
-        guard let hash = href.firstIndex(of: "#") else { return nil }
-        let fragment = String(href[href.index(after: hash)...])
-        return fragment.isEmpty ? nil : fragment
-    }
 }
 
 // MARK: - External SVG image cache
@@ -195,9 +194,15 @@ private enum ExternalSVGImageCache {
     static func document(
         at fileURL: URL,
         parseBaseURL: URL,
+        parserOptions: SVGParserOptions,
         parseContext: SVGReferencedImageResolveContext
     ) -> SVGDocument? {
-        cache.document(at: fileURL, parseBaseURL: parseBaseURL, parseContext: parseContext)
+        cache.document(
+            at: fileURL,
+            parseBaseURL: parseBaseURL,
+            parserOptions: parserOptions,
+            parseContext: parseContext
+        )
     }
 
     private final class Cache: @unchecked Sendable {
@@ -207,6 +212,7 @@ private enum ExternalSVGImageCache {
         func document(
             at fileURL: URL,
             parseBaseURL: URL,
+            parserOptions: SVGParserOptions,
             parseContext: SVGReferencedImageResolveContext
         ) -> SVGDocument? {
             let key = fileURL.standardizedFileURL
@@ -218,7 +224,7 @@ private enum ExternalSVGImageCache {
             lock.unlock()
 
             guard let data = try? Data(contentsOf: key),
-                  let extDoc = try? SVGParser().parse(
+                  let extDoc = try? SVGParser(options: parserOptions).parse(
                     data: data,
                     baseURL: parseBaseURL,
                     sourceURL: key,

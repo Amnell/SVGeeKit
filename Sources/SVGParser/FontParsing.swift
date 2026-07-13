@@ -1,4 +1,3 @@
-import CoreGraphics
 import Foundation
 import SVGCore
 
@@ -10,15 +9,23 @@ import SVGCore
 private enum ExternalFontCache {
     private static let cache = Cache()
 
-    static func fonts(at fileURL: URL, parseBaseURL: URL) -> [String: SVGFontDefinition]? {
-        cache.fonts(at: fileURL, parseBaseURL: parseBaseURL)
+    static func fonts(
+        at fileURL: URL,
+        parseBaseURL: URL,
+        parserOptions: SVGParserOptions
+    ) -> [String: SVGFontDefinition]? {
+        cache.fonts(at: fileURL, parseBaseURL: parseBaseURL, parserOptions: parserOptions)
     }
 
     private final class Cache: @unchecked Sendable {
         private var storage: [URL: [String: SVGFontDefinition]] = [:]
         private let lock = NSLock()
 
-        func fonts(at fileURL: URL, parseBaseURL: URL) -> [String: SVGFontDefinition]? {
+        func fonts(
+            at fileURL: URL,
+            parseBaseURL: URL,
+            parserOptions: SVGParserOptions
+        ) -> [String: SVGFontDefinition]? {
             let key = fileURL.standardizedFileURL
             lock.lock()
             if let cached = storage[key] {
@@ -28,7 +35,8 @@ private enum ExternalFontCache {
             lock.unlock()
 
             guard let data = try? Data(contentsOf: key),
-                  let extDoc = try? SVGParser().parse(data: data, baseURL: parseBaseURL) else {
+                  let extDoc = try? SVGParser(options: parserOptions)
+                    .parse(data: data, options: .localFiles(at: parseBaseURL)).document else {
                 return nil
             }
 
@@ -152,31 +160,38 @@ extension SAXDelegate {
         )
     }
 
-    func resolvePendingFontHrefs() {
+    func resolvePendingFontHrefs() throws {
         for href in pendingFontHrefs {
-            loadExternalFont(href: href)
+            try loadExternalFont(href: href)
         }
         pendingFontHrefs.removeAll()
     }
 
-    func loadExternalFont(href: String) {
+    func loadExternalFont(href: String) throws {
         guard let fontID = Self.fontID(fromHref: href) else { return }
         guard fonts[fontID] == nil else { return }
 
-        let resolver = SVGDocument(baseURL: baseURL)
-        guard let resolved = resolver.resolveURL(href) else { return }
-        let (fileURL, fragment) = Self.splitFragment(resolved)
-
-        let parseBase = fileURL.deletingLastPathComponent()
-        guard let extFonts = ExternalFontCache.fonts(at: fileURL, parseBaseURL: parseBase) else {
+        switch SVGHrefResolver.classify(href: href, policy: options.resourcePolicy) {
+        case .localFile(let resolved):
+            let (fileURL, fragment) = Self.splitFragment(resolved)
+            let parseBase = fileURL.deletingLastPathComponent()
+            guard let extFonts = ExternalFontCache.fonts(
+                at: fileURL,
+                parseBaseURL: parseBase,
+                parserOptions: options
+            ) else {
+                return
+            }
+            for (id, def) in extFonts where fonts[id] == nil {
+                fonts[id] = def
+            }
+            if let fragment, fonts[fontID] == nil, let def = extFonts[fragment] {
+                fonts[fontID] = def
+            }
+        case .rejected(let reason):
+            try recordWarning(SVGHrefResolver.parseWarning(href: href, reason: reason))
+        case .fragment, .dataURI:
             return
-        }
-
-        for (id, def) in extFonts where fonts[id] == nil {
-            fonts[id] = def
-        }
-        if let fragment, fonts[fontID] == nil, let def = extFonts[fragment] {
-            fonts[fontID] = def
         }
     }
 
