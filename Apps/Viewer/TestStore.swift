@@ -139,14 +139,8 @@ final class TestStore {
         let expectedReference = RepoLayout.suiteRoot
             .appendingPathComponent("png", isDirectory: true)
             .appendingPathComponent("\(testCase.id).png")
-        let hasScripts = Self.detectScripts(
-            data: svgData,
-            baseURL: testCase.svgURL.deletingLastPathComponent()
-        )
-        let hasAnimations = Self.detectAnimations(
-            data: svgData,
-            baseURL: testCase.svgURL.deletingLastPathComponent()
-        )
+        let hasScripts = Self.detectScripts(data: svgData, svgURL: testCase.svgURL)
+        let hasAnimations = Self.detectAnimations(data: svgData, svgURL: testCase.svgURL)
 
         return TestRow(
             id: testCase.id,
@@ -163,8 +157,8 @@ final class TestStore {
         )
     }
 
-    private static func detectScripts(data: Data, baseURL: URL) -> Bool {
-        guard let document = try? SVGParser().parse(data: data, baseURL: baseURL) else {
+    private static func detectScripts(data: Data, svgURL: URL) -> Bool {
+        guard let document = try? SVGConformanceFixtureParsing.parse(data: data, svgURL: svgURL) else {
             return false
         }
         let metadata = document.scriptMetadata
@@ -173,8 +167,8 @@ final class TestStore {
             || !metadata.rootHandlers.isEmpty
     }
 
-    private static func detectAnimations(data: Data, baseURL: URL) -> Bool {
-        guard let document = try? SVGParser().parse(data: data, baseURL: baseURL) else {
+    private static func detectAnimations(data: Data, svgURL: URL) -> Bool {
+        guard let document = try? SVGConformanceFixtureParsing.parse(data: data, svgURL: svgURL) else {
             return false
         }
         return SVGAnimationEngine.containsAnimations(in: document)

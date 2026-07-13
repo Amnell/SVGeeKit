@@ -70,9 +70,11 @@ struct SVGImageRenderTests {
                  xlink:href="\(svgURL.lastPathComponent)"/>
         </svg>
         """
-        var doc = try SVGParser().parse(
-            string: svg,
-            baseURL: svgURL.deletingLastPathComponent()
+        let options = SVGParserOptions.localFiles(at: svgURL.deletingLastPathComponent())
+        var doc = try SVGParser(options: options).parse(
+            data: Data(svg.utf8),
+            options: options,
+            sourceURL: nil
         )
         doc.intrinsicSize = CGSize(width: 50, height: 50)
         let cmds = SVGRenderTree.lower(doc)

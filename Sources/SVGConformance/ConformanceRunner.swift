@@ -88,7 +88,6 @@ public struct SVGConformanceRunner {
     }
 
     public let options: Options
-    private let parser = SVGParser()
 
     public init(options: Options) {
         self.options = options
@@ -107,9 +106,9 @@ public struct SVGConformanceRunner {
         let document: SVGDocument
         do {
             let data = try Data(contentsOf: testCase.svgURL)
-            document = try parser.parse(
+            document = try SVGConformanceFixtureParsing.parse(
                 data: data,
-                baseURL: testCase.svgURL.deletingLastPathComponent(),
+                svgURL: testCase.svgURL,
                 sourceURL: testCase.svgURL.standardizedFileURL
             )
         } catch {

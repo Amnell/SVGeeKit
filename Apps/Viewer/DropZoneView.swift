@@ -2,6 +2,7 @@ import AppKit
 import SwiftUI
 import UniformTypeIdentifiers
 import SVGAnimation
+import SVGConformance
 import SVGCore
 import SVGKit
 import SVGParser
@@ -112,9 +113,9 @@ struct DropZoneView: View {
             let result: Result<(SVGDocument, String), Error> = await Task.detached(priority: .userInitiated) {
                 do {
                     let data = try Data(contentsOf: url)
-                    let document = try SVGParser().parse(
+                    let document = try SVGConformanceFixtureParsing.parse(
                         data: data,
-                        baseURL: url.deletingLastPathComponent()
+                        svgURL: url
                     )
                     let source = String(data: data, encoding: .utf8) ?? ""
                     return .success((document, source))

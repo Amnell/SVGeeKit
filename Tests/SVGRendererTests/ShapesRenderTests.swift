@@ -1,6 +1,7 @@
 import CoreGraphics
 import Foundation
 import Testing
+import SVGConformance
 import SVGParser
 import SVGRendererSwiftUI
 
@@ -49,7 +50,7 @@ struct ShapesRenderTests {
     private func render(testId: String) throws -> CGImage {
         let svgURL = Self.w3cRoot.appendingPathComponent("svg/\(testId).svg")
         let data = try Data(contentsOf: svgURL)
-        var doc = try SVGParser().parse(data: data, baseURL: svgURL.deletingLastPathComponent())
+        var doc = try SVGConformanceFixtureParsing.parse(data: data, svgURL: svgURL)
         doc.intrinsicSize = doc.intrinsicSize ?? doc.viewBox?.size
         return try SVGRasterizer.rasterize(doc, pixelSize: CGSize(width: 480, height: 360), scale: 1)
     }

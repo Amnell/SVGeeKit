@@ -16,7 +16,7 @@ public enum W3CReferenceDiff {
         let svgURL = w3cResourcesRoot.appendingPathComponent("svg/\(testId).svg")
         let refURL = w3cResourcesRoot.appendingPathComponent("png/\(testId).png")
         let data = try Data(contentsOf: svgURL)
-        let doc = try SVGParser().parse(data: data, baseURL: svgURL.deletingLastPathComponent())
+        let doc = try SVGConformanceFixtureParsing.parse(data: data, svgURL: svgURL)
         let actual = try SVGRasterizer.rasterize(doc, pixelSize: pixelSize)
         guard let ref = SVGSnapshotDiffer.loadPNG(refURL) else {
             throw Error.unableToLoadReference(testId: testId, path: refURL.path)

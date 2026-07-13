@@ -1,6 +1,7 @@
 import CoreGraphics
 import Foundation
 import Testing
+import SVGConformance
 import SVGCore
 import SVGParser
 import SVGRendererSwiftUI
@@ -15,7 +16,7 @@ import SVGRendererSwiftUI
         let svgURL = Self.repoRoot
             .appendingPathComponent("Tests/SVGConformanceTests/Resources/W3C-SVG-1.1/svg/struct-use-03-t.svg")
         let data = try Data(contentsOf: svgURL)
-        var doc = try SVGParser().parse(data: data, baseURL: svgURL.deletingLastPathComponent())
+        var doc = try SVGConformanceFixtureParsing.parse(data: data, svgURL: svgURL)
         doc.intrinsicSize = doc.intrinsicSize ?? doc.viewBox?.size
         let image = try SVGRasterizer.rasterize(doc, pixelSize: CGSize(width: 480, height: 360), scale: 1)
 
@@ -32,7 +33,7 @@ import SVGRendererSwiftUI
         let svgURL = Self.repoRoot
             .appendingPathComponent("Tests/SVGConformanceTests/Resources/W3C-SVG-1.1/svg/struct-use-12-f.svg")
         let data = try Data(contentsOf: svgURL)
-        var doc = try SVGParser().parse(data: data, baseURL: svgURL.deletingLastPathComponent())
+        var doc = try SVGConformanceFixtureParsing.parse(data: data, svgURL: svgURL)
         doc.intrinsicSize = doc.intrinsicSize ?? doc.viewBox?.size
         let image = try SVGRasterizer.rasterize(doc, pixelSize: CGSize(width: 480, height: 360), scale: 1)
 
@@ -46,7 +47,7 @@ import SVGRendererSwiftUI
         let svgURL = Self.repoRoot
             .appendingPathComponent("Tests/SVGConformanceTests/Resources/W3C-SVG-1.1/svg/struct-use-09-b.svg")
         let data = try Data(contentsOf: svgURL)
-        var doc = try SVGParser().parse(data: data, baseURL: svgURL.deletingLastPathComponent())
+        var doc = try SVGConformanceFixtureParsing.parse(data: data, svgURL: svgURL)
         doc.intrinsicSize = doc.intrinsicSize ?? doc.viewBox?.size
 
         #expect(doc.definitions["rects"] != nil)

@@ -226,7 +226,7 @@ private enum ExternalSVGImageCache {
             guard let data = try? Data(contentsOf: key),
                   let extDoc = try? SVGParser(options: parserOptions).parse(
                     data: data,
-                    baseURL: parseBaseURL,
+                    options: .localFiles(at: parseBaseURL),
                     sourceURL: key,
                     referencedImageContext: parseContext
                   ) else {

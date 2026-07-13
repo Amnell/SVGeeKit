@@ -402,10 +402,7 @@ private struct InteractiveAnimationCanvas: View {
             loadError = nil
             do {
                 let data = try Data(contentsOf: svgURL)
-                document = try SVGParser().parse(
-                    data: data,
-                    baseURL: svgURL.deletingLastPathComponent()
-                )
+                document = try SVGConformanceFixtureParsing.parse(data: data, svgURL: svgURL)
             } catch {
                 loadError = String(describing: error)
                 document = nil

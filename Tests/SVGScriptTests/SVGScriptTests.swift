@@ -5,6 +5,7 @@ import SVGCore
 import SVGParser
 import SVGRenderer
 import SVGRendererSwiftUI
+import SVGConformance
 import SVGScript
 
 @Suite("SVGScript")
@@ -27,7 +28,7 @@ struct SVGScriptTests {
   @Test func parsesScriptHandle01Metadata() throws {
     let url = try w3cURL("script-handle-01-b")
     let data = try Data(contentsOf: url)
-    let doc = try SVGParser().parse(data: data, baseURL: url.deletingLastPathComponent())
+    let doc = try SVGConformanceFixtureParsing.parse(data: data, svgURL: url)
     #expect(doc.scriptMetadata.blocks.count == 1)
     #expect(doc.scriptMetadata.blocks[0].source.contains("onMouseClick"))
     #expect(doc.scriptMetadata.handlersByElementID["target"]?.contains(where: { $0.event == "click" }) == true)
@@ -91,7 +92,7 @@ struct SVGScriptTests {
   @Test func scriptHandle01bHitTestIgnoresTransparentFrame() throws {
     let url = try w3cURL("script-handle-01-b")
     let data = try Data(contentsOf: url)
-    let doc = try SVGParser().parse(data: data, baseURL: url.deletingLastPathComponent())
+    let doc = try SVGConformanceFixtureParsing.parse(data: data, svgURL: url)
     let hit = SVGHitTester.hitTest(document: doc, at: CGPoint(x: 70, y: 170))
     #expect(hit != nil)
     let match = SVGHitTester.handlerOwnerPath(hitPath: hit!.path, document: doc, event: "click")

@@ -74,7 +74,7 @@ struct SVGAnimationTests {
     @Test func animateElem22bParsesFourAnimations() throws {
         let url = try w3cURL("animate-elem-22-b")
         let data = try Data(contentsOf: url)
-        let doc = try SVGParser().parse(data: data, baseURL: url.deletingLastPathComponent())
+        let doc = try SVGConformanceFixtureParsing.parse(data: data, svgURL: url)
         let animatedRect = doc.root.children
             .flatMap { element -> [SVGElement] in
                 guard case .group(let group) = element else { return [element] }
@@ -93,7 +93,7 @@ struct SVGAnimationTests {
         let testId = "animate-elem-22-b"
         let url = try w3cURL(testId)
         let data = try Data(contentsOf: url)
-        let doc = try SVGParser().parse(data: data, baseURL: url.deletingLastPathComponent())
+        let doc = try SVGConformanceFixtureParsing.parse(data: data, svgURL: url)
         let sampled = SVGAnimationEngine.sample(document: doc, at: 9)
         guard case .group(let body) = sampled.root.children.first(where: {
             if case .group(let group) = $0 { return group.id == "test-body-content" }
@@ -168,7 +168,7 @@ struct SVGAnimationTests {
     @Test func animateElem02tLeftmostRectHeights() throws {
         let url = try w3cURL("animate-elem-02-t")
         let data = try Data(contentsOf: url)
-        let doc = try SVGParser().parse(data: data, baseURL: url.deletingLastPathComponent())
+        let doc = try SVGConformanceFixtureParsing.parse(data: data, svgURL: url)
         #expect(SVGAnimationEngine.suggestedDuration(in: doc) == 8)
 
         #expect(try rectHeight(in: SVGAnimationEngine.sample(document: doc, at: 0), animationID: "an5") == 200)
@@ -180,7 +180,7 @@ struct SVGAnimationTests {
     @Test func animateElem02tAdditiveSumRectHeights() throws {
         let url = try w3cURL("animate-elem-02-t")
         let data = try Data(contentsOf: url)
-        let doc = try SVGParser().parse(data: data, baseURL: url.deletingLastPathComponent())
+        let doc = try SVGConformanceFixtureParsing.parse(data: data, svgURL: url)
 
         #expect(try rectHeight(in: SVGAnimationEngine.sample(document: doc, at: 0), animationID: "an6") == 220)
         #expect(try rectHeight(in: SVGAnimationEngine.sample(document: doc, at: 2), animationID: "an6") == 40)
@@ -211,7 +211,7 @@ struct SVGAnimationTests {
     @Test func animateElem03tInterpolatesFillAtMidpoint() throws {
         let url = try w3cURL("animate-elem-03-t")
         let data = try Data(contentsOf: url)
-        let doc = try SVGParser().parse(data: data, baseURL: url.deletingLastPathComponent())
+        let doc = try SVGConformanceFixtureParsing.parse(data: data, svgURL: url)
         let sampled = SVGAnimationEngine.sample(document: doc, at: 3)
         let top = try #require(try textElements(in: sampled).first { abs($0.origin.y - 80) < 0.5 })
         guard case .color(let color) = top.paint.fill else {
@@ -250,7 +250,7 @@ struct SVGAnimationTests {
     @Test func animateElem03tInheritedPresentationAtSixSeconds() throws {
         let url = try w3cURL("animate-elem-03-t")
         let data = try Data(contentsOf: url)
-        let doc = try SVGParser().parse(data: data, baseURL: url.deletingLastPathComponent())
+        let doc = try SVGConformanceFixtureParsing.parse(data: data, svgURL: url)
         #expect(SVGAnimationEngine.suggestedDuration(in: doc) == 6)
 
         let sampled = SVGAnimationEngine.sample(document: doc, at: 6)
@@ -325,7 +325,7 @@ struct SVGAnimationTests {
     @Test func animateElem28tInheritedStrokeAtFourSeconds() throws {
         let url = try w3cURL("animate-elem-28-t")
         let data = try Data(contentsOf: url)
-        let doc = try SVGParser().parse(data: data, baseURL: url.deletingLastPathComponent())
+        let doc = try SVGConformanceFixtureParsing.parse(data: data, svgURL: url)
         #expect(SVGAnimationEngine.suggestedDuration(in: doc) == 4)
 
         let eyesGroup = try #require(group(id: "eyes", in: doc))
@@ -354,7 +354,7 @@ struct SVGAnimationTests {
     @Test func animateElem28tInterpolatesStrokeAtMidpoint() throws {
         let url = try w3cURL("animate-elem-28-t")
         let data = try Data(contentsOf: url)
-        let doc = try SVGParser().parse(data: data, baseURL: url.deletingLastPathComponent())
+        let doc = try SVGConformanceFixtureParsing.parse(data: data, svgURL: url)
         let sampled = SVGAnimationEngine.sample(document: doc, at: 2)
         let face = try #require(faceCircle(in: sampled))
         guard case .color(let color) = face.paint.stroke else {
@@ -445,7 +445,7 @@ struct SVGAnimationTests {
     @Test func animateElem27tRectHeightsAtNineSeconds() throws {
         let url = try w3cURL("animate-elem-27-t")
         let data = try Data(contentsOf: url)
-        let doc = try SVGParser().parse(data: data, baseURL: url.deletingLastPathComponent())
+        let doc = try SVGConformanceFixtureParsing.parse(data: data, svgURL: url)
         #expect(SVGAnimationEngine.suggestedDuration(in: doc) == 9)
 
         let sampled = SVGAnimationEngine.sample(document: doc, at: 9)
@@ -459,7 +459,7 @@ struct SVGAnimationTests {
     @Test func animateElem27tHrefTargetsSiblingRect() throws {
         let url = try w3cURL("animate-elem-27-t")
         let data = try Data(contentsOf: url)
-        let doc = try SVGParser().parse(data: data, baseURL: url.deletingLastPathComponent())
+        let doc = try SVGConformanceFixtureParsing.parse(data: data, svgURL: url)
 
         let midLeft = SVGAnimationEngine.sample(document: doc, at: 4.5)
         let rect1 = try #require(try rect(id: "rect1", in: midLeft))

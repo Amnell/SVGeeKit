@@ -21,7 +21,12 @@ public final class SVGScriptDocument {
   @ObservationIgnored private lazy var runtime: SVGScriptRuntime = SVGScriptRuntime(owner: self)
 
   public init(data: Data, baseURL: URL? = nil) throws {
-    let parsed = try SVGParser().parse(data: data, baseURL: baseURL)
+    let options = baseURL.map { SVGParserOptions.localFiles(at: $0) } ?? .production
+    let parsed = try SVGParser(options: options).parse(
+      data: data,
+      options: options,
+      sourceURL: nil
+    )
     self.document = parsed
   }
 

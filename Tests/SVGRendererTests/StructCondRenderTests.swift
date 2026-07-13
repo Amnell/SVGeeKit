@@ -1,6 +1,7 @@
 import CoreGraphics
 import Foundation
 import Testing
+import SVGConformance
 import SVGCore
 import SVGParser
 import SVGRendererSwiftUI
@@ -17,8 +18,14 @@ import SVGRendererSwiftUI
         let svgURL = repoRoot()
             .appendingPathComponent("Tests/SVGConformanceTests/Resources/W3C-SVG-1.1/svg/\(testId).svg")
         let data = try Data(contentsOf: svgURL)
-        let parser = context.map(SVGParser.init(conditionalContext:)) ?? SVGParser()
-        return try parser.parse(data: data, baseURL: svgURL.deletingLastPathComponent())
+        let options = SVGConformanceFixtureParsing.localFilesOptions(for: svgURL)
+        let parser = context.map { SVGParser(conditionalContext: $0, options: options) }
+            ?? SVGParser(options: options)
+        return try parser.parse(
+            data: data,
+            options: options,
+            sourceURL: svgURL.standardizedFileURL
+        )
     }
 
     private func render(_ testId: String, context: SVGConditionalProcessingContext? = nil) throws -> CGImage {

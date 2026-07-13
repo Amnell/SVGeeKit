@@ -60,21 +60,17 @@ struct Benchmarks {
             uniqueKeysWithValues: Phase.allCases.map { ($0, []) }
         )
 
-        let parser = SVGParser()
         let clock = ContinuousClock()
 
         for (i, tc) in inputs.enumerated() {
             // Skip silently if anything fails to load; benchmarks shouldn't
             // mask correctness work — that's what the conformance suite is for.
             guard let data = try? Data(contentsOf: tc.url) else { continue }
-            guard let warmDoc = try? parser.parse(
-                data: data,
-                baseURL: tc.url.deletingLastPathComponent()
-            ) else { continue }
+            guard let warmDoc = try? SVGConformanceFixtureParsing.parse(data: data, svgURL: tc.url) else { continue }
 
             // Warmup runs (untimed) to settle caches.
             for _ in 0..<config.warmup {
-                _ = try? parser.parse(data: data, baseURL: tc.url.deletingLastPathComponent())
+                _ = try? SVGConformanceFixtureParsing.parse(data: data, svgURL: tc.url)
                 _ = SVGRenderTree.lower(warmDoc)
                 if !config.skipRasterize {
                     _ = try? SVGRasterizer.rasterize(warmDoc, pixelSize: config.outputSize)
@@ -93,10 +89,7 @@ struct Benchmarks {
                 // parse
                 var parsed: SVGDocument?
                 let parseDur = clock.measure {
-                    parsed = try? parser.parse(
-                        data: data,
-                        baseURL: tc.url.deletingLastPathComponent()
-                    )
+                    parsed = try? SVGConformanceFixtureParsing.parse(data: data, svgURL: tc.url)
                 }
                 phaseSamples[.parse]!.append(parseDur)
                 caseTotal += parseDur

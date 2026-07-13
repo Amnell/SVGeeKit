@@ -36,7 +36,12 @@ public struct SVGAnimationImageView: View {
         contentMode: SVGImageContentMode = .fit,
         initialTime: Double? = nil
     ) throws {
-        let parsed = try SVGParser().parse(data: data, baseURL: baseURL)
+        let options = baseURL.map { SVGParserOptions.localFiles(at: $0) } ?? .production
+        let parsed = try SVGParser(options: options).parse(
+            data: data,
+            options: options,
+            sourceURL: nil
+        )
         self.init(document: parsed, contentMode: contentMode, initialTime: initialTime)
     }
 

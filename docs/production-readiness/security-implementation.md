@@ -203,19 +203,17 @@ Extend `SVGImageDataLoaderTests` with `.restricted` vs `.localFiles`.
 | `Tests/SVGAnimationTests/*` | same |
 | `Tests/SVGParserTests/*` | tests that need external refs use `.localFiles`; others use `.production` |
 
-Add test helper in `SVGConformance` or test support:
+Add test helper in `SVGConformance`:
 
 ```swift
-func parseConformanceFixture(data: Data, svgURL: URL) throws -> SVGParseResult {
-  try SVGParser(options: .localFiles(at: svgURL.deletingLastPathComponent()))
-    .parse(data: data)
-}
+// Sources/SVGConformance/ConformanceFixtureParsing.swift
+SVGConformanceFixtureParsing.parse(data:svgURL:)
 ```
 
 ### Exit criteria
 
-- [ ] Conformance green with explicit `.localFiles`
-- [ ] No production test accidentally passes `baseURL:` without `.localFiles`
+- [x] Conformance green with explicit `.localFiles`
+- [x] No production test accidentally passes `baseURL:` without `.localFiles`
 
 ---
 

@@ -36,6 +36,20 @@ public struct SVGParser {
         try parseResult(data: data, resolvedOptions: options, sourceURL: nil, referencedImageContext: nil)
     }
 
+    /// Document-only parse with explicit options and optional `sourceURL` for cyclic `<image>` detection.
+    public func parse(
+        data: Data,
+        options: SVGParserOptions,
+        sourceURL: URL?
+    ) throws -> SVGDocument {
+        try parseResult(
+            data: data,
+            resolvedOptions: options,
+            sourceURL: sourceURL,
+            referencedImageContext: nil
+        ).document
+    }
+
     public func parseWithReport(string: String) throws -> SVGParseResult {
         try parseWithReport(data: Data(string.utf8))
     }
@@ -64,6 +78,20 @@ public struct SVGParser {
         try parseResult(
             data: data,
             resolvedOptions: Self.resolvedOptions(parserOptions: options, baseURL: baseURL),
+            sourceURL: sourceURL,
+            referencedImageContext: referencedImageContext
+        ).document
+    }
+
+    func parse(
+        data: Data,
+        options: SVGParserOptions,
+        sourceURL: URL?,
+        referencedImageContext: SVGReferencedImageResolveContext?
+    ) throws -> SVGDocument {
+        try parseResult(
+            data: data,
+            resolvedOptions: options,
             sourceURL: sourceURL,
             referencedImageContext: referencedImageContext
         ).document
@@ -140,15 +168,12 @@ public struct SVGParser {
         try parse(data: Data(string.utf8), baseURL: baseURL)
     }
 
-    /// Reads `url` and parses with `baseURL` set to the file's parent directory.
+    /// Reads `url` and parses with explicit `.localFiles` at the file's parent directory.
     public func parse(url: URL) throws -> SVGDocument {
         let data = try Data(contentsOf: url)
-        return try parse(
-            data: data,
-            baseURL: url.deletingLastPathComponent(),
-            sourceURL: url.standardizedFileURL,
-            referencedImageContext: nil
-        )
+        let base = url.deletingLastPathComponent()
+        let options = SVGParserOptions.localFiles(at: base)
+        return try parse(data: data, options: options, sourceURL: url.standardizedFileURL)
     }
 
     /// Async convenience: runs the synchronous `parse(data:baseURL:)` on a detached

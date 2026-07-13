@@ -196,7 +196,7 @@ struct PatternRenderTests {
     let w3cRoot = Self.w3cRoot
     let svgURL = w3cRoot.appendingPathComponent("svg/coords-units-01-b.svg")
     let data = try Data(contentsOf: svgURL)
-    let doc = try SVGParser().parse(data: data, baseURL: svgURL.deletingLastPathComponent())
+    let doc = try SVGConformanceFixtureParsing.parse(data: data, svgURL: svgURL)
     let image = try SVGRasterizer.rasterize(doc, pixelSize: CGSize(width: 480, height: 360))
 
     // Bottom row: percentage (≈30–80), fraction (≈180–230), user space (≈330–380).
@@ -276,10 +276,7 @@ struct PatternRenderTests {
 
   @Test func grad10RepeatRowShowsTiledGradient() throws {
     let svgURL = Self.w3cRoot.appendingPathComponent("svg/pservers-grad-10-b.svg")
-    let doc = try SVGParser().parse(
-      data: Data(contentsOf: svgURL),
-      baseURL: svgURL.deletingLastPathComponent()
-    )
+    let doc = try SVGConformanceFixtureParsing.parse(data: Data(contentsOf: svgURL), svgURL: svgURL)
     let image = try SVGRasterizer.rasterize(doc, pixelSize: CGSize(width: 480, height: 360))
     let mid = Self.pixel(in: image, x: 230, y: 232)
     #expect(mid.green > 50)

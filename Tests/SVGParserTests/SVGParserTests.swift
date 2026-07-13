@@ -3,6 +3,7 @@ import CoreGraphics
 import Foundation
 @testable import SVGParser
 import SVGCore
+import SVGConformance
 
 @Suite("SVGParser — shapes")
 struct SVGParserTests {
@@ -1127,18 +1128,23 @@ struct SVGParserTests {
 
     @Test func parseStoresBaseURL() throws {
         let base = URL(fileURLWithPath: "/tmp/svgeekit/tests/svg", isDirectory: true)
-        let doc = try SVGParser().parse(
-            string: "<svg xmlns=\"http://www.w3.org/2000/svg\"/>",
-            baseURL: base
+        let options = SVGParserOptions.localFiles(at: base)
+        let doc = try SVGParser(options: options).parse(
+            data: Data("<svg xmlns=\"http://www.w3.org/2000/svg\"/>".utf8),
+            options: options,
+            sourceURL: nil
         )
         #expect(doc.baseURL == base)
+        #expect(doc.resourcePolicy == .localFiles(baseURL: base))
     }
 
     @Test func resolveURLHandlesRelativeHrefs() throws {
         let base = URL(fileURLWithPath: "/tmp/svgeekit/tests/svg", isDirectory: true)
-        let doc = try SVGParser().parse(
-            string: "<svg xmlns=\"http://www.w3.org/2000/svg\"/>",
-            baseURL: base
+        let options = SVGParserOptions.localFiles(at: base)
+        let doc = try SVGParser(options: options).parse(
+            data: Data("<svg xmlns=\"http://www.w3.org/2000/svg\"/>".utf8),
+            options: options,
+            sourceURL: nil
         )
         let resolved = doc.resolveURL("../resources/SVGFreeSans.svg#ascii")
         #expect(resolved?.lastPathComponent == "SVGFreeSans.svg")
@@ -1158,6 +1164,7 @@ struct SVGParserTests {
 
         let doc = try SVGParser().parse(url: file)
         #expect(doc.baseURL == directory)
+        #expect(doc.resourcePolicy == .localFiles(baseURL: directory))
     }
 
     @Test func parsesTextClipPathAttribute() throws {
@@ -1272,9 +1279,11 @@ struct SVGParserTests {
           </defs>
         </svg>
         """
-        let doc = try SVGParser().parse(
+        let options = SVGParserOptions.localFiles(at: svgDir)
+        let doc = try SVGParser(options: options).parse(
             data: Data(svg.utf8),
-            baseURL: svgDir
+            options: options,
+            sourceURL: nil
         )
         #expect(doc.fontFaces.count == 1)
         #expect(doc.fontFaces[0].family == "SVGFreeSansASCII")
@@ -1360,7 +1369,7 @@ struct SVGParserTests {
         let svgURL = repoRoot
             .appendingPathComponent("Tests/SVGConformanceTests/Resources/W3C-SVG-1.1/svg/styling-css-01-b.svg")
         let data = try Data(contentsOf: svgURL)
-        let doc = try SVGParser().parse(data: data, baseURL: svgURL.deletingLastPathComponent())
+        let doc = try SVGConformanceFixtureParsing.parse(data: data, svgURL: svgURL)
 
         var rects: [SVGRect] = []
         func collectRects(_ el: SVGElement) {
@@ -1433,7 +1442,7 @@ struct SVGParserTests {
         let svgURL = repoRoot
             .appendingPathComponent("Tests/SVGConformanceTests/Resources/W3C-SVG-1.1/svg/styling-css-02-b.svg")
         let data = try Data(contentsOf: svgURL)
-        let doc = try SVGParser().parse(data: data, baseURL: svgURL.deletingLastPathComponent())
+        let doc = try SVGConformanceFixtureParsing.parse(data: data, svgURL: svgURL)
 
         var paintedShapes: [SVGPaintProperties] = []
         func collectPaintedShapes(_ el: SVGElement) {
@@ -1465,7 +1474,7 @@ struct SVGParserTests {
         let svgURL = repoRoot
             .appendingPathComponent("Tests/SVGConformanceTests/Resources/W3C-SVG-1.1/svg/styling-css-03-b.svg")
         let data = try Data(contentsOf: svgURL)
-        let doc = try SVGParser().parse(data: data, baseURL: svgURL.deletingLastPathComponent())
+        let doc = try SVGConformanceFixtureParsing.parse(data: data, svgURL: svgURL)
 
         var paintedShapes: [SVGPaintProperties] = []
         func collectPaintedShapes(_ el: SVGElement) {
@@ -1496,7 +1505,7 @@ struct SVGParserTests {
         let svgURL = repoRoot
             .appendingPathComponent("Tests/SVGConformanceTests/Resources/W3C-SVG-1.1/svg/styling-css-04-f.svg")
         let data = try Data(contentsOf: svgURL)
-        let doc = try SVGParser().parse(data: data, baseURL: svgURL.deletingLastPathComponent())
+        let doc = try SVGConformanceFixtureParsing.parse(data: data, svgURL: svgURL)
 
         var contentRects: [SVGRect] = []
         func collectRects(_ el: SVGElement) {
@@ -1690,7 +1699,7 @@ struct SVGParserScriptTests {
             "SVGConformanceTests/Resources/W3C-SVG-1.1/svg/script-handle-01-b.svg"
         )
         let data = try Data(contentsOf: url)
-        let doc = try SVGParser().parse(data: data, baseURL: url.deletingLastPathComponent())
+        let doc = try SVGConformanceFixtureParsing.parse(data: data, svgURL: url)
         #expect(doc.scriptMetadata.blocks.count == 1)
         #expect(doc.scriptMetadata.elementIndex["target"] != nil)
         #expect(doc.scriptMetadata.elementIndex["testPassed"] != nil)
@@ -1774,7 +1783,12 @@ struct SVGParserScriptTests {
         </svg>
         """
         let base = URL(fileURLWithPath: "/tmp/test/svg", isDirectory: true)
-        let doc = try SVGParser().parse(string: svg, baseURL: base)
+        let options = SVGParserOptions.localFiles(at: base)
+        let doc = try SVGParser(options: options).parse(
+            data: Data(svg.utf8),
+            options: options,
+            sourceURL: nil
+        )
         guard case .image(let img) = doc.root.children.first else {
             Issue.record("expected image"); return
         }
@@ -1792,7 +1806,7 @@ struct SVGParserScriptTests {
             .standardizedFileURL
         let svgURL = w3cRoot.appendingPathComponent("svg/coords-viewattr-04-f.svg")
         let data = try Data(contentsOf: svgURL)
-        let doc = try SVGParser().parse(data: data, baseURL: svgURL.deletingLastPathComponent())
+        let doc = try SVGConformanceFixtureParsing.parse(data: data, svgURL: svgURL)
 
         func findImage(in elements: [SVGElement]) -> SVGImage? {
             for element in elements {
