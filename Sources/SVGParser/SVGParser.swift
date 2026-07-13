@@ -117,6 +117,21 @@ public struct SVGParser {
         sourceURL: URL?,
         referencedImageContext: SVGReferencedImageResolveContext?
     ) throws -> SVGParseResult {
+        if data.count > resolvedOptions.limits.maxDocumentBytes {
+            let warning = SVGParseWarning(
+                kind: .limitExceeded(kind: "maxDocumentBytes", line: nil),
+                message: "Parse limit exceeded: maxDocumentBytes"
+            )
+            if resolvedOptions.failurePolicy == .throwOnWarning {
+                throw SVGParseError(kind: .policyViolation(warning.message), line: nil, column: nil)
+            }
+            let document = SVGDocument(
+                resourcePolicy: resolvedOptions.resourcePolicy,
+                parsingLimits: resolvedOptions.limits
+            )
+            return SVGParseResult(document: document, report: SVGParseReport(warnings: [warning]))
+        }
+
         let parser = XMLParser(data: data)
         let delegate = SAXDelegate(
             options: resolvedOptions,
@@ -145,6 +160,7 @@ public struct SVGParser {
         delegate.resolvePatternHrefs()
         try delegate.resolvePendingFontHrefs()
         document.resourcePolicy = resolvedOptions.resourcePolicy
+        document.parsingLimits = resolvedOptions.limits
         document.baseURL = Self.baseURL(for: resolvedOptions.resourcePolicy)
         let resolveContext = referencedImageContext
             ?? SVGReferencedImageResolveContext.topLevel(sourceURL: sourceURL)
@@ -225,15 +241,66 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
     /// Open `<switch>` elements collecting conditional children.
     private var switchStack: [PartialSwitch] = []
 
+    private var elementCount = 0
+    private var xmlNestingDepth = 0
+    /// When > 0, elements are ignored until the subtree closes.
+    private var skipSubtreeDepth = 0
+    private var warnedElementCount = false
+    private var warnedNestingDepth = false
+    private var warnedDefinitionLimit = false
+
     init(options: SVGParserOptions = .production, conditionalContext: SVGConditionalProcessingContext = .current()) {
         self.options = options
         self.conditionalContext = conditionalContext
     }
 
-    func recordWarning(_ warning: SVGParseWarning) throws {
+    func recordWarning(_ warning: SVGParseWarning) {
         parseWarnings.append(warning)
-        if failurePolicy == .throwOnWarning {
-            throw SVGParseError(kind: .policyViolation(warning.message), line: nil, column: nil)
+        if failurePolicy == .throwOnWarning, error == nil {
+            error = SVGParseError(kind: .policyViolation(warning.message), line: nil, column: nil)
+        }
+    }
+
+    private func recordLimitExceeded(_ kind: String, line: Int?) {
+        recordWarning(SVGParseWarning(
+            kind: .limitExceeded(kind: kind, line: line),
+            message: "Parse limit exceeded: \(kind)"
+        ))
+    }
+
+    private func beginParsingElement(_ parser: XMLParser) -> Bool {
+        elementCount += 1
+        xmlNestingDepth += 1
+
+        if skipSubtreeDepth > 0 {
+            skipSubtreeDepth += 1
+            return false
+        }
+
+        let limits = options.limits
+        if elementCount > limits.maxElementCount {
+            if !warnedElementCount {
+                warnedElementCount = true
+                recordLimitExceeded("maxElementCount", line: parser.lineNumber)
+            }
+            skipSubtreeDepth = 1
+            return false
+        }
+        if xmlNestingDepth > limits.maxNestingDepth {
+            if !warnedNestingDepth {
+                warnedNestingDepth = true
+                recordLimitExceeded("maxNestingDepth", line: parser.lineNumber)
+            }
+            skipSubtreeDepth = 1
+            return false
+        }
+        return true
+    }
+
+    private func endParsingElement() {
+        xmlNestingDepth -= 1
+        if skipSubtreeDepth > 0 {
+            skipSubtreeDepth -= 1
         }
     }
 
@@ -454,6 +521,8 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         qualifiedName qName: String?,
         attributes attributeDict: [String: String] = [:]
     ) {
+        guard beginParsingElement(parser) else { return }
+
         let inheritedPaint = paintStack.last ?? SVGPaintProperties()
         let elementPaint = mergePaint(
             into: inheritedPaint,
@@ -621,6 +690,12 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         namespaceURI: String?,
         qualifiedName qName: String?
     ) {
+        if skipSubtreeDepth > 0 {
+            endParsingElement()
+            return
+        }
+        defer { endParsingElement() }
+
         paintStack.removeLast()
         fontStack.removeLast()
 
@@ -999,10 +1074,13 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
 
     private func handlePath(attributes: [String: String], paint: SVGPaintProperties, parser: XMLParser) {
         guard let raw = attributes["d"],
-              let commands = PathDataParser.parse(raw),
-              !commands.isEmpty else { return }
+              let parsed = PathDataParser.parse(raw, maxCommands: options.limits.maxPathCommands),
+              !parsed.commands.isEmpty else { return }
+        if parsed.truncated {
+            recordLimitExceeded("maxPathCommands", line: parser.lineNumber)
+        }
         let path = SVGPath(
-            commands: commands,
+            commands: parsed.commands,
             paint: paint,
             explicitPresentation: presentationAttributeKeys(from: attributes),
             transform: transform(from: attributes, parser: parser) ?? .identity
@@ -1218,9 +1296,20 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         var element = pending.element
         element.setAnimations(pending.animations)
         if let id = pending.definitionID, !id.isEmpty {
-            definitions[id] = element
+            storeDefinition(id: id, element: element)
         }
         appendChild(element)
+    }
+
+    private func storeDefinition(id: String, element: SVGElement) {
+        if definitions.count >= options.limits.maxDefinitions {
+            if !warnedDefinitionLimit {
+                warnedDefinitionLimit = true
+                recordLimitExceeded("maxDefinitions", line: nil)
+            }
+            return
+        }
+        definitions[id] = element
     }
 
     private func appendCapturedAnimation(_ animation: SVGTimedAnimation) {
@@ -1241,7 +1330,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
 
     private func registerDefinition(id: String?, element: SVGElement) {
         guard registersAsDefinition, let id, !id.isEmpty else { return }
-        definitions[id] = element
+        storeDefinition(id: id, element: element)
     }
 
     private func handleUse(

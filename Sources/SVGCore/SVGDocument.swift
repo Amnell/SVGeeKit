@@ -10,6 +10,8 @@ public struct SVGDocument: Equatable, Sendable {
     public var baseURL: URL?
     /// Active resource policy stamped at parse time; render paths consult this.
     public var resourcePolicy: SVGResourcePolicy
+    /// Bomb-protection limits stamped at parse time; render paths consult this.
+    public var parsingLimits: SVGParsingLimits
     public var root: SVGGroup
     public var paintServers: [String: SVGPaintServer]
     public var clipPaths: [String: SVGClipPath]
@@ -30,6 +32,7 @@ public struct SVGDocument: Equatable, Sendable {
         intrinsicSize: CGSize? = nil,
         baseURL: URL? = nil,
         resourcePolicy: SVGResourcePolicy = .restricted,
+        parsingLimits: SVGParsingLimits = .default,
         root: SVGGroup = SVGGroup(),
         paintServers: [String: SVGPaintServer] = [:],
         clipPaths: [String: SVGClipPath] = [:],
@@ -44,6 +47,7 @@ public struct SVGDocument: Equatable, Sendable {
         self.intrinsicSize = intrinsicSize
         self.baseURL = baseURL
         self.resourcePolicy = resourcePolicy
+        self.parsingLimits = parsingLimits
         self.root = root
         self.paintServers = paintServers
         self.clipPaths = clipPaths

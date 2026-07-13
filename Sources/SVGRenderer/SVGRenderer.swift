@@ -85,7 +85,8 @@ public enum SVGRenderTree {
             fonts: document.fonts,
             fontFaces: document.fontFaces,
             definitions: document.definitions,
-            resourcePolicy: document.resourcePolicy
+            resourcePolicy: document.resourcePolicy,
+            parsingLimits: document.parsingLimits
         )
         commands.append(.pushState)
         if let viewBox = document.viewBox, let size = document.intrinsicSize {
@@ -151,6 +152,7 @@ public enum SVGRenderTree {
         let fontFaces: [SVGFontFace]
         let definitions: [String: SVGElement]
         let resourcePolicy: SVGResourcePolicy
+        let parsingLimits: SVGParsingLimits
     }
 
     private static func lower(group: SVGGroup, ctx: Context, into commands: inout [SVGRenderCommand]) {
@@ -259,7 +261,11 @@ public enum SVGRenderTree {
             lowerSVGImageContent(document: document, image: image, ctx: ctx, into: &commands)
             return
         }
-        guard let imageData = SVGImageDataLoader.load(href: image.href, policy: ctx.resourcePolicy) else { return }
+        guard let imageData = SVGImageDataLoader.load(
+            href: image.href,
+            policy: ctx.resourcePolicy,
+            limits: ctx.parsingLimits
+        ) else { return }
 
         let viewport = CGRect(origin: image.origin, size: image.size)
         emitPaintedImage(
@@ -302,7 +308,8 @@ public enum SVGRenderTree {
             fonts: document.fonts,
             fontFaces: document.fontFaces,
             definitions: document.definitions,
-            resourcePolicy: document.resourcePolicy
+            resourcePolicy: document.resourcePolicy,
+            parsingLimits: document.parsingLimits
         )
 
         var painted: [SVGRenderCommand] = []

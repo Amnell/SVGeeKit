@@ -10,9 +10,14 @@ public enum SVGImageDataLoader {
 
     /// Load raster image bytes from a `data:` URI or a local file allowed by `policy`.
     /// Returns `nil` for non-raster hrefs (e.g. `.svg` files) without touching the filesystem.
-    static func load(href: String, policy: SVGResourcePolicy) -> Data? {
+    static func load(
+        href: String,
+        policy: SVGResourcePolicy,
+        limits: SVGParsingLimits = .default
+    ) -> Data? {
         switch SVGHrefResolver.classify(href: href, policy: policy) {
         case .dataURI(let uri):
+            guard !limits.dataURIExceedsLimit(uri) else { return nil }
             guard isRasterDataURI(uri) else { return nil }
             return dataFromDataURI(uri)
         case .localFile(let url):

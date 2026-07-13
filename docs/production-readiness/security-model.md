@@ -409,7 +409,7 @@ Integrators inspect `result.report.warnings` after a successful `try`. For Swift
 
 ### Phase 0c — hardening
 
-- [ ] Add `SVGParsingLimits` on `SVGParserOptions`
+- [x] Add `SVGParsingLimits` on `SVGParserOptions`
 - [ ] `SVGParseReport` on every successful `parse(…)`
 - [ ] Audit `SVGParser` for implicit `URL(string:relativeTo:)` resolution paths
 - [ ] Ensure `SVGScript` / `SVGAnimation` are not linked by default from `SVGKit`

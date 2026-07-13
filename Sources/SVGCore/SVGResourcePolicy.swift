@@ -44,6 +44,25 @@ public struct SVGParsingLimits: Sendable, Equatable {
     }
 
     public static let `default` = SVGParsingLimits()
+
+    /// Estimated decoded payload size for a `data:` URI (without fully decoding base64).
+    public func estimatedDataURIPayloadByteCount(_ uri: String) -> Int? {
+        guard uri.lowercased().hasPrefix("data:") else { return nil }
+        let body = uri.dropFirst(5)
+        guard let comma = body.firstIndex(of: ",") else { return nil }
+        let metadata = body[..<comma].lowercased()
+        let payload = body[body.index(after: comma)...]
+        if metadata.hasSuffix(";base64") {
+            let padding = payload.suffix(2).filter { $0 == "=" }.count
+            return max(0, (payload.count * 3) / 4 - padding)
+        }
+        return payload.utf8.count
+    }
+
+    public func dataURIExceedsLimit(_ uri: String) -> Bool {
+        guard let bytes = estimatedDataURIPayloadByteCount(uri) else { return true }
+        return bytes > maxDataURIBytes
+    }
 }
 
 /// Parser configuration. Defaults to production-safe resource loading.

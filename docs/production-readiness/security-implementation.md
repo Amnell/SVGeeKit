@@ -302,8 +302,8 @@ On exceed: `warning(.limitExceeded(…))` + skip/truncate per [security-model.md
 
 ### Exit criteria
 
-- [ ] Oversized path `d` → warning, partial path or skipped element
-- [ ] Hard XML errors still throw
+- [x] Oversized path `d` → warning, partial path or skipped element
+- [x] Hard XML errors still throw
 
 ---
 

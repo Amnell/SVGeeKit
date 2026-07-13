@@ -124,6 +124,13 @@ enum SVGReferencedImageResolver {
 
         switch SVGHrefResolver.classify(href: trimmed, policy: policy) {
         case .dataURI(let uri):
+            if parserOptions.limits.dataURIExceedsLimit(uri) {
+                warnings.append(SVGParseWarning(
+                    kind: .limitExceeded(kind: "maxDataURIBytes", line: nil),
+                    message: "Parse limit exceeded: maxDataURIBytes"
+                ))
+                return nil
+            }
             guard isSVGDataURI(uri),
                   let data = dataFromSVGDataURI(uri) else {
                 return nil

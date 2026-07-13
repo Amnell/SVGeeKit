@@ -42,6 +42,13 @@ struct SVGImageDataLoaderTests {
         #expect(data == nil)
     }
 
+    @Test func rejectsOversizedDataURI() {
+        let payload = String(repeating: "A", count: 64)
+        let uri = "data:image/png;base64,\(payload)"
+        let limits = SVGParsingLimits(maxDataURIBytes: 16)
+        #expect(SVGImageDataLoader.load(href: uri, policy: .restricted, limits: limits) == nil)
+    }
+
     @Test func rejectsSVGDataURI() {
         #expect(SVGImageDataLoader.isRasterDataURI(Self.svgDataURI) == false)
         #expect(SVGImageDataLoader.load(href: Self.svgDataURI, policy: .restricted) == nil)

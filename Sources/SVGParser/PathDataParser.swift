@@ -7,12 +7,26 @@ import SVGCore
 /// repeated-parameter rule, and arc-to-cubic decomposition.
 enum PathDataParser {
 
-    /// Returns nil for empty input. Returns the parsed commands even if the
-    /// data ends mid-stream (matches permissive UA behavior).
-    static func parse(_ raw: String) -> [SVGPathCommand]? {
+    struct ParseResult {
+        let commands: [SVGPathCommand]
+        let truncated: Bool
+    }
+
+    /// Returns nil for empty input. Stops at `maxCommands` and sets `truncated`.
+    static func parse(_ raw: String, maxCommands: Int) -> ParseResult? {
         var scanner = PathScanner(input: raw)
         guard scanner.hasNumberOrCommand else { return nil }
         var out: [SVGPathCommand] = []
+        var truncated = false
+
+        func append(_ command: SVGPathCommand) -> Bool {
+            guard out.count < maxCommands else {
+                truncated = true
+                return false
+            }
+            out.append(command)
+            return true
+        }
 
         var current = CGPoint.zero          // current point
         var subpathStart = CGPoint.zero     // for Z/z
@@ -22,6 +36,7 @@ enum PathDataParser {
 
         scanner.skipWhitespaceAndCommas()
         while let cmd = scanner.readCommand() {
+            if truncated { break }
             let isRelative = cmd >= 97 && cmd <= 122
             let upper = isRelative ? cmd - 32 : cmd
 
@@ -29,53 +44,52 @@ enum PathDataParser {
             // are implicit linetos (per SVG path grammar).
             var isFirstIteration = true
             repeat {
-                if !isFirstIteration && !scanner.hasNumber { break }
+                if truncated || (!isFirstIteration && !scanner.hasNumber) { break }
 
                 switch upper {
                 case 77: // M
-                    guard let p = scanner.readPoint() else { return out }
+                    guard let p = scanner.readPoint() else { return ParseResult(commands: out, truncated: truncated) }
                     let target = isRelative && lastCommand != nil
                         ? CGPoint(x: current.x + p.x, y: current.y + p.y)
                         : p
                     if isFirstIteration {
-                        out.append(.moveTo(target))
+                        guard append(.moveTo(target)) else { break }
                         subpathStart = target
                     } else {
-                        // Implicit lineto after moveto.
-                        out.append(.lineTo(target))
+                        guard append(.lineTo(target)) else { break }
                     }
                     current = target
                     lastCubicCtrl = nil
                     lastQuadCtrl = nil
 
                 case 76: // L
-                    guard let p = scanner.readPoint() else { return out }
+                    guard let p = scanner.readPoint() else { return ParseResult(commands: out, truncated: truncated) }
                     let target = isRelative
                         ? CGPoint(x: current.x + p.x, y: current.y + p.y)
                         : p
-                    out.append(.lineTo(target))
+                    guard append(.lineTo(target)) else { break }
                     current = target
                     lastCubicCtrl = nil
                     lastQuadCtrl = nil
 
                 case 72: // H
-                    guard let x = scanner.readNumber() else { return out }
+                    guard let x = scanner.readNumber() else { return ParseResult(commands: out, truncated: truncated) }
                     let target = CGPoint(
                         x: isRelative ? current.x + x : x,
                         y: current.y
                     )
-                    out.append(.lineTo(target))
+                    guard append(.lineTo(target)) else { break }
                     current = target
                     lastCubicCtrl = nil
                     lastQuadCtrl = nil
 
                 case 86: // V
-                    guard let y = scanner.readNumber() else { return out }
+                    guard let y = scanner.readNumber() else { return ParseResult(commands: out, truncated: truncated) }
                     let target = CGPoint(
                         x: current.x,
                         y: isRelative ? current.y + y : y
                     )
-                    out.append(.lineTo(target))
+                    guard append(.lineTo(target)) else { break }
                     current = target
                     lastCubicCtrl = nil
                     lastQuadCtrl = nil
@@ -83,22 +97,20 @@ enum PathDataParser {
                 case 67: // C
                     guard let c1 = scanner.readPoint(),
                           let c2 = scanner.readPoint(),
-                          let end = scanner.readPoint() else { return out }
+                          let end = scanner.readPoint() else { return ParseResult(commands: out, truncated: truncated) }
                     let absC1 = isRelative ? c1.offset(by: current) : c1
                     let absC2 = isRelative ? c2.offset(by: current) : c2
                     let absEnd = isRelative ? end.offset(by: current) : end
-                    out.append(.cubicTo(control1: absC1, control2: absC2, end: absEnd))
+                    guard append(.cubicTo(control1: absC1, control2: absC2, end: absEnd)) else { break }
                     current = absEnd
                     lastCubicCtrl = absC2
                     lastQuadCtrl = nil
 
                 case 83: // S
                     guard let c2 = scanner.readPoint(),
-                          let end = scanner.readPoint() else { return out }
+                          let end = scanner.readPoint() else { return ParseResult(commands: out, truncated: truncated) }
                     let absC2 = isRelative ? c2.offset(by: current) : c2
                     let absEnd = isRelative ? end.offset(by: current) : end
-                    // Reflect previous cubic control point. If the previous
-                    // command wasn't a cubic, the spec says use the current point.
                     let absC1: CGPoint
                     if let prev = lastCubicCtrl {
                         absC1 = CGPoint(x: 2 * current.x - prev.x,
@@ -106,23 +118,23 @@ enum PathDataParser {
                     } else {
                         absC1 = current
                     }
-                    out.append(.cubicTo(control1: absC1, control2: absC2, end: absEnd))
+                    guard append(.cubicTo(control1: absC1, control2: absC2, end: absEnd)) else { break }
                     current = absEnd
                     lastCubicCtrl = absC2
                     lastQuadCtrl = nil
 
                 case 81: // Q
                     guard let c = scanner.readPoint(),
-                          let end = scanner.readPoint() else { return out }
+                          let end = scanner.readPoint() else { return ParseResult(commands: out, truncated: truncated) }
                     let absC = isRelative ? c.offset(by: current) : c
                     let absEnd = isRelative ? end.offset(by: current) : end
-                    out.append(.quadTo(control: absC, end: absEnd))
+                    guard append(.quadTo(control: absC, end: absEnd)) else { break }
                     current = absEnd
                     lastQuadCtrl = absC
                     lastCubicCtrl = nil
 
                 case 84: // T
-                    guard let end = scanner.readPoint() else { return out }
+                    guard let end = scanner.readPoint() else { return ParseResult(commands: out, truncated: truncated) }
                     let absEnd = isRelative ? end.offset(by: current) : end
                     let absC: CGPoint
                     if let prev = lastQuadCtrl {
@@ -131,7 +143,7 @@ enum PathDataParser {
                     } else {
                         absC = current
                     }
-                    out.append(.quadTo(control: absC, end: absEnd))
+                    guard append(.quadTo(control: absC, end: absEnd)) else { break }
                     current = absEnd
                     lastQuadCtrl = absC
                     lastCubicCtrl = nil
@@ -142,7 +154,7 @@ enum PathDataParser {
                           let xrot = scanner.readNumber(),
                           let largeArc = scanner.readFlag(),
                           let sweep = scanner.readFlag(),
-                          let end = scanner.readPoint() else { return out }
+                          let end = scanner.readPoint() else { return ParseResult(commands: out, truncated: truncated) }
                     let absEnd = isRelative ? end.offset(by: current) : end
                     let arcs = arcToCubics(
                         from: current, to: absEnd,
@@ -150,19 +162,21 @@ enum PathDataParser {
                         xAxisRotation: xrot,
                         largeArc: largeArc, sweep: sweep
                     )
-                    out.append(contentsOf: arcs)
+                    for arc in arcs {
+                        guard append(arc) else { break }
+                    }
                     current = absEnd
                     lastCubicCtrl = nil
                     lastQuadCtrl = nil
 
                 case 90: // Z
-                    out.append(.close)
+                    guard append(.close) else { break }
                     current = subpathStart
                     lastCubicCtrl = nil
                     lastQuadCtrl = nil
 
                 default:
-                    return out
+                    return ParseResult(commands: out, truncated: truncated)
                 }
 
                 isFirstIteration = false
@@ -171,7 +185,13 @@ enum PathDataParser {
             } while upper != 90  // Z takes no parameters; never iterates
         }
 
-        return out
+        return ParseResult(commands: out, truncated: truncated)
+    }
+
+    /// Returns nil for empty input. Returns the parsed commands even if the
+    /// data ends mid-stream (matches permissive UA behavior).
+    static func parse(_ raw: String) -> [SVGPathCommand]? {
+        parse(raw, maxCommands: .max)?.commands
     }
 
     // MARK: - Arc decomposition

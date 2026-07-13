@@ -192,7 +192,7 @@ extension SAXDelegate {
                 fonts[fontID] = def
             }
         case .rejected(let reason):
-            try recordWarning(SVGHrefResolver.parseWarning(href: href, reason: reason))
+            recordWarning(SVGHrefResolver.parseWarning(href: href, reason: reason))
         case .fragment, .dataURI:
             return
         }
