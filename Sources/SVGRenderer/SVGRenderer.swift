@@ -422,6 +422,8 @@ public enum SVGRenderTree {
     }
 
     private static func lower(rect: SVGRect, ctx: Context, into commands: inout [SVGRenderCommand]) {
+        // SVG 1.1 §9.2: zero (or negative) width/height disables rendering.
+        guard rect.size.width > 0, rect.size.height > 0 else { return }
         let cgRect = CGRect(origin: rect.origin, size: rect.size)
         let path: CGPath = {
             if rect.cornerRadii == .zero {
@@ -635,6 +637,7 @@ public enum SVGRenderTree {
             }
             return path
         case .rect(let r):
+            guard r.size.width > 0, r.size.height > 0 else { return CGMutablePath() }
             let cgRect = CGRect(origin: r.origin, size: r.size)
             let p: CGPath = r.cornerRadii == .zero
                 ? CGPath(rect: cgRect, transform: nil)
