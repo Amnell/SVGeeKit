@@ -64,7 +64,7 @@ Update conformance targets after `swift test` regenerates
 
 | Target | Baseline | Goal | Status |
 | --- | ---: | ---: | --- |
-| `shapes` passed | 27 | 30 | `[~]` |
+| `shapes` passed | 29 | 30 | `[~]` |
 | `paths` passed | 19 | 21 | `[~]` |
 | `coords` passed | 28 | 28+ | `[~]` |
 
@@ -215,8 +215,8 @@ or have a documented unsupported sub-feature.
 
 | Target | Baseline | Goal | Status |
 | --- | ---: | ---: | --- |
-| `partialBaseline` total | 121 | ≤30 | `[ ]` |
-| `passed` total | 181 | 280+ | `[ ]` |
+| `partialBaseline` total | 119 | ≤30 | `[ ]` |
+| `passed` total | 183 | 280+ | `[ ]` |
 
 ### Process (repeat per tag)
 
@@ -232,7 +232,7 @@ or have a documented unsupported sub-feature.
 2. `animate` (60 partial) — **low priority** (out of production scope; only promote if needed for regression)
 3. `styling` (11 partial)
 4. `pservers` (8 partial)
-5. `shapes` (3 partial)
+5. `shapes` (1 partial — `shapes-rect-03-t`)
 6. `color` (2 partial)
 7. `render` (1 partial)
 

@@ -48,15 +48,15 @@ references them; do not duplicate their step-by-step content here.
 
 | Status | Count | Meaning |
 | --- | ---: | --- |
-| `passed` | 181 | Verified baseline in `Tests/__Snapshots__/` |
-| `partialBaseline` | 121 | Renders; auto-tracked, needs human verification |
+| `passed` | 183 | Verified baseline in `Tests/__Snapshots__/` |
+| `partialBaseline` | 119 | Renders; auto-tracked, needs human verification |
 | `skipped` | 233 | Feature family or test explicitly out of scope |
 
 ### By feature tag (in-profile chapters)
 
 | Tag | Total | Passed | Partial | Skipped | Profile tier |
 | --- | ---: | ---: | ---: | ---: | --- |
-| `shapes` | 30 | 27 | 3 | 0 | Tier 1 |
+| `shapes` | 30 | 29 | 1 | 0 | Tier 1 |
 | `paths` | 21 | 19 | 0 | 2 | Tier 1 |
 | `coords` | 32 | 28 | 0 | 4 | Tier 1 |
 | `painting` | 31 | 20 | 0 | 11 | Tier 1 |

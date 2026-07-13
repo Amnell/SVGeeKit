@@ -481,8 +481,23 @@ public enum SVGRenderTree {
     }
 
     private static func lower(polyline: SVGPolyline, ctx: Context, into commands: inout [SVGRenderCommand]) {
-        guard let path = polylinePath(points: polyline.points, closed: false) else { return }
-        emitPaintedPath(path, paint: polyline.paint, transform: polyline.transform, ctx: ctx, into: &commands)
+        guard !polyline.points.isEmpty else { return }
+
+        // SVG 1.1 §11.4 / painting-control-03-f: filled polylines close the path
+        // for fill only; stroke follows the open point list.
+        if !isPaintNone(polyline.paint.fill),
+           let fillPath = polylinePath(points: polyline.points, closed: true) {
+            var fillOnly = polyline.paint
+            fillOnly.stroke = .none
+            emitPaintedPath(fillPath, paint: fillOnly, transform: polyline.transform, ctx: ctx, into: &commands)
+        }
+
+        if !isPaintNone(polyline.paint.stroke),
+           let strokePath = polylinePath(points: polyline.points, closed: false) {
+            var strokeOnly = polyline.paint
+            strokeOnly.fill = .none
+            emitPaintedPath(strokePath, paint: strokeOnly, transform: polyline.transform, ctx: ctx, into: &commands)
+        }
     }
 
     private static func lower(polygon: SVGPolygon, ctx: Context, into commands: inout [SVGRenderCommand]) {
@@ -794,6 +809,11 @@ public enum SVGRenderTree {
         // SVG 1.1 §14.4; a present mask wraps the painted commands.
         guard let wrapped = applyMask(paint.maskRef, bbox: bbox, content: painted, ctx: ctx) else { return }
         commands.append(contentsOf: wrapped)
+    }
+
+    private static func isPaintNone(_ paint: SVGPaint) -> Bool {
+        if case .none = paint { return true }
+        return false
     }
 
     /// Convert `.paintServer` references into concrete paint cases with the

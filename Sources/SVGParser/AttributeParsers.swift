@@ -5,17 +5,17 @@ import SVGCore
 /// Parsers for individual attribute values. All return nil for empty input.
 enum AttributeParsers {
 
-    /// Splits on whitespace and commas (SVG list-of-numbers grammar).
+    /// Parses a whitespace/comma-separated list of numbers per SVG list grammar.
+    /// Adjacent numbers may abut (e.g. `270-225` → `270`, `-225`).
     static func numberList(_ s: String) -> [CGFloat]? {
-        let trimmed = s.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return nil }
-        let parts = trimmed.split { $0 == " " || $0 == "\t" || $0 == "\n" || $0 == "\r" || $0 == "," }
+        var scanner = NumberListScanner(input: s)
         var out: [CGFloat] = []
-        out.reserveCapacity(parts.count)
-        for p in parts {
-            guard let d = Double(p) else { return nil }
-            out.append(CGFloat(d))
+        while let n = scanner.readNumber() {
+            out.append(n)
         }
+        guard !out.isEmpty else { return nil }
+        scanner.skipWhitespaceAndCommas()
+        guard scanner.isAtEnd else { return nil }
         return out
     }
 
@@ -453,5 +453,111 @@ private struct TransformScanner {
         while index < input.endIndex, input[index].isWhitespace || input[index] == "," {
             index = input.index(after: index)
         }
+    }
+}
+
+/// Scanner for SVG list-of-numbers attributes (`points`, `viewBox`, …).
+private struct NumberListScanner {
+    private let bytes: [UInt8]
+    private var index: Int
+
+    init(input: String) {
+        self.bytes = Array(input.utf8)
+        self.index = bytes.startIndex
+    }
+
+    var isAtEnd: Bool {
+        var i = index
+        while i < bytes.endIndex, isWhitespaceOrComma(bytes[i]) {
+            i += 1
+        }
+        return i >= bytes.endIndex
+    }
+
+    mutating func readNumber() -> CGFloat? {
+        skipWhitespaceAndCommas()
+        let start = index
+
+        var sign = 1.0
+        if index < bytes.endIndex {
+            if bytes[index] == 45 {
+                sign = -1.0
+                index += 1
+            } else if bytes[index] == 43 {
+                index += 1
+            }
+        }
+
+        var mantissa = 0.0
+        var sawDigit = false
+        while index < bytes.endIndex, isDigit(bytes[index]) {
+            sawDigit = true
+            mantissa = mantissa * 10.0 + Double(bytes[index] - 48)
+            index += 1
+        }
+
+        if index < bytes.endIndex, bytes[index] == 46 {
+            index += 1
+            var divisor = 10.0
+            while index < bytes.endIndex, isDigit(bytes[index]) {
+                sawDigit = true
+                mantissa += Double(bytes[index] - 48) / divisor
+                divisor *= 10.0
+                index += 1
+            }
+        }
+
+        guard sawDigit else {
+            index = start
+            return nil
+        }
+
+        var exponent = 0
+        if index < bytes.endIndex, bytes[index] == 69 || bytes[index] == 101 {
+            let exponentStart = index
+            index += 1
+
+            var exponentSign = 1
+            if index < bytes.endIndex {
+                if bytes[index] == 45 {
+                    exponentSign = -1
+                    index += 1
+                } else if bytes[index] == 43 {
+                    index += 1
+                }
+            }
+
+            var sawExponentDigit = false
+            while index < bytes.endIndex, isDigit(bytes[index]) {
+                sawExponentDigit = true
+                exponent = exponent * 10 + Int(bytes[index] - 48)
+                index += 1
+            }
+
+            if sawExponentDigit {
+                exponent *= exponentSign
+            } else {
+                index = exponentStart
+            }
+        }
+
+        let value = exponent == 0
+            ? sign * mantissa
+            : sign * mantissa * pow(10.0, Double(exponent))
+        return CGFloat(value)
+    }
+
+    mutating func skipWhitespaceAndCommas() {
+        while index < bytes.endIndex, isWhitespaceOrComma(bytes[index]) {
+            index += 1
+        }
+    }
+
+    private func isDigit(_ byte: UInt8) -> Bool {
+        byte >= 48 && byte <= 57
+    }
+
+    private func isWhitespaceOrComma(_ byte: UInt8) -> Bool {
+        byte == 44 || byte == 32 || byte == 9 || byte == 10 || byte == 13 || byte == 12
     }
 }

@@ -120,6 +120,58 @@ struct SVGParserTests {
         ])
     }
 
+    @Test func parsesPolylineWithEmbeddedNegativeCoordinates() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10">
+          <polyline points="270-225 300-245" fill="none" stroke="black"/>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .polyline(let p) = doc.root.children.first else {
+            Issue.record("expected polyline"); return
+        }
+        #expect(p.points == [
+            CGPoint(x: 270, y: -225),
+            CGPoint(x: 300, y: -245),
+        ])
+    }
+
+    @Test func shapesGrammar01fParsesCompactPointLists() throws {
+        let repoRoot = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+        let svgURL = repoRoot
+            .appendingPathComponent("Tests/SVGConformanceTests/Resources/W3C-SVG-1.1/svg/shapes-grammar-01-f.svg")
+        let data = try Data(contentsOf: svgURL)
+        let doc = try SVGConformanceFixtureParsing.parse(data: data, svgURL: svgURL)
+
+        var polylines: [SVGPolyline] = []
+        var polygons: [SVGPolygon] = []
+        func collect(_ element: SVGElement) {
+            switch element {
+            case .polyline(let p): polylines.append(p)
+            case .polygon(let p): polygons.append(p)
+            case .group(let g): g.children.forEach(collect)
+            default: break
+            }
+        }
+        doc.root.children.forEach(collect)
+
+        #expect(polylines.count == 2)
+        #expect(polygons.count == 2)
+        #expect(polylines.allSatisfy { $0.points.count == 8 })
+        #expect(polygons.allSatisfy { $0.points.count == 7 })
+
+        let compactStroke = polylines[1].paint.stroke
+        guard case .color(let strokeColor) = compactStroke else {
+            Issue.record("expected compact polyline stroke color"); return
+        }
+        #expect(strokeColor.red < 0.3 && strokeColor.green > 0.2 && strokeColor.blue > 0.3)
+        #expect(polylines[1].paint.fill == .none)
+        #expect(polygons[1].paint.fill == .none)
+    }
+
     @Test func parsesPolygon() throws {
         let svg = """
         <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10">

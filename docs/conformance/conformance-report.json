@@ -2653,17 +2653,17 @@
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-grammar-01-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/shapes-grammar-01-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "partialBaseline",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-grammar-01-f\/baseline.png",
+    "detail" : "promoted from partial baseline",
+    "status" : "passed",
     "tag" : "shapes",
     "testId" : "shapes-grammar-01-f"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-intro-01-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-intro-01-t\/baseline.png",
-    "detail" : "promoted from partial baseline",
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "passed",
     "tag" : "shapes",
     "testId" : "shapes-intro-01-t"

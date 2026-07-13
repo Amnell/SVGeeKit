@@ -34,6 +34,25 @@ struct ShapesRenderTests {
         #expect(samplePixel(image, x: 50, y: 60) == (0, 0, 0))
     }
 
+    private func diffAgainstW3C(testId: String) throws -> SVGSnapshotDiffer.DiffResult {
+        try W3CReferenceDiff.diff(testId: testId, w3cResourcesRoot: Self.w3cRoot)
+    }
+
+    @Test func w3cShapesGrammar01FMatchesReference() throws {
+        let diff = try diffAgainstW3C(testId: "shapes-grammar-01-f")
+        #expect(diff.mismatchedFraction < 0.05, "mismatchedFraction=\(diff.mismatchedFraction)")
+    }
+
+    @Test func w3cShapesRect03TMatchesReference() throws {
+        let diff = try diffAgainstW3C(testId: "shapes-rect-03-t")
+        #expect(diff.mismatchedFraction < 0.05, "mismatchedFraction=\(diff.mismatchedFraction)")
+    }
+
+    @Test func shapesRect03tHasNoVisibleRed() throws {
+        let image = try render(testId: "shapes-rect-03-t")
+        #expect(!imageHasStrongRed(image))
+    }
+
     @Test func typesBasic01fGreyMarkersStayAboveColoredBoxes() throws {
         let image = try render(testId: "types-basic-01-f")
 
@@ -93,5 +112,25 @@ struct ShapesRenderTests {
             in: CGRect(x: -x, y: -(image.height - 1 - y), width: image.width, height: image.height)
         )
         return (Int(pixel[0]), Int(pixel[1]), Int(pixel[2]))
+    }
+
+    private func imageHasStrongRed(_ image: CGImage) -> Bool {
+        guard let data = image.dataProvider?.data,
+              let bytes = CFDataGetBytePtr(data) else { return false }
+        let bytesPerPixel = image.bitsPerPixel / 8
+        guard bytesPerPixel >= 4 else { return false }
+        let bytesPerRow = image.bytesPerRow
+        for y in 0..<image.height {
+            for x in 0..<image.width {
+                let offset = y * bytesPerRow + x * bytesPerPixel
+                let r = bytes[offset]
+                let g = bytes[offset + 1]
+                let b = bytes[offset + 2]
+                let a = bytes[offset + 3]
+                guard a > 16 else { continue }
+                if r > 200 && g < 80 && b < 80 { return true }
+            }
+        }
+        return false
     }
 }
