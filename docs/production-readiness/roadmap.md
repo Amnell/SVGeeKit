@@ -1,12 +1,14 @@
 # Production roadmap
 
-Phased checklist for SVGeeKit v1. Work top-to-bottom; do not skip Phase 0 before
-shipping. Each item should land with tests per [adding-a-feature.md](../adding-a-feature.md).
+Phased checklist for SVGeeKit v1. Work top-to-bottom. Each item should land with tests
+per [adding-a-feature.md](../adding-a-feature.md).
 
 **Status key:** `[ ]` not started · `[~]` in progress · `[x]` done
 
 Update conformance targets after `swift test` regenerates
 [conformance-report.json](../conformance/conformance-report.json).
+
+**Implementation detail for Phase 0:** [security-implementation.md](security-implementation.md) (Steps 0–9, complete).
 
 ---
 
@@ -14,16 +16,41 @@ Update conformance targets after `swift test` regenerates
 
 **Goal:** No external resource fetch in production parse path.
 
-**Doc:** [security-model.md](security-model.md)
+**Status:** `[x]` **Complete** (2026-07-13)
 
-- [ ] Gate/remove external `<image href="file.svg">` resolution in `SVGParser`
-- [ ] Reject external `href` / `xlink:href` in production (warn + skip, no throw)
-- [ ] Add `SVGParser.Options` resource limits
-- [ ] Add `SVGParseReport` warnings
-- [ ] Unit tests for URI policy
+**Docs:** [security-model.md](security-model.md) · [security-implementation.md](security-implementation.md)
+
+### Resource policy
+
+- [x] `SVGResourcePolicy`, `SVGParserOptions`, `SVGHrefResolver`
+- [x] `SVGParser()` defaults to `.production` (`.restricted` — `#fragment` + `data:` only)
+- [x] Gate external `<image>` / `font-face-uri` resolution at parse time
+- [x] Reject external `href` / `xlink:href` in production (warn + skip, no throw)
+- [x] Gate raster loads at render time via `document.resourcePolicy`
+- [x] Explicit `.localFiles(at:)` for conformance, Viewer, benchmarks (`SVGConformanceFixtureParsing`)
+- [x] Remove implicit `baseURL` bridge from public parser API
+
+### Parse reporting & limits
+
+- [x] `SVGParseReport` / `SVGParseResult` with `SVGParseWarning`
+- [x] `SVGParsingLimits` on `SVGParserOptions` (document, elements, nesting, path, data URI, defs)
+- [x] Soft limit exceed → warning + skip/truncate; hard XML errors still throw
+
+### View layer & resilience
+
+- [x] `SVGImageView(svgData:)` — non-throwing; empty canvas on failure
+- [x] Optional `parseError: Binding<Error?>` for parent state
+- [x] Trap audit: no `fatalError` / `precondition` / `try!` on parser/renderer paths
+- [x] `HostileInputTests` — random bytes + W3C corpus under `.production` never trap
+
+### Tests & docs
+
+- [x] `SVGHrefResolverTests`, `SVGParsingLimitsTests`
+- [x] README documents parser-throws / view-never-throws contract
+- [x] `SVGScript` / `SVGAnimation` not linked from `SVGKit` by default
 
 **Exit criteria:** Untrusted SVG bytes cannot trigger filesystem or network I/O through
-`SVGKit` alone.
+`SVGKit` alone. **Met.**
 
 ---
 
@@ -94,7 +121,7 @@ Follow [styling-rollout.md](../styling-rollout.md):
 
 - [x] `g`, `defs`, `use` (fragment refs)
 - [x] `<switch>` conditional processing
-- [x] `<image>` element (needs Phase 0 security lockdown)
+- [x] `<image>` element (production policy gates external refs; `.localFiles` for fixtures)
 - [ ] `symbol` instancing polish
 - [ ] Promote high-value partial baselines (batch by test family)
 - [x] Skip `struct-dom-*` — DOM API out of scope
@@ -148,9 +175,9 @@ or have a documented unsupported sub-feature.
 
 ### Conformance-only (inline SVG fonts)
 
-- [ ] Parse inline `<font>`, `<glyph>` in `defs` (no external `font-face-uri`)
-- [ ] Bundle `SVGFreeSans` inline for W3C tests OR ship test-only fixture helper
-- [ ] Keep external `font-face-uri` **rejected** per [security-model.md](security-model.md)
+- [x] Parse inline `<font>`, `<glyph>` in `defs` (conformance / `.localFiles` fixtures)
+- [x] External `font-face-uri` **rejected** under `.production` per [security-model.md](security-model.md)
+- [ ] Bundle `SVGFreeSans` inline for W3C tests OR ship test-only fixture helper (`.localFiles` covers corpus today)
 
 ### Defer
 
@@ -246,9 +273,9 @@ Do not implement for production. Keep `skipTags` entries in `overrides.json`.
 ## Suggested work order (summary)
 
 ```
-Phase 0  Security lockdown
+Phase 0  Security lockdown                    [x] complete
    ↓
-Phase 1  Styling partials + pservers partials + struct partials
+Phase 1  Styling partials + pservers partials + struct partials   ← current
    ↓
 Phase 2  Masking complete
    ↓
