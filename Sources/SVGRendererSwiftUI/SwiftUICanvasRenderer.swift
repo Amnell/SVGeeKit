@@ -75,6 +75,7 @@ public struct SwiftUICanvasRenderer {
 
             case .strokePath(let cgPath, let paint, let opacity, let width, let cap, let join, let miterLimit, let dashArray, let dashPhase):
                 guard let shading = shading(for: paint, opacity: opacity) else { continue }
+                let strokePath = HairlineStrokeAlignment.alignedPathForStroke(cgPath, lineWidth: width)
                 let style = StrokeStyle(
                     lineWidth: width,
                     lineCap: lineCap(cap),
@@ -87,13 +88,13 @@ public struct SwiftUICanvasRenderer {
                     context.drawLayer { layerCtx in
                         layerCtx.concatenate(tx)
                         layerCtx.stroke(
-                            Path(cgPath).applying(tx.inverted()),
+                            Path(strokePath).applying(tx.inverted()),
                             with: shading,
                             style: style
                         )
                     }
                 } else {
-                    context.stroke(Path(cgPath), with: shading, style: style)
+                    context.stroke(Path(strokePath), with: shading, style: style)
                 }
 
             case .clipToPath(let cgPath, let evenOdd):

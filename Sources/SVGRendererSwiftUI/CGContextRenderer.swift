@@ -229,10 +229,12 @@ struct CGContextRenderer {
         switch paint {
         case .color(let c):
             ctx.setStrokeColor(cgColor(c, opacity: effectiveOpacity))
-            ctx.addPath(path)
+            let strokePath = HairlineStrokeAlignment.alignedPathForStroke(path, lineWidth: width)
+            ctx.addPath(strokePath)
             ctx.strokePath()
         case .linearGradient(let g):
-            guard let strokePath = strokedCopy(path, width: width, cap: cap, join: join, miterLimit: miterLimit) else {
+            let sourcePath = HairlineStrokeAlignment.alignedPathForStroke(path, lineWidth: width)
+            guard let strokePath = strokedCopy(sourcePath, width: width, cap: cap, join: join, miterLimit: miterLimit) else {
                 ctx.restoreGState()
                 return
             }
@@ -245,7 +247,8 @@ struct CGContextRenderer {
                 transform: g.transform.matrix.isIdentity ? nil : g.transform.matrix
             )
         case .radialGradient(let g):
-            guard let strokePath = strokedCopy(path, width: width, cap: cap, join: join, miterLimit: miterLimit) else {
+            let sourcePath = HairlineStrokeAlignment.alignedPathForStroke(path, lineWidth: width)
+            guard let strokePath = strokedCopy(sourcePath, width: width, cap: cap, join: join, miterLimit: miterLimit) else {
                 ctx.restoreGState()
                 return
             }
