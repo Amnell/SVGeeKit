@@ -395,25 +395,25 @@ Integrators inspect `result.report.warnings` after a successful `try`. For Swift
 - [x] Route `SVGReferencedImageResolver`, `FontParsing`, `SVGImageDataLoader` through resolver
 - [x] Path traversal guard for `.localFiles` (warn + skip; allows W3C `../resources/`)
 - [x] Unit tests: production warns on relative href; localFiles accepts co-located file
-- [ ] Unit tests: malformed XML throws; hostile input never traps (`fatalError`/force-unwrap)
+- [x] Unit tests: malformed XML throws; hostile input never traps (`fatalError`/force-unwrap)
 
 ### Phase 0b — caller migration & view layer
 
-- [ ] `SVGConformanceRunner` → explicit `.localFiles(at:)` (still uses `baseURL` bridge)
-- [ ] `W3CReferenceDiff` → `.localFiles(at:)`
-- [ ] Viewer / Benchmarks → `.localFiles(at:)` when reading paths
+- [x] `SVGConformanceRunner` → explicit `.localFiles(at:)`
+- [x] `W3CReferenceDiff` → `.localFiles(at:)`
+- [x] Viewer / Benchmarks → `.localFiles(at:)` when reading paths
 - [x] `SVGImageView(svgData:)` — non-throwing init, empty canvas on parse failure
 - [x] Optional `SVGImageView(…, parseError: Binding<Error?>)` for parent state
 - [ ] Document in README: parser throws on hard failure; view never throws
-- [ ] Renderer audit: no `fatalError` / force-unwrap on user-controlled model data
+- [x] Renderer audit: no `fatalError` / force-unwrap on user-controlled model data
 
 ### Phase 0c — hardening
 
 - [x] Add `SVGParsingLimits` on `SVGParserOptions`
-- [ ] `SVGParseReport` on every successful `parse(…)`
-- [ ] Audit `SVGParser` for implicit `URL(string:relativeTo:)` resolution paths
-- [ ] Ensure `SVGScript` / `SVGAnimation` are not linked by default from `SVGKit`
-- [ ] Fuzz / corpus test: random bytes → no trap; malformed → `throws` or empty view
+- [x] `SVGParseReport` on every successful `parse(…)` via `parseWithReport`
+- [x] Audit `SVGParser` for implicit `URL(string:relativeTo:)` resolution paths
+- [x] Ensure `SVGScript` / `SVGAnimation` are not linked by default from `SVGKit`
+- [x] Fuzz / corpus test: random bytes → no trap; malformed → `throws` or empty view
 
 ## Conformance impact
 

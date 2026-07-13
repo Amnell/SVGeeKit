@@ -53,7 +53,7 @@ let package = Package(
             path: "Apps/Benchmarks"
         ),
         .testTarget(name: "SVGCoreTests", dependencies: ["SVGCore"]),
-        .testTarget(name: "SVGParserTests", dependencies: ["SVGParser"]),
+        .testTarget(name: "SVGParserTests", dependencies: ["SVGParser", "SVGRendererSwiftUI"]),
         .testTarget(
             name: "SVGRendererTests",
             dependencies: ["SVGParser", "SVGRenderer", "SVGRendererSwiftUI", "SVGConformance"],

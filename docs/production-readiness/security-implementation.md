@@ -311,15 +311,34 @@ On exceed: `warning(.limitExceeded(…))` + skip/truncate per [security-model.md
 
 **Goal:** Prove no `fatalError` / force-unwrap on hostile input.
 
-1. Grep audit: `fatalError`, `precondition`, `!` on parser/renderer paths touching user data.
-2. Add `Tests/SVGParserTests/HostileInputTests.swift`:
-   - Random `Data` → `parse` does not trap
-   - Malformed XML → `throws` OR empty view (Step 7)
-3. Optional: run on W3C corpus with `.production` — expect warnings, no crash.
+### Trap audit (2026-07-13)
+
+Grep over `Sources/SVGParser`, `Sources/SVGRenderer`, `Sources/SVGRendererSwiftUI`:
+
+| Pattern | Parser | Renderer | SwiftUI view |
+| --- | ---: | ---: | ---: |
+| `fatalError` | 0 | 0 | 0 |
+| `precondition` | 0 | 0 | 0 |
+| `try!` | 0 | 0 | 0 |
+
+Remaining force-unwraps are internal invariants (e.g. `tspanStyleStack.last!` after a
+push) or framework bridging (`CTLineGetGlyphRuns` cast), not direct indexing of
+user-controlled strings.
+
+`SVGKit` does **not** link `SVGScript` or `SVGAnimation`; those remain separate products.
+
+### Tests
+
+`Tests/SVGParserTests/HostileInputTests.swift`:
+
+- Seeded random `Data` (256 samples, up to 8 KB) → `parseWithReport` never traps
+- Malformed XML → `throws`
+- `SVGImageView(svgData:)` on random bytes → never traps
+- W3C corpus (535 files) under `.production` → no trap (warnings OK)
 
 ### Exit criteria
 
-- [ ] Checklist in [security-model.md](security-model.md) Phase 0c complete
+- [x] Checklist in [security-model.md](security-model.md) Phase 0c complete
 
 ---
 

@@ -79,7 +79,7 @@ references them; do not duplicate their step-by-step content here.
 
 | Phase | Focus | Status |
 | --- | --- | --- |
-| 0 | [Security model](security-model.md) — lock external refs | Not started |
+| 0 | [Security model](security-model.md) — lock external refs | **Complete** (Steps 0–9) |
 | 1 | [Roadmap §1](roadmap.md#phase-1--core-static-rendering) — core geometry & paint | In progress |
 | 2 | [Roadmap §2](roadmap.md#phase-2--masking--clipping) — `clipPath` / `mask` | In progress |
 | 3 | [Roadmap §3](roadmap.md#phase-3--text) — system-font text | Not started |
@@ -100,7 +100,7 @@ references them; do not duplicate their step-by-step content here.
 ## Definition of done (v1)
 
 - [ ] [Static profile](static-profile.md) implemented and documented
-- [ ] [Security model](security-model.md) enforced in parser (no silent external fetch)
+- [x] [Security model](security-model.md) enforced in parser (no silent external fetch)
 - [ ] In-profile W3C chapters at target pass rates in [roadmap.md](roadmap.md)
 - [ ] [Shipping checklist](shipping-checklist.md) complete
 - [ ] `SVGScript` / `SVGAnimation` remain optional modules, not required for `SVGKit`
