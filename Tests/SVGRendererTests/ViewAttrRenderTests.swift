@@ -24,4 +24,11 @@ struct ViewAttrRenderTests {
         // can produce large per-channel deltas on glyphs while raster image viewports match.
         #expect(diff.mismatchedFraction < 0.13)
     }
+
+    @Test func coordsViewattr04fMatchesW3CReference() throws {
+        let diff = try W3CReferenceDiff.diff(testId: "coords-viewattr-04-f", w3cResourcesRoot: Self.w3cRoot)
+        // Label text uses SVGFreeSans in the W3C reference; system font substitution
+        // can produce large per-channel deltas on glyphs while SVG image viewports match.
+        #expect(diff.mismatchedFraction < 0.13)
+    }
 }

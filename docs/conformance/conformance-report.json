@@ -1012,10 +1012,9 @@
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/coords-viewattr-04-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/coords-viewattr-04-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "partialBaseline",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/coords-viewattr-04-f\/baseline.png",
+    "detail" : "promoted from partial baseline",
+    "status" : "passed",
     "tag" : "coords",
     "testId" : "coords-viewattr-04-f"
   },
@@ -2144,7 +2143,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/paths-data-18-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/paths-data-18-f\/baseline.png",
-    "detail" : "promoted from partial baseline",
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "passed",
     "tag" : "paths",
     "testId" : "paths-data-18-f"
@@ -3138,10 +3138,9 @@
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-03-t\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-image-03-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "partialBaseline",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-image-03-t\/baseline.png",
+    "detail" : "promoted from partial baseline",
+    "status" : "passed",
     "tag" : "struct",
     "testId" : "struct-image-03-t"
   },
@@ -3156,10 +3155,9 @@
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-05-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-image-05-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "partialBaseline",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-image-05-b\/baseline.png",
+    "detail" : "promoted from partial baseline",
+    "status" : "passed",
     "tag" : "struct",
     "testId" : "struct-image-05-b"
   },
@@ -3264,10 +3262,9 @@
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-17-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-image-17-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "partialBaseline",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-image-17-b\/baseline.png",
+    "detail" : "promoted from partial baseline",
+    "status" : "passed",
     "tag" : "struct",
     "testId" : "struct-image-17-b"
   },

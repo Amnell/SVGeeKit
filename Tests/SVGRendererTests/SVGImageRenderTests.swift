@@ -57,4 +57,34 @@ struct SVGImageRenderTests {
         }.count
         #expect(drawCount == 1)
     }
+
+    @Test func lowersSVGImageContentWithoutDrawCommand() throws {
+        let w3cRoot = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .appendingPathComponent("../SVGConformanceTests/Resources/W3C-SVG-1.1", isDirectory: true)
+            .standardizedFileURL
+        let svgURL = w3cRoot.appendingPathComponent("images/happysmiley.svg")
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="50" height="50">
+          <image x="5" y="5" width="40" height="40" preserveAspectRatio="xMidYMid meet"
+                 xlink:href="\(svgURL.lastPathComponent)"/>
+        </svg>
+        """
+        var doc = try SVGParser().parse(
+            string: svg,
+            baseURL: svgURL.deletingLastPathComponent()
+        )
+        doc.intrinsicSize = CGSize(width: 50, height: 50)
+        let cmds = SVGRenderTree.lower(doc)
+        let drawCount = cmds.filter {
+            if case .drawImage = $0 { return true }
+            return false
+        }.count
+        #expect(drawCount == 0)
+        let fillCount = cmds.filter {
+            if case .fillPath = $0 { return true }
+            return false
+        }.count
+        #expect(fillCount > 0)
+    }
 }

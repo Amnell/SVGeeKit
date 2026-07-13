@@ -19,6 +19,21 @@ public struct SVGParser {
     }
 
     public func parse(data: Data, baseURL: URL? = nil) throws -> SVGDocument {
+        try parse(data: data, baseURL: baseURL, sourceURL: nil, referencedImageContext: nil)
+    }
+
+    /// Like `parse(data:baseURL:)` but records `sourceURL` so cyclic / self-referencing
+    /// `<image href="…svg">` links are detected when resolving nested SVG documents.
+    public func parse(data: Data, baseURL: URL?, sourceURL: URL) throws -> SVGDocument {
+        try parse(data: data, baseURL: baseURL, sourceURL: sourceURL, referencedImageContext: nil)
+    }
+
+    func parse(
+        data: Data,
+        baseURL: URL?,
+        sourceURL: URL?,
+        referencedImageContext: SVGReferencedImageResolveContext?
+    ) throws -> SVGDocument {
         let parser = XMLParser(data: data)
         let delegate = SAXDelegate(baseURL: baseURL, conditionalContext: conditionalContext)
         parser.delegate = delegate
@@ -44,6 +59,9 @@ public struct SVGParser {
         delegate.resolvePatternHrefs()
         delegate.resolvePendingFontHrefs()
         document.baseURL = baseURL
+        let resolveContext = referencedImageContext
+            ?? SVGReferencedImageResolveContext.topLevel(sourceURL: sourceURL)
+        SVGReferencedImageResolver.resolve(in: &document, context: resolveContext)
         document.paintServers = delegate.paintServers
         document.clipPaths = delegate.clipPaths
         document.masks = delegate.masks
@@ -63,7 +81,12 @@ public struct SVGParser {
     /// Reads `url` and parses with `baseURL` set to the file's parent directory.
     public func parse(url: URL) throws -> SVGDocument {
         let data = try Data(contentsOf: url)
-        return try parse(data: data, baseURL: url.deletingLastPathComponent())
+        return try parse(
+            data: data,
+            baseURL: url.deletingLastPathComponent(),
+            sourceURL: url.standardizedFileURL,
+            referencedImageContext: nil
+        )
     }
 
     /// Async convenience: runs the synchronous `parse(data:baseURL:)` on a detached

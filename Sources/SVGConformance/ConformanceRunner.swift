@@ -109,7 +109,8 @@ public struct SVGConformanceRunner {
             let data = try Data(contentsOf: testCase.svgURL)
             document = try parser.parse(
                 data: data,
-                baseURL: testCase.svgURL.deletingLastPathComponent()
+                baseURL: testCase.svgURL.deletingLastPathComponent(),
+                sourceURL: testCase.svgURL.standardizedFileURL
             )
         } catch {
             return SVGConformanceRecord(

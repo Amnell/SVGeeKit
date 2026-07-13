@@ -1784,4 +1784,96 @@ struct SVGParserScriptTests {
         #expect(img.preserveAspectRatio == SVGPreserveAspectRatio(align: .xMidYMid, meetOrSlice: .meet))
         #expect(doc.resolveURL(img.href)?.lastPathComponent == "photo.png")
     }
+
+    @Test func parsesReferencedSVGDocumentForImageHref() throws {
+        let w3cRoot = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .appendingPathComponent("../SVGConformanceTests/Resources/W3C-SVG-1.1", isDirectory: true)
+            .standardizedFileURL
+        let svgURL = w3cRoot.appendingPathComponent("svg/coords-viewattr-04-f.svg")
+        let data = try Data(contentsOf: svgURL)
+        let doc = try SVGParser().parse(data: data, baseURL: svgURL.deletingLastPathComponent())
+
+        func findImage(in elements: [SVGElement]) -> SVGImage? {
+            for element in elements {
+                switch element {
+                case .image(let img) where img.referencedDocument != nil:
+                    return img
+                case .group(let g):
+                    if let found = findImage(in: g.children) { return found }
+                case .svg(let s):
+                    if let found = findImage(in: s.children) { return found }
+                default:
+                    break
+                }
+            }
+            return nil
+        }
+
+        guard let img = findImage(in: doc.root.children) else {
+            Issue.record("expected image with referenced SVG document"); return
+        }
+        #expect(img.href.hasSuffix("happysmiley.svg"))
+        #expect(img.referencedDocument?.viewBox == CGRect(x: 0, y: 0, width: 30, height: 40))
+    }
+
+    @Test func breaksCyclicSVGImageReferences() throws {
+        let w3cRoot = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .appendingPathComponent("../SVGConformanceTests/Resources/W3C-SVG-1.1", isDirectory: true)
+            .standardizedFileURL
+        let svgURL = w3cRoot.appendingPathComponent("svg/struct-image-12-b.svg")
+        let doc = try SVGParser().parse(url: svgURL)
+
+        func imageHrefs(in elements: [SVGElement]) -> [String] {
+            elements.flatMap { element -> [String] in
+                switch element {
+                case .image(let img):
+                    return [img.href]
+                case .group(let g):
+                    return imageHrefs(in: g.children)
+                case .svg(let s):
+                    return imageHrefs(in: s.children)
+                default:
+                    return []
+                }
+            }
+        }
+
+        let hrefs = imageHrefs(in: doc.root.children)
+        #expect(hrefs.contains("../images/struct-image-12-b-cycle.svg"))
+
+        func findImage(hrefSuffix: String, in elements: [SVGElement]) -> SVGImage? {
+            for element in elements {
+                switch element {
+                case .image(let img) where img.href.hasSuffix(hrefSuffix):
+                    return img
+                case .group(let g):
+                    if let found = findImage(hrefSuffix: hrefSuffix, in: g.children) { return found }
+                case .svg(let s):
+                    if let found = findImage(hrefSuffix: hrefSuffix, in: s.children) { return found }
+                default:
+                    break
+                }
+            }
+            return nil
+        }
+
+        let cycleImage = findImage(hrefSuffix: "struct-image-12-b-cycle.svg", in: doc.root.children)
+        #expect(cycleImage?.referencedDocument != nil)
+        let nestedHrefs = imageHrefs(in: cycleImage?.referencedDocument?.root.children ?? [])
+        let backRef = nestedHrefs.first { $0.hasSuffix("struct-image-12-b.svg") }
+        #expect(backRef != nil)
+        let backImage = findImage(
+            hrefSuffix: "struct-image-12-b.svg",
+            in: cycleImage?.referencedDocument?.root.children ?? []
+        )
+        #expect(backImage?.referencedDocument == nil)
+
+        let selfImage = findImage(hrefSuffix: "struct-image-12-b.svg", in: doc.root.children)
+            .flatMap { img -> SVGImage? in
+                img.href == "struct-image-12-b.svg" ? img : nil
+            }
+        #expect(selfImage?.referencedDocument == nil)
+    }
 }

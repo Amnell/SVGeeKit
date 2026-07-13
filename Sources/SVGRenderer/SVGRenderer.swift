@@ -255,6 +255,10 @@ public enum SVGRenderTree {
 
     private static func lower(image: SVGImage, ctx: Context, into commands: inout [SVGRenderCommand]) {
         guard image.paint.visibility == .visible else { return }
+        if let document = image.referencedDocument {
+            lowerSVGImageContent(document: document, image: image, ctx: ctx, into: &commands)
+            return
+        }
         guard let imageData = SVGImageDataLoader.load(href: image.href, baseURL: ctx.baseURL) else { return }
 
         let viewport = CGRect(origin: image.origin, size: image.size)
@@ -267,6 +271,76 @@ public enum SVGRenderTree {
             ctx: ctx,
             into: &commands
         )
+    }
+
+    private static func lowerSVGImageContent(
+        document: SVGDocument,
+        image: SVGImage,
+        ctx: Context,
+        into commands: inout [SVGRenderCommand]
+    ) {
+        let contentViewBox: CGRect
+        if let viewBox = document.viewBox {
+            contentViewBox = viewBox
+        } else if let size = document.intrinsicSize, size.width > 0, size.height > 0 {
+            contentViewBox = CGRect(origin: .zero, size: size)
+        } else {
+            return
+        }
+        guard contentViewBox.width > 0, contentViewBox.height > 0 else { return }
+
+        let intrinsicSize = contentViewBox.size
+        var viewport = CGRect(origin: image.origin, size: image.size)
+        if viewport.width <= 0 { viewport.size.width = intrinsicSize.width }
+        if viewport.height <= 0 { viewport.size.height = intrinsicSize.height }
+        guard viewport.width > 0, viewport.height > 0 else { return }
+
+        let nestedCtx = Context(
+            paintServers: document.paintServers,
+            clipPaths: document.clipPaths,
+            masks: document.masks,
+            fonts: document.fonts,
+            fontFaces: document.fontFaces,
+            definitions: document.definitions,
+            baseURL: document.baseURL
+        )
+
+        var painted: [SVGRenderCommand] = []
+        let hasClip = image.paint.clipPathRef != nil
+        let needsState = hasClip || image.transform.matrix != .identity || image.paint.opacity < 1
+        if needsState { painted.append(.pushState) }
+        if image.transform.matrix != .identity {
+            painted.append(.concatenate(image.transform))
+        }
+        if let clipRef = image.paint.clipPathRef, let clipDef = ctx.clipPaths[clipRef] {
+            painted.append(.clipToPath(
+                lowerToClipPath(clipDef, bbox: viewport, ctx: ctx),
+                evenOdd: false
+            ))
+        }
+        if image.paint.opacity < 1 {
+            painted.append(.beginOpacityLayer(image.paint.opacity))
+        }
+
+        painted.append(.pushState)
+        painted.append(.clipToPath(CGPath(rect: viewport, transform: nil), evenOdd: false))
+        let fit = CGAffineTransform(translationX: viewport.minX, y: viewport.minY)
+            .concatenating(SVGPreserveAspectRatio.viewBoxTransform(
+                viewBox: contentViewBox,
+                viewportSize: viewport.size,
+                preserveAspectRatio: image.preserveAspectRatio
+            ))
+        painted.append(.concatenate(SVGTransform(fit)))
+        lower(group: document.root, ctx: nestedCtx, into: &painted)
+        painted.append(.popState)
+
+        if image.paint.opacity < 1 { painted.append(.endOpacityLayer) }
+        if needsState { painted.append(.popState) }
+
+        guard let wrapped = applyMask(image.paint.maskRef, bbox: viewport, content: painted, ctx: ctx) else {
+            return
+        }
+        commands.append(contentsOf: wrapped)
     }
 
     private static func emitPaintedImage(
