@@ -2081,7 +2081,8 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         }
     }
 
-    /// SVG 1.1 §13.2.3: clamp out-of-order stop offsets; equal offsets keep the last stop.
+    /// SVG 1.1 §13.2.3: clamp out-of-order stop offsets; equal offsets keep the last stop
+    /// at the overlap point but retain earlier stops for segment interpolation.
     private static func normalizeGradientStops(_ stops: [SVGGradientStop]) -> [SVGGradientStop] {
         guard !stops.isEmpty else { return [] }
         var normalized: [SVGGradientStop] = []
@@ -2093,12 +2094,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             } else {
                 maxOffset = offset
             }
-            let corrected = SVGGradientStop(offset: offset, color: stop.color)
-            if let last = normalized.last, abs(last.offset - corrected.offset) < 1e-6 {
-                normalized[normalized.count - 1] = corrected
-            } else {
-                normalized.append(corrected)
-            }
+            normalized.append(SVGGradientStop(offset: offset, color: stop.color))
         }
         return normalized
     }

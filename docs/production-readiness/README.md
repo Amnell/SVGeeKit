@@ -48,8 +48,8 @@ references them; do not duplicate their step-by-step content here.
 
 | Status | Count | Meaning |
 | --- | ---: | --- |
-| `passed` | 193 | Verified baseline in `Tests/__Snapshots__/` |
-| `partialBaseline` | 110 | Renders; auto-tracked, needs human verification |
+| `passed` | 195 | Verified baseline in `Tests/__Snapshots__/` |
+| `partialBaseline` | 109 | Renders; auto-tracked, needs human verification |
 | `skipped` | 231 | Feature family or test explicitly out of scope |
 
 ### By feature tag (in-profile chapters)
@@ -59,8 +59,8 @@ references them; do not duplicate their step-by-step content here.
 | `shapes` | 30 | 30 | 0 | 0 | Tier 1 ✓ |
 | `paths` | 21 | 19 | 0 | 2 | Tier 1 ✓ |
 | `coords` | 32 | 28 | 0 | 4 | Tier 1 |
-| `painting` | 31 | 21 | 0 | 9 | Tier 1 |
-| `pservers` | 33 | 32 | 1 | 0 | Tier 1 |
+| `painting` | 31 | 22 | 0 | 9 | Tier 1 |
+| `pservers` | 33 | 33 | 0 | 0 | Tier 1 ✓ |
 | `styling` | 18 | 8 | 10 | 0 | Tier 1 |
 | `struct` | 72 | 23 | 31 | 18 | Tier 1 |
 | `render` | 8 | 7 | 1 | 0 | Tier 1 |

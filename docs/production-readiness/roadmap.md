@@ -84,7 +84,7 @@ mutation, out of production scope.
 
 | Target | Baseline | Goal | Status |
 | --- | ---: | ---: | --- |
-| `painting` passed | 21 | 24+ | `[~]` |
+| `painting` passed | 22 | 24+ | `[~]` |
 | `painting` partial | 0 | 0 | `[x]` |
 
 - [x] Fill, stroke, opacity, dash, caps/joins
@@ -97,15 +97,18 @@ mutation, out of production scope.
 
 | Target | Baseline | Goal | Status |
 | --- | ---: | ---: | --- |
-| `pservers` passed | 32 | 33 | `[~]` |
-| `pservers` partial | 1 | 0 | `[~]` |
+| `pservers` passed | 33 | 33 | `[x]` verified |
+| `pservers` partial | 0 | 0 | `[x]` |
 
 - [x] `linearGradient`, `radialGradient`, `pattern`
 - [x] `stop-opacity` independent interpolation (`pservers-grad-05-b`)
-- [x] Promoted: `pservers-grad-05-b`, `pservers-grad-13-b`, `pservers-grad-18-b`, `pservers-grad-21-b`, `pservers-grad-23-f`, `pservers-grad-24-f`, `pservers-pattern-06-f`
+- [x] Promoted: `pservers-grad-05-b`, `pservers-grad-13-b`, `pservers-grad-16-b`, `pservers-grad-18-b`, `pservers-grad-21-b`, `pservers-grad-23-f`, `pservers-grad-24-f`, `pservers-pattern-06-f`
 - [x] `<use>` fill on no-fill overlay + inherited group stroke (`pservers-grad-13-b`)
-- [x] Stop offset normalization (`pservers-grad-16-b`) — ready for human baseline promotion
-- [ ] Remaining partial: `pservers-grad-16-b`
+- [x] Stop offset normalization + duplicate-offset overlap (`pservers-grad-16-b`)
+
+**`pservers` chapter:** all 33 non-skipped W3C tests pass with verified baselines
+(completed 2026-07-14).
+
 - [ ] `gradientUnits`, `spreadMethod`, `gradientTransform` edge cases
 
 ### 1d. CSS styling
@@ -228,8 +231,8 @@ or have a documented unsupported sub-feature.
 
 | Target | Baseline | Goal | Status |
 | --- | ---: | ---: | --- |
-| `partialBaseline` total | 110 | ≤30 | `[ ]` |
-| `passed` total | 193 | 280+ | `[ ]` |
+| `partialBaseline` total | 109 | ≤30 | `[ ]` |
+| `passed` total | 195 | 280+ | `[ ]` |
 
 ### Process (repeat per tag)
 
@@ -244,11 +247,12 @@ or have a documented unsupported sub-feature.
 1. `struct` (31 partial) — highest count
 2. `animate` (60 partial) — **low priority** (out of production scope; only promote if needed for regression)
 3. `styling` (11 partial)
-4. `pservers` (1 partial) — `pservers-grad-16-b`
+4. ~~`pservers`~~ — **complete** (33/33 passed, 2026-07-14)
 5. `color` (2 partial)
 6. `render` (1 partial)
 
 `shapes` — **complete and verified** (30/30 passed, 0 partial; promoted 2026-07-14).
+`pservers` — **complete and verified** (33/33 passed, 0 partial; promoted 2026-07-14).
 
 **Exit criteria:** No `partialBaseline` with `diffMaxChannel: 0` in Tier-1 tags unless
 explicitly marked "known gap" in [static-profile.md](static-profile.md).

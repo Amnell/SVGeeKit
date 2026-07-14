@@ -189,7 +189,20 @@ struct PatternRenderTests {
   @Test func w3cGrad16MatchesReference() throws {
     let diff = try diffAgainstW3C(testId: "pservers-grad-16-b")
     // Revision line at bottom uses SVGFreeSans vs reference font.
-    #expect(diff.mismatchedFraction < 0.07)
+    #expect(diff.mismatchedFraction < 0.02)
+  }
+
+  /// pservers-grad-16-b defs3: pink→green left half, blue right half after stop rules.
+  @Test func grad16StopRulesRenderYellowPinkGreenThenBlue() throws {
+    let svgURL = Self.w3cRoot.appendingPathComponent("svg/pservers-grad-16-b.svg")
+    let doc = try SVGConformanceFixtureParsing.parse(data: Data(contentsOf: svgURL), svgURL: svgURL)
+    let image = try SVGRasterizer.rasterize(doc, pixelSize: CGSize(width: 480, height: 360))
+    let greenBand = Self.pixel(in: image, x: 210, y: 250)
+    #expect(greenBand.green > greenBand.blue, "left half should reach green before blue boundary")
+    let blueBand = Self.pixel(in: image, x: 400, y: 250)
+    #expect(blueBand.blue > 200 && blueBand.red < 20)
+    let emptyTop = Self.pixel(in: image, x: 240, y: 50)
+    #expect(emptyTop.alpha == 0, "no-stop gradient should paint no fill")
   }
 
   @Test func w3cGrad18MatchesReference() throws {

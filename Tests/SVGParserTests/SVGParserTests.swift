@@ -781,11 +781,14 @@ struct SVGParserTests {
         guard case .linearGradient(let g) = doc.paintServers["g"] else {
             Issue.record("expected linearGradient"); return
         }
-        #expect(g.stops.count == 3)
+        #expect(g.stops.count == 4)
         #expect(g.stops[0].offset == 0)
         #expect(g.stops[1].offset == 0.25)
         #expect(g.stops[2].offset == 0.5)
-        #expect(g.stops[2].color.red == 0 && g.stops[2].color.green == 0 && g.stops[2].color.blue == 1)
+        #expect(abs(g.stops[2].color.green - 128 / 255) < 0.01)
+        #expect(g.stops[2].color.red == 0)
+        #expect(g.stops[3].offset == 0.5)
+        #expect(g.stops[3].color.red == 0 && g.stops[3].color.green == 0 && g.stops[3].color.blue == 1)
     }
 
     @Test func parsesGradientStopColorAndOpacityInherit() throws {

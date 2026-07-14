@@ -84,7 +84,7 @@ enum SVGUseExpansion {
     explicitPresentation: Set<String>
   ) -> SVGPaintProperties {
     var paint = referenced
-    for key in inheritedPresentationKeys where !explicitPresentation.contains(key) {
+    for key in inheritedPresentationKeys where shouldInheritPresentation(key, explicit: explicitPresentation) {
       applyPresentationKey(key, from: use.paint, into: &paint)
     }
     // Use fill overrides only shapes without a specified fill (struct-use-01-t).
@@ -93,6 +93,16 @@ enum SVGUseExpansion {
       paint.fill = use.paint.fill
     }
     return paint
+  }
+
+  /// Parser maps `display` → `visibility`; block both keys when either is explicit
+  /// on the referenced shape (painting-control-05-f displaynone_rect via `<use>`).
+  private static func shouldInheritPresentation(_ key: String, explicit: Set<String>) -> Bool {
+    if explicit.contains(key) { return false }
+    if key == "visibility" || key == "display" {
+      return !explicit.contains("visibility") && !explicit.contains("display")
+    }
+    return true
   }
 
   private static let inheritedPresentationKeys = [

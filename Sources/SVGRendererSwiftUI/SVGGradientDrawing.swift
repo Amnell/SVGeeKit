@@ -51,7 +51,13 @@ enum SVGGradientDrawing {
         _ stops: [SVGGradientStop],
         colorInterpolation: SVGColorInterpolation
     ) -> [SVGGradientStop] {
-        let sorted = stops.sorted { $0.offset < $1.offset }
+        // Preserve document order at equal offsets (SVG: last stop controls overlap point).
+        let sorted = stops.enumerated().sorted { lhs, rhs in
+            if lhs.element.offset != rhs.element.offset {
+                return lhs.element.offset < rhs.element.offset
+            }
+            return lhs.offset < rhs.offset
+        }.map(\.element)
         guard !sorted.isEmpty else { return [] }
 
         var effectiveStops = sorted
