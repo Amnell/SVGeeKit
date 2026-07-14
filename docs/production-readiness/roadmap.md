@@ -103,8 +103,8 @@ mutation, out of production scope.
 - [x] `linearGradient`, `radialGradient`, `pattern`
 - [x] `stop-opacity` independent interpolation (`pservers-grad-05-b`)
 - [x] Promoted: `pservers-grad-05-b`, `pservers-grad-18-b`, `pservers-grad-23-f`, `pservers-grad-24-f`, `pservers-pattern-06-f`
-- [x] Stop offset normalization (`pservers-grad-16-b`), radial `xlink:href` attribute merge (`pservers-grad-21-b`) — pending human baseline promotion
-- [~] `pservers-grad-13-b` — substantial improvement (`<use>` gradient overlay + focal tiles); radial focal rendering still partial
+- [x] Stop offset normalization (`pservers-grad-16-b`), radial `xlink:href` attribute merge (`pservers-grad-21-b`) — ready for human baseline promotion
+- [~] `pservers-grad-13-b` — improved via `<use>` gradient overlay; off-center focal on non-square OBB still partial
 - [ ] Remaining partials: `pservers-grad-13-b`, `pservers-grad-16-b`, `pservers-grad-21-b`
 - [ ] `gradientUnits`, `spreadMethod`, `gradientTransform` edge cases
 
@@ -120,7 +120,7 @@ Follow [styling-rollout.md](../styling-rollout.md):
 - [x] Presentation attributes
 - [x] Inline `style`
 - [x] `<style>` class and type selectors (core)
-- [x] Inheritance (`styling-inherit-01-b`)
+- [x] Inheritance (`styling-inherit-01-b` promoted)
 - [ ] Presentation edge cases (`styling-pres-02-f` … `05-f`)
 - [ ] Promote 10 partial baselines after verification
 

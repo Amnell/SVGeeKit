@@ -128,8 +128,12 @@ enum SVGGradientDrawing {
         }
         ctx.clip(using: evenOdd ? .evenOdd : .winding)
 
+        let focal = clampedFocal(
+            cx: gradient.cx, cy: gradient.cy,
+            fx: gradient.fx, fy: gradient.fy,
+            r: gradient.r
+        )
         let center = CGPoint(x: gradient.cx, y: gradient.cy)
-        let focal = CGPoint(x: gradient.fx, y: gradient.fy)
         let radius = gradient.r
         ctx.drawRadialGradient(
             cgGradient,
@@ -319,6 +323,17 @@ enum SVGGradientDrawing {
     }
 
     private static let stopEpsilon: CGFloat = 0.000_1
+
+    /// SVG 1.1: clamp focal to the circle perimeter when outside `(cx, cy, r)`.
+    private static func clampedFocal(
+        cx: CGFloat, cy: CGFloat, fx: CGFloat, fy: CGFloat, r: CGFloat
+    ) -> CGPoint {
+        let dx = fx - cx, dy = fy - cy
+        let dist = hypot(dx, dy)
+        guard dist > r, dist > 0, r > 0 else { return CGPoint(x: fx, y: fy) }
+        let s = r / dist
+        return CGPoint(x: cx + dx * s, y: cy + dy * s)
+    }
 
     private static func needsIndependentOpacityInterpolation(_ stops: [SVGGradientStop]) -> Bool {
         stops.contains { $0.color.alpha < 1 - stopEpsilon }
