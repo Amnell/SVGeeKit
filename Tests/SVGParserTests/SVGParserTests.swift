@@ -643,6 +643,26 @@ struct SVGParserTests {
         #expect(abs(cb.red) < 0.01 && abs(cb.green) < 0.01 && abs(cb.blue - 1) < 0.01)
     }
 
+    @Test func mapsDisplayNoneToHiddenVisibility() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+          <rect id="hidden" display="none"/>
+          <g display="none">
+            <rect id="inherited"/>
+          </g>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .rect(let hidden) = doc.root.children[0],
+              case .group(let g) = doc.root.children[1],
+              case .rect(let inherited) = g.children[0] else {
+            Issue.record("expected hidden rect and group child"); return
+        }
+        #expect(hidden.paint.visibility == .hidden)
+        #expect(g.visibility == .hidden)
+        #expect(inherited.paint.visibility == .hidden)
+    }
+
     @Test func cascadesVisibilityAndHonorsChildOverride() throws {
         let svg = """
         <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
@@ -663,6 +683,30 @@ struct SVGParserTests {
         #expect(shown.paint.visibility == .visible)
         #expect(hidden.paint.visibility == .hidden)
         #expect(revealed.paint.visibility == .visible)
+    }
+
+    @Test func parsesLinearGradientColorInterpolation() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="50">
+          <defs>
+            <linearGradient id="srgb" color-interpolation="sRGB">
+              <stop offset="0" stop-color="white"/>
+              <stop offset="1" stop-color="blue"/>
+            </linearGradient>
+            <linearGradient id="linear" color-interpolation="linearRGB">
+              <stop offset="0" stop-color="white"/>
+              <stop offset="1" stop-color="blue"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .linearGradient(let srgb) = doc.paintServers["srgb"],
+              case .linearGradient(let linear) = doc.paintServers["linear"] else {
+            Issue.record("expected linear gradients"); return
+        }
+        #expect(srgb.colorInterpolation == .sRGB)
+        #expect(linear.colorInterpolation == .linearRGB)
     }
 
     @Test func parsesLinearGradientWithXlinkHrefStopInheritance() throws {

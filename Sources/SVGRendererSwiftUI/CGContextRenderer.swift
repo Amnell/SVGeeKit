@@ -90,6 +90,7 @@ struct CGContextRenderer {
                 )
 
             case .clipToPath(let cgPath, let evenOdd):
+                guard !cgPath.isEmpty else { continue }
                 ctx.addPath(cgPath)
                 ctx.clip(using: evenOdd ? .evenOdd : .winding)
 

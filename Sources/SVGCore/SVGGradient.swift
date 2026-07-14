@@ -28,6 +28,7 @@ public struct SVGLinearGradient: Equatable, Sendable {
     public var y2: CGFloat
     public var units: SVGGradientUnits
     public var spreadMethod: SVGGradientSpread
+    public var colorInterpolation: SVGColorInterpolation
     public var stops: [SVGGradientStop]
     public var transform: SVGTransform
 
@@ -38,6 +39,7 @@ public struct SVGLinearGradient: Equatable, Sendable {
         y2: CGFloat = 0,
         units: SVGGradientUnits = .objectBoundingBox,
         spreadMethod: SVGGradientSpread = .pad,
+        colorInterpolation: SVGColorInterpolation = .sRGB,
         stops: [SVGGradientStop] = [],
         transform: SVGTransform = .identity
     ) {
@@ -47,6 +49,7 @@ public struct SVGLinearGradient: Equatable, Sendable {
         self.y2 = y2
         self.units = units
         self.spreadMethod = spreadMethod
+        self.colorInterpolation = colorInterpolation
         self.stops = stops
         self.transform = transform
     }
@@ -63,6 +66,7 @@ public struct SVGRadialGradient: Equatable, Sendable {
     public var r: CGFloat
     public var units: SVGGradientUnits
     public var spreadMethod: SVGGradientSpread
+    public var colorInterpolation: SVGColorInterpolation
     public var stops: [SVGGradientStop]
     public var transform: SVGTransform
 
@@ -74,6 +78,7 @@ public struct SVGRadialGradient: Equatable, Sendable {
         r: CGFloat = 0.5,
         units: SVGGradientUnits = .objectBoundingBox,
         spreadMethod: SVGGradientSpread = .pad,
+        colorInterpolation: SVGColorInterpolation = .sRGB,
         stops: [SVGGradientStop] = [],
         transform: SVGTransform = .identity
     ) {
@@ -84,6 +89,7 @@ public struct SVGRadialGradient: Equatable, Sendable {
         self.r = r
         self.units = units
         self.spreadMethod = spreadMethod
+        self.colorInterpolation = colorInterpolation
         self.stops = stops
         self.transform = transform
     }

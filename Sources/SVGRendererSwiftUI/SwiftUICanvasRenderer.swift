@@ -98,9 +98,6 @@ public struct SwiftUICanvasRenderer {
                 }
 
             case .clipToPath(let cgPath, let evenOdd):
-                // Core Graphics treats an empty clip path as a no-op; match that so
-                // Canvas and SVGRasterizer stay in sync until `<use>`-in-clipPath
-                // is implemented (otherwise unresolved clips are empty paths).
                 guard !cgPath.isEmpty else { continue }
                 context.clip(to: Path(cgPath), style: FillStyle(eoFill: evenOdd))
 

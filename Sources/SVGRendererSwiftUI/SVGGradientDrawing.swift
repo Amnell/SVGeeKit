@@ -16,17 +16,26 @@ enum SVGGradientDrawing {
 
     static func makeGradient(
         stops: [SVGGradientStop],
-        paintOpacity: CGFloat
+        paintOpacity: CGFloat,
+        colorInterpolation: SVGColorInterpolation = .sRGB
     ) -> CGGradient? {
         let sorted = stops.sorted { $0.offset < $1.offset }
         guard !sorted.isEmpty else { return nil }
 
+        let effectiveStops: [SVGGradientStop]
+        switch colorInterpolation {
+        case .sRGB:
+            effectiveStops = sorted
+        case .linearRGB:
+            effectiveStops = densifyStopsLinearRGB(sorted, stepsPerSegment: 32)
+        }
+
         var colors: [CGColor] = []
         var locations: [CGFloat] = []
-        colors.reserveCapacity(sorted.count)
-        locations.reserveCapacity(sorted.count)
+        colors.reserveCapacity(effectiveStops.count)
+        locations.reserveCapacity(effectiveStops.count)
 
-        for stop in sorted {
+        for stop in effectiveStops {
             let a = stop.color.alpha * paintOpacity
             // Zero chroma on fully-transparent stops so alpha interpolation
             // does not hue-bleed (pservers-grad-05-b).
@@ -56,7 +65,11 @@ enum SVGGradientDrawing {
         evenOdd: Bool,
         transform: CGAffineTransform?
     ) {
-        guard let cgGradient = makeGradient(stops: gradient.stops, paintOpacity: paintOpacity) else {
+        guard let cgGradient = makeGradient(
+            stops: gradient.stops,
+            paintOpacity: paintOpacity,
+            colorInterpolation: gradient.colorInterpolation
+        ) else {
             return
         }
 
@@ -88,7 +101,11 @@ enum SVGGradientDrawing {
         evenOdd: Bool,
         transform: CGAffineTransform?
     ) {
-        guard let cgGradient = makeGradient(stops: gradient.stops, paintOpacity: paintOpacity) else {
+        guard let cgGradient = makeGradient(
+            stops: gradient.stops,
+            paintOpacity: paintOpacity,
+            colorInterpolation: gradient.colorInterpolation
+        ) else {
             return
         }
 
@@ -292,6 +309,55 @@ enum SVGGradientDrawing {
     }
 
     private static let stopEpsilon: CGFloat = 0.000_1
+
+    private static func srgbToLinear(_ channel: CGFloat) -> CGFloat {
+        if channel <= 0.04045 { return channel / 12.92 }
+        return pow((channel + 0.055) / 1.055, 2.4)
+    }
+
+    private static func linearToSrgb(_ channel: CGFloat) -> CGFloat {
+        if channel <= 0.0031308 { return 12.92 * channel }
+        return 1.055 * pow(channel, 1.0 / 2.4) - 0.055
+    }
+
+    private static func interpolateColorLinearRGB(_ a: SVGColor, _ b: SVGColor, t: CGFloat) -> SVGColor {
+        func channel(_ va: CGFloat, _ vb: CGFloat) -> CGFloat {
+            let linear = srgbToLinear(va) * (1 - t) + srgbToLinear(vb) * t
+            return linearToSrgb(linear)
+        }
+        return SVGColor(
+            red: channel(a.red, b.red),
+            green: channel(a.green, b.green),
+            blue: channel(a.blue, b.blue),
+            alpha: a.alpha * (1 - t) + b.alpha * t
+        )
+    }
+
+    private static func densifyStopsLinearRGB(
+        _ stops: [SVGGradientStop],
+        stepsPerSegment: Int
+    ) -> [SVGGradientStop] {
+        guard stops.count >= 2, stepsPerSegment > 1 else { return stops }
+        var result: [SVGGradientStop] = []
+        result.reserveCapacity((stops.count - 1) * stepsPerSegment + 1)
+        for index in 0..<(stops.count - 1) {
+            let start = stops[index]
+            let end = stops[index + 1]
+            if index == 0 { result.append(start) }
+            for step in 1..<stepsPerSegment {
+                let fraction = CGFloat(step) / CGFloat(stepsPerSegment)
+                let offset = start.offset + (end.offset - start.offset) * fraction
+                result.append(
+                    SVGGradientStop(
+                        offset: offset,
+                        color: interpolateColorLinearRGB(start.color, end.color, t: fraction)
+                    )
+                )
+            }
+            result.append(end)
+        }
+        return result
+    }
 
     private static func expandedStops(
         stops: [SVGGradientStop],

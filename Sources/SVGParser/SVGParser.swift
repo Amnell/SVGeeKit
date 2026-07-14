@@ -436,6 +436,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         var r: CGFloat?
         var units: SVGGradientUnits?
         var spreadMethod: SVGGradientSpread?
+        var colorInterpolation: SVGColorInterpolation?
         var transform: SVGTransform?
         var stops: [SVGGradientStop] = []
     }
@@ -1359,7 +1360,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         let paintNames: Set<String> = [
             "fill", "fill-opacity", "fill-rule", "stroke", "stroke-opacity", "stroke-width",
             "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-dasharray",
-            "stroke-dashoffset", "opacity", "color", "visibility", "clip-path", "mask"
+            "stroke-dashoffset", "opacity", "color", "visibility", "display", "clip-path", "mask"
         ]
         let fontNames: Set<String> = [
             "font-family", "font-size", "font-weight", "font-style", "text-anchor"
@@ -1561,6 +1562,9 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             if let v = SVGVisibility(rawValue: value.trimmingCharacters(in: .whitespaces).lowercased()) {
                 p.visibility = v
             }
+        case "display":
+            let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+            p.visibility = trimmed == "none" ? .hidden : .visible
         case "clip-path":
             if let ref = parseClipPathRef(["clip-path": value]) {
                 p.clipPathRef = ref
@@ -1744,6 +1748,10 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
            let t = AttributeParsers.transform(raw) {
             p.transform = t
         }
+        if let raw = attributes["color-interpolation"]?.trimmingCharacters(in: .whitespaces),
+           let interpolation = SVGColorInterpolation(rawValue: raw) {
+            p.colorInterpolation = interpolation
+        }
         gradientStack.append(p)
     }
 
@@ -1888,6 +1896,10 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
            let t = AttributeParsers.transform(raw) {
             p.transform = t
         }
+        if let raw = attributes["color-interpolation"]?.trimmingCharacters(in: .whitespaces),
+           let interpolation = SVGColorInterpolation(rawValue: raw) {
+            p.colorInterpolation = interpolation
+        }
         gradientStack.append(p)
     }
 
@@ -1901,6 +1913,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             r: p.r ?? 0.5,
             units: p.units ?? .objectBoundingBox,
             spreadMethod: p.spreadMethod ?? .pad,
+            colorInterpolation: p.colorInterpolation ?? .sRGB,
             stops: p.stops,
             transform: p.transform ?? .identity
         )
@@ -1920,6 +1933,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             y2: p.y2 ?? 0,
             units: p.units ?? .objectBoundingBox,
             spreadMethod: p.spreadMethod ?? .pad,
+            colorInterpolation: p.colorInterpolation ?? .sRGB,
             stops: p.stops,
             transform: p.transform ?? .identity
         )
@@ -1947,6 +1961,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
                     let merged = SVGLinearGradient(
                         x1: child.x1, y1: child.y1, x2: child.x2, y2: child.y2,
                         units: child.units, spreadMethod: child.spreadMethod,
+                        colorInterpolation: child.colorInterpolation,
                         stops: child.stops.isEmpty ? parent.stops : child.stops,
                         transform: child.transform
                     )
@@ -1955,6 +1970,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
                     let merged = SVGRadialGradient(
                         cx: child.cx, cy: child.cy, fx: child.fx, fy: child.fy, r: child.r,
                         units: child.units, spreadMethod: child.spreadMethod,
+                        colorInterpolation: child.colorInterpolation,
                         stops: child.stops.isEmpty ? parent.stops : child.stops,
                         transform: child.transform
                     )

@@ -80,12 +80,14 @@ Update conformance targets after `swift test` regenerates
 
 | Target | Baseline | Goal | Status |
 | --- | ---: | ---: | --- |
-| `painting` passed | 20 | 24+ | `[~]` |
+| `painting` passed | 22 | 24+ | `[~]` |
+| `painting` partial | 0 | 0 | `[x]` |
 
 - [x] Fill, stroke, opacity, dash, caps/joins
-- [ ] `<marker>` — moved to [Phase 4](#phase-4--structure--reuse)
-- [ ] Skip / document: `color-interpolation=linearRGB` (`painting-render-02-b`)
-- [ ] `painting-marker-*` — blocked on `<marker>`
+- [x] `display="none"` in mask / clipPath children (`painting-control-05-f`)
+- [x] Gradient `color-interpolation` sRGB + linearRGB (`painting-render-01-b`)
+- [ ] `<marker>` — moved to [Phase 4](#phase-4--structure--reuse) (8 tests; required for 24+ passed)
+- [ ] Skip / document: `color-interpolation` compositing (`painting-render-02-b`)
 
 ### 1c. Paint servers (`pservers`)
 
@@ -218,8 +220,8 @@ or have a documented unsupported sub-feature.
 
 | Target | Baseline | Goal | Status |
 | --- | ---: | ---: | --- |
-| `partialBaseline` total | 118 | ≤30 | `[ ]` |
-| `passed` total | 184 | 280+ | `[ ]` |
+| `partialBaseline` total | 116 | ≤30 | `[ ]` |
+| `passed` total | 186 | 280+ | `[ ]` |
 
 ### Process (repeat per tag)
 

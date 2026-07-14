@@ -59,7 +59,7 @@ references them; do not duplicate their step-by-step content here.
 | `shapes` | 30 | 30 | 0 | 0 | Tier 1 ✓ |
 | `paths` | 21 | 19 | 0 | 2 | Tier 1 |
 | `coords` | 32 | 28 | 0 | 4 | Tier 1 |
-| `painting` | 31 | 20 | 0 | 11 | Tier 1 |
+| `painting` | 31 | 22 | 0 | 9 | Tier 1 |
 | `pservers` | 33 | 25 | 8 | 0 | Tier 1 |
 | `styling` | 18 | 7 | 11 | 0 | Tier 1 |
 | `struct` | 72 | 23 | 31 | 18 | Tier 1 |

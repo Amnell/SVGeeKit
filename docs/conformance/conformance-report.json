@@ -1788,8 +1788,11 @@
     "testId" : "painting-control-04-f"
   },
   {
-    "detail" : "requires <mask>\/<clipPath>; masking out of scope",
-    "status" : "skipped",
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-control-05-f\/actual.png",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/painting-control-05-f\/baseline.png",
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
+    "status" : "passed",
     "tag" : "painting",
     "testId" : "painting-control-05-f"
   },
@@ -1896,13 +1899,16 @@
     "testId" : "painting-marker-properties-01-f"
   },
   {
-    "detail" : "requires <linearGradient>; deferred to pservers-grad",
-    "status" : "skipped",
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/painting-render-01-b\/actual.png",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/painting-render-01-b\/baseline.png",
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
+    "status" : "passed",
     "tag" : "painting",
     "testId" : "painting-render-01-b"
   },
   {
-    "detail" : "requires color-interpolation=linearRGB; color-space switching out of scope",
+    "detail" : "requires color-interpolation=linearRGB compositing; out of scope",
     "status" : "skipped",
     "tag" : "painting",
     "testId" : "painting-render-02-b"
@@ -2798,7 +2804,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-rect-03-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-rect-03-t\/baseline.png",
-    "detail" : "promoted from partial baseline",
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "passed",
     "tag" : "shapes",
     "testId" : "shapes-rect-03-t"

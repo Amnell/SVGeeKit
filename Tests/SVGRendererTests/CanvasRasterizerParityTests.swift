@@ -8,7 +8,7 @@ import SVGRendererSwiftUI
 
 @Suite struct CanvasRasterizerParityTests {
     @MainActor
-    @Test func emptyClipPathDoesNotSuppressCanvasFill() throws {
+    @Test func emptyClipPathSuppressesFillInCGAndCanvas() throws {
         let svg = """
         <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
           <clipPath id="empty"/>
@@ -26,7 +26,7 @@ import SVGRendererSwiftUI
         #expect(diff.matches)
 
         let center = samplePixel(canvas, x: 50, y: 50)
-        #expect(center.g > 200)
+        #expect(center.g < 50)
     }
 
     private static let redPixelPNG = """

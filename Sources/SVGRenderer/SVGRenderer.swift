@@ -185,8 +185,8 @@ public enum SVGRenderTree {
         if group.transform.matrix != .identity {
             inner.append(.concatenate(group.transform))
         }
-        if let clipRef = group.clipPathRef, let clipDef = ctx.clipPaths[clipRef] {
-            inner.append(.clipToPath(lowerToClipPath(clipDef, bbox: nil, ctx: ctx), evenOdd: false))
+        if let clipRef = group.clipPathRef {
+            guard appendClipPath(clipRef, bbox: nil, ctx: ctx, into: &inner) else { return }
         }
         for child in group.children {
             lower(element: child, ctx: ctx, into: &inner)
@@ -222,7 +222,24 @@ public enum SVGRenderTree {
         for child in mask.children {
             lower(element: child, ctx: ctx, into: &maskCommands)
         }
+        if maskCommands.isEmpty { return nil }
         return [.maskedContent(mask: maskCommands, region: maskRegion(mask, bbox: bbox), content: content)]
+    }
+
+    /// Append a resolved clip path, or return `false` when the definition is empty
+    /// (the caller must suppress the element per SVG 1.1 §14.3).
+    @discardableResult
+    private static func appendClipPath(
+        _ ref: String,
+        bbox: CGRect?,
+        ctx: Context,
+        into commands: inout [SVGRenderCommand]
+    ) -> Bool {
+        guard let clipDef = ctx.clipPaths[ref] else { return true }
+        let path = lowerToClipPath(clipDef, bbox: bbox, ctx: ctx)
+        guard !path.isEmpty else { return false }
+        commands.append(.clipToPath(path, evenOdd: false))
+        return true
     }
 
     /// Resolve the mask region rectangle in user space, or `nil` for no clip.
@@ -341,11 +358,8 @@ public enum SVGRenderTree {
         if image.transform.matrix != .identity {
             painted.append(.concatenate(image.transform))
         }
-        if let clipRef = image.paint.clipPathRef, let clipDef = ctx.clipPaths[clipRef] {
-            painted.append(.clipToPath(
-                lowerToClipPath(clipDef, bbox: viewport, ctx: ctx),
-                evenOdd: false
-            ))
+        if let clipRef = image.paint.clipPathRef {
+            guard appendClipPath(clipRef, bbox: viewport, ctx: ctx, into: &painted) else { return }
         }
         if image.paint.opacity < 1 {
             painted.append(.beginOpacityLayer(image.paint.opacity))
@@ -392,8 +406,8 @@ public enum SVGRenderTree {
         if transform.matrix != .identity {
             painted.append(.concatenate(transform))
         }
-        if let clipRef = paint.clipPathRef, let clipDef = ctx.clipPaths[clipRef] {
-            painted.append(.clipToPath(lowerToClipPath(clipDef, bbox: bbox, ctx: ctx), evenOdd: false))
+        if let clipRef = paint.clipPathRef {
+            guard appendClipPath(clipRef, bbox: bbox, ctx: ctx, into: &painted) else { return }
         }
         if paint.opacity < 1 {
             painted.append(.beginOpacityLayer(paint.opacity))
@@ -414,6 +428,7 @@ public enum SVGRenderTree {
     }
 
     private static func lower(use: SVGUse, ctx: Context, into commands: inout [SVGRenderCommand]) {
+        guard use.paint.visibility == .visible else { return }
         guard !ctx.useExpansionChain.contains(use.href) else { return }
         ctx.useExpansionChain.insert(use.href)
         defer { ctx.useExpansionChain.remove(use.href) }
@@ -641,6 +656,7 @@ public enum SVGRenderTree {
     ) -> CGPath {
         switch element {
         case .use(let u):
+            guard u.paint.visibility == .visible else { return CGMutablePath() }
             guard !chain.contains(u.href) else { return CGMutablePath() }
             var expansionChain = chain
             expansionChain.insert(u.href)
@@ -657,6 +673,7 @@ public enum SVGRenderTree {
                 chain: expansionChain
             )
         case .group(let g):
+            guard g.visibility == .visible else { return CGMutablePath() }
             let path = CGMutablePath()
             var gtx = transform
             if g.transform.matrix != .identity {
@@ -689,6 +706,7 @@ public enum SVGRenderTree {
             }
             return path
         case .rect(let r):
+            guard r.paint.visibility == .visible else { return CGMutablePath() }
             guard r.size.width > 0, r.size.height > 0 else { return CGMutablePath() }
             let cgRect = CGRect(origin: r.origin, size: r.size)
             let p: CGPath = r.cornerRadii == .zero
@@ -699,6 +717,7 @@ public enum SVGRenderTree {
             if let obb = obbTransform { tx = tx.isIdentity ? obb : tx.concatenating(obb) }
             return p.copy(using: &tx) ?? p
         case .circle(let c):
+            guard c.paint.visibility == .visible else { return CGMutablePath() }
             guard c.radius > 0 else { return CGMutablePath() }
             let bounds = CGRect(
                 x: c.center.x - c.radius, y: c.center.y - c.radius,
@@ -709,6 +728,7 @@ public enum SVGRenderTree {
             if let obb = obbTransform { tx = tx.isIdentity ? obb : tx.concatenating(obb) }
             return p.copy(using: &tx) ?? p
         case .ellipse(let e):
+            guard e.paint.visibility == .visible else { return CGMutablePath() }
             guard e.radii.width > 0, e.radii.height > 0 else { return CGMutablePath() }
             let bounds = CGRect(
                 x: e.center.x - e.radii.width, y: e.center.y - e.radii.height,
@@ -719,6 +739,7 @@ public enum SVGRenderTree {
             if let obb = obbTransform { tx = tx.isIdentity ? obb : tx.concatenating(obb) }
             return p.copy(using: &tx) ?? p
         case .path(let sp):
+            guard sp.paint.visibility == .visible else { return CGMutablePath() }
             let cg = CGMutablePath()
             for cmd in sp.commands {
                 switch cmd {
@@ -733,11 +754,13 @@ public enum SVGRenderTree {
             if let obb = obbTransform { tx = tx.isIdentity ? obb : tx.concatenating(obb) }
             return cg.copy(using: &tx) ?? cg
         case .polyline(let pl):
+            guard pl.paint.visibility == .visible else { return CGMutablePath() }
             guard let p = polylinePath(points: pl.points, closed: false) else { return CGMutablePath() }
             var tx = transform.concatenating(pl.transform.matrix)
             if let obb = obbTransform { tx = tx.isIdentity ? obb : tx.concatenating(obb) }
             return p.copy(using: &tx) ?? p
         case .polygon(let pg):
+            guard pg.paint.visibility == .visible else { return CGMutablePath() }
             guard let p = polylinePath(points: pg.points, closed: true) else { return CGMutablePath() }
             var tx = transform.concatenating(pg.transform.matrix)
             if let obb = obbTransform { tx = tx.isIdentity ? obb : tx.concatenating(obb) }
@@ -778,8 +801,8 @@ public enum SVGRenderTree {
         if transform.matrix != .identity {
             painted.append(.concatenate(transform))
         }
-        if let clipRef = paint.clipPathRef, let clipDef = ctx.clipPaths[clipRef] {
-            painted.append(.clipToPath(lowerToClipPath(clipDef, bbox: bbox, ctx: ctx), evenOdd: false))
+        if let clipRef = paint.clipPathRef {
+            guard appendClipPath(clipRef, bbox: bbox, ctx: ctx, into: &painted) else { return }
         }
         if paint.opacity < 1 {
             painted.append(.beginOpacityLayer(paint.opacity))

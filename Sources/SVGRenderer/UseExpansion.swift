@@ -105,6 +105,7 @@ enum SVGUseExpansion {
     case "opacity": paint.opacity = source.opacity
     case "color": paint.color = source.color
     case "visibility": paint.visibility = source.visibility
+    case "display": paint.visibility = source.visibility
     case "clip-path": paint.clipPathRef = source.clipPathRef
     case "mask": paint.maskRef = source.maskRef
     default: break
