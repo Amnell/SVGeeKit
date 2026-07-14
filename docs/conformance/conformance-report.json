@@ -2446,10 +2446,9 @@
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/pservers-pattern-06-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/pservers-pattern-06-f\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "partialBaseline",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/pservers-pattern-06-f\/baseline.png",
+    "detail" : "promoted from partial baseline",
+    "status" : "passed",
     "tag" : "pservers",
     "testId" : "pservers-pattern-06-f"
   },
