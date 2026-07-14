@@ -64,14 +64,15 @@ Update conformance targets after `swift test` regenerates
 
 | Target | Baseline | Goal | Status |
 | --- | ---: | ---: | --- |
-| `shapes` passed | 29 | 30 | `[~]` |
+| `shapes` passed | 30 | 30 | `[x]` |
 | `paths` passed | 19 | 21 | `[~]` |
 | `coords` passed | 28 | 28+ | `[~]` |
 
 - [x] Basic shapes (`rect`, `circle`, `ellipse`, `line`, `poly`, `path`)
 - [x] Transforms, `viewBox`, coordinate units
+- [x] `shapes-rect-03-t` — `<use href="#references">` stroke overlays (index scene-graph
+  ids for `<use>`; break expansion cycles)
 - [ ] Remaining `paths-*` edge cases (read pass criteria per test)
-- [ ] Promote `shapes` partial baselines after visual verification
 
 ### 1b. Painting
 
@@ -119,7 +120,7 @@ Follow [styling-rollout.md](../styling-rollout.md):
 | `struct` partial | 31 | ≤10 | `[~]` |
 | `struct` skipped (DOM) | 18 | 18 | `[x]` keep skipped |
 
-- [x] `g`, `defs`, `use` (fragment refs)
+- [x] `g`, `defs`, `use` (fragment refs; ids outside `<defs>` indexed for `<use>`)
 - [x] `<switch>` conditional processing
 - [x] `<image>` element (production policy gates external refs; `.localFiles` for fixtures)
 - [ ] `symbol` instancing polish
@@ -215,8 +216,8 @@ or have a documented unsupported sub-feature.
 
 | Target | Baseline | Goal | Status |
 | --- | ---: | ---: | --- |
-| `partialBaseline` total | 119 | ≤30 | `[ ]` |
-| `passed` total | 183 | 280+ | `[ ]` |
+| `partialBaseline` total | 118 | ≤30 | `[ ]` |
+| `passed` total | 184 | 280+ | `[ ]` |
 
 ### Process (repeat per tag)
 
@@ -232,9 +233,10 @@ or have a documented unsupported sub-feature.
 2. `animate` (60 partial) — **low priority** (out of production scope; only promote if needed for regression)
 3. `styling` (11 partial)
 4. `pservers` (8 partial)
-5. `shapes` (1 partial — `shapes-rect-03-t`)
-6. `color` (2 partial)
-7. `render` (1 partial)
+5. `color` (2 partial)
+6. `render` (1 partial)
+
+`shapes` — **complete** (30/30 passed; `shapes-rect-03-t` promoted 2026-07-14).
 
 **Exit criteria:** No `partialBaseline` with `diffMaxChannel: 0` in Tier-1 tags unless
 explicitly marked "known gap" in [static-profile.md](static-profile.md).
