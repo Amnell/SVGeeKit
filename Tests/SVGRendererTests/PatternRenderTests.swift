@@ -308,6 +308,31 @@ struct PatternRenderTests {
     #expect(p.red < 120)
   }
 
+  /// stop-color and stop-opacity interpolate independently: between violet and
+  /// transparent blue the ramp stays blue-violet, not gray (pservers-grad-05-b).
+  @Test func gradientStopOpacityInterpolatesColorAndAlphaIndependently() throws {
+    let svg = """
+    <svg xmlns="http://www.w3.org/2000/svg" width="480" height="100" viewBox="0 0 480 100">
+      <rect width="480" height="100" fill="aqua"/>
+      <linearGradient id="Grad1" gradientUnits="objectBoundingBox" x1="0" y1="0" x2="1" y2="1">
+        <stop stop-color="rgb(238,130,238)" stop-opacity="1" offset="0"/>
+        <stop stop-color="blue" stop-opacity="0" offset="0.2"/>
+        <stop stop-color="lime" stop-opacity="0.5" offset="0.4"/>
+        <stop stop-color="yellow" stop-opacity="0.2" offset="0.6"/>
+        <stop stop-color="rgb(255,165,0)" stop-opacity="0.8" offset="0.8"/>
+        <stop stop-color="black" stop-opacity="1" offset="1"/>
+      </linearGradient>
+      <rect x="20" y="20" width="440" height="80" fill="url(#Grad1)"/>
+    </svg>
+    """
+    let doc = try SVGParser().parse(string: svg)
+    let image = try SVGRasterizer.rasterize(doc, pixelSize: CGSize(width: 480, height: 100))
+    // Midway between violet (offset 0) and transparent blue (offset 0.2) on the diagonal.
+    let p = Self.pixel(in: image, x: 64, y: 28)
+    #expect(p.blue > p.red + 40, "blue stop-color must participate when stop-opacity is 0")
+    #expect(p.blue > 200)
+  }
+
   /// Semi-transparent stops must not double-darken (straight alpha, not premul RGB).
   @Test func semiTransparentGradientStopPreservesBrightness() throws {
     let svg = """

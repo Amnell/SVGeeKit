@@ -204,7 +204,7 @@ public struct SwiftUICanvasRenderer {
             return nil
         case .linearGradient(let g):
             guard !g.stops.isEmpty else { return nil }
-            let stops = Self.gradientStops(g.stops, paintOpacity: opacity)
+            let stops = Self.gradientStops(g.stops, paintOpacity: opacity, colorInterpolation: g.colorInterpolation)
             let options: GraphicsContext.GradientOptions
             switch g.spreadMethod {
             case .pad: options = []
@@ -219,7 +219,7 @@ public struct SwiftUICanvasRenderer {
             )
         case .radialGradient(let g):
             guard !g.stops.isEmpty else { return nil }
-            let stops = Self.gradientStops(g.stops, paintOpacity: opacity)
+            let stops = Self.gradientStops(g.stops, paintOpacity: opacity, colorInterpolation: g.colorInterpolation)
             let options: GraphicsContext.GradientOptions
             switch g.spreadMethod {
             case .pad: options = []
@@ -237,23 +237,21 @@ public struct SwiftUICanvasRenderer {
     }
 
     /// SVG composites stop-color and stop-opacity over content below. SwiftUI
-    /// premultiplies during interpolation, so keep straight sRGB + opacity and
-    /// zero chroma on fully-transparent stops to avoid hue bleed (grad-05-b).
+    /// premultiplies during interpolation, so keep straight sRGB + opacity per stop.
     private static func gradientStops(
         _ stops: [SVGGradientStop],
-        paintOpacity: CGFloat
+        paintOpacity: CGFloat,
+        colorInterpolation: SVGColorInterpolation = .sRGB
     ) -> [Gradient.Stop] {
-        stops
-            .sorted { $0.offset < $1.offset }
+        SVGGradientDrawing.resolvedStops(stops, colorInterpolation: colorInterpolation)
             .map { stop in
                 let a = Double(stop.color.alpha * paintOpacity)
-                let useChroma = a > 0
                 return Gradient.Stop(
                     color: Color(
                         .sRGB,
-                        red: useChroma ? Double(stop.color.red) : 0,
-                        green: useChroma ? Double(stop.color.green) : 0,
-                        blue: useChroma ? Double(stop.color.blue) : 0,
+                        red: Double(stop.color.red),
+                        green: Double(stop.color.green),
+                        blue: Double(stop.color.blue),
                         opacity: a
                     ),
                     location: stop.offset

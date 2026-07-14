@@ -19,16 +19,8 @@ enum SVGGradientDrawing {
         paintOpacity: CGFloat,
         colorInterpolation: SVGColorInterpolation = .sRGB
     ) -> CGGradient? {
-        let sorted = stops.sorted { $0.offset < $1.offset }
-        guard !sorted.isEmpty else { return nil }
-
-        let effectiveStops: [SVGGradientStop]
-        switch colorInterpolation {
-        case .sRGB:
-            effectiveStops = sorted
-        case .linearRGB:
-            effectiveStops = densifyStopsLinearRGB(sorted, stepsPerSegment: 32)
-        }
+        let effectiveStops = resolvedStops(stops, colorInterpolation: colorInterpolation)
+        guard !effectiveStops.isEmpty else { return nil }
 
         var colors: [CGColor] = []
         var locations: [CGFloat] = []
@@ -37,13 +29,10 @@ enum SVGGradientDrawing {
 
         for stop in effectiveStops {
             let a = stop.color.alpha * paintOpacity
-            // Zero chroma on fully-transparent stops so alpha interpolation
-            // does not hue-bleed (pservers-grad-05-b).
-            let useChroma = a > 0
-            let r = useChroma ? stop.color.red : 0
-            let g = useChroma ? stop.color.green : 0
-            let b = useChroma ? stop.color.blue : 0
-            guard let color = CGColor(colorSpace: gradientRGB, components: [r, g, b, a]) else {
+            guard let color = CGColor(
+                colorSpace: gradientRGB,
+                components: [stop.color.red, stop.color.green, stop.color.blue, a]
+            ) else {
                 return nil
             }
             colors.append(color)
@@ -55,6 +44,27 @@ enum SVGGradientDrawing {
             colors: colors as CFArray,
             locations: locations
         )
+    }
+
+    /// Resolve gradient stops for rendering, including opacity and color-space densification.
+    static func resolvedStops(
+        _ stops: [SVGGradientStop],
+        colorInterpolation: SVGColorInterpolation
+    ) -> [SVGGradientStop] {
+        let sorted = stops.sorted { $0.offset < $1.offset }
+        guard !sorted.isEmpty else { return [] }
+
+        var effectiveStops = sorted
+        if needsIndependentOpacityInterpolation(sorted) {
+            effectiveStops = densifyStopsIndependentOpacity(sorted, stepsPerSegment: 32)
+        }
+        switch colorInterpolation {
+        case .sRGB:
+            break
+        case .linearRGB:
+            effectiveStops = densifyStopsLinearRGB(effectiveStops, stepsPerSegment: 32)
+        }
+        return effectiveStops
     }
 
     static func drawLinear(
@@ -309,6 +319,42 @@ enum SVGGradientDrawing {
     }
 
     private static let stopEpsilon: CGFloat = 0.000_1
+
+    private static func needsIndependentOpacityInterpolation(_ stops: [SVGGradientStop]) -> Bool {
+        stops.contains { $0.color.alpha < 1 - stopEpsilon }
+    }
+
+    /// Sample stop-color and stop-opacity independently along each segment.
+    private static func densifyStopsIndependentOpacity(
+        _ stops: [SVGGradientStop],
+        stepsPerSegment: Int
+    ) -> [SVGGradientStop] {
+        guard stops.count >= 2, stepsPerSegment > 1 else { return stops }
+        var result: [SVGGradientStop] = []
+        result.reserveCapacity((stops.count - 1) * stepsPerSegment + 1)
+        for index in 0..<(stops.count - 1) {
+            let start = stops[index]
+            let end = stops[index + 1]
+            if index == 0 { result.append(start) }
+            for step in 1..<stepsPerSegment {
+                let fraction = CGFloat(step) / CGFloat(stepsPerSegment)
+                let offset = start.offset + (end.offset - start.offset) * fraction
+                result.append(
+                    SVGGradientStop(
+                        offset: offset,
+                        color: SVGColor(
+                            red: start.color.red + (end.color.red - start.color.red) * fraction,
+                            green: start.color.green + (end.color.green - start.color.green) * fraction,
+                            blue: start.color.blue + (end.color.blue - start.color.blue) * fraction,
+                            alpha: start.color.alpha + (end.color.alpha - start.color.alpha) * fraction
+                        )
+                    )
+                )
+            }
+            result.append(end)
+        }
+        return result
+    }
 
     private static func srgbToLinear(_ channel: CGFloat) -> CGFloat {
         if channel <= 0.04045 { return channel / 12.92 }
