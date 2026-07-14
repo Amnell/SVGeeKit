@@ -26,7 +26,7 @@ Update this document when features land. Tag matching W3C chapters in
 | `svg` | Root and nested `<svg>` in definitions |
 | `g` | Grouping, inherited paint, transforms |
 | `defs` | Definition container |
-| `rect`, `circle`, `ellipse`, `line`, `polyline`, `polygon` | Basic shapes |
+| `rect`, `circle`, `ellipse`, `line`, `polyline`, `polygon` | Basic shapes — W3C `shapes` chapter verified (30/30) |
 | `path` | Path data (`d`) |
 | `use` | **`href="#id"` / `xlink:href="#id"` only** — same document |
 | `linearGradient`, `radialGradient`, `stop` | Paint servers in `defs` |

@@ -60,18 +60,20 @@ Update conformance targets after `swift test` regenerates
 
 **Docs:** [styling-rollout.md](../styling-rollout.md), [adding-a-feature.md](../adding-a-feature.md)
 
-### 1a. Shapes, paths, coords (mostly done)
+### 1a. Shapes, paths, coords
 
 | Target | Baseline | Goal | Status |
 | --- | ---: | ---: | --- |
-| `shapes` passed | 30 | 30 | `[x]` |
+| `shapes` passed | 30 | 30 | `[x]` verified |
 | `paths` passed | 19 | 21 | `[~]` |
 | `coords` passed | 28 | 28+ | `[~]` |
 
+**`shapes` chapter:** all 30 non-skipped W3C tests pass with verified baselines in
+`Tests/__Snapshots__/` (completed 2026-07-14).
+
 - [x] Basic shapes (`rect`, `circle`, `ellipse`, `line`, `poly`, `path`)
 - [x] Transforms, `viewBox`, coordinate units
-- [x] `shapes-rect-03-t` — `<use href="#references">` stroke overlays (index scene-graph
-  ids for `<use>`; break expansion cycles)
+- [x] `rx` / `ry` clamping, single-attribute copy, `<use>` stroke overlays (`shapes-rect-03-t`)
 - [ ] Remaining `paths-*` edge cases (read pass criteria per test)
 
 ### 1b. Painting
@@ -236,7 +238,7 @@ or have a documented unsupported sub-feature.
 5. `color` (2 partial)
 6. `render` (1 partial)
 
-`shapes` — **complete** (30/30 passed; `shapes-rect-03-t` promoted 2026-07-14).
+`shapes` — **complete and verified** (30/30 passed, 0 partial; promoted 2026-07-14).
 
 **Exit criteria:** No `partialBaseline` with `diffMaxChannel: 0` in Tier-1 tags unless
 explicitly marked "known gap" in [static-profile.md](static-profile.md).
