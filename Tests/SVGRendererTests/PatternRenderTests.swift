@@ -205,8 +205,8 @@ struct PatternRenderTests {
 
   @Test func w3cGrad13MatchesReference() throws {
     let diff = try diffAgainstW3C(testId: "pservers-grad-13-b")
-    // Radial focal tiles + stripe compositing; ~25% W3C diff at tol 4.
-    #expect(diff.mismatchedFraction < 0.28)
+    // Radial focal tiles + inherited 0.5px stroke outlines on each rect (~28% W3C diff).
+    #expect(diff.mismatchedFraction < 0.29)
   }
 
   @Test func grad13FirstTileCenterMatchesBlueDominant() throws {
@@ -228,6 +228,16 @@ struct PatternRenderTests {
     #expect(p.red > 200, "expected yellow background behind stripes, got \(p)")
     #expect(p.green > 200)
     #expect(p.blue < 80)
+  }
+
+  /// group1 stroke="black" stroke-width="0.5" must outline each instanced tile rect.
+  @Test func grad13TilesHaveInheritedStrokeOutlines() throws {
+    let svgURL = Self.w3cRoot.appendingPathComponent("svg/pservers-grad-13-b.svg")
+    let doc = try SVGConformanceFixtureParsing.parse(data: Data(contentsOf: svgURL), svgURL: svgURL)
+    let image = try SVGRasterizer.rasterize(doc, pixelSize: CGSize(width: 480, height: 360))
+    // Bottom edge of first tile row (y=105): black stroke between stripe rects.
+    let p = Self.pixel(in: image, x: 67, y: 105)
+    #expect(p.red < 40 && p.green < 40 && p.blue < 40, "expected inherited black stroke, got \(p)")
   }
 
   @Test func w3cCoordsUnits01BMatchesReference() throws {

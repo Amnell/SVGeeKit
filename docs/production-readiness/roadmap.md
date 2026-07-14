@@ -104,7 +104,7 @@ mutation, out of production scope.
 - [x] `stop-opacity` independent interpolation (`pservers-grad-05-b`)
 - [x] Promoted: `pservers-grad-05-b`, `pservers-grad-18-b`, `pservers-grad-21-b`, `pservers-grad-23-f`, `pservers-grad-24-f`, `pservers-pattern-06-f`
 - [x] Stop offset normalization (`pservers-grad-16-b`) — ready for human baseline promotion
-- [~] `pservers-grad-13-b` — `<use>` fill only on no-fill overlay; yellow base + stripes preserved (~25% W3C diff)
+- [~] `pservers-grad-13-b` — yellow base + inherited group stroke on tiles (~28% W3C diff)
 - [ ] Remaining partials: `pservers-grad-13-b`, `pservers-grad-16-b`
 - [ ] `gradientUnits`, `spreadMethod`, `gradientTransform` edge cases
 
