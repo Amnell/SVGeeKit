@@ -312,6 +312,8 @@ public struct SVGRect: Equatable, Sendable {
     public var paint: SVGPaintProperties
     public var transform: SVGTransform
     public var animations: [SVGTimedAnimation]
+    /// Presentation attribute names specified on the `<rect>` element itself.
+    public var explicitPresentation: Set<String>
 
     public init(
         id: String? = nil,
@@ -320,7 +322,8 @@ public struct SVGRect: Equatable, Sendable {
         cornerRadii: CGSize = .zero,
         paint: SVGPaintProperties = .init(),
         transform: SVGTransform = .identity,
-        animations: [SVGTimedAnimation] = []
+        animations: [SVGTimedAnimation] = [],
+        explicitPresentation: Set<String> = []
     ) {
         self.id = id
         self.origin = origin
@@ -329,6 +332,7 @@ public struct SVGRect: Equatable, Sendable {
         self.paint = paint
         self.transform = transform
         self.animations = animations
+        self.explicitPresentation = explicitPresentation
     }
 }
 

@@ -186,6 +186,29 @@ struct PatternRenderTests {
     #expect(diff.mismatchedFraction < 0.2)
   }
 
+  @Test func w3cGrad16MatchesReference() throws {
+    let diff = try diffAgainstW3C(testId: "pservers-grad-16-b")
+    // Revision line at bottom uses SVGFreeSans vs reference font.
+    #expect(diff.mismatchedFraction < 0.07)
+  }
+
+  @Test func w3cGrad18MatchesReference() throws {
+    let diff = try diffAgainstW3C(testId: "pservers-grad-18-b")
+    #expect(diff.mismatchedFraction < 0.05)
+  }
+
+  @Test func w3cGrad21MatchesReference() throws {
+    let diff = try diffAgainstW3C(testId: "pservers-grad-21-b")
+    // "Reference" label and revision line differ in font from W3C PNG.
+    #expect(diff.mismatchedFraction < 0.09)
+  }
+
+  @Test func w3cGrad13MatchesReference() throws {
+    let diff = try diffAgainstW3C(testId: "pservers-grad-13-b")
+    // Radial focal-point tiles + title text; coarse guard until focal rendering matches W3C.
+    #expect(diff.mismatchedFraction < 0.4)
+  }
+
   @Test func w3cCoordsUnits01BMatchesReference() throws {
     let diff = try diffAgainstW3C(testId: "coords-units-01-b")
     // Label text may differ (Arial vs SVGFreeSans); gradient/pattern tiles must match.

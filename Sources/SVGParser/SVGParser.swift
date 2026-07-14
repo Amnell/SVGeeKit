@@ -345,6 +345,8 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
     /// xlink:href deferrals: gradients that referenced another paint server.
     /// Resolved in a final pass once the whole document has been parsed.
     private var gradientHrefs: [(id: String, href: String)] = []
+    /// Which gradient attributes were explicitly set (vs parser defaults) per id.
+    private var gradientExplicitAttrs: [String: Set<String>] = [:]
 
     /// Partial `<pattern>` definitions currently open.
     private var patternStack: [PartialPattern] = []
@@ -439,6 +441,9 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         var colorInterpolation: SVGColorInterpolation?
         var transform: SVGTransform?
         var stops: [SVGGradientStop] = []
+        var defaultStopColor: SVGColor = .black
+        var defaultStopOpacity: CGFloat = 1
+        var explicitAttrs: Set<String> = []
     }
 
     struct PartialClipPath {
@@ -1000,7 +1005,8 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             size: CGSize(width: w, height: h),
             cornerRadii: radii,
             paint: paint,
-            transform: transform(from: attributes, parser: parser) ?? .identity
+            transform: transform(from: attributes, parser: parser) ?? .identity,
+            explicitPresentation: presentationAttributeKeys(from: attributes)
         )
         registerDefinition(id: attributes["id"], element: .rect(rect))
         beginAnimatableShape(.rect(rect), definitionID: attributes["id"])
@@ -1555,9 +1561,20 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         case "color":
             let trimmed = value.trimmingCharacters(in: .whitespaces)
             if trimmed.lowercased() == "currentcolor" { return } // no-op
+            if trimmed.lowercased() == "inherit" { return }
             if case .color(let c) = AttributeParsers.color(trimmed) ?? .none {
                 p.color = c
             }
+        case "stop-color":
+            let trimmed = value.trimmingCharacters(in: .whitespaces)
+            if trimmed.lowercased() == "inherit" { return }
+            if case .color(let c) = AttributeParsers.color(trimmed) ?? .none {
+                p.stopColor = c
+            }
+        case "stop-opacity":
+            let trimmed = value.trimmingCharacters(in: .whitespaces)
+            if trimmed.lowercased() == "inherit" { return }
+            if let d = Double(trimmed) { p.stopOpacity = CGFloat(min(1, max(0, d))) }
         case "visibility":
             if let v = SVGVisibility(rawValue: value.trimmingCharacters(in: .whitespaces).lowercased()) {
                 p.visibility = v
@@ -1731,32 +1748,53 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         var p = PartialGradient()
         p.id = attributes["id"]
         p.href = attributes["xlink:href"] ?? attributes["href"]
+        let inheritedPaint = paintStack.last ?? SVGPaintProperties()
+        p.defaultStopColor = inheritedPaint.stopColor
+        p.defaultStopOpacity = inheritedPaint.stopOpacity
         if let u = attributes["gradientUnits"]?.trimmingCharacters(in: .whitespaces),
            let units = SVGGradientUnits(rawValue: u) {
             p.units = units
+            p.explicitAttrs.insert("gradientUnits")
         }
         let obb = (p.units ?? .objectBoundingBox) == .objectBoundingBox
-        p.x1 = attributes["x1"].flatMap { resolvePaintServerLength($0, objectBoundingBox: obb, axis: .x) }
-        p.y1 = attributes["y1"].flatMap { resolvePaintServerLength($0, objectBoundingBox: obb, axis: .y) }
-        p.x2 = attributes["x2"].flatMap { resolvePaintServerLength($0, objectBoundingBox: obb, axis: .x) }
-        p.y2 = attributes["y2"].flatMap { resolvePaintServerLength($0, objectBoundingBox: obb, axis: .y) }
+        if let raw = attributes["x1"] {
+            p.explicitAttrs.insert("x1")
+            p.x1 = resolvePaintServerLength(raw, objectBoundingBox: obb, axis: .x)
+        }
+        if let raw = attributes["y1"] {
+            p.explicitAttrs.insert("y1")
+            p.y1 = resolvePaintServerLength(raw, objectBoundingBox: obb, axis: .y)
+        }
+        if let raw = attributes["x2"] {
+            p.explicitAttrs.insert("x2")
+            p.x2 = resolvePaintServerLength(raw, objectBoundingBox: obb, axis: .x)
+        }
+        if let raw = attributes["y2"] {
+            p.explicitAttrs.insert("y2")
+            p.y2 = resolvePaintServerLength(raw, objectBoundingBox: obb, axis: .y)
+        }
         if let s = attributes["spreadMethod"]?.trimmingCharacters(in: .whitespaces),
            let spread = SVGGradientSpread(rawValue: s) {
             p.spreadMethod = spread
+            p.explicitAttrs.insert("spreadMethod")
         }
         if let raw = attributes["gradientTransform"],
            let t = AttributeParsers.transform(raw) {
             p.transform = t
+            p.explicitAttrs.insert("gradientTransform")
         }
         if let raw = attributes["color-interpolation"]?.trimmingCharacters(in: .whitespaces),
            let interpolation = SVGColorInterpolation(rawValue: raw) {
             p.colorInterpolation = interpolation
+            p.explicitAttrs.insert("color-interpolation")
         }
         gradientStack.append(p)
     }
 
     fileprivate func handleStop(attributes: [String: String], currentColor: SVGColor) {
         guard !gradientStack.isEmpty else { return }
+        let gradientIndex = gradientStack.count - 1
+        let gradientDefaults = gradientStack[gradientIndex]
 
         // style="..." wins over presentation attributes (CSS specificity).
         var props: [String: String] = attributes
@@ -1778,14 +1816,20 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         if let raw = props["stop-color"]?.trimmingCharacters(in: .whitespaces) {
             if raw.caseInsensitiveCompare("currentColor") == .orderedSame {
                 color = currentColor
+            } else if raw.caseInsensitiveCompare("inherit") == .orderedSame {
+                color = gradientDefaults.defaultStopColor
             } else if case .color(let c) = AttributeParsers.color(raw) ?? .none {
                 color = c
             }
         }
-        if let raw = props["stop-opacity"], let d = Double(raw) {
-            color.alpha *= CGFloat(min(1, max(0, d)))
+        if let raw = props["stop-opacity"]?.trimmingCharacters(in: .whitespaces) {
+            if raw.caseInsensitiveCompare("inherit") == .orderedSame {
+                color.alpha = gradientDefaults.defaultStopOpacity
+            } else if let d = Double(raw) {
+                color.alpha = CGFloat(min(1, max(0, d)))
+            }
         }
-        gradientStack[gradientStack.count - 1].stops.append(
+        gradientStack[gradientIndex].stops.append(
             SVGGradientStop(offset: max(0, min(1, offset)), color: color)
         )
     }
@@ -1878,27 +1922,49 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         p.kind = .radial
         p.id = attributes["id"]
         p.href = attributes["xlink:href"] ?? attributes["href"]
+        let inheritedPaint = paintStack.last ?? SVGPaintProperties()
+        p.defaultStopColor = inheritedPaint.stopColor
+        p.defaultStopOpacity = inheritedPaint.stopOpacity
         if let u = attributes["gradientUnits"]?.trimmingCharacters(in: .whitespaces),
            let units = SVGGradientUnits(rawValue: u) {
             p.units = units
+            p.explicitAttrs.insert("gradientUnits")
         }
         let obb = (p.units ?? .objectBoundingBox) == .objectBoundingBox
-        p.cx = attributes["cx"].flatMap { resolvePaintServerLength($0, objectBoundingBox: obb, axis: .x) }
-        p.cy = attributes["cy"].flatMap { resolvePaintServerLength($0, objectBoundingBox: obb, axis: .y) }
-        p.fx = attributes["fx"].flatMap { resolvePaintServerLength($0, objectBoundingBox: obb, axis: .x) }
-        p.fy = attributes["fy"].flatMap { resolvePaintServerLength($0, objectBoundingBox: obb, axis: .y) }
-        p.r  = attributes["r"].flatMap  { resolvePaintServerLength($0, objectBoundingBox: obb, axis: .length) }
+        if let raw = attributes["cx"] {
+            p.explicitAttrs.insert("cx")
+            p.cx = resolvePaintServerLength(raw, objectBoundingBox: obb, axis: .x)
+        }
+        if let raw = attributes["cy"] {
+            p.explicitAttrs.insert("cy")
+            p.cy = resolvePaintServerLength(raw, objectBoundingBox: obb, axis: .y)
+        }
+        if let raw = attributes["fx"] {
+            p.explicitAttrs.insert("fx")
+            p.fx = resolvePaintServerLength(raw, objectBoundingBox: obb, axis: .x)
+        }
+        if let raw = attributes["fy"] {
+            p.explicitAttrs.insert("fy")
+            p.fy = resolvePaintServerLength(raw, objectBoundingBox: obb, axis: .y)
+        }
+        if let raw = attributes["r"] {
+            p.explicitAttrs.insert("r")
+            p.r = resolvePaintServerLength(raw, objectBoundingBox: obb, axis: .length)
+        }
         if let s = attributes["spreadMethod"]?.trimmingCharacters(in: .whitespaces),
            let spread = SVGGradientSpread(rawValue: s) {
             p.spreadMethod = spread
+            p.explicitAttrs.insert("spreadMethod")
         }
         if let raw = attributes["gradientTransform"],
            let t = AttributeParsers.transform(raw) {
             p.transform = t
+            p.explicitAttrs.insert("gradientTransform")
         }
         if let raw = attributes["color-interpolation"]?.trimmingCharacters(in: .whitespaces),
            let interpolation = SVGColorInterpolation(rawValue: raw) {
             p.colorInterpolation = interpolation
+            p.explicitAttrs.insert("color-interpolation")
         }
         gradientStack.append(p)
     }
@@ -1908,16 +1974,17 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         let gradient = SVGRadialGradient(
             cx: p.cx ?? 0.5,
             cy: p.cy ?? 0.5,
-            fx: p.fx,
-            fy: p.fy,
+            fx: p.explicitAttrs.contains("fx") ? p.fx : nil,
+            fy: p.explicitAttrs.contains("fy") ? p.fy : nil,
             r: p.r ?? 0.5,
             units: p.units ?? .objectBoundingBox,
             spreadMethod: p.spreadMethod ?? .pad,
             colorInterpolation: p.colorInterpolation ?? .sRGB,
-            stops: p.stops,
+            stops: Self.normalizeGradientStops(p.stops),
             transform: p.transform ?? .identity
         )
         paintServers[id] = .radialGradient(gradient)
+        gradientExplicitAttrs[id] = p.explicitAttrs
         if var href = p.href {
             if href.hasPrefix("#") { href = String(href.dropFirst()) }
             gradientHrefs.append((id: id, href: href))
@@ -1934,10 +2001,11 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             units: p.units ?? .objectBoundingBox,
             spreadMethod: p.spreadMethod ?? .pad,
             colorInterpolation: p.colorInterpolation ?? .sRGB,
-            stops: p.stops,
+            stops: Self.normalizeGradientStops(p.stops),
             transform: p.transform ?? .identity
         )
         paintServers[id] = .linearGradient(gradient)
+        gradientExplicitAttrs[id] = p.explicitAttrs
         if var href = p.href {
             if href.hasPrefix("#") { href = String(href.dropFirst()) }
             gradientHrefs.append((id: id, href: href))
@@ -1956,23 +2024,42 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             for (id, href) in gradientHrefs {
                 guard let childServer = paintServers[id],
                       let parentServer = paintServers[href] else { continue }
+                let childExplicit = gradientExplicitAttrs[id] ?? []
+                let parentExplicit = gradientExplicitAttrs[href] ?? []
                 switch (childServer, parentServer) {
                 case (.linearGradient(let child), .linearGradient(let parent)):
                     let merged = SVGLinearGradient(
-                        x1: child.x1, y1: child.y1, x2: child.x2, y2: child.y2,
-                        units: child.units, spreadMethod: child.spreadMethod,
-                        colorInterpolation: child.colorInterpolation,
+                        x1: Self.inheritedGradientValue("x1", child: child.x1, parent: parent.x1, childExplicit: childExplicit),
+                        y1: Self.inheritedGradientValue("y1", child: child.y1, parent: parent.y1, childExplicit: childExplicit),
+                        x2: Self.inheritedGradientValue("x2", child: child.x2, parent: parent.x2, childExplicit: childExplicit),
+                        y2: Self.inheritedGradientValue("y2", child: child.y2, parent: parent.y2, childExplicit: childExplicit),
+                        units: Self.inheritedGradientValue("gradientUnits", child: child.units, parent: parent.units, childExplicit: childExplicit),
+                        spreadMethod: Self.inheritedGradientValue("spreadMethod", child: child.spreadMethod, parent: parent.spreadMethod, childExplicit: childExplicit),
+                        colorInterpolation: Self.inheritedGradientValue("color-interpolation", child: child.colorInterpolation, parent: parent.colorInterpolation, childExplicit: childExplicit),
                         stops: child.stops.isEmpty ? parent.stops : child.stops,
-                        transform: child.transform
+                        transform: Self.inheritedGradientValue("gradientTransform", child: child.transform, parent: parent.transform, childExplicit: childExplicit)
                     )
                     if merged != child { paintServers[id] = .linearGradient(merged); changed = true }
                 case (.radialGradient(let child), .radialGradient(let parent)):
+                    let cx = Self.inheritedGradientValue("cx", child: child.cx, parent: parent.cx, childExplicit: childExplicit)
+                    let cy = Self.inheritedGradientValue("cy", child: child.cy, parent: parent.cy, childExplicit: childExplicit)
+                    let fx: CGFloat? = childExplicit.contains("fx")
+                        ? child.fx
+                        : (parentExplicit.contains("fx") ? parent.fx : nil)
+                    let fy: CGFloat? = childExplicit.contains("fy")
+                        ? child.fy
+                        : (parentExplicit.contains("fy") ? parent.fy : nil)
                     let merged = SVGRadialGradient(
-                        cx: child.cx, cy: child.cy, fx: child.fx, fy: child.fy, r: child.r,
-                        units: child.units, spreadMethod: child.spreadMethod,
-                        colorInterpolation: child.colorInterpolation,
+                        cx: cx,
+                        cy: cy,
+                        fx: fx,
+                        fy: fy,
+                        r: Self.inheritedGradientValue("r", child: child.r, parent: parent.r, childExplicit: childExplicit),
+                        units: Self.inheritedGradientValue("gradientUnits", child: child.units, parent: parent.units, childExplicit: childExplicit),
+                        spreadMethod: Self.inheritedGradientValue("spreadMethod", child: child.spreadMethod, parent: parent.spreadMethod, childExplicit: childExplicit),
+                        colorInterpolation: Self.inheritedGradientValue("color-interpolation", child: child.colorInterpolation, parent: parent.colorInterpolation, childExplicit: childExplicit),
                         stops: child.stops.isEmpty ? parent.stops : child.stops,
-                        transform: child.transform
+                        transform: Self.inheritedGradientValue("gradientTransform", child: child.transform, parent: parent.transform, childExplicit: childExplicit)
                     )
                     if merged != child { paintServers[id] = .radialGradient(merged); changed = true }
                 case (.radialGradient(let child), .linearGradient(let parent)):
@@ -1992,6 +2079,37 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
                 }
             }
         }
+    }
+
+    /// SVG 1.1 §13.2.3: clamp out-of-order stop offsets; equal offsets keep the last stop.
+    private static func normalizeGradientStops(_ stops: [SVGGradientStop]) -> [SVGGradientStop] {
+        guard !stops.isEmpty else { return [] }
+        var normalized: [SVGGradientStop] = []
+        var maxOffset: CGFloat = -1
+        for stop in stops {
+            var offset = stop.offset
+            if offset < maxOffset {
+                offset = maxOffset
+            } else {
+                maxOffset = offset
+            }
+            let corrected = SVGGradientStop(offset: offset, color: stop.color)
+            if let last = normalized.last, abs(last.offset - corrected.offset) < 1e-6 {
+                normalized[normalized.count - 1] = corrected
+            } else {
+                normalized.append(corrected)
+            }
+        }
+        return normalized
+    }
+
+    private static func inheritedGradientValue<T>(
+        _ key: String,
+        child: T,
+        parent: T,
+        childExplicit: Set<String>
+    ) -> T {
+        childExplicit.contains(key) ? child : parent
     }
 
     /// Parse `stroke-dasharray` per SVG 1.1: "none" → empty; comma/whitespace

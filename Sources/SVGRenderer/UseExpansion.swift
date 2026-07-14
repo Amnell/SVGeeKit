@@ -34,7 +34,9 @@ enum SVGUseExpansion {
     case .svg(let svg):
       return instanceElement(.svg(svg), use: use)
     case .rect(var r):
-      r.paint = mergedInstancePaint(r.paint, use: use, inheritedFill: inheritedFill)
+      r.paint = mergedInstancePaint(
+        r.paint, use: use, inheritedFill: inheritedFill, explicitPresentation: r.explicitPresentation
+      )
       return .rect(r)
     case .circle(var c):
       c.paint = mergedInstancePaint(c.paint, use: use, inheritedFill: inheritedFill)
@@ -68,18 +70,17 @@ enum SVGUseExpansion {
   private static func mergedInstancePaint(
     _ referenced: SVGPaintProperties,
     use: SVGUse,
-    inheritedFill: SVGPaint?
+    inheritedFill: SVGPaint?,
+    explicitPresentation: Set<String> = []
   ) -> SVGPaintProperties {
     var paint = referenced
     for key in use.explicitPresentation where key != "fill" {
       applyPresentationKey(key, from: use.paint, into: &paint)
     }
     if use.explicitPresentation.contains("fill") {
-      if let inheritedFill {
-        if referenced.fill == inheritedFill {
-          paint.fill = use.paint.fill
-        }
-      } else {
+      if !explicitPresentation.contains("fill") {
+        paint.fill = use.paint.fill
+      } else if let inheritedFill, referenced.fill == inheritedFill {
         paint.fill = use.paint.fill
       }
     }

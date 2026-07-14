@@ -97,28 +97,32 @@ mutation, out of production scope.
 
 | Target | Baseline | Goal | Status |
 | --- | ---: | ---: | --- |
-| `pservers` passed | 25 | 33 | `[~]` |
-| `pservers` partial | 8 | 0 | `[~]` |
+| `pservers` passed | 30 | 33 | `[~]` |
+| `pservers` partial | 3 | 0 | `[~]` |
 
 - [x] `linearGradient`, `radialGradient`, `pattern`
-- [ ] Verify and promote 8 partial baselines against W3C PNG + pass criteria
+- [x] `stop-opacity` independent interpolation (`pservers-grad-05-b`)
+- [x] Promoted: `pservers-grad-05-b`, `pservers-grad-18-b`, `pservers-grad-23-f`, `pservers-grad-24-f`, `pservers-pattern-06-f`
+- [x] Stop offset normalization (`pservers-grad-16-b`), radial `xlink:href` attribute merge (`pservers-grad-21-b`) — pending human baseline promotion
+- [~] `pservers-grad-13-b` — substantial improvement (`<use>` gradient overlay + focal tiles); radial focal rendering still partial
+- [ ] Remaining partials: `pservers-grad-13-b`, `pservers-grad-16-b`, `pservers-grad-21-b`
 - [ ] `gradientUnits`, `spreadMethod`, `gradientTransform` edge cases
 
 ### 1d. CSS styling
 
 | Target | Baseline | Goal | Status |
 | --- | ---: | ---: | --- |
-| `styling` passed | 7 | 18 | `[~]` |
-| `styling` partial | 11 | 0 | `[~]` |
+| `styling` passed | 8 | 18 | `[~]` |
+| `styling` partial | 10 | 0 | `[~]` |
 
 Follow [styling-rollout.md](../styling-rollout.md):
 
 - [x] Presentation attributes
 - [x] Inline `style`
 - [x] `<style>` class and type selectors (core)
-- [ ] Inheritance (`styling-inherit-01-b`, …)
+- [x] Inheritance (`styling-inherit-01-b`)
 - [ ] Presentation edge cases (`styling-pres-02-f` … `05-f`)
-- [ ] Promote 11 partial baselines after verification
+- [ ] Promote 10 partial baselines after verification
 
 ### 1e. Document structure (`struct`)
 
@@ -224,8 +228,8 @@ or have a documented unsupported sub-feature.
 
 | Target | Baseline | Goal | Status |
 | --- | ---: | ---: | --- |
-| `partialBaseline` total | 116 | ≤30 | `[ ]` |
-| `passed` total | 186 | 280+ | `[ ]` |
+| `partialBaseline` total | 114 | ≤30 | `[ ]` |
+| `passed` total | 190 | 280+ | `[ ]` |
 
 ### Process (repeat per tag)
 
@@ -240,7 +244,7 @@ or have a documented unsupported sub-feature.
 1. `struct` (31 partial) — highest count
 2. `animate` (60 partial) — **low priority** (out of production scope; only promote if needed for regression)
 3. `styling` (11 partial)
-4. `pservers` (8 partial)
+4. `pservers` (4 partial) — `pservers-grad-13-b`, `16-b`, `18-b`, `21-b`
 5. `color` (2 partial)
 6. `render` (1 partial)
 

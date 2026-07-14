@@ -766,6 +766,83 @@ struct SVGParserTests {
         #expect(g.stops[2].color.alpha == 0.5)
     }
 
+    @Test func normalizesOutOfOrderGradientStops() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg">
+          <linearGradient id="g" gradientUnits="objectBoundingBox" x1="0" y1="0" x2="1" y2="0">
+            <stop stop-color="yellow" offset="0"/>
+            <stop stop-color="#f48" offset=".25"/>
+            <stop stop-color="green" offset=".5"/>
+            <stop stop-color="blue" offset=".1"/>
+          </linearGradient>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .linearGradient(let g) = doc.paintServers["g"] else {
+            Issue.record("expected linearGradient"); return
+        }
+        #expect(g.stops.count == 3)
+        #expect(g.stops[0].offset == 0)
+        #expect(g.stops[1].offset == 0.25)
+        #expect(g.stops[2].offset == 0.5)
+        #expect(g.stops[2].color.red == 0 && g.stops[2].color.green == 0 && g.stops[2].color.blue == 1)
+    }
+
+    @Test func parsesGradientStopColorAndOpacityInherit() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg">
+          <g stop-color="#f48" stop-opacity="0.5" color="yellow">
+            <linearGradient id="g1" stop-color="inherit">
+              <stop offset="0" stop-color="green" stop-opacity="1"/>
+              <stop offset="1" stop-color="inherit" stop-opacity="1"/>
+            </linearGradient>
+            <linearGradient id="g2" stop-opacity="inherit">
+              <stop offset="0" stop-color="green" stop-opacity="1"/>
+              <stop offset="1" stop-color="green" stop-opacity="inherit"/>
+            </linearGradient>
+          </g>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .linearGradient(let g1) = doc.paintServers["g1"],
+              case .linearGradient(let g2) = doc.paintServers["g2"] else {
+            Issue.record("expected gradients"); return
+        }
+        let pink = g1.stops[1].color
+        #expect(abs(pink.red - 1) < 0.01)
+        #expect(abs(pink.green - 0.267) < 0.02)
+        #expect(abs(pink.blue - 0.533) < 0.02)
+        #expect(g2.stops[1].color.alpha == 0.5)
+    }
+
+    @Test func parsesRadialGradientHrefAttributeInheritance() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+          <radialGradient id="grad1" cx="100%" r="20%">
+            <stop offset="0" stop-color="black"/>
+            <stop offset="1" stop-opacity="0"/>
+          </radialGradient>
+          <radialGradient id="grad2" xlink:href="#grad1" cx="0%"/>
+          <radialGradient id="grad3" cx="100%" r="20%" fx="0%">
+            <stop offset="0" stop-color="black"/>
+            <stop offset="1" stop-opacity="0"/>
+          </radialGradient>
+          <radialGradient id="grad4" xlink:href="#grad3" cx="0%"/>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .radialGradient(let g2) = doc.paintServers["grad2"],
+              case .radialGradient(let g4) = doc.paintServers["grad4"] else {
+            Issue.record("expected radial gradients"); return
+        }
+        #expect(g2.cx == 0)
+        #expect(g2.r == 0.2)
+        #expect(g2.stops.count == 2)
+        #expect(g4.cx == 0)
+        #expect(g4.r == 0.2)
+        #expect(g4.fx == 0)
+    }
+
     @Test func parsesPatternWithChildrenAndHrefMerge() throws {
         let svg = """
         <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100">

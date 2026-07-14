@@ -61,6 +61,10 @@ public struct SVGPaintProperties: Equatable, Sendable {
     public var strokeDashOffset: CGFloat
     public var opacity: CGFloat
     public var color: SVGColor
+    /// Inherited presentation attribute for `<stop>` defaults on gradient elements.
+    public var stopColor: SVGColor
+    /// Inherited presentation attribute for `<stop>` defaults on gradient elements.
+    public var stopOpacity: CGFloat
     public var visibility: SVGVisibility
     public var clipPathRef: String?
     public var maskRef: String?
@@ -79,6 +83,8 @@ public struct SVGPaintProperties: Equatable, Sendable {
         strokeDashOffset: CGFloat = 0,
         opacity: CGFloat = 1,
         color: SVGColor = .black,
+        stopColor: SVGColor = .black,
+        stopOpacity: CGFloat = 1,
         visibility: SVGVisibility = .visible,
         clipPathRef: String? = nil,
         maskRef: String? = nil
@@ -96,6 +102,8 @@ public struct SVGPaintProperties: Equatable, Sendable {
         self.strokeDashOffset = strokeDashOffset
         self.opacity = opacity
         self.color = color
+        self.stopColor = stopColor
+        self.stopOpacity = stopOpacity
         self.visibility = visibility
         self.clipPathRef = clipPathRef
         self.maskRef = maskRef
