@@ -205,8 +205,29 @@ struct PatternRenderTests {
 
   @Test func w3cGrad13MatchesReference() throws {
     let diff = try diffAgainstW3C(testId: "pservers-grad-13-b")
-    // Radial focal-point tiles + title text; coarse guard until focal rendering matches W3C.
-    #expect(diff.mismatchedFraction < 0.4)
+    // Radial focal tiles + stripe compositing; ~25% W3C diff at tol 4.
+    #expect(diff.mismatchedFraction < 0.28)
+  }
+
+  @Test func grad13FirstTileCenterMatchesBlueDominant() throws {
+    let svgURL = Self.w3cRoot.appendingPathComponent("svg/pservers-grad-13-b.svg")
+    let doc = try SVGConformanceFixtureParsing.parse(data: Data(contentsOf: svgURL), svgURL: svgURL)
+    let image = try SVGRasterizer.rasterize(doc, pixelSize: CGSize(width: 480, height: 360))
+    let p = Self.pixel(in: image, x: 67, y: 60)
+    #expect(p.blue > p.red, "first focal tile should read blue, not stripe yellow")
+    #expect(p.blue > 60)
+  }
+
+  /// Yellow base rect must stay under stripes; only the no-fill overlay gets the gradient.
+  @Test func grad13TilesShowYellowBehindStripes() throws {
+    let svgURL = Self.w3cRoot.appendingPathComponent("svg/pservers-grad-13-b.svg")
+    let doc = try SVGConformanceFixtureParsing.parse(data: Data(contentsOf: svgURL), svgURL: svgURL)
+    let image = try SVGRasterizer.rasterize(doc, pixelSize: CGSize(width: 480, height: 360))
+    // Bottom-right of first tile: gradient is transparent; yellow base should dominate.
+    let p = Self.pixel(in: image, x: 105, y: 98)
+    #expect(p.red > 200, "expected yellow background behind stripes, got \(p)")
+    #expect(p.green > 200)
+    #expect(p.blue < 80)
   }
 
   @Test func w3cCoordsUnits01BMatchesReference() throws {

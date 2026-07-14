@@ -97,15 +97,15 @@ mutation, out of production scope.
 
 | Target | Baseline | Goal | Status |
 | --- | ---: | ---: | --- |
-| `pservers` passed | 30 | 33 | `[~]` |
-| `pservers` partial | 3 | 0 | `[~]` |
+| `pservers` passed | 31 | 33 | `[~]` |
+| `pservers` partial | 2 | 0 | `[~]` |
 
 - [x] `linearGradient`, `radialGradient`, `pattern`
 - [x] `stop-opacity` independent interpolation (`pservers-grad-05-b`)
-- [x] Promoted: `pservers-grad-05-b`, `pservers-grad-18-b`, `pservers-grad-23-f`, `pservers-grad-24-f`, `pservers-pattern-06-f`
-- [x] Stop offset normalization (`pservers-grad-16-b`), radial `xlink:href` attribute merge (`pservers-grad-21-b`) — ready for human baseline promotion
-- [~] `pservers-grad-13-b` — improved via `<use>` gradient overlay; off-center focal on non-square OBB still partial
-- [ ] Remaining partials: `pservers-grad-13-b`, `pservers-grad-16-b`, `pservers-grad-21-b`
+- [x] Promoted: `pservers-grad-05-b`, `pservers-grad-18-b`, `pservers-grad-21-b`, `pservers-grad-23-f`, `pservers-grad-24-f`, `pservers-pattern-06-f`
+- [x] Stop offset normalization (`pservers-grad-16-b`) — ready for human baseline promotion
+- [~] `pservers-grad-13-b` — `<use>` fill only on no-fill overlay; yellow base + stripes preserved (~25% W3C diff)
+- [ ] Remaining partials: `pservers-grad-13-b`, `pservers-grad-16-b`
 - [ ] `gradientUnits`, `spreadMethod`, `gradientTransform` edge cases
 
 ### 1d. CSS styling
@@ -244,7 +244,7 @@ or have a documented unsupported sub-feature.
 1. `struct` (31 partial) — highest count
 2. `animate` (60 partial) — **low priority** (out of production scope; only promote if needed for regression)
 3. `styling` (11 partial)
-4. `pservers` (4 partial) — `pservers-grad-13-b`, `16-b`, `18-b`, `21-b`
+4. `pservers` (2 partial) — `pservers-grad-13-b`, `16-b`
 5. `color` (2 partial)
 6. `render` (1 partial)
 

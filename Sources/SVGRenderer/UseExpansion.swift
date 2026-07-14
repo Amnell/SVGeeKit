@@ -11,22 +11,20 @@ enum SVGUseExpansion {
   static func instanceElement(_ element: SVGElement, use: SVGUse) -> SVGElement {
     switch element {
     case .group(let g):
-      let inheritedFill = predominantFill(in: g)
       var group = g
-      group.children = g.children.map { instanceGroupChild($0, use: use, inheritedFill: inheritedFill) }
+      group.children = g.children.map { instanceGroupChild($0, use: use) }
       return .group(group)
     case .svg(var svg):
-      svg.children = svg.children.map { instanceGroupChild($0, use: use, inheritedFill: nil) }
+      svg.children = svg.children.map { instanceGroupChild($0, use: use) }
       return .svg(svg)
     default:
-      return instanceGroupChild(element, use: use, inheritedFill: nil)
+      return instanceGroupChild(element, use: use)
     }
   }
 
   private static func instanceGroupChild(
     _ element: SVGElement,
-    use: SVGUse,
-    inheritedFill: SVGPaint?
+    use: SVGUse
   ) -> SVGElement {
     switch element {
     case .group(let g):
@@ -35,34 +33,34 @@ enum SVGUseExpansion {
       return instanceElement(.svg(svg), use: use)
     case .rect(var r):
       r.paint = mergedInstancePaint(
-        r.paint, use: use, inheritedFill: inheritedFill, explicitPresentation: r.explicitPresentation
+        r.paint, use: use, explicitPresentation: r.explicitPresentation
       )
       return .rect(r)
     case .circle(var c):
-      c.paint = mergedInstancePaint(c.paint, use: use, inheritedFill: inheritedFill)
+      c.paint = mergedInstancePaint(c.paint, use: use)
       return .circle(c)
     case .ellipse(var e):
-      e.paint = mergedInstancePaint(e.paint, use: use, inheritedFill: inheritedFill)
+      e.paint = mergedInstancePaint(e.paint, use: use)
       return .ellipse(e)
     case .line(var l):
-      l.paint = mergedInstancePaint(l.paint, use: use, inheritedFill: inheritedFill)
+      l.paint = mergedInstancePaint(l.paint, use: use)
       return .line(l)
     case .polyline(var p):
-      p.paint = mergedInstancePaint(p.paint, use: use, inheritedFill: inheritedFill)
+      p.paint = mergedInstancePaint(p.paint, use: use)
       return .polyline(p)
     case .polygon(var p):
-      p.paint = mergedInstancePaint(p.paint, use: use, inheritedFill: inheritedFill)
+      p.paint = mergedInstancePaint(p.paint, use: use)
       return .polygon(p)
     case .path(var p):
-      p.paint = mergedInstancePaint(p.paint, use: use, inheritedFill: inheritedFill)
+      p.paint = mergedInstancePaint(p.paint, use: use)
       return .path(p)
     case .text(var t):
-      t.paint = mergedInstancePaint(t.paint, use: use, inheritedFill: inheritedFill)
+      t.paint = mergedInstancePaint(t.paint, use: use)
       return .text(t)
     case .use:
       return element
     case .image(var img):
-      img.paint = mergedInstancePaint(img.paint, use: use, inheritedFill: inheritedFill)
+      img.paint = mergedInstancePaint(img.paint, use: use)
       return .image(img)
     }
   }
@@ -70,19 +68,16 @@ enum SVGUseExpansion {
   private static func mergedInstancePaint(
     _ referenced: SVGPaintProperties,
     use: SVGUse,
-    inheritedFill: SVGPaint?,
     explicitPresentation: Set<String> = []
   ) -> SVGPaintProperties {
     var paint = referenced
     for key in use.explicitPresentation where key != "fill" {
       applyPresentationKey(key, from: use.paint, into: &paint)
     }
-    if use.explicitPresentation.contains("fill") {
-      if !explicitPresentation.contains("fill") {
-        paint.fill = use.paint.fill
-      } else if let inheritedFill, referenced.fill == inheritedFill {
-        paint.fill = use.paint.fill
-      }
+    // Use fill overrides only shapes without a specified fill (struct-use-01-t).
+    // Explicit fills on referenced children are kept (pservers-grad-13-b stripes + yellow base).
+    if use.explicitPresentation.contains("fill"), !explicitPresentation.contains("fill") {
+      paint.fill = use.paint.fill
     }
     return paint
   }
@@ -110,27 +105,6 @@ enum SVGUseExpansion {
     case "clip-path": paint.clipPathRef = source.clipPathRef
     case "mask": paint.maskRef = source.maskRef
     default: break
-    }
-  }
-
-  private static func predominantFill(in group: SVGGroup) -> SVGPaint? {
-    for child in group.children {
-      if let fill = shapeFill(child) { return fill }
-    }
-    return nil
-  }
-
-  private static func shapeFill(_ element: SVGElement) -> SVGPaint? {
-    switch element {
-    case .rect(let r): return r.paint.fill
-    case .circle(let c): return c.paint.fill
-    case .ellipse(let e): return e.paint.fill
-    case .line(let l): return l.paint.fill
-    case .polyline(let p): return p.paint.fill
-    case .polygon(let p): return p.paint.fill
-    case .path(let p): return p.paint.fill
-    case .text(let t): return t.paint.fill
-    case .group, .svg, .use, .image: return nil
     }
   }
 }
