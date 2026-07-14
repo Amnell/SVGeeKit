@@ -10,3 +10,4 @@ DerivedData/
 
 # Snapshot diffs (kept ephemeral; baselines ARE committed)
 Tests/__SnapshotResults__/
+/.serena/memories/memory_maintenance.md
