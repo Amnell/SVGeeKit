@@ -65,16 +65,20 @@ Update conformance targets after `swift test` regenerates
 | Target | Baseline | Goal | Status |
 | --- | ---: | ---: | --- |
 | `shapes` passed | 30 | 30 | `[x]` verified |
-| `paths` passed | 19 | 21 | `[~]` |
+| `paths` passed | 19 | 19 | `[x]` verified |
 | `coords` passed | 28 | 28+ | `[~]` |
 
 **`shapes` chapter:** all 30 non-skipped W3C tests pass with verified baselines in
 `Tests/__Snapshots__/` (completed 2026-07-14).
 
+**`paths` chapter:** all 19 non-skipped W3C tests pass with verified baselines
+(completed 2026-07-14). Two `paths-dom-*` tests remain skipped — DOM API + script
+mutation, out of production scope.
+
 - [x] Basic shapes (`rect`, `circle`, `ellipse`, `line`, `poly`, `path`)
 - [x] Transforms, `viewBox`, coordinate units
 - [x] `rx` / `ry` clamping, single-attribute copy, `<use>` stroke overlays (`shapes-rect-03-t`)
-- [ ] Remaining `paths-*` edge cases (read pass criteria per test)
+- [x] Path `d` parsing and rendering (`paths-data-*`; `paths-dom-*` skipped)
 
 ### 1b. Painting
 

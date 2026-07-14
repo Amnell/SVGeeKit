@@ -27,7 +27,7 @@ Update this document when features land. Tag matching W3C chapters in
 | `g` | Grouping, inherited paint, transforms |
 | `defs` | Definition container |
 | `rect`, `circle`, `ellipse`, `line`, `polyline`, `polygon` | Basic shapes — W3C `shapes` chapter verified (30/30) |
-| `path` | Path data (`d`) |
+| `path` | Path data (`d`) — W3C `paths` chapter verified (19/19 non-skipped; `paths-dom-*` skipped) |
 | `use` | **`href="#id"` / `xlink:href="#id"` only** — same document |
 | `linearGradient`, `radialGradient`, `stop` | Paint servers in `defs` |
 | `pattern` | Tiled paint; fragment refs only |
