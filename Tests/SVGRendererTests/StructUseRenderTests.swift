@@ -4,6 +4,7 @@ import Testing
 import SVGConformance
 import SVGCore
 import SVGParser
+import SVGRenderer
 import SVGRendererSwiftUI
 
 @Suite struct StructUseRenderTests {
@@ -41,6 +42,35 @@ import SVGRendererSwiftUI
         #expect(green.g > 100)
         #expect(green.g > green.r)
         #expect(green.g > green.b)
+    }
+
+    @Test func structUse12LowersWithoutUseCycleStackOverflow() throws {
+        let svgURL = Self.repoRoot
+            .appendingPathComponent("Tests/SVGConformanceTests/Resources/W3C-SVG-1.1/svg/struct-use-12-f.svg")
+        let data = try Data(contentsOf: svgURL)
+        let doc = try SVGConformanceFixtureParsing.parse(data: data, svgURL: svgURL)
+        _ = SVGRenderTree.lower(doc)
+    }
+
+    @Test func useCycleShortPairLowersSafely() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100">
+          <use xlink:href="#b" id="a"/>
+          <use xlink:href="#a" id="b"/>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        _ = SVGRenderTree.lower(doc)
+    }
+
+    @Test func useCycleGroupSelfReferenceLowersSafely() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100">
+          <g id="g1"><use id="u2" xlink:href="#g1"/></g>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        _ = SVGRenderTree.lower(doc)
     }
 
     @Test func structUse09ShowsNestedSymbolStrokes() throws {

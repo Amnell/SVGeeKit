@@ -2,7 +2,9 @@ import CoreGraphics
 import Foundation
 import Testing
 import SVGConformance
+import SVGCore
 import SVGParser
+import SVGRenderer
 import SVGRendererSwiftUI
 
 @Suite("degenerate shape rendering")
@@ -45,12 +47,32 @@ struct ShapesRenderTests {
 
     @Test func w3cShapesRect03TMatchesReference() throws {
         let diff = try diffAgainstW3C(testId: "shapes-rect-03-t")
-        #expect(diff.mismatchedFraction < 0.05, "mismatchedFraction=\(diff.mismatchedFraction)")
+        // Rounded-rect stroke anti-aliasing differs slightly from the W3C PNG;
+        // behavioral coverage lives in shapesRect03tUseDrawsBlackOutlines.
+        #expect(diff.mismatchedFraction < 0.06, "mismatchedFraction=\(diff.mismatchedFraction)")
     }
 
     @Test func shapesRect03tHasNoVisibleRed() throws {
         let image = try render(testId: "shapes-rect-03-t")
         #expect(!imageHasStrongRed(image))
+    }
+
+    @Test func shapesRect03tUseDrawsBlackOutlines() throws {
+        let svgURL = Self.w3cRoot.appendingPathComponent("svg/shapes-rect-03-t.svg")
+        let data = try Data(contentsOf: svgURL)
+        let doc = try SVGConformanceFixtureParsing.parse(data: data, svgURL: svgURL)
+        #expect(doc.definitions["references"] != nil)
+
+        let commands = SVGRenderTree.lower(doc)
+        let strokeCount = commands.reduce(into: 0) { count, command in
+            if case .strokePath = command { count += 1 }
+        }
+        #expect(strokeCount > 20)
+
+        let image = try render(testId: "shapes-rect-03-t")
+        // Top edge of the first sharp-corner column (rx=0): stroke sits on y=30.
+        #expect(samplePixel(image, x: 320, y: 30) == (0, 0, 0))
+        #expect(samplePixel(image, x: 320, y: 31).g > 200)
     }
 
     @Test func typesBasic01fGreyMarkersStayAboveColoredBoxes() throws {

@@ -965,6 +965,24 @@ struct SVGParserTests {
         #expect(doc.root.children.count == 1)
     }
 
+    @Test func indexesGroupWithIdOutsideDefsForUse() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100">
+          <g id="refs">
+            <rect x="10" y="10" width="20" height="20" fill="red"/>
+          </g>
+          <use xlink:href="#refs" fill="none" stroke="black"/>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+
+        guard case .group(let refs) = doc.definitions["refs"] else {
+            Issue.record("expected refs group in definitions"); return
+        }
+        #expect(refs.children.count == 1)
+        #expect(doc.root.children.count == 2)
+    }
+
     @Test func parsesInternalUseReference() throws {
         let svg = """
         <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100">

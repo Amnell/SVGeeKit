@@ -1278,10 +1278,6 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
 
     // MARK: - Helpers
 
-    private var registersAsDefinition: Bool {
-        defsDepth > 0 && clipPathStack.isEmpty && patternStack.isEmpty && maskStack.isEmpty
-    }
-
     private func beginAnimatableShape(_ element: SVGElement, definitionID: String?) {
         pendingAnimatable = PendingAnimatable(
             element: element,
@@ -1328,8 +1324,10 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         }
     }
 
+    /// Index an element by `id` so `<use href="#id">` can resolve it anywhere in
+    /// the document, not only under `<defs>` (SVG 1.1 §5.4 / §5.6.2).
     private func registerDefinition(id: String?, element: SVGElement) {
-        guard registersAsDefinition, let id, !id.isEmpty else { return }
+        guard let id, !id.isEmpty else { return }
         storeDefinition(id: id, element: element)
     }
 

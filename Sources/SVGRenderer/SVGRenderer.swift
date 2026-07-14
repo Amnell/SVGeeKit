@@ -144,7 +144,7 @@ public enum SVGRenderTree {
         commands.append(contentsOf: inner)
     }
 
-    fileprivate struct Context {
+    fileprivate final class Context {
         let paintServers: [String: SVGPaintServer]
         let clipPaths: [String: SVGClipPath]
         let masks: [String: SVGMask]
@@ -153,6 +153,28 @@ public enum SVGRenderTree {
         let definitions: [String: SVGElement]
         let resourcePolicy: SVGResourcePolicy
         let parsingLimits: SVGParsingLimits
+        /// Active `<use href>` ids while expanding a use subtree; breaks cycles.
+        var useExpansionChain: Set<String> = []
+
+        init(
+            paintServers: [String: SVGPaintServer],
+            clipPaths: [String: SVGClipPath],
+            masks: [String: SVGMask],
+            fonts: [String: SVGFontDefinition],
+            fontFaces: [SVGFontFace],
+            definitions: [String: SVGElement],
+            resourcePolicy: SVGResourcePolicy,
+            parsingLimits: SVGParsingLimits
+        ) {
+            self.paintServers = paintServers
+            self.clipPaths = clipPaths
+            self.masks = masks
+            self.fonts = fonts
+            self.fontFaces = fontFaces
+            self.definitions = definitions
+            self.resourcePolicy = resourcePolicy
+            self.parsingLimits = parsingLimits
+        }
     }
 
     private static func lower(group: SVGGroup, ctx: Context, into commands: inout [SVGRenderCommand]) {
@@ -392,7 +414,13 @@ public enum SVGRenderTree {
     }
 
     private static func lower(use: SVGUse, ctx: Context, into commands: inout [SVGRenderCommand]) {
-        guard let (element, placement) = expandUse(use, definitions: ctx.definitions, chain: []) else { return }
+        guard !ctx.useExpansionChain.contains(use.href) else { return }
+        ctx.useExpansionChain.insert(use.href)
+        defer { ctx.useExpansionChain.remove(use.href) }
+
+        guard let (element, placement) = expandUse(
+            use, definitions: ctx.definitions, chain: &ctx.useExpansionChain
+        ) else { return }
         var inner: [SVGRenderCommand] = []
         inner.append(.pushState)
         if placement != .identity {
@@ -407,16 +435,16 @@ public enum SVGRenderTree {
     private static func expandUse(
         _ use: SVGUse,
         definitions: [String: SVGElement],
-        chain: Set<String>
+        chain: inout Set<String>
     ) -> (SVGElement, CGAffineTransform)? {
-        guard !chain.contains(use.href) else { return nil }
-        var chain = chain
-        chain.insert(use.href)
         guard let def = definitions[use.href] else { return nil }
         let placement = SVGUseExpansion.placementTransform(for: use)
         switch def {
         case .use(let inner):
-            guard let (resolved, innerPlacement) = expandUse(inner, definitions: definitions, chain: chain) else {
+            guard !chain.contains(inner.href) else { return nil }
+            guard let (resolved, innerPlacement) = expandUse(
+                inner, definitions: definitions, chain: &chain
+            ) else {
                 return nil
             }
             var instanced = SVGUseExpansion.instanceElement(resolved, use: inner)
@@ -614,17 +642,19 @@ public enum SVGRenderTree {
         switch element {
         case .use(let u):
             guard !chain.contains(u.href) else { return CGMutablePath() }
-            guard let (resolved, placement) = expandUse(u, definitions: ctx.definitions, chain: chain) else {
+            var expansionChain = chain
+            expansionChain.insert(u.href)
+            guard let (resolved, placement) = expandUse(
+                u, definitions: ctx.definitions, chain: &expansionChain
+            ) else {
                 return CGMutablePath()
             }
-            var nextChain = chain
-            nextChain.insert(u.href)
             return clipPathGeometry(
                 for: resolved,
                 transform: transform.concatenating(placement),
                 obbTransform: obbTransform,
                 ctx: ctx,
-                chain: nextChain
+                chain: expansionChain
             )
         case .group(let g):
             let path = CGMutablePath()
