@@ -76,12 +76,13 @@ public struct SwiftUICanvasRenderer {
             case .strokePath(let cgPath, let paint, let opacity, let width, let cap, let join, let miterLimit, let dashArray, let dashPhase):
                 guard let shading = shading(for: paint, opacity: opacity) else { continue }
                 let strokePath = HairlineStrokeAlignment.alignedPathForStroke(cgPath, lineWidth: width)
+                let effectiveDash = dashArray.contains(where: { $0 != 0 }) ? dashArray : []
                 let style = StrokeStyle(
                     lineWidth: width,
                     lineCap: lineCap(cap),
                     lineJoin: lineJoin(join),
                     miterLimit: miterLimit,
-                    dash: dashArray,
+                    dash: effectiveDash,
                     dashPhase: dashPhase
                 )
                 if let tx = gradientPaintTransform(paint) {

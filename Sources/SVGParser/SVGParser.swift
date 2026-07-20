@@ -2190,6 +2190,8 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             out.append(v)
         }
         if out.count % 2 == 1 { out.append(contentsOf: out) }
+        // SVG 1.1: all-zero lists render as a solid stroke (same as "none").
+        if out.allSatisfy({ $0 == 0 }) { return [] }
         return out
     }
 }

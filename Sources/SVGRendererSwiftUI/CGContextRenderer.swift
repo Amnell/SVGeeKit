@@ -227,7 +227,7 @@ struct CGContextRenderer {
         ctx.setLineCap(lineCap(cap))
         ctx.setLineJoin(lineJoin(join))
         ctx.setMiterLimit(miterLimit)
-        if !dashArray.isEmpty {
+        if dashArray.contains(where: { $0 != 0 }) {
             ctx.setLineDash(phase: dashPhase, lengths: dashArray)
         }
 

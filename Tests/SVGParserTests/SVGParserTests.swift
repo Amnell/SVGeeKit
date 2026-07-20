@@ -585,13 +585,16 @@ struct SVGParserTests {
                 stroke-dasharray="none"/>
           <line x1="0" y1="0" x2="100" y2="0" stroke="black"
                 stroke-dasharray="10 -5"/>
+          <line x1="0" y1="0" x2="100" y2="0" stroke="black"
+                stroke-dasharray="0"/>
         </svg>
         """
         let doc = try SVGParser().parse(string: svg)
         guard case .line(let a) = doc.root.children[0],
               case .line(let b) = doc.root.children[1],
-              case .line(let c) = doc.root.children[2] else {
-            Issue.record("expected three lines"); return
+              case .line(let c) = doc.root.children[2],
+              case .line(let d) = doc.root.children[3] else {
+            Issue.record("expected four lines"); return
         }
         // Odd-length lists are duplicated per SVG 1.1.
         #expect(a.paint.strokeDashArray == [10, 5, 20, 10, 5, 20])
@@ -599,6 +602,8 @@ struct SVGParserTests {
         #expect(b.paint.strokeDashArray.isEmpty)
         // Negative values invalidate the whole list.
         #expect(c.paint.strokeDashArray.isEmpty)
+        // All-zero lists render as solid stroke (same as "none").
+        #expect(d.paint.strokeDashArray.isEmpty)
     }
 
     @Test func parsesNamedColorPalette() throws {
