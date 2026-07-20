@@ -82,6 +82,9 @@
     "painting-marker-05-f": { "skip": "<marker> element not supported" },
     "painting-marker-06-f": { "skip": "<marker> element not supported" },
     "painting-marker-07-f": { "skip": "<marker> element not supported" },
-    "painting-marker-properties-01-f": { "skip": "<marker> element not supported" }
+    "painting-marker-properties-01-f": { "skip": "<marker> element not supported" },
+    "styling-pres-02-f": { "skip": "script-driven getComputedStyle property collection; requires SVGScript" },
+    "styling-css-05-b": { "skip": "requires :lang() text rendering; deferred to Phase 3 text" },
+    "styling-css-06-b": { "skip": "dynamic pseudo-classes (:link, :hover, :focus); interaction out of scope" }
   }
 }

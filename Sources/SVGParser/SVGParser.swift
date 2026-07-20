@@ -132,10 +132,14 @@ public struct SVGParser {
             return SVGParseResult(document: document, report: SVGParseReport(warnings: [warning]))
         }
 
+        let importCSS = Self.cssImportLoader(for: resolvedOptions.resourcePolicy)
+        let preloadedStylesheet = CSSStylesheetCollector.collect(from: data, importCSS: importCSS)
         let parser = XMLParser(data: data)
         let delegate = SAXDelegate(
             options: resolvedOptions,
-            conditionalContext: conditionalContext
+            conditionalContext: conditionalContext,
+            preloadedStylesheet: preloadedStylesheet,
+            stylesPreloaded: !preloadedStylesheet.isEmpty
         )
         parser.delegate = delegate
         parser.shouldProcessNamespaces = false
@@ -182,6 +186,18 @@ public struct SVGParser {
         document.scriptMetadata.elementIndex = SVGDocument.buildElementIndex(root: document.root)
         document.animationMetadata = delegate.animationMetadata
         return SVGParseResult(document: document, report: SVGParseReport(warnings: warnings))
+    }
+
+    private static func cssImportLoader(for policy: SVGResourcePolicy) -> ((String) -> String?)? {
+        guard case .localFiles = policy else { return nil }
+        return { href in
+            switch SVGHrefResolver.classify(href: href, policy: policy) {
+            case .localFile(let url):
+                return try? String(contentsOf: url, encoding: .utf8)
+            default:
+                return nil
+            }
+        }
     }
 
     private static func baseURL(for policy: SVGResourcePolicy) -> URL? {
@@ -249,9 +265,16 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
     private var warnedNestingDepth = false
     private var warnedDefinitionLimit = false
 
-    init(options: SVGParserOptions = .production, conditionalContext: SVGConditionalProcessingContext = .current()) {
+    init(
+        options: SVGParserOptions = .production,
+        conditionalContext: SVGConditionalProcessingContext = .current(),
+        preloadedStylesheet: CSSStylesheet = CSSStylesheet(),
+        stylesPreloaded: Bool = false
+    ) {
         self.options = options
         self.conditionalContext = conditionalContext
+        self.stylesheet = preloadedStylesheet
+        self.stylesPreloaded = stylesPreloaded
     }
 
     func recordWarning(_ warning: SVGParseWarning) {
@@ -388,6 +411,8 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
 
     /// Author stylesheet rules from `<style type="text/css">` elements.
     private var stylesheet = CSSStylesheet()
+    /// When true, stylesheet was pre-scanned and inline `<style>` blocks are not re-appended.
+    private let stylesPreloaded: Bool
     /// Character data buffer while a `<style>` element is open.
     private var styleTextBuffer: String?
 
@@ -786,7 +811,9 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             if defsDepth > 0 { defsDepth -= 1 }
         case "style":
             if let buffer = styleTextBuffer {
-                stylesheet.append(css: buffer)
+                if !stylesPreloaded {
+                    stylesheet.append(css: buffer, importCSS: Self.cssImportLoader(for: options.resourcePolicy))
+                }
                 styleTextBuffer = nil
             }
         case "font-face" where !svgFontStack.isEmpty:
@@ -1470,6 +1497,22 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         return nil
     }
 
+    private func cssImportLoader() -> ((String) -> String?)? {
+        Self.cssImportLoader(for: options.resourcePolicy)
+    }
+
+    private static func cssImportLoader(for policy: SVGResourcePolicy) -> ((String) -> String?)? {
+        guard case .localFiles = policy else { return nil }
+        return { href in
+            switch SVGHrefResolver.classify(href: href, policy: policy) {
+            case .localFile(let url):
+                return try? String(contentsOf: url, encoding: .utf8)
+            default:
+                return nil
+            }
+        }
+    }
+
     private func mergePaint(
         into inherited: SVGPaintProperties,
         elementName: String,
@@ -1477,22 +1520,32 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         parser: XMLParser
     ) -> SVGPaintProperties {
         var p = inherited
-        func applyDeclarations(_ declarations: [(String, String)]) {
-            // Two passes: `color` first (so `fill="currentColor"` can resolve
-            // against it on the same element), then everything else.
-            for (name, value) in declarations where name == "color" {
-                applyPaintProperty(name: name, value: value, into: &p, parser: parser)
-            }
-            for (name, value) in declarations where name != "color" {
-                applyPaintProperty(name: name, value: value, into: &p, parser: parser)
+        var authored: [String: (value: String, important: Bool, priority: Int)] = [:]
+
+        func applyAuthoredDeclarations(_ declarations: [CSSDeclaration], priority: Int) {
+            for declaration in declarations {
+                let incoming = (declaration.value, declaration.important, priority)
+                if shouldApplyAuthoredDeclaration(existing: authored[declaration.name], incoming: incoming) {
+                    authored[declaration.name] = incoming
+                }
             }
         }
 
-        // 1) Presentation attributes (specificity 0).
+        func flushAuthoredDeclarations() {
+            let ordered = authored.keys.sorted()
+            for name in ordered where name == "color" {
+                applyPaintProperty(name: name, value: authored[name]!.value, into: &p, parser: parser)
+            }
+            for name in ordered where name != "color" {
+                applyPaintProperty(name: name, value: authored[name]!.value, into: &p, parser: parser)
+            }
+        }
+
+        // 1) Presentation attributes (specificity 0, never !important; XML names are case-sensitive).
         let presentationDeclarations = attributes
             .filter { $0.key != "style" }
-            .map { ($0.key, $0.value) }
-        applyDeclarations(presentationDeclarations)
+            .map { CSSDeclaration(name: $0.key, value: $0.value, important: false) }
+        applyAuthoredDeclarations(presentationDeclarations, priority: 0)
 
         if !stylesheet.isEmpty {
             let classes = Set((attributes["class"] ?? "").split(whereSeparator: \.isWhitespace).map(String.init))
@@ -1505,24 +1558,35 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
                 parent: cssElementStack.last,
                 previousSibling: cssChildStack.last?.last
             )
-            let stylesheetDeclarations = stylesheet.declarations(
-                matching: cssNode
-            )
             // 2) Author stylesheet rules (specificity + source order).
-            applyDeclarations(stylesheetDeclarations)
+            applyAuthoredDeclarations(stylesheet.declarations(matching: cssNode), priority: 1)
         }
 
         // 3) Inline `style` (highest author specificity).
-        var inlineStyleDeclarations: [(String, String)] = []
         if let style = attributes["style"] {
+            var inlineStyleDeclarations: [CSSDeclaration] = []
             for pair in style.split(separator: ";") {
                 let parts = pair.split(separator: ":", maxSplits: 1).map { $0.trimmingCharacters(in: .whitespaces) }
-                guard parts.count == 2 else { continue }
-                inlineStyleDeclarations.append((parts[0], parts[1]))
+                guard parts.count == 2,
+                      let declaration = CSSStylesheet.parseInlineDeclaration(namePart: parts[0], valuePart: parts[1])
+                else { continue }
+                inlineStyleDeclarations.append(declaration)
             }
+            applyAuthoredDeclarations(inlineStyleDeclarations, priority: 2)
         }
-        applyDeclarations(inlineStyleDeclarations)
+
+        flushAuthoredDeclarations()
         return p
+    }
+
+    private func shouldApplyAuthoredDeclaration(
+        existing: (value: String, important: Bool, priority: Int)?,
+        incoming: (value: String, important: Bool, priority: Int)
+    ) -> Bool {
+        guard let existing else { return true }
+        if incoming.important && !existing.important { return true }
+        if !incoming.important && existing.important { return false }
+        return incoming.priority >= existing.priority
     }
 
     private func applyPaintProperty(
@@ -1531,7 +1595,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         into p: inout SVGPaintProperties,
         parser: XMLParser
     ) {
-        switch name {
+        switch name.lowercased() {
         case "fill":
             if let paint = resolvePaint(value, currentColor: p.color) { p.fill = paint }
         case "fill-opacity":

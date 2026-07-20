@@ -153,6 +153,7 @@ struct SVGParserTests {
             case .polyline(let p): polylines.append(p)
             case .polygon(let p): polygons.append(p)
             case .group(let g): g.children.forEach(collect)
+            case .svg(let svg): svg.children.forEach(collect)
             default: break
             }
         }
@@ -1775,6 +1776,235 @@ struct SVGParserTests {
                     Issue.record("unexpected column color \(column.color)")
                 }
             }
+        }
+    }
+
+    @Test func stylingCss04fTitleTextUsesBlackFillFromStylesheet() throws {
+        let repoRoot = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+        let svgURL = repoRoot
+            .appendingPathComponent("Tests/SVGConformanceTests/Resources/W3C-SVG-1.1/svg/styling-css-04-f.svg")
+        let data = try Data(contentsOf: svgURL)
+        let doc = try SVGConformanceFixtureParsing.parse(data: data, svgURL: svgURL)
+
+        var texts: [SVGText] = []
+        func collect(_ el: SVGElement) {
+            switch el {
+            case .text(let t): texts.append(t)
+            case .group(let g): g.children.forEach(collect)
+            default: break
+            }
+        }
+        collect(.group(SVGGroup(children: doc.root.children)))
+        #expect(texts.count >= 1)
+        guard case .color(let fill) = texts[0].paint.fill else {
+            Issue.record("title text expected black fill from text{} stylesheet rule"); return
+        }
+        #expect(fill.red < 0.1 && fill.green < 0.1 && fill.blue < 0.1)
+        #expect(texts[0].paint.stroke == .none, "text{} rule should clear universal stroke")
+    }
+
+    @Test func stylingPres03fInlineStyleOverridesPresentationFill() throws {
+        let repoRoot = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+        let svgURL = repoRoot
+            .appendingPathComponent("Tests/SVGConformanceTests/Resources/W3C-SVG-1.1/svg/styling-pres-03-f.svg")
+        let data = try Data(contentsOf: svgURL)
+        let doc = try SVGConformanceFixtureParsing.parse(data: data, svgURL: svgURL)
+
+        var contentRects: [SVGRect] = []
+        func collectRects(_ el: SVGElement) {
+            switch el {
+            case .rect(let rect) where rect.id != "test-frame" && rect.paint.fill != .none:
+                if rect.origin.x >= 10, rect.origin.y >= 10, rect.size.width >= 100 {
+                    contentRects.append(rect)
+                }
+            case .group(let g):
+                g.children.forEach(collectRects)
+            default:
+                break
+            }
+        }
+        collectRects(.group(SVGGroup(children: doc.root.children)))
+        #expect(contentRects.count == 1)
+        guard case .color(let fill) = contentRects[0].paint.fill else {
+            Issue.record("expected color fill"); return
+        }
+        #expect(fill.green > 0.4 && fill.red < 0.1, "inline style fill:green should beat fill=red presentation attribute")
+    }
+
+    @Test func stylingPres04fStylesheetOverridesPresentationFill() throws {
+        let repoRoot = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+        let svgURL = repoRoot
+            .appendingPathComponent("Tests/SVGConformanceTests/Resources/W3C-SVG-1.1/svg/styling-pres-04-f.svg")
+        let data = try Data(contentsOf: svgURL)
+        let doc = try SVGConformanceFixtureParsing.parse(data: data, svgURL: svgURL)
+
+        var painted: [SVGPaintProperties] = []
+        func collect(_ el: SVGElement) {
+            switch el {
+            case .path(let p) where p.paint.fill != .none: painted.append(p.paint)
+            case .circle(let c) where c.paint.fill != .none: painted.append(c.paint)
+            case .ellipse(let e) where e.paint.fill != .none: painted.append(e.paint)
+            case .rect(let r) where r.id != "test-frame" && r.origin.y > 20 && r.paint.fill != .none:
+                painted.append(r.paint)
+            case .group(let g): g.children.forEach(collect)
+            case .svg(let svg): svg.children.forEach(collect)
+            default: break
+            }
+        }
+        collect(.group(SVGGroup(children: doc.root.children)))
+        #expect(painted.count == 7)
+        for (index, paint) in painted.enumerated() {
+            guard case .color(let fill) = paint.fill else {
+                Issue.record("shape \(index) expected color fill"); return
+            }
+            #expect(fill.green > 0.4 && fill.red < 0.1, "shape \(index) expected green from stylesheet")
+        }
+    }
+
+    @Test func stylingCss08fReferenceShapesStayVisible() throws {
+        let repoRoot = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+        let svgURL = repoRoot
+            .appendingPathComponent("Tests/SVGConformanceTests/Resources/W3C-SVG-1.1/svg/styling-css-08-f.svg")
+        let data = try Data(contentsOf: svgURL)
+        let doc = try SVGConformanceFixtureParsing.parse(data: data, svgURL: svgURL)
+
+        func isLime(_ fill: SVGColor) -> Bool {
+            fill.green > 0.8 && fill.red < 0.2 && fill.blue < 0.2
+        }
+        func isRed(_ fill: SVGColor) -> Bool {
+            fill.red > 0.8 && fill.green < 0.2 && fill.blue < 0.2
+        }
+
+        var referenceShapes: [SVGPaintProperties] = []
+        var redTestShapes: [SVGPaintProperties] = []
+        func collect(_ el: SVGElement) {
+            switch el {
+            case .path(let p):
+                guard case .color(let fill) = p.paint.fill else { break }
+                if isLime(fill) { referenceShapes.append(p.paint) }
+                if isRed(fill) { redTestShapes.append(p.paint) }
+            case .circle(let c):
+                guard case .color(let fill) = c.paint.fill else { break }
+                if isLime(fill) { referenceShapes.append(c.paint) }
+                if isRed(fill) { redTestShapes.append(c.paint) }
+            case .ellipse(let e):
+                guard case .color(let fill) = e.paint.fill else { break }
+                if isLime(fill) { referenceShapes.append(e.paint) }
+                if isRed(fill) { redTestShapes.append(e.paint) }
+            case .rect(let r) where r.id != "test-frame":
+                guard case .color(let fill) = r.paint.fill else { break }
+                if isLime(fill) { referenceShapes.append(r.paint) }
+                if isRed(fill) { redTestShapes.append(r.paint) }
+            case .group(let g): g.children.forEach(collect)
+            case .svg(let svg): svg.children.forEach(collect)
+            default: break
+            }
+        }
+
+        collect(.group(SVGGroup(children: doc.root.children)))
+        #expect(referenceShapes.count == 7)
+        for (index, paint) in referenceShapes.enumerated() {
+            #expect(paint.visibility == .visible, "reference shape \(index) should stay visible")
+        }
+        #expect(redTestShapes.count == 7)
+        for (index, paint) in redTestShapes.enumerated() {
+            #expect(paint.visibility == .hidden, "test shape \(index) should be hidden by stylesheet")
+        }
+    }
+
+    @Test func stylingCss09fReferenceShapesStayVisible() throws {
+        let repoRoot = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+        let svgURL = repoRoot
+            .appendingPathComponent("Tests/SVGConformanceTests/Resources/W3C-SVG-1.1/svg/styling-css-09-f.svg")
+        let data = try Data(contentsOf: svgURL)
+        let doc = try SVGConformanceFixtureParsing.parse(data: data, svgURL: svgURL)
+
+        func isBlue(_ fill: SVGColor) -> Bool { fill.blue > 0.8 && fill.red < 0.2 && fill.green < 0.2 }
+        func isRed(_ fill: SVGColor) -> Bool { fill.red > 0.8 && fill.green < 0.2 && fill.blue < 0.2 }
+
+        var referenceShapes: [SVGPaintProperties] = []
+        var redTestShapes: [SVGPaintProperties] = []
+        func collect(_ el: SVGElement) {
+            switch el {
+            case .path(let p):
+                guard case .color(let fill) = p.paint.fill else { break }
+                if isBlue(fill) { referenceShapes.append(p.paint) }
+                if isRed(fill) { redTestShapes.append(p.paint) }
+            case .circle(let c):
+                guard case .color(let fill) = c.paint.fill else { break }
+                if isBlue(fill) { referenceShapes.append(c.paint) }
+                if isRed(fill) { redTestShapes.append(c.paint) }
+            case .ellipse(let e):
+                guard case .color(let fill) = e.paint.fill else { break }
+                if isBlue(fill) { referenceShapes.append(e.paint) }
+                if isRed(fill) { redTestShapes.append(e.paint) }
+            case .rect(let r) where r.id != "test-frame" && r.origin.y > 20:
+                guard case .color(let fill) = r.paint.fill else { break }
+                if isBlue(fill) { referenceShapes.append(r.paint) }
+                if isRed(fill) { redTestShapes.append(r.paint) }
+            case .group(let g): g.children.forEach(collect)
+            case .svg(let svg): svg.children.forEach(collect)
+            default: break
+            }
+        }
+        collect(.group(SVGGroup(children: doc.root.children)))
+        #expect(referenceShapes.count == 7)
+        #expect(redTestShapes.count == 7)
+        for (index, paint) in redTestShapes.enumerated() {
+            #expect(paint.visibility == .hidden, "test shape \(index) should be hidden")
+        }
+    }
+
+    @Test func stylingCss10fCaseInsensitiveCSSOverridesPresentationFill() throws {
+        let repoRoot = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+        let svgURL = repoRoot
+            .appendingPathComponent("Tests/SVGConformanceTests/Resources/W3C-SVG-1.1/svg/styling-css-10-f.svg")
+        let data = try Data(contentsOf: svgURL)
+        let doc = try SVGConformanceFixtureParsing.parse(data: data, svgURL: svgURL)
+
+        var circles: [SVGCircle] = []
+        func collect(_ el: SVGElement) {
+            switch el {
+            case .circle(let c): circles.append(c)
+            case .group(let g): g.children.forEach(collect)
+            default: break
+            }
+        }
+        collect(.group(SVGGroup(children: doc.root.children)))
+        #expect(circles.count == 4)
+
+        func isOrange(_ fill: SVGColor) -> Bool {
+            fill.green > 0.4 && fill.red > 0.4 && fill.blue < 0.2
+        }
+
+        guard case .color(let aFill) = circles[0].paint.fill else {
+            Issue.record("circle a expected fill"); return
+        }
+        #expect(isOrange(aFill), "circle a inherits orange; invalid FiLl attribute ignored")
+
+        for index in 1...3 {
+            guard case .color(let fill) = circles[index].paint.fill else {
+                Issue.record("circle \(index) expected fill"); return
+            }
+            #expect(isOrange(fill), "circle \(index) expected orange from case-insensitive CSS")
         }
     }
 

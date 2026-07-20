@@ -72,25 +72,41 @@ final class CSSNodeContext {
     }
 }
 
+/// A single declaration from an author stylesheet or inline style block.
+struct CSSDeclaration: Equatable {
+    let name: String
+    let value: String
+    let important: Bool
+}
+
 /// A single rule from an author `<style>` block.
 struct CSSRule {
     let selector: CSSSelector
     let specificity: CSSSpecificity
-    let declarations: [(name: String, value: String)]
+    let declarations: [CSSDeclaration]
 }
 
 /// Accumulated author stylesheet rules from `<style>` elements.
 struct CSSStylesheet {
     private(set) var rules: [CSSRule] = []
 
+    /// Known SVG presentation attributes that may appear as XML attributes.
+    static let paintPresentationAttributes: Set<String> = [
+        "fill", "fill-opacity", "fill-rule", "stroke", "stroke-opacity", "stroke-width",
+        "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-dasharray",
+        "stroke-dashoffset", "opacity", "color", "visibility", "display", "clip-path", "mask",
+        "stop-color", "stop-opacity",
+    ]
+
     var isEmpty: Bool { rules.isEmpty }
 
-    mutating func append(css text: String) {
-        rules.append(contentsOf: CSSStylesheet.parseRules(from: text))
+    mutating func append(css text: String, importCSS: ((String) -> String?)? = nil) {
+        let expanded = Self.expandImports(in: text, importCSS: importCSS)
+        rules.append(contentsOf: CSSStylesheet.parseRules(from: expanded))
     }
 
     /// Declarations from all matching rules, in document order.
-    func declarations(matching node: CSSNodeContext) -> [(name: String, value: String)] {
+    func declarations(matching node: CSSNodeContext) -> [CSSDeclaration] {
         let matched = rules.enumerated()
             .filter { _, rule in matches(rule.selector, node: node) }
             .sorted { lhs, rhs in
@@ -101,7 +117,7 @@ struct CSSStylesheet {
                 return lhs.offset < rhs.offset
             }
 
-        var result: [(name: String, value: String)] = []
+        var result: [CSSDeclaration] = []
         for (_, rule) in matched {
             result.append(contentsOf: rule.declarations)
         }
@@ -167,6 +183,48 @@ struct CSSStylesheet {
             }
         }
         return true
+    }
+
+    private static func expandImports(in text: String, importCSS: ((String) -> String?)?) -> String {
+        guard let importCSS else { return text }
+        var imported = ""
+        var body = ""
+        for line in text.split(separator: "\n", omittingEmptySubsequences: false) {
+            let trimmed = line.trimmingCharacters(in: .whitespacesAndNewlines)
+            if trimmed.lowercased().hasPrefix("@import"),
+               let href = parseImportURL(trimmed),
+               let css = importCSS(href)
+            {
+                imported += expandImports(in: css, importCSS: importCSS)
+                if !imported.isEmpty, !imported.hasSuffix("\n") { imported += "\n" }
+                continue
+            }
+            body += line
+            body += "\n"
+        }
+        return imported + body
+    }
+
+    private static func parseImportURL(_ raw: String) -> String? {
+        var trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard trimmed.lowercased().hasPrefix("@import") else { return nil }
+        trimmed = String(trimmed.dropFirst("@import".count)).trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmed.hasSuffix(";") {
+            trimmed = String(trimmed.dropLast()).trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+        if trimmed.lowercased().hasPrefix("url("), trimmed.hasSuffix(")") {
+            var inner = String(trimmed.dropFirst(4).dropLast()).trimmingCharacters(in: .whitespacesAndNewlines)
+            if (inner.hasPrefix("\"") && inner.hasSuffix("\"")) || (inner.hasPrefix("'") && inner.hasSuffix("'")) {
+                inner = String(inner.dropFirst().dropLast())
+            }
+            let href = inner.trimmingCharacters(in: .whitespacesAndNewlines)
+            return href.isEmpty ? nil : href
+        }
+        if (trimmed.hasPrefix("\"") && trimmed.hasSuffix("\"")) || (trimmed.hasPrefix("'") && trimmed.hasSuffix("'")) {
+            trimmed = String(trimmed.dropFirst().dropLast())
+        }
+        let href = trimmed.trimmingCharacters(in: .whitespacesAndNewlines)
+        return href.isEmpty ? nil : href
     }
 
     private static func parseRules(from text: String) -> [CSSRule] {
@@ -428,14 +486,102 @@ struct CSSStylesheet {
         return result
     }
 
-    private static func parseDeclarations(_ body: String) -> [(name: String, value: String)] {
-        var result: [(name: String, value: String)] = []
+    private static func parseDeclarations(_ body: String) -> [CSSDeclaration] {
+        var result: [CSSDeclaration] = []
         for pair in body.split(separator: ";", omittingEmptySubsequences: false) {
             let parts = pair.split(separator: ":", maxSplits: 1)
                 .map { $0.trimmingCharacters(in: .whitespaces) }
             guard parts.count == 2 else { continue }
-            result.append((parts[0], parts[1]))
+            guard let declaration = parseProperty(namePart: parts[0], valuePart: parts[1]) else { continue }
+            result.append(declaration)
         }
         return result
+    }
+
+    static func parseInlineDeclaration(namePart: String, valuePart: String) -> CSSDeclaration? {
+        parseProperty(namePart: namePart, valuePart: valuePart)
+    }
+
+    private static func parseProperty(namePart: String, valuePart: String) -> CSSDeclaration? {
+        let trimmedValue = valuePart.trimmingCharacters(in: .whitespaces)
+        guard !trimmedValue.isEmpty else { return nil }
+        let lowerName = namePart.trimmingCharacters(in: .whitespaces).lowercased()
+        guard !lowerName.isEmpty else { return nil }
+
+        var value = trimmedValue
+        var important = false
+        if let range = value.range(of: "!important", options: [.caseInsensitive, .backwards]) {
+            let suffix = value[range.upperBound...].trimmingCharacters(in: .whitespaces)
+            guard suffix.isEmpty else {
+                return CSSDeclaration(name: lowerName, value: trimmedValue, important: false)
+            }
+            important = true
+            value = value[..<range.lowerBound].trimmingCharacters(in: .whitespaces)
+        }
+        guard !value.isEmpty else { return nil }
+        return CSSDeclaration(name: lowerName, value: value, important: important)
+    }
+}
+
+/// Pre-scans SVG XML for author `<style>` blocks so rules apply regardless of
+/// document order relative to styled elements.
+enum CSSStylesheetCollector {
+    static func collect(from data: Data, importCSS: ((String) -> String?)? = nil) -> CSSStylesheet {
+        let parser = XMLParser(data: data)
+        let delegate = Delegate(importCSS: importCSS)
+        parser.delegate = delegate
+        parser.shouldProcessNamespaces = false
+        parser.shouldReportNamespacePrefixes = false
+        parser.shouldResolveExternalEntities = false
+        _ = parser.parse()
+        return delegate.stylesheet
+    }
+
+    private final class Delegate: NSObject, XMLParserDelegate {
+        var stylesheet = CSSStylesheet()
+        private let importCSS: ((String) -> String?)?
+        private var styleTextBuffer: String?
+
+        init(importCSS: ((String) -> String?)?) {
+            self.importCSS = importCSS
+        }
+
+        func parser(
+            _ parser: XMLParser,
+            didStartElement elementName: String,
+            namespaceURI: String?,
+            qualifiedName qName: String?,
+            attributes attributeDict: [String: String] = [:]
+        ) {
+            guard elementName == "style" else { return }
+            let type = attributeDict["type"]?.trimmingCharacters(in: .whitespaces).lowercased()
+            if type == nil || type == "text/css" {
+                styleTextBuffer = ""
+            }
+        }
+
+        func parser(_ parser: XMLParser, foundCharacters string: String) {
+            if styleTextBuffer != nil {
+                styleTextBuffer?.append(string)
+            }
+        }
+
+        func parser(_ parser: XMLParser, foundCDATA CDATABlock: Data) {
+            if styleTextBuffer != nil,
+               let string = String(data: CDATABlock, encoding: .utf8) {
+                styleTextBuffer?.append(string)
+            }
+        }
+
+        func parser(
+            _ parser: XMLParser,
+            didEndElement elementName: String,
+            namespaceURI: String?,
+            qualifiedName qName: String?
+        ) {
+            guard elementName == "style", let buffer = styleTextBuffer else { return }
+            stylesheet.append(css: buffer, importCSS: importCSS)
+            styleTextBuffer = nil
+        }
     }
 }
