@@ -149,7 +149,7 @@ Follow [styling-rollout.md](../styling-rollout.md):
 - [x] `<switch>` conditional processing
 - [x] `<image>` element (production policy gates external refs; `.localFiles` for fixtures)
 - [ ] `symbol` instancing polish
-- [~] Promote high-value partial baselines (batch by test family; promoted `struct-use-01-t`, `struct-use-05-b` on 2026-07-20; next: `struct-use-06-b`)
+- [~] Promote high-value partial baselines (batch by test family; promoted `struct-use-01-t`, `struct-use-05-b` on 2026-07-20; `struct-use-06-b`/`07-b` skipped — onclick/interaction)
 - [x] Skip `struct-dom-*` — DOM API out of scope
 
 ### 1f. Rendering (`render`)
