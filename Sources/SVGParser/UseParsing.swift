@@ -7,6 +7,7 @@ enum SVGExternalUseResolver {
 
     static func resolve(
         definitions: inout [String: SVGElement],
+        externalPaintServers: inout [String: [String: SVGPaintServer]],
         root: SVGGroup,
         context: SVGReferencedImageResolveContext,
         policy: SVGResourcePolicy,
@@ -18,6 +19,7 @@ enum SVGExternalUseResolver {
 
         for (sourceHref, fragmentIDs) in needed {
             let trimmed = sourceHref.trimmingCharacters(in: .whitespacesAndNewlines)
+            let scopeKey = paintServerScopeKey(from: trimmed)
             switch SVGHrefResolver.classify(href: trimmed, policy: policy) {
             case .localFile(let fileURL):
                 guard let fragment = fileURL.fragment, !fragment.isEmpty else { continue }
@@ -34,22 +36,101 @@ enum SVGExternalUseResolver {
                 ) else {
                     continue
                 }
+                if externalPaintServers[scopeKey] == nil {
+                    externalPaintServers[scopeKey] = extDoc.paintServers
+                }
                 for id in fragmentIDs {
                     if definitions[id] == nil, let element = extDoc.definitions[id] {
-                        definitions[id] = element
+                        definitions[id] = remapExternalPaintScope(element, scopeKey: scopeKey)
                     }
                 }
             case .dataURI(let uri):
                 guard let extDoc = loadDataURI(uri, parserOptions: parserOptions, warnings: &warnings)
                 else { continue }
+                if externalPaintServers[scopeKey] == nil {
+                    externalPaintServers[scopeKey] = extDoc.paintServers
+                }
                 for id in fragmentIDs {
                     if definitions[id] == nil, let element = extDoc.definitions[id] {
-                        definitions[id] = element
+                        definitions[id] = remapExternalPaintScope(element, scopeKey: scopeKey)
                     }
                 }
             case .fragment, .rejected:
                 break
             }
+        }
+    }
+
+    /// External href without fragment — keys `SVGDocument.externalPaintServers`.
+    static func paintServerScopeKey(from sourceHref: String) -> String {
+        let trimmed = sourceHref.trimmingCharacters(in: .whitespacesAndNewlines)
+        if let hash = trimmed.firstIndex(of: "#") {
+            return String(trimmed[..<hash])
+        }
+        return trimmed
+    }
+
+    private static func remapExternalPaintScope(_ element: SVGElement, scopeKey: String) -> SVGElement {
+        switch element {
+        case .rect(var r):
+            r.paint = remapPaintProperties(r.paint, scopeKey: scopeKey)
+            return .rect(r)
+        case .circle(var c):
+            c.paint = remapPaintProperties(c.paint, scopeKey: scopeKey)
+            return .circle(c)
+        case .ellipse(var e):
+            e.paint = remapPaintProperties(e.paint, scopeKey: scopeKey)
+            return .ellipse(e)
+        case .line(var l):
+            l.paint = remapPaintProperties(l.paint, scopeKey: scopeKey)
+            return .line(l)
+        case .polyline(var p):
+            p.paint = remapPaintProperties(p.paint, scopeKey: scopeKey)
+            return .polyline(p)
+        case .polygon(var p):
+            p.paint = remapPaintProperties(p.paint, scopeKey: scopeKey)
+            return .polygon(p)
+        case .path(var p):
+            p.paint = remapPaintProperties(p.paint, scopeKey: scopeKey)
+            return .path(p)
+        case .text(var t):
+            t.paint = remapPaintProperties(t.paint, scopeKey: scopeKey)
+            t.runs = t.runs.map { run in
+                var updated = run
+                updated.paint = remapPaintProperties(run.paint, scopeKey: scopeKey)
+                return updated
+            }
+            return .text(t)
+        case .image(var img):
+            img.paint = remapPaintProperties(img.paint, scopeKey: scopeKey)
+            return .image(img)
+        case .group(var g):
+            g.children = g.children.map { remapExternalPaintScope($0, scopeKey: scopeKey) }
+            return .group(g)
+        case .svg(var svg):
+            svg.children = svg.children.map { remapExternalPaintScope($0, scopeKey: scopeKey) }
+            return .svg(svg)
+        case .use:
+            return element
+        }
+    }
+
+    private static func remapPaintProperties(
+        _ paint: SVGPaintProperties,
+        scopeKey: String
+    ) -> SVGPaintProperties {
+        var updated = paint
+        updated.fill = remapPaintScope(paint.fill, scopeKey: scopeKey)
+        updated.stroke = remapPaintScope(paint.stroke, scopeKey: scopeKey)
+        return updated
+    }
+
+    private static func remapPaintScope(_ paint: SVGPaint, scopeKey: String) -> SVGPaint {
+        switch paint {
+        case .paintServer(let id, let fallback, _):
+            return .paintServer(id: id, fallback: fallback, scope: .external(sourceKey: scopeKey))
+        default:
+            return paint
         }
     }
 

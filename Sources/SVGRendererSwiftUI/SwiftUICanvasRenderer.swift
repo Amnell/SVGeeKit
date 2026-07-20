@@ -196,7 +196,7 @@ public struct SwiftUICanvasRenderer {
                 opacity: Double(c.alpha * opacity)
             )
             return .color(color)
-        case .paintServer:
+        case .currentColor, .paintServer:
             // Unresolved server reference (lowering left it as-is, e.g. on
             // text where bbox isn't known). Treat as no paint.
             return nil

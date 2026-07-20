@@ -640,13 +640,13 @@ struct SVGParserTests {
               case .rect(let b) = g.children[1] else {
             Issue.record("expected group with two rects"); return
         }
-        guard case .color(let ca) = a.paint.fill, case .color(let cb) = b.paint.fill else {
-            Issue.record("expected resolved color fills"); return
+        guard case .currentColor = a.paint.fill, case .currentColor = b.paint.fill else {
+            Issue.record("expected currentColor fills"); return
         }
         // green = #008000
-        #expect(abs(ca.red) < 0.01 && abs(ca.green - 128.0/255) < 0.01 && abs(ca.blue) < 0.01)
+        #expect(abs(a.paint.color.red) < 0.01 && abs(a.paint.color.green - 128.0/255) < 0.01 && abs(a.paint.color.blue) < 0.01)
         // blue = #0000ff
-        #expect(abs(cb.red) < 0.01 && abs(cb.green) < 0.01 && abs(cb.blue - 1) < 0.01)
+        #expect(abs(b.paint.color.red) < 0.01 && abs(b.paint.color.green) < 0.01 && abs(b.paint.color.blue - 1) < 0.01)
     }
 
     @Test func mapsDisplayNoneToHiddenVisibility() throws {
@@ -976,7 +976,7 @@ struct SVGParserTests {
         guard case .rect(let r) = doc.root.children.first else {
             Issue.record("expected rect"); return
         }
-        guard case .paintServer(let id, let fallback) = r.paint.fill else {
+        guard case .paintServer(let id, let fallback, _) = r.paint.fill else {
             Issue.record("expected paintServer"); return
         }
         #expect(id == "missing")

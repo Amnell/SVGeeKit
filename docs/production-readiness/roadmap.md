@@ -137,8 +137,8 @@ Follow [styling-rollout.md](../styling-rollout.md):
 
 | Target | Baseline | Goal | Status |
 | --- | ---: | ---: | --- |
-| `struct` passed | 27 | 45+ | `[~]` |
-| `struct` partial | 27 | ≤10 | `[~]` |
+| `struct` passed | 28 | 45+ | `[~]` |
+| `struct` partial | 26 | ≤10 | `[~]` |
 | `struct` skipped (DOM) | 18 | 18 | `[x]` keep skipped |
 
 - [x] `g`, `defs`, `use` (same-document `#id` refs; ids outside `<defs>` indexed for `<use>`)
@@ -149,7 +149,7 @@ Follow [styling-rollout.md](../styling-rollout.md):
 - [x] `<switch>` conditional processing
 - [x] `<image>` element (production policy gates external refs; `.localFiles` for fixtures)
 - [ ] `symbol` instancing polish
-- [~] Promote high-value partial baselines (batch by test family; promoted `struct-use-01-t` 2026-07-20; next: `struct-use-05-b`)
+- [~] Promote high-value partial baselines (batch by test family; promoted `struct-use-01-t`, `struct-use-05-b` on 2026-07-20; next: `struct-use-06-b`)
 - [x] Skip `struct-dom-*` — DOM API out of scope
 
 ### 1f. Rendering (`render`)
@@ -256,8 +256,8 @@ or have a documented unsupported sub-feature.
 
 | Target | Baseline | Goal | Status |
 | --- | ---: | ---: | --- |
-| `partialBaseline` total | 94 | ≤30 | `[ ]` |
-| `passed` total | 207 | 280+ | `[ ]` |
+| `partialBaseline` total | 93 | ≤30 | `[ ]` |
+| `passed` total | 208 | 280+ | `[ ]` |
 
 ### Process (repeat per tag)
 
@@ -270,7 +270,7 @@ or have a documented unsupported sub-feature.
 ### Priority order
 
 1. `animate` (60 partial) — **low priority** (out of production scope; only promote if needed for regression)
-2. `struct` (27 partial) — highest in-profile count
+2. `struct` (26 partial) — highest in-profile count
 3. ~~`styling`~~ — **complete** (15/15 passed, 0 partial; promoted 2026-07-20)
 4. ~~`pservers`~~ — **complete** (33/33 passed, 2026-07-14)
 5. ~~`render`~~ — **complete** (8/8 passed, 0 partial; promoted 2026-07-20)

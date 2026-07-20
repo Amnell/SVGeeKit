@@ -200,7 +200,7 @@ struct CGContextRenderer {
                 evenOdd: evenOdd,
                 transform: g.transform.matrix.isIdentity ? nil : g.transform.matrix
             )
-        case .paintServer, .pattern:
+        case .paintServer, .pattern, .currentColor:
             return
         }
     }
@@ -265,7 +265,7 @@ struct CGContextRenderer {
                 evenOdd: false,
                 transform: g.transform.matrix.isIdentity ? nil : g.transform.matrix
             )
-        case .none, .paintServer, .pattern:
+        case .none, .paintServer, .pattern, .currentColor:
             break
         }
 

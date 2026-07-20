@@ -52,8 +52,8 @@ references them; do not duplicate their step-by-step content here.
 
 | Status | Count | Meaning |
 | --- | ---: | --- |
-| `passed` | 207 | Verified baseline in `Tests/__Snapshots__/` |
-| `partialBaseline` | 94 | Renders; auto-tracked, needs human verification |
+| `passed` | 208 | Verified baseline in `Tests/__Snapshots__/` |
+| `partialBaseline` | 93 | Renders; auto-tracked, needs human verification |
 | `skipped` | 234 | Feature family or test explicitly out of scope |
 
 ### By feature tag (in-profile chapters)
@@ -66,7 +66,7 @@ references them; do not duplicate their step-by-step content here.
 | `painting` | 31 | 22 | 0 | 9 | Tier 1 |
 | `pservers` | 33 | 33 | 0 | 0 | Tier 1 ✓ |
 | `styling` | 18 | 15 | 0 | 3 | Tier 1 ✓ |
-| `struct` | 72 | 27 | 27 | 18 | Tier 1 |
+| `struct` | 72 | 28 | 26 | 18 | Tier 1 |
 | `render` | 8 | 8 | 0 | 0 | Tier 1 ✓ |
 | `color` | 6 | 4 | 2 | 0 | Tier 1 |
 | `masking` | 19 | 6 | 0 | 13 | Tier 1 → Tier 2 |
@@ -99,6 +99,9 @@ references them; do not duplicate their step-by-step content here.
   shadow tree (`struct` 26 passed / 28 partial).
 - **2026-07-20:** Promoted `struct-use-01-t` — `<text id="…">` defs now indexed for `<use>`
   resolution (`struct` 27 passed / 27 partial).
+- **2026-07-20:** Promoted `struct-use-05-b` — external `<use>` now preserves computed
+  values (`currentColor`, `url(#id)` paint servers) across document boundaries
+  (`struct` 28 passed / 26 partial).
 
 ## How to use this plan
 

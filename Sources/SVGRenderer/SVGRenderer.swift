@@ -80,6 +80,7 @@ public enum SVGRenderTree {
         var commands: [SVGRenderCommand] = []
         let ctx = Context(
             paintServers: document.paintServers,
+            externalPaintServers: document.externalPaintServers,
             clipPaths: document.clipPaths,
             masks: document.masks,
             fonts: document.fonts,
@@ -146,6 +147,7 @@ public enum SVGRenderTree {
 
     fileprivate final class Context {
         let paintServers: [String: SVGPaintServer]
+        let externalPaintServers: [String: [String: SVGPaintServer]]
         let clipPaths: [String: SVGClipPath]
         let masks: [String: SVGMask]
         let fonts: [String: SVGFontDefinition]
@@ -158,6 +160,7 @@ public enum SVGRenderTree {
 
         init(
             paintServers: [String: SVGPaintServer],
+            externalPaintServers: [String: [String: SVGPaintServer]],
             clipPaths: [String: SVGClipPath],
             masks: [String: SVGMask],
             fonts: [String: SVGFontDefinition],
@@ -167,6 +170,7 @@ public enum SVGRenderTree {
             parsingLimits: SVGParsingLimits
         ) {
             self.paintServers = paintServers
+            self.externalPaintServers = externalPaintServers
             self.clipPaths = clipPaths
             self.masks = masks
             self.fonts = fonts
@@ -342,6 +346,7 @@ public enum SVGRenderTree {
 
         let nestedCtx = Context(
             paintServers: document.paintServers,
+            externalPaintServers: document.externalPaintServers,
             clipPaths: document.clipPaths,
             masks: document.masks,
             fonts: document.fonts,
@@ -808,8 +813,8 @@ public enum SVGRenderTree {
             painted.append(.beginOpacityLayer(paint.opacity))
         }
 
-        let resolvedFill = resolvePaint(paint.fill, bbox: bbox, ctx: ctx)
-        let resolvedStroke = resolvePaint(paint.stroke, bbox: bbox, ctx: ctx)
+        let resolvedFill = resolvePaint(paint.fill, bbox: bbox, currentColor: paint.color, ctx: ctx)
+        let resolvedStroke = resolvePaint(paint.stroke, bbox: bbox, currentColor: paint.color, ctx: ctx)
 
         if case .pattern(let pat) = resolvedFill {
             emitTiledFill(
@@ -874,10 +879,25 @@ public enum SVGRenderTree {
     /// input unchanged for colors and `.none`; returns `.none` for dangling
     /// or stop-less references. Uses the optional fallback paint when the
     /// server is missing or invalid (SVG 1.1 §13.2.4).
-    private static func resolvePaint(_ paint: SVGPaint, bbox: CGRect, ctx: Context) -> SVGPaint {
+    private static func resolvePaint(
+        _ paint: SVGPaint,
+        bbox: CGRect,
+        currentColor: SVGColor,
+        ctx: Context
+    ) -> SVGPaint {
         switch paint {
-        case .paintServer(let id, let fallback):
-            guard let server = ctx.paintServers[id] else {
+        case .currentColor:
+            return .color(currentColor)
+        case .paintServer(let id, let fallback, let scope):
+            let servers: [String: SVGPaintServer] = {
+                switch scope {
+                case .document:
+                    return ctx.paintServers
+                case .external(let sourceKey):
+                    return ctx.externalPaintServers[sourceKey] ?? [:]
+                }
+            }()
+            guard let server = servers[id] else {
                 if let fallback { return .color(fallback) }
                 return .none
             }
@@ -886,10 +906,6 @@ public enum SVGRenderTree {
                 let useFallback: Bool = {
                     switch server {
                     case .pattern(let p):
-                        // Zero-size patterns without a viewBox are empty paint
-                        // servers and use the ICC fallback (pservers-pattern-03-f).
-                        // A viewBox with zero tile size paints nothing instead
-                        // (pservers-pattern-09-f pattern3).
                         if p.width <= 0 || p.height <= 0 {
                             return p.viewBox == nil
                         }

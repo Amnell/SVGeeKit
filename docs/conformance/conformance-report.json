@@ -329,9 +329,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/animate-elem-39-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/animate-elem-39-t\/baseline.png",
-    "detail" : "partial baseline updated (1780 px changed)",
-    "diffMaxChannel" : 255,
-    "mismatchedFraction" : 0.010300925925925925,
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "partialBaseline",
     "tag" : "animate",
     "testId" : "animate-elem-39-t"
@@ -720,9 +719,10 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/color-prop-05-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/color-prop-05-t\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
+    "detail" : "22500 px exceed tolerance",
+    "diffMaxChannel" : 255,
+    "mismatchedFraction" : 0.13020833333333334,
+    "status" : "failed",
     "tag" : "color",
     "testId" : "color-prop-05-t"
   },
@@ -3336,7 +3336,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-use-01-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-use-01-t\/baseline.png",
-    "detail" : "promoted from partial baseline",
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "passed",
     "tag" : "struct",
     "testId" : "struct-use-01-t"
@@ -3361,10 +3362,9 @@
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-use-05-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-use-05-b\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "partialBaseline",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-use-05-b\/baseline.png",
+    "detail" : "promoted from partial baseline",
+    "status" : "passed",
     "tag" : "struct",
     "testId" : "struct-use-05-b"
   },

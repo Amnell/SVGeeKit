@@ -177,8 +177,10 @@ public struct SVGParser {
             warnings: &warnings
         )
         var definitions = delegate.definitions
+        var externalPaintServers: [String: [String: SVGPaintServer]] = [:]
         SVGExternalUseResolver.resolve(
             definitions: &definitions,
+            externalPaintServers: &externalPaintServers,
             root: document.root,
             context: resolveContext,
             policy: resolvedOptions.resourcePolicy,
@@ -186,6 +188,7 @@ public struct SVGParser {
             warnings: &warnings
         )
         document.paintServers = delegate.paintServers
+        document.externalPaintServers = externalPaintServers
         document.clipPaths = delegate.clipPaths
         document.masks = delegate.masks
         document.fonts = delegate.fonts
@@ -1712,7 +1715,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
     private func resolvePaint(_ raw: String, currentColor: SVGColor) -> SVGPaint? {
         let trimmed = raw.trimmingCharacters(in: .whitespaces)
         if trimmed.caseInsensitiveCompare("currentColor") == .orderedSame {
-            return .color(currentColor)
+            return .currentColor
         }
         if trimmed.lowercased().hasPrefix("url(") {
             guard let openEnd = trimmed.index(trimmed.startIndex, offsetBy: 4, limitedBy: trimmed.endIndex) else {

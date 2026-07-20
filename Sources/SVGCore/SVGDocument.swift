@@ -14,6 +14,9 @@ public struct SVGDocument: Equatable, Sendable {
     public var parsingLimits: SVGParsingLimits
     public var root: SVGGroup
     public var paintServers: [String: SVGPaintServer]
+    /// Paint servers from externally referenced SVG files, keyed by the
+    /// external href without fragment (e.g. `../images/svgRef1.svg`).
+    public var externalPaintServers: [String: [String: SVGPaintServer]]
     public var clipPaths: [String: SVGClipPath]
     public var masks: [String: SVGMask]
     /// CSS `<font-face>` family → font id bindings.
@@ -35,6 +38,7 @@ public struct SVGDocument: Equatable, Sendable {
         parsingLimits: SVGParsingLimits = .default,
         root: SVGGroup = SVGGroup(),
         paintServers: [String: SVGPaintServer] = [:],
+        externalPaintServers: [String: [String: SVGPaintServer]] = [:],
         clipPaths: [String: SVGClipPath] = [:],
         masks: [String: SVGMask] = [:],
         fontFaces: [SVGFontFace] = [],
@@ -50,6 +54,7 @@ public struct SVGDocument: Equatable, Sendable {
         self.parsingLimits = parsingLimits
         self.root = root
         self.paintServers = paintServers
+        self.externalPaintServers = externalPaintServers
         self.clipPaths = clipPaths
         self.masks = masks
         self.fontFaces = fontFaces

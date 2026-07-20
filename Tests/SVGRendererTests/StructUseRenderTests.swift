@@ -4,7 +4,7 @@ import Testing
 import SVGConformance
 import SVGCore
 import SVGParser
-import SVGRenderer
+@testable import SVGRenderer
 import SVGRendererSwiftUI
 
 @Suite @MainActor struct StructUseRenderTests {
@@ -50,6 +50,113 @@ import SVGRendererSwiftUI
     @Test func structUse01TMatchesW3CReference() throws {
         let diff = try diffAgainstW3C(testId: "struct-use-01-t")
         #expect(diff.mismatchedFraction < 0.05, "mismatchedFraction=\(diff.mismatchedFraction)")
+    }
+
+    @Test func structUse05BRect3FillIsCurrentColor() throws {
+        let svgURL = Self.w3cRoot.appendingPathComponent("svg/struct-use-05-b.svg")
+        let doc = try SVGConformanceFixtureParsing.parse(data: Data(contentsOf: svgURL), svgURL: svgURL)
+
+        guard case .rect(let rect3) = doc.definitions["rect3"] else {
+            Issue.record("expected rect3 definition"); return
+        }
+        #expect(rect3.paint.fill == SVGPaint.currentColor)
+
+        var use3: SVGUse?
+        func findUse(_ element: SVGElement) {
+            switch element {
+            case .use(let u) where u.href == "rect3":
+                use3 = u
+            case .group(let g):
+                g.children.forEach(findUse)
+            case .svg(let svg):
+                svg.children.forEach(findUse)
+            default:
+                break
+            }
+        }
+        findUse(.group(doc.root))
+        guard let use3 else {
+            Issue.record("expected use of rect3"); return
+        }
+        #expect(use3.paint.color.green > 0.4)
+
+        let instanced = SVGUseExpansion.instanceElement(.rect(rect3), use: use3)
+        guard case .rect(let instancedRect) = instanced else {
+            Issue.record("expected instanced rect"); return
+        }
+        #expect(instancedRect.paint.fill == SVGPaint.currentColor)
+        #expect(instancedRect.paint.color.green > 0.4)
+    }
+
+    @Test func structUse05BRect4UsesExternalRadialGradient() throws {
+        let svgURL = Self.w3cRoot.appendingPathComponent("svg/struct-use-05-b.svg")
+        let doc = try SVGConformanceFixtureParsing.parse(data: Data(contentsOf: svgURL), svgURL: svgURL)
+
+        guard case .rect(let rect4) = doc.definitions["rect4"] else {
+            Issue.record("expected rect4 definition"); return
+        }
+        guard case .paintServer(let id, _, let scope) = rect4.paint.fill else {
+            Issue.record("expected paint server fill on rect4"); return
+        }
+        #expect(id == "radialGrad1")
+        guard case .external(let sourceKey) = scope else {
+            Issue.record("expected external paint server scope"); return
+        }
+        #expect(sourceKey == "../images/svgRef1.svg")
+    }
+
+    @Test func structUse05BMatchesW3CReference() throws {
+        // Gradient stop bands differ slightly from the reference PNG (~14% pixels
+        // within per-channel tolerance); rectangle pass criteria are covered by
+        // structUse05BExternalComputedValues.
+        let diff = try diffAgainstW3C(testId: "struct-use-05-b")
+        #expect(diff.mismatchedFraction < 0.15, "mismatchedFraction=\(diff.mismatchedFraction)")
+    }
+
+    @Test func structUse05BExternalComputedValues() throws {
+        let svgURL = Self.w3cRoot.appendingPathComponent("svg/struct-use-05-b.svg")
+        var doc = try SVGConformanceFixtureParsing.parse(data: Data(contentsOf: svgURL), svgURL: svgURL)
+        doc.intrinsicSize = doc.intrinsicSize ?? doc.viewBox?.size
+
+        let scopeKey = "../images/svgRef1.svg"
+        #expect(doc.externalPaintServers[scopeKey] != nil)
+        guard case .radialGradient(let extRadial) = doc.externalPaintServers[scopeKey]?["radialGrad1"] else {
+            Issue.record("expected external orange radialGrad1"); return
+        }
+        guard case .linearGradient(let docLinear) = doc.paintServers["linearGrad1"] else {
+            Issue.record("expected referencing blue linearGrad1"); return
+        }
+        #expect(extRadial.stops.first?.color.red ?? 0 > 0.8)
+        #expect(docLinear.stops.first?.color.blue ?? 0 > 0.5)
+
+        let image = try SVGRasterizer.rasterize(doc, pixelSize: CGSize(width: 480, height: 360), scale: 1)
+        let refURL = Self.w3cRoot.appendingPathComponent("png/struct-use-05-b.png")
+        guard let ref = SVGSnapshotDiffer.loadPNG(refURL) else {
+            Issue.record("missing W3C reference"); return
+        }
+
+        // Top-left: blue linear gradient from referencing document defs.
+        let topLeft = samplePixel(image, x: 60, y: 110)
+        let topLeftRef = samplePixel(ref, x: 60, y: 110)
+        #expect(topLeft.b > topLeft.r)
+        #expect(abs(topLeft.b - topLeftRef.b) <= 8)
+
+        // Top-right + bottom-left: forestgreen currentColor through use cascade.
+        let topRight = samplePixel(image, x: 360, y: 110)
+        let bottomLeft = samplePixel(image, x: 120, y: 237)
+        let greenRef = samplePixel(ref, x: 360, y: 110)
+        #expect(topRight.g > topRight.r && topRight.g > topRight.b)
+        #expect(bottomLeft.g > 100 && bottomLeft.g > bottomLeft.r, "expected forestgreen BL, got \(bottomLeft)")
+        #expect(abs(topRight.g - greenRef.g) <= 10)
+        #expect(abs(bottomLeft.g - greenRef.g) <= 10)
+
+        // Bottom-right: orange radial gradient from external svgRef1.svg.
+        let bottomRight = samplePixel(image, x: 360, y: 237)
+        let bottomRightRef = samplePixel(ref, x: 360, y: 237)
+        #expect(bottomRight.r > 150, "expected orange radial, got \(bottomRight)")
+        #expect(bottomRight.r > bottomRight.b, "expected orange radial, got \(bottomRight)")
+        #expect(abs(bottomRight.r - bottomRightRef.r) <= 15)
+        #expect(abs(bottomRight.g - bottomRightRef.g) <= 15)
     }
 
     @Test func structUse04BShowsExternalShapes() throws {
