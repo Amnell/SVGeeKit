@@ -66,7 +66,7 @@ Update conformance targets after `swift test` regenerates
 | --- | ---: | ---: | --- |
 | `shapes` passed | 30 | 30 | `[x]` verified |
 | `paths` passed | 19 | 19 | `[x]` verified |
-| `coords` passed | 28 | 28+ | `[~]` |
+| `coords` passed | 28 | 28 | `[x]` verified |
 
 **`shapes` chapter:** all 30 non-skipped W3C tests pass with verified baselines in
 `Tests/__Snapshots__/` (completed 2026-07-14).
@@ -115,27 +115,30 @@ mutation, out of production scope.
 
 | Target | Baseline | Goal | Status |
 | --- | ---: | ---: | --- |
-| `styling` passed | 14 | 15 | `[~]` |
-| `styling` partial | 1 | 0 | `[~]` |
+| `styling` passed | 15 | 15 | `[x]` verified |
+| `styling` partial | 0 | 0 | `[x]` |
 | `styling` skipped | 3 | 3 | `[x]` keep skipped |
 
 Follow [styling-rollout.md](../styling-rollout.md):
 
-- [x] Presentation attributes
+- [x] Presentation attributes (case-sensitive XML names — `FiLl` is not `fill`)
 - [x] Inline `style`
 - [x] `<style>` class and type selectors (core)
 - [x] Inheritance (`styling-inherit-01-b` promoted)
 - [x] Presentation cascade vs style/stylesheet (`styling-pres-03-f` … `05-f`)
 - [x] `!important`, `@import` (localFiles), case-insensitive CSS (`styling-css-08-f` … `10-f`, `styling-elem-01-b`)
-- [ ] Promote remaining partial: `styling-css-10-f`
+- [x] Promoted: `styling-css-10-f` — case-insensitive CSS in `style` / `<style>` / `@import`; presentation attrs remain case-sensitive (2026-07-20)
 - [x] Skip: `styling-pres-02-f` (script), `styling-css-05-b` (`:lang`/text), `styling-css-06-b` (dynamic pseudo-classes)
+
+**`styling` chapter:** all 15 non-skipped W3C tests pass with verified baselines
+(completed 2026-07-20).
 
 ### 1e. Document structure (`struct`)
 
 | Target | Baseline | Goal | Status |
 | --- | ---: | ---: | --- |
-| `struct` passed | 23 | 45+ | `[~]` |
-| `struct` partial | 31 | ≤10 | `[~]` |
+| `struct` passed | 25 | 45+ | `[~]` |
+| `struct` partial | 29 | ≤10 | `[~]` |
 | `struct` skipped (DOM) | 18 | 18 | `[x]` keep skipped |
 
 - [x] `g`, `defs`, `use` (fragment refs; ids outside `<defs>` indexed for `<use>`)
@@ -234,8 +237,8 @@ or have a documented unsupported sub-feature.
 
 | Target | Baseline | Goal | Status |
 | --- | ---: | ---: | --- |
-| `partialBaseline` total | 109 | ≤30 | `[ ]` |
-| `passed` total | 195 | 280+ | `[ ]` |
+| `partialBaseline` total | 97 | ≤30 | `[ ]` |
+| `passed` total | 204 | 280+ | `[ ]` |
 
 ### Process (repeat per tag)
 
@@ -247,15 +250,16 @@ or have a documented unsupported sub-feature.
 
 ### Priority order
 
-1. `struct` (31 partial) — highest count
+1. `struct` (29 partial) — highest count
 2. `animate` (60 partial) — **low priority** (out of production scope; only promote if needed for regression)
-3. `styling` (11 partial)
+3. ~~`styling`~~ — **complete** (15/15 passed, 0 partial; promoted 2026-07-20)
 4. ~~`pservers`~~ — **complete** (33/33 passed, 2026-07-14)
 5. `color` (2 partial)
 6. `render` (1 partial)
 
 `shapes` — **complete and verified** (30/30 passed, 0 partial; promoted 2026-07-14).
 `pservers` — **complete and verified** (33/33 passed, 0 partial; promoted 2026-07-14).
+`styling` — **complete and verified** (15/15 passed, 0 partial; promoted 2026-07-20).
 
 **Exit criteria:** No `partialBaseline` with `diffMaxChannel: 0` in Tier-1 tags unless
 explicitly marked "known gap" in [static-profile.md](static-profile.md).
@@ -296,7 +300,7 @@ Do not implement for production. Keep `skipTags` entries in `overrides.json`.
 ```
 Phase 0  Security lockdown                    [x] complete
    ↓
-Phase 1  Styling partials + pservers partials + struct partials   ← current
+Phase 1  Struct partials + painting markers (Phase 4)            ← current
    ↓
 Phase 2  Masking complete
    ↓
