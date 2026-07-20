@@ -207,6 +207,16 @@ struct SVGImageRenderTests {
         #expect(diff.mismatchedFraction < 0.05, "max=\(diff.maxChannelDelta) frac=\(diff.mismatchedFraction)")
     }
 
+    @Test @MainActor func structImage07tMatchesW3CReference() throws {
+        let w3cRoot = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .appendingPathComponent("../SVGConformanceTests/Resources/W3C-SVG-1.1", isDirectory: true)
+            .standardizedFileURL
+        let diff = try W3CReferenceDiff.diff(testId: "struct-image-07-t", w3cResourcesRoot: w3cRoot)
+        // System font for labels; three smiley images must match.
+        #expect(diff.mismatchedFraction < 0.05, "max=\(diff.maxChannelDelta) frac=\(diff.mismatchedFraction)")
+    }
+
     private func sample(_ image: CGImage, x: Int, y: Int) -> (r: Int, g: Int, b: Int) {
         var pixel = [UInt8](repeating: 0, count: 4)
         guard let ctx = CGContext(

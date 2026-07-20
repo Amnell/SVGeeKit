@@ -74,6 +74,59 @@ public enum SVGHrefResolver {
         return .localFile(resolved)
     }
 
+    /// Resolves a relative `href` against `effectiveBase`, then rewrites it as a
+    /// path relative to `documentBase` (so later classification still uses the
+    /// document resource policy). Absolute schemes (`data:`, `http:`, …) and
+    /// same-document fragments are returned unchanged.
+    public static func resolveHref(
+        _ href: String,
+        documentBase: URL,
+        effectiveBase: URL
+    ) -> String {
+        let trimmed = href.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return trimmed }
+        if trimmed.hasPrefix("#") || trimmed.lowercased().hasPrefix("data:") {
+            return trimmed
+        }
+        if let scheme = URL(string: trimmed)?.scheme, !scheme.isEmpty {
+            return trimmed
+        }
+        guard let absolute = URL(string: trimmed, relativeTo: effectiveBase)?.standardizedFileURL else {
+            return trimmed
+        }
+        return filePath(relativeTo: documentBase, from: absolute) ?? trimmed
+    }
+
+    /// XML Base (RFC 3986): resolve `xml:base` against the parent base URI.
+    /// Trailing `/` is preserved as a directory base for subsequent relative hrefs.
+    public static func resolveXMLBase(_ raw: String, relativeTo parent: URL) -> URL? {
+        let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
+        guard let resolved = URL(string: trimmed, relativeTo: parent)?.absoluteURL.standardizedFileURL else {
+            return nil
+        }
+        if trimmed.hasSuffix("/") || resolved.hasDirectoryPath {
+            return URL(fileURLWithPath: resolved.path, isDirectory: true)
+        }
+        return resolved
+    }
+
+    /// File path of `target` relative to directory `base` (e.g. `../images/a.png`).
+    public static func filePath(relativeTo base: URL, from target: URL) -> String? {
+        let baseParts = base.standardizedFileURL.pathComponents
+        let targetParts = target.standardizedFileURL.pathComponents
+        var shared = 0
+        while shared < baseParts.count,
+              shared < targetParts.count,
+              baseParts[shared] == targetParts[shared] {
+            shared += 1
+        }
+        let ups = Array(repeating: "..", count: baseParts.count - shared)
+        let downs = Array(targetParts[shared...])
+        let parts = ups + downs
+        return parts.isEmpty ? "." : parts.joined(separator: "/")
+    }
+
     public static func parseWarning(
         href: String,
         reason: SVGHrefRejectionReason,

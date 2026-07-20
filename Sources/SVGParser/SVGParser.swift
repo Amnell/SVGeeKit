@@ -379,6 +379,8 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
     private var specifiedPaintKeysStack: [Set<String>] = [[]]
     /// Inherited font / text-anchor properties (cascade through <g> and <text>).
     private var fontStack: [SVGFont] = [SVGFont()]
+    /// Effective XML Base URI stack (`xml:base`); falls back to document `baseURL`.
+    private var xmlBaseStack: [URL] = []
     /// Partially-built <text> elements. Character data is appended to the top
     /// while a text capture is active (including text inside nested <tspan>).
     private var textStack: [SVGText] = []
@@ -612,6 +614,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         let inheritedFont = fontStack.last ?? SVGFont()
         let elementFont = mergeFont(into: inheritedFont, from: attributeDict)
         fontStack.append(elementFont)
+        pushXMLBase(from: attributeDict)
 
         switch elementName {
         case "switch":
@@ -780,6 +783,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         paintStack.removeLast()
         specifiedPaintKeysStack.removeLast()
         fontStack.removeLast()
+        popXMLBase()
 
         switch elementName {
         case "switch":
@@ -1041,6 +1045,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         guard let href = attributes["xlink:href"] ?? attributes["href"] else { return }
         let trimmed = href.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
+        let resolvedHref = resolveHrefWithXMLBase(trimmed)
 
         let x = attributes["x"].map { resolveLength($0, axis: .x) } ?? 0
         let y = attributes["y"].map { resolveLength($0, axis: .y) } ?? 0
@@ -1053,7 +1058,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             id: attributes["id"],
             origin: CGPoint(x: x, y: y),
             size: CGSize(width: width, height: height),
-            href: trimmed,
+            href: resolvedHref,
             preserveAspectRatio: preserveAspectRatio,
             paint: paint,
             transform: transform(from: attributes, parser: parser) ?? .identity,
@@ -1063,6 +1068,32 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         )
         registerDefinition(id: attributes["id"], element: .image(image))
         appendChild(.image(image))
+    }
+
+    private func pushXMLBase(from attributes: [String: String]) {
+        guard let parent = xmlBaseStack.last ?? baseURL else { return }
+        if let raw = attributes["xml:base"],
+           let resolved = SVGHrefResolver.resolveXMLBase(raw, relativeTo: parent) {
+            xmlBaseStack.append(resolved)
+        } else {
+            xmlBaseStack.append(parent)
+        }
+    }
+
+    private func popXMLBase() {
+        guard !xmlBaseStack.isEmpty else { return }
+        xmlBaseStack.removeLast()
+    }
+
+    /// Rewrites relative `href` values against the current `xml:base` stack.
+    private func resolveHrefWithXMLBase(_ href: String) -> String {
+        guard let documentBase = baseURL else { return href }
+        let effectiveBase = xmlBaseStack.last ?? documentBase
+        return SVGHrefResolver.resolveHref(
+            href,
+            documentBase: documentBase,
+            effectiveBase: effectiveBase
+        )
     }
 
     /// `auto` / `sRGB` mean no named profile override. Other values are profile names

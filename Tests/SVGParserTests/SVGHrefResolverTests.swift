@@ -105,4 +105,59 @@ struct SVGHrefResolverTests {
       return
     }
   }
+
+  @Test func resolveXMLBasePreservesDirectoryTrailingSlash() {
+    let doc = URL(fileURLWithPath: "/tmp/W3C/svg", isDirectory: true)
+    let resolved = SVGHrefResolver.resolveXMLBase("../images/", relativeTo: doc)
+    #expect(resolved?.path == "/tmp/W3C/images")
+    #expect(resolved?.hasDirectoryPath == true)
+  }
+
+  @Test func resolveHrefAgainstXMLBaseRewritesRelativeToDocument() {
+    let doc = URL(fileURLWithPath: "/tmp/W3C/svg", isDirectory: true)
+    let images = URL(fileURLWithPath: "/tmp/W3C/images", isDirectory: true)
+    let href = SVGHrefResolver.resolveHref(
+      "smiley.png",
+      documentBase: doc,
+      effectiveBase: images
+    )
+    #expect(href == "../images/smiley.png")
+  }
+
+  @Test func parserResolvesImageHrefViaXMLBaseOnElement() throws {
+    let root = FileManager.default.temporaryDirectory
+      .appendingPathComponent("svgeekit-xmlbase-\(UUID().uuidString)", isDirectory: true)
+    let svgDir = root.appendingPathComponent("svg", isDirectory: true)
+    let imagesDir = root.appendingPathComponent("images", isDirectory: true)
+    try FileManager.default.createDirectory(at: svgDir, withIntermediateDirectories: true)
+    try FileManager.default.createDirectory(at: imagesDir, withIntermediateDirectories: true)
+    defer { try? FileManager.default.removeItem(at: root) }
+
+    let pngData = Data(base64Encoded:
+      "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="
+    )!
+    try pngData.write(to: imagesDir.appendingPathComponent("smiley.png"))
+
+    let svg = """
+    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="10" height="10">
+      <image xml:base="../images/" xlink:href="smiley.png" width="10" height="10"/>
+      <g xml:base="../images/">
+        <image xlink:href="smiley.png" width="10" height="10"/>
+      </g>
+      <image xlink:href="../images/smiley.png" width="10" height="10"/>
+    </svg>
+    """
+    let doc = try SVGParser(options: .localFiles(at: svgDir)).parse(string: svg)
+    let hrefs: [String] = doc.root.children.compactMap { child in
+      switch child {
+      case .image(let image): return image.href
+      case .group(let group):
+        if case .image(let image) = group.children.first { return image.href }
+        return nil
+      default: return nil
+      }
+    }
+    #expect(hrefs.count == 3)
+    #expect(hrefs.allSatisfy { $0 == "../images/smiley.png" })
+  }
 }
