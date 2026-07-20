@@ -783,6 +783,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
                 rootRotate: textRootRotate,
                 segmentMeta: textSegmentMeta
             )
+            registerDefinition(id: finished.id, element: .text(finished))
             tspanStyleStack.removeAll()
             rotateStack.removeAll()
             rotatePushStack.removeAll()

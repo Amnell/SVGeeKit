@@ -52,8 +52,8 @@ references them; do not duplicate their step-by-step content here.
 
 | Status | Count | Meaning |
 | --- | ---: | --- |
-| `passed` | 206 | Verified baseline in `Tests/__Snapshots__/` |
-| `partialBaseline` | 95 | Renders; auto-tracked, needs human verification |
+| `passed` | 207 | Verified baseline in `Tests/__Snapshots__/` |
+| `partialBaseline` | 94 | Renders; auto-tracked, needs human verification |
 | `skipped` | 234 | Feature family or test explicitly out of scope |
 
 ### By feature tag (in-profile chapters)
@@ -66,7 +66,7 @@ references them; do not duplicate their step-by-step content here.
 | `painting` | 31 | 22 | 0 | 9 | Tier 1 |
 | `pservers` | 33 | 33 | 0 | 0 | Tier 1 ✓ |
 | `styling` | 18 | 15 | 0 | 3 | Tier 1 ✓ |
-| `struct` | 72 | 26 | 28 | 18 | Tier 1 |
+| `struct` | 72 | 27 | 27 | 18 | Tier 1 |
 | `render` | 8 | 8 | 0 | 0 | Tier 1 ✓ |
 | `color` | 6 | 4 | 2 | 0 | Tier 1 |
 | `masking` | 19 | 6 | 0 | 13 | Tier 1 → Tier 2 |
@@ -97,6 +97,8 @@ references them; do not duplicate their step-by-step content here.
 - **2026-07-20:** Promoted `struct-use-04-b` — external `<use href="file.svg#id">` under
   `.localFiles`, linked CSS via `<?xml-stylesheet?>`, CSS-specified stroke through use
   shadow tree (`struct` 26 passed / 28 partial).
+- **2026-07-20:** Promoted `struct-use-01-t` — `<text id="…">` defs now indexed for `<use>`
+  resolution (`struct` 27 passed / 27 partial).
 
 ## How to use this plan
 

@@ -1184,6 +1184,22 @@ struct SVGParserTests {
         #expect(rect.explicitPresentation.contains("stroke-width"))
     }
 
+    @Test func registersTextWithIdForUse() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100">
+          <defs>
+            <text id="label">Hi</text>
+          </defs>
+          <use xlink:href="#label" x="10" y="20" fill="lime"/>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .text(let text) = doc.definitions["label"] else {
+            Issue.record("expected text definition"); return
+        }
+        #expect(text.string == "Hi")
+    }
+
     @Test func parsesInternalUseReference() throws {
         let svg = """
         <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100">

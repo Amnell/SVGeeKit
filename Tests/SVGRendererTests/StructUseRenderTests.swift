@@ -21,6 +21,32 @@ import SVGRendererSwiftUI
         try W3CReferenceDiff.diff(testId: testId, w3cResourcesRoot: Self.w3cRoot)
     }
 
+    @Test func structUse01TRegistersUsedTextDefinition() throws {
+        let svgURL = Self.w3cRoot.appendingPathComponent("svg/struct-use-01-t.svg")
+        let doc = try SVGConformanceFixtureParsing.parse(data: Data(contentsOf: svgURL), svgURL: svgURL)
+
+        guard case .text(let usedText) = doc.definitions["usedText"] else {
+            Issue.record("expected usedText in definitions"); return
+        }
+        #expect(usedText.string == "Text")
+        #expect(!usedText.runs.isEmpty)
+    }
+
+    @Test func structUse01TUsedTextRendersGreen() throws {
+        let svgURL = Self.w3cRoot.appendingPathComponent("svg/struct-use-01-t.svg")
+        var doc = try SVGConformanceFixtureParsing.parse(data: Data(contentsOf: svgURL), svgURL: svgURL)
+        doc.intrinsicSize = doc.intrinsicSize ?? doc.viewBox?.size
+
+        let image = try SVGRasterizer.rasterize(doc, pixelSize: CGSize(width: 480, height: 360), scale: 1)
+        var maxGreen = 0
+        for y in 260..<300 {
+            for x in 140..<220 {
+                maxGreen = max(maxGreen, samplePixel(image, x: x, y: y).g)
+            }
+        }
+        #expect(maxGreen > 200, "usedText instancing did not render bright green (max g=\(maxGreen))")
+    }
+
     @Test func structUse01TMatchesW3CReference() throws {
         let diff = try diffAgainstW3C(testId: "struct-use-01-t")
         #expect(diff.mismatchedFraction < 0.05, "mismatchedFraction=\(diff.mismatchedFraction)")
