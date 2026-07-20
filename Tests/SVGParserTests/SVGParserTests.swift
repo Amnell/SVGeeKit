@@ -625,6 +625,27 @@ struct SVGParserTests {
         #expect(abs(cb.red - 144.0/255) < 0.01 && abs(cb.green - 238.0/255) < 0.01 && abs(cb.blue - 144.0/255) < 0.01)
     }
 
+    @Test func inheritsComputedCurrentColorFill() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+          <g fill="currentColor" color="lime">
+            <rect id="r" color="red"/>
+          </g>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .group(let g) = doc.root.children[0],
+              case .rect(let r) = g.children[0] else {
+            Issue.record("expected group with rect"); return
+        }
+        guard case .color(let fill) = r.paint.fill else {
+            Issue.record("expected inherited fill resolved to lime"); return
+        }
+        #expect(abs(fill.red) < 0.01)
+        #expect(abs(fill.green - 1) < 0.01)
+        #expect(abs(fill.blue) < 0.01)
+    }
+
     @Test func resolvesCurrentColorAgainstColorCascade() throws {
         let svg = """
         <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">

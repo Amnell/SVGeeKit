@@ -575,7 +575,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             from: attributeDict,
             parser: parser
         )
-        paintStack.append(mergedPaint.paint)
+        paintStack.append(resolveCurrentColorForInheritance(mergedPaint.paint))
         specifiedPaintKeysStack.append(mergedPaint.specifiedKeys)
         let elementPaint = mergedPaint.paint
 
@@ -1707,6 +1707,19 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         default:
             break
         }
+    }
+
+    /// Inherited presentation values use the computed color, not the
+    /// `currentColor` keyword (which would re-resolve against the child's `color`).
+    private func resolveCurrentColorForInheritance(_ paint: SVGPaintProperties) -> SVGPaintProperties {
+        var p = paint
+        if case .currentColor = p.fill {
+            p.fill = .color(p.color)
+        }
+        if case .currentColor = p.stroke {
+            p.stroke = .color(p.color)
+        }
+        return p
     }
 
     /// Resolves a paint value, expanding `currentColor` and `url(#id)`
