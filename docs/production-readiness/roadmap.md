@@ -137,21 +137,24 @@ Follow [styling-rollout.md](../styling-rollout.md):
 
 | Target | Baseline | Goal | Status |
 | --- | ---: | ---: | --- |
-| `struct` passed | 30 | 45+ | `[~]` |
-| `struct` partial | 16 | ≤10 | `[~]` |
+| `struct` passed | 35 | 45+ | `[~]` |
+| `struct` partial | 11 | ≤10 | `[~]` |
 | `struct` skipped | 26 | 26 | `[x]` keep DOM / onclick skipped |
 
 - [x] `g`, `defs`, `use` (same-document `#id` refs; ids outside `<defs>` indexed for `<use>`)
 - [x] External `<use xlink:href="file.svg#id">` under `.localFiles` (rejected in `.production`;
   `SVGExternalUseResolver` + shared `ExternalSVGDocumentLoader`; promoted `struct-use-04-b`, 2026-07-20)
 - [x] `<?xml-stylesheet href="…css">` pre-scan for linked author CSS (required by `svgRef4.svg` in `struct-use-04-b`)
-- [x] CSS/stylesheet-specified presentation preserved through `<use>` shadow tree (stroke on external shapes)
-- [x] `<switch>` conditional processing
+- [x] CSS/stylesheet-specified presentation preserved through `<use>` shadow tree (stroke on external shapes;
+  multiline CSS property trim for `struct-use-10-f`, 2026-07-20)
+- [x] `<switch>` conditional processing; failing parent `requiredFeatures` skips subtree
+  (`struct-cond-overview-02-f` / `04-f`, 2026-07-20)
 - [x] `<image>` element (production policy gates external refs; `.localFiles` for fixtures;
-  promoted `struct-image-12-b`, `struct-image-19-f`, 2026-07-20)
+  no-`viewBox` SVG embed is 1:1 + clip — `struct-image-18-f`, 2026-07-20)
 - [ ] `symbol` instancing polish (`struct-symbol-01-b` still partial)
-- [~] Promote high-value partial baselines (16 remain: `struct-cond-*`, `struct-frag-*`,
-  `struct-group-03-t`, image/use leftovers; `struct-use-06-b`/`07-b` skipped — onclick)
+- [~] Promote high-value partial baselines (11 remain: `struct-cond-03-t`,
+  `struct-cond-overview-03-f` / `05-f`, `struct-frag-03-t` / `05-t`, `struct-group-03-t`,
+  `struct-image-02-b` / `07-t` / `16-f`, `struct-symbol-01-b`, `struct-use-08-b`)
 - [x] Skip `struct-dom-*` — DOM API out of scope
 
 ### 1f. Rendering (`render`)
@@ -288,8 +291,8 @@ skips + 1 filter skip remain.
 
 | Target | Baseline | Goal | Status |
 | --- | ---: | ---: | --- |
-| `partialBaseline` total | 81 | ≤30 | `[ ]` |
-| `passed` total | 221 | 280+ | `[ ]` |
+| `partialBaseline` total | 76 | ≤30 | `[ ]` |
+| `passed` total | 226 | 280+ | `[ ]` |
 
 ### Process (repeat per tag)
 
@@ -302,7 +305,7 @@ skips + 1 filter skip remain.
 ### Priority order
 
 1. `animate` (60 partial) — **low priority** (out of production scope; only promote if needed for regression)
-2. `struct` (16 partial) — highest in-profile count
+2. `struct` (11 partial) — highest in-profile count
 3. ~~`styling`~~ — **complete** (15/15 passed, 0 partial; promoted 2026-07-20)
 4. ~~`pservers`~~ — **complete** (33/33 passed, 2026-07-14)
 5. ~~`render`~~ — **complete** (8/8 passed, 0 partial; promoted 2026-07-20)
@@ -354,7 +357,7 @@ Do not implement for production. Keep `skipTags` entries in `overrides.json`.
 ```
 Phase 0  Security lockdown                    [x] complete
    ↓
-Phase 1  Drain struct partials (core exit already met)   ← current
+Phase 1  Drain struct partials (11 left; core exit already met)   ← current
    ↓
 Phase 2  Finish remaining masking skips (intro/09/12)
    ↓

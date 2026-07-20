@@ -46,14 +46,14 @@ references them; do not duplicate their step-by-step content here.
 
 ## Current snapshot (baseline for this plan)
 
-*Last measured: 2026-07-20 (post `color-prof-01-f` promote). Re-run tests to refresh.*
+*Last measured: 2026-07-20 (post struct CLOSE-batch promotes). Re-run tests to refresh.*
 
 ### Conformance suite (535 W3C tests)
 
 | Status | Count | Meaning |
 | --- | ---: | --- |
-| `passed` | 221 | Verified baseline in `Tests/__Snapshots__/` |
-| `partialBaseline` | 81 | Renders; auto-tracked, needs human verification |
+| `passed` | 226 | Verified baseline in `Tests/__Snapshots__/` |
+| `partialBaseline` | 76 | Renders; auto-tracked, needs human verification |
 | `skipped` | 233 | Feature family or test explicitly out of scope |
 
 ### By feature tag (in-profile chapters)
@@ -66,7 +66,7 @@ references them; do not duplicate their step-by-step content here.
 | `painting` | 31 | 22 | 0 | 9 | Tier 1 |
 | `pservers` | 33 | 33 | 0 | 0 | Tier 1 ✓ |
 | `styling` | 18 | 15 | 0 | 3 | Tier 1 ✓ |
-| `struct` | 72 | 30 | 16 | 26 | Tier 1 |
+| `struct` | 72 | 35 | 11 | 26 | Tier 1 |
 | `render` | 8 | 8 | 0 | 0 | Tier 1 ✓ |
 | `color` | 6 | 6 | 0 | 0 | Tier 1 ✓ |
 | `masking` | 19 | 15 | 0 | 4 | Tier 1 → Tier 2 |
@@ -84,7 +84,7 @@ references them; do not duplicate their step-by-step content here.
 | Phase | Focus | Status |
 | --- | --- | --- |
 | 0 | [Security model](security-model.md) — lock external refs | **Complete** (Steps 0–9) |
-| 1 | [Roadmap §1](roadmap.md#phase-1--core-static-rendering) — core geometry & paint | Core exit met; `struct` 1e still open |
+| 1 | [Roadmap §1](roadmap.md#phase-1--core-static-rendering) — core geometry & paint | Core exit met; `struct` 1e still open (35/45+) |
 | 2 | [Roadmap §2](roadmap.md#phase-2--masking--clipping) — `clipPath` / `mask` | Nearly done (15/15 non-skipped; 4 remaining skips) |
 | 3 | [Roadmap §3](roadmap.md#phase-3--text) — system-font text | Not started |
 | 4 | [Roadmap §4](roadmap.md#phase-4--structure--reuse) — `symbol`, `marker` | Not started |
@@ -94,15 +94,18 @@ references them; do not duplicate their step-by-step content here.
 
 ### Recent milestones
 
+- **2026-07-20:** Struct CLOSE batch (W3C-matched) — promoted `struct-frag-04-t`,
+  `struct-image-18-f`, `struct-use-10-f`, `struct-cond-overview-02-f`,
+  `struct-cond-overview-04-f`. Fixes: multiline CSS property trim, no-`viewBox`
+  `<image>` 1:1 embed, parent `requiredFeatures` skips subtree
+  (`struct` **35 passed / 11 partial**).
 - **2026-07-20:** Promoted `color-prof-01-f` — ICC `<color-profile>` on raster `<image>`
   (`color` chapter **6/6** verified; Phase 1 core ≥90% exit met).
 - **2026-07-20:** Masking sweep — promoted `masking-path-04-b` … `08-b`, `10-b`, `11-b`,
   `13-f`, `14-f` (plus earlier `01-b`…`03-b`, `05-f`, `06-b`, `07-b`). Chapter at
-  **15 passed / 0 partial / 4 skipped** (goal 15+ met among runnable tests).
-- **2026-07-20:** Promoted `struct-image-12-b`, `struct-image-19-f` — image sizing /
-  aspect (`struct` 30 passed / 16 partial).
-- **2026-07-20:** Promoted `struct-use-04-b` / `01-t` / `05-b` — external `<use>` under
-  `.localFiles`, linked CSS, computed values across document boundaries.
+  **15 passed / 0 partial / 4 skipped**.
+- **2026-07-20:** Promoted `struct-image-12-b`, `struct-image-19-f`, `struct-use-04-b` /
+  `01-t` / `05-b`.
 ## How to use this plan
 
 1. Pick the next open phase in [roadmap.md](roadmap.md).
