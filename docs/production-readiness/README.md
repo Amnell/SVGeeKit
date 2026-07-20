@@ -42,15 +42,15 @@ references them; do not duplicate their step-by-step content here.
 
 ## Current snapshot (baseline for this plan)
 
-*Last measured: 2026-07-14. Re-run tests to refresh.*
+*Last measured: 2026-07-20. Re-run tests to refresh.*
 
 ### Conformance suite (535 W3C tests)
 
 | Status | Count | Meaning |
 | --- | ---: | --- |
-| `passed` | 195 | Verified baseline in `Tests/__Snapshots__/` |
-| `partialBaseline` | 109 | Renders; auto-tracked, needs human verification |
-| `skipped` | 231 | Feature family or test explicitly out of scope |
+| `passed` | 204 | Verified baseline in `Tests/__Snapshots__/` |
+| `partialBaseline` | 97 | Renders; auto-tracked, needs human verification |
+| `skipped` | 234 | Feature family or test explicitly out of scope |
 
 ### By feature tag (in-profile chapters)
 
@@ -58,11 +58,11 @@ references them; do not duplicate their step-by-step content here.
 | --- | ---: | ---: | ---: | ---: | --- |
 | `shapes` | 30 | 30 | 0 | 0 | Tier 1 ✓ |
 | `paths` | 21 | 19 | 0 | 2 | Tier 1 ✓ |
-| `coords` | 32 | 28 | 0 | 4 | Tier 1 |
+| `coords` | 32 | 28 | 0 | 4 | Tier 1 ✓ |
 | `painting` | 31 | 22 | 0 | 9 | Tier 1 |
 | `pservers` | 33 | 33 | 0 | 0 | Tier 1 ✓ |
-| `styling` | 18 | 8 | 10 | 0 | Tier 1 |
-| `struct` | 72 | 23 | 31 | 18 | Tier 1 |
+| `styling` | 18 | 15 | 0 | 3 | Tier 1 ✓ |
+| `struct` | 72 | 25 | 29 | 18 | Tier 1 |
 | `render` | 8 | 7 | 1 | 0 | Tier 1 |
 | `color` | 6 | 4 | 2 | 0 | Tier 1 |
 | `masking` | 19 | 6 | 0 | 13 | Tier 1 → Tier 2 |
