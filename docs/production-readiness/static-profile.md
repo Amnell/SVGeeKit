@@ -117,7 +117,8 @@ Update this document when features land. Tag matching W3C chapters in
 | --- | --- |
 | sRGB colors (`#rgb`, `rgb()`, named colors) | Supported |
 | `currentColor` | Supported |
-| `color-interpolation=linearRGB` | Unsupported |
+| `<color-profile>` + `color-profile` on raster `<image>` | Supported under `.localFiles` (ICC via ColorSync); external ICM rejected in production |
+| `color-interpolation=linearRGB` | Unsupported (gradient stops: partial; compositing skipped) |
 | Premultiplied alpha raster output | Yes (snapshot harness) |
 
 ## Parser & SwiftUI API

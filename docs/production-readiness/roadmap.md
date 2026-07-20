@@ -172,19 +172,23 @@ Follow [styling-rollout.md](../styling-rollout.md):
 
 | Target | Baseline | Goal | Status |
 | --- | ---: | ---: | --- |
-| `color` passed | 5 | 6 | `[~]` |
-| `color` partial | 1 | 0 | `[~]` |
+| `color` passed | 6 | 6 | `[x]` verified |
+| `color` partial | 0 | 0 | `[x]` |
 
 - [x] Promoted: `color-prop-01-b` … `05-t` (2026-07-20)
-- [ ] `color-prof-01-f` — ICC / color profile (last partial)
+- [x] `<color-profile>` + `color-profile` on `<image>` — ICC applied via ColorSync
+  (`color-prof-01-f` promoted 2026-07-20)
+- [x] External ICM href gated by resource policy (`.localFiles` only; production warns + skips)
+
+**`color` chapter:** all 6 non-skipped W3C tests pass with verified baselines
+(completed 2026-07-20).
 
 **Phase 1 exit criteria:** Core tags (`shapes`, `paths`, `coords`, `painting`, `pservers`,
 `styling`, `render`, `color`) at ≥90% passed among non-skipped tests; remaining gaps
 documented in [static-profile.md](static-profile.md).
 
-**Current:** all listed tags are 100% except `color` (5/6 = 83%) — blocked on
-`color-prof-01-f`. `struct` remains below goal but is tracked under 1e (not in the
-core ≥90% set).
+**Current:** core tags all at 100% among non-skipped — **exit met.** `struct` remains
+below its 45+ goal under 1e (tracked separately; not part of the core ≥90% set).
 ---
 
 ## Phase 2 — Masking & clipping
@@ -284,8 +288,8 @@ skips + 1 filter skip remain.
 
 | Target | Baseline | Goal | Status |
 | --- | ---: | ---: | --- |
-| `partialBaseline` total | 82 | ≤30 | `[ ]` |
-| `passed` total | 220 | 280+ | `[ ]` |
+| `partialBaseline` total | 81 | ≤30 | `[ ]` |
+| `passed` total | 221 | 280+ | `[ ]` |
 
 ### Process (repeat per tag)
 
@@ -303,12 +307,13 @@ skips + 1 filter skip remain.
 4. ~~`pservers`~~ — **complete** (33/33 passed, 2026-07-14)
 5. ~~`render`~~ — **complete** (8/8 passed, 0 partial; promoted 2026-07-20)
 6. ~~`masking`~~ — **complete among runnable** (15/15 passed, 0 partial; 2026-07-20)
-7. `color` (1 partial — `color-prof-01-f`)
+7. ~~`color`~~ — **complete** (6/6 passed, 0 partial; promoted 2026-07-20)
 
 `shapes` — **complete and verified** (30/30 passed, 0 partial; promoted 2026-07-14).
 `pservers` — **complete and verified** (33/33 passed, 0 partial; promoted 2026-07-14).
 `styling` — **complete and verified** (15/15 passed, 0 partial; promoted 2026-07-20).
 `render` — **complete and verified** (8/8 passed, 0 partial; promoted 2026-07-20).
+`color` — **complete and verified** (6/6 passed, 0 partial; promoted 2026-07-20).
 `masking` — **15/15 runnable verified** (4 skips remain; see Phase 2).
 **Exit criteria:** No `partialBaseline` with `diffMaxChannel: 0` in Tier-1 tags unless
 explicitly marked "known gap" in [static-profile.md](static-profile.md).
@@ -349,7 +354,7 @@ Do not implement for production. Keep `skipTags` entries in `overrides.json`.
 ```
 Phase 0  Security lockdown                    [x] complete
    ↓
-Phase 1  Close color-prof-01-f; drain struct partials   ← current
+Phase 1  Drain struct partials (core exit already met)   ← current
    ↓
 Phase 2  Finish remaining masking skips (intro/09/12)
    ↓

@@ -58,11 +58,14 @@ public enum SVGRenderCommand: Equatable, Sendable {
     case maskedContent(mask: [SVGRenderCommand], region: CGRect?, content: [SVGRenderCommand])
 
     /// Draw a decoded raster image into `viewport` with `preserveAspectRatio` fitting.
+    /// When `iccProfileData` is set, pixel values are interpreted in that ICC space
+    /// and converted to the destination (SVG `color-profile` on `<image>`).
     case drawImage(
         imageData: Data,
         viewport: CGRect,
         preserveAspectRatio: SVGPreserveAspectRatio,
-        opacity: CGFloat
+        opacity: CGFloat,
+        iccProfileData: Data? = nil
     )
 }
 
@@ -83,6 +86,7 @@ public enum SVGRenderTree {
             externalPaintServers: document.externalPaintServers,
             clipPaths: document.clipPaths,
             masks: document.masks,
+            colorProfiles: document.colorProfiles,
             fonts: document.fonts,
             fontFaces: document.fontFaces,
             definitions: document.definitions,
@@ -150,6 +154,7 @@ public enum SVGRenderTree {
         let externalPaintServers: [String: [String: SVGPaintServer]]
         let clipPaths: [String: SVGClipPath]
         let masks: [String: SVGMask]
+        let colorProfiles: [String: SVGColorProfile]
         let fonts: [String: SVGFontDefinition]
         let fontFaces: [SVGFontFace]
         let definitions: [String: SVGElement]
@@ -163,6 +168,7 @@ public enum SVGRenderTree {
             externalPaintServers: [String: [String: SVGPaintServer]],
             clipPaths: [String: SVGClipPath],
             masks: [String: SVGMask],
+            colorProfiles: [String: SVGColorProfile],
             fonts: [String: SVGFontDefinition],
             fontFaces: [SVGFontFace],
             definitions: [String: SVGElement],
@@ -173,6 +179,7 @@ public enum SVGRenderTree {
             self.externalPaintServers = externalPaintServers
             self.clipPaths = clipPaths
             self.masks = masks
+            self.colorProfiles = colorProfiles
             self.fonts = fonts
             self.fontFaces = fontFaces
             self.definitions = definitions
@@ -327,6 +334,7 @@ public enum SVGRenderTree {
             limits: ctx.parsingLimits
         ) else { return }
 
+        let iccData = image.colorProfileName.flatMap { ctx.colorProfiles[$0]?.iccData }
         let viewport = CGRect(origin: image.origin, size: image.size)
         emitPaintedImage(
             imageData: imageData,
@@ -335,6 +343,7 @@ public enum SVGRenderTree {
             paint: image.paint,
             transform: image.transform,
             cssClipRect: cssClipRect(for: image, viewport: viewport),
+            iccProfileData: iccData,
             ctx: ctx,
             into: &commands
         )
@@ -373,6 +382,7 @@ public enum SVGRenderTree {
             externalPaintServers: document.externalPaintServers,
             clipPaths: document.clipPaths,
             masks: document.masks,
+            colorProfiles: document.colorProfiles,
             fonts: document.fonts,
             fontFaces: document.fontFaces,
             definitions: document.definitions,
@@ -427,6 +437,7 @@ public enum SVGRenderTree {
         paint: SVGPaintProperties,
         transform: SVGTransform,
         cssClipRect: CGRect? = nil,
+        iccProfileData: Data? = nil,
         ctx: Context,
         into commands: inout [SVGRenderCommand]
     ) {
@@ -455,7 +466,8 @@ public enum SVGRenderTree {
             imageData: imageData,
             viewport: viewport,
             preserveAspectRatio: preserveAspectRatio,
-            opacity: 1
+            opacity: 1,
+            iccProfileData: iccProfileData
         ))
 
         if paint.opacity < 1 { painted.append(.endOpacityLayer) }

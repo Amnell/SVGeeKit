@@ -13,13 +13,13 @@ enum SVGImageDecoder {
     nonisolated(unsafe) private static var cache: [Data: CGImage] = [:]
     nonisolated(unsafe) private static var failed: Set<Data> = []
 
-    static func cgImage(from data: Data) -> CGImage? {
+    static func cgImage(from data: Data, iccProfileData: Data? = nil) -> CGImage? {
         guard SVGImageDataLoader.isRasterData(data) else { return nil }
 
         lock.lock()
         if let cached = cache[data] {
             lock.unlock()
-            return cached
+            return applyICCProfile(cached, iccProfileData: iccProfileData)
         }
         if failed.contains(data) {
             lock.unlock()
@@ -39,7 +39,32 @@ enum SVGImageDecoder {
         lock.lock()
         cache[data] = image
         lock.unlock()
-        return image
+        return applyICCProfile(image, iccProfileData: iccProfileData)
+    }
+
+    /// Reinterpret pixel values in `iccProfileData`'s color space (SVG `color-profile`
+    /// on `<image>`). Drawing into an sRGB destination then converts via ColorSync.
+    private static func applyICCProfile(_ image: CGImage, iccProfileData: Data?) -> CGImage {
+        guard let iccProfileData,
+              let space = CGColorSpace(iccData: iccProfileData as CFData),
+              let provider = image.dataProvider,
+              let tagged = CGImage(
+                width: image.width,
+                height: image.height,
+                bitsPerComponent: image.bitsPerComponent,
+                bitsPerPixel: image.bitsPerPixel,
+                bytesPerRow: image.bytesPerRow,
+                space: space,
+                bitmapInfo: image.bitmapInfo,
+                provider: provider,
+                decode: nil,
+                shouldInterpolate: true,
+                intent: .defaultIntent
+              )
+        else {
+            return image
+        }
+        return tagged
     }
 
     /// Effective viewport after substituting intrinsic dimensions for zero width/height.

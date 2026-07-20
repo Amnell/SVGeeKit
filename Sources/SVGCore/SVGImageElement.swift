@@ -17,6 +17,9 @@ public struct SVGImage: Equatable, Sendable {
     public var overflow: SVGOverflow
     /// CSS2 `clip`; only takes effect when `overflow` is not `visible`.
     public var clip: SVGCSSClip
+    /// Named ICC profile from the `color-profile` presentation attribute
+    /// (`auto` / `sRGB` are stored as `nil`). Resolves against `SVGDocument.colorProfiles`.
+    public var colorProfileName: String?
 
     public init(
         id: String? = nil,
@@ -28,7 +31,8 @@ public struct SVGImage: Equatable, Sendable {
         paint: SVGPaintProperties = .init(),
         transform: SVGTransform = .identity,
         overflow: SVGOverflow = .hidden,
-        clip: SVGCSSClip = .auto
+        clip: SVGCSSClip = .auto,
+        colorProfileName: String? = nil
     ) {
         self.id = id
         self.origin = origin
@@ -40,5 +44,6 @@ public struct SVGImage: Equatable, Sendable {
         self.transform = transform
         self.overflow = overflow
         self.clip = clip
+        self.colorProfileName = colorProfileName
     }
 }

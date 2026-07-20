@@ -2451,6 +2451,56 @@ struct SVGParserScriptTests {
         #expect(img.clip.resolvedRect(in: viewport) == CGRect(x: 10, y: 10, width: 180, height: 100))
     }
 
+    @Test func parsesColorProfileAndImageReference() throws {
+        let w3cImages = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .appendingPathComponent("../SVGConformanceTests/Resources/W3C-SVG-1.1/images", isDirectory: true)
+            .standardizedFileURL
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+             width="100" height="100">
+          <defs>
+            <color-profile id="changeColor" name="changeColor"
+                           xlink:href="changeColor.ICM"/>
+          </defs>
+          <image color-profile="changeColor" x="0" y="0" width="10" height="10"
+                 xlink:href="colorprof.png"/>
+          <image color-profile="auto" x="0" y="0" width="10" height="10"
+                 xlink:href="colorprof.png"/>
+        </svg>
+        """
+        let options = SVGParserOptions.localFiles(at: w3cImages)
+        let doc = try SVGParser(options: options).parse(
+            data: Data(svg.utf8),
+            options: options,
+            sourceURL: nil
+        )
+        #expect(doc.colorProfiles["changeColor"]?.iccData != nil)
+        #expect(doc.colorProfiles["changeColor"]?.iccData?.count == 740)
+        guard case .image(let withProfile) = doc.root.children.first else {
+            Issue.record("expected first image"); return
+        }
+        #expect(withProfile.colorProfileName == "changeColor")
+        guard case .image(let auto) = doc.root.children.dropFirst().first else {
+            Issue.record("expected second image"); return
+        }
+        #expect(auto.colorProfileName == nil)
+    }
+
+    @Test func rejectsColorProfileHrefUnderProductionPolicy() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+          <color-profile name="changeColor" xlink:href="../images/changeColor.ICM"/>
+        </svg>
+        """
+        let result = try SVGParser().parseWithReport(string: svg)
+        #expect(result.document.colorProfiles["changeColor"]?.iccData == nil)
+        #expect(result.report.warnings.contains { warning in
+            if case .rejectedExternalReference = warning.kind { return true }
+            return false
+        })
+    }
+
     @Test func parsesReferencedSVGDocumentForImageHref() throws {
         let w3cRoot = URL(fileURLWithPath: #filePath)
             .deletingLastPathComponent()

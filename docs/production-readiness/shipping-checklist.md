@@ -11,11 +11,11 @@ Check items off as they land. Link PRs or issues inline if helpful.
 
 - [ ] [static-profile.md](static-profile.md) reflects implemented reality (no stale "Supported" rows)
 - [x] [security-model.md](security-model.md) Phase 0 checklist complete
-- [ ] Tier-1 W3C tags at roadmap pass-rate targets (`color` 5/6; `struct` still below 45+)
+- [ ] Tier-1 W3C tags at roadmap pass-rate targets (core tags ✓; `struct` still below 45+)
 - [~] `masking` chapter substantially passing (15/15 runnable; 3 non-filter + 1 filter skip remain)
 - [ ] System-font `text` working for typical labels
 - [ ] `<marker>` or documented workaround in static profile
-- [ ] `partialBaseline` count ≤30 across in-profile tags (see Phase 5; currently 82 total / 16 struct)
+- [ ] `partialBaseline` count ≤30 across in-profile tags (see Phase 5; currently 81 total / 16 struct)
 
 ---
 

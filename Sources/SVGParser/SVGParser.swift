@@ -191,6 +191,7 @@ public struct SVGParser {
         document.externalPaintServers = externalPaintServers
         document.clipPaths = delegate.clipPaths
         document.masks = delegate.masks
+        document.colorProfiles = delegate.colorProfiles
         document.fonts = delegate.fonts
         document.fontFaces = delegate.fontFaces
         document.definitions = definitions
@@ -400,6 +401,8 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
     private var maskStack: [PartialMask] = []
     /// Completed masks keyed by id.
     fileprivate var masks: [String: SVGMask] = [:]
+    /// ICC color profiles keyed by `name` / `id`.
+    fileprivate var colorProfiles: [String: SVGColorProfile] = [:]
 
     /// Nesting depth of `<defs>` — content here is not part of the render tree.
     private var defsDepth: Int = 0
@@ -660,6 +663,8 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             handleClipPathStart(attributes: attributeDict, parser: parser)
         case "mask":
             handleMaskStart(attributes: attributeDict)
+        case "color-profile":
+            handleColorProfile(attributes: attributeDict)
         case "defs":
             defsDepth += 1
         case "style":
@@ -1027,10 +1032,92 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             paint: paint,
             transform: transform(from: attributes, parser: parser) ?? .identity,
             overflow: parseOverflow(attributes["overflow"]),
-            clip: attributes["clip"].flatMap { AttributeParsers.cssClip($0) } ?? .auto
+            clip: attributes["clip"].flatMap { AttributeParsers.cssClip($0) } ?? .auto,
+            colorProfileName: Self.parseColorProfileName(attributes["color-profile"])
         )
         registerDefinition(id: attributes["id"], element: .image(image))
         appendChild(.image(image))
+    }
+
+    /// `auto` / `sRGB` mean no named profile override. Other values are profile names
+    /// (or `#id` / `url(#id)` forms normalized to the id).
+    static func parseColorProfileName(_ raw: String?) -> String? {
+        guard let raw else { return nil }
+        let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
+        let lower = trimmed.lowercased()
+        if lower == "auto" || lower == "srgb" { return nil }
+        if lower.hasPrefix("url("), lower.hasSuffix(")") {
+            var inner = trimmed.dropFirst(4).dropLast()
+            if (inner.hasPrefix("\"") && inner.hasSuffix("\""))
+                || (inner.hasPrefix("'") && inner.hasSuffix("'")) {
+                inner = inner.dropFirst().dropLast()
+            }
+            return parseColorProfileName(String(inner))
+        }
+        if trimmed.hasPrefix("#") {
+            let id = String(trimmed.dropFirst()).trimmingCharacters(in: .whitespacesAndNewlines)
+            return id.isEmpty ? nil : id
+        }
+        return trimmed
+    }
+
+    func handleColorProfile(attributes: [String: String]) {
+        let name = attributes["name"]?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        let id = attributes["id"]?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let keyName = name.flatMap({ $0.isEmpty ? nil : $0 })
+                ?? id.flatMap({ $0.isEmpty ? nil : $0 })
+        else { return }
+
+        let href = attributes["xlink:href"] ?? attributes["href"]
+        var iccData: Data?
+        if let href {
+            let trimmed = href.trimmingCharacters(in: .whitespacesAndNewlines)
+            switch SVGHrefResolver.classify(href: trimmed, policy: options.resourcePolicy) {
+            case .localFile(let url):
+                var components = URLComponents(url: url, resolvingAgainstBaseURL: false)
+                components?.fragment = nil
+                let fileURL = components?.url ?? url
+                if let data = try? Data(contentsOf: fileURL), Self.isICCProfileData(data) {
+                    iccData = data
+                }
+            case .dataURI(let uri):
+                if let data = Self.dataFromDataURI(uri), Self.isICCProfileData(data) {
+                    iccData = data
+                }
+            case .rejected(let reason):
+                recordWarning(SVGHrefResolver.parseWarning(href: trimmed, reason: reason))
+            case .fragment:
+                break
+            }
+        }
+
+        let profile = SVGColorProfile(name: keyName, href: href, iccData: iccData)
+        colorProfiles[keyName] = profile
+        if let id, !id.isEmpty, id != keyName {
+            colorProfiles[id] = profile
+        }
+    }
+
+    /// ICC profile files contain the ASCII tag `acsp` at byte offset 36.
+    static func isICCProfileData(_ data: Data) -> Bool {
+        guard data.count > 40 else { return false }
+        return data[36..<40].elementsEqual([0x61, 0x63, 0x73, 0x70]) // "acsp"
+    }
+
+    /// Minimal `data:` URI decode for ICC payloads (not raster-gated).
+    static func dataFromDataURI(_ uri: String) -> Data? {
+        guard uri.lowercased().hasPrefix("data:") else { return nil }
+        let body = uri.dropFirst(5)
+        guard let comma = body.firstIndex(of: ",") else { return nil }
+        let metadata = body[..<comma].lowercased()
+        let payload = String(body[body.index(after: comma)...])
+        if metadata.hasSuffix(";base64") {
+            return Data(base64Encoded: payload, options: .ignoreUnknownCharacters)
+        }
+        return Data(payload.utf8)
     }
 
     private func handleRect(attributes: [String: String], paint: SVGPaintProperties, parser: XMLParser) {

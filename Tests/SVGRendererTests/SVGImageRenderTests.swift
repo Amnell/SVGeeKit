@@ -154,6 +154,50 @@ struct SVGImageRenderTests {
         #expect(svgMargin.r < 40 && svgMargin.g < 40 && svgMargin.b < 40)
     }
 
+    @Test func appliesNamedICCProfileToRasterImage() throws {
+        let w3cRoot = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .appendingPathComponent("../SVGConformanceTests/Resources/W3C-SVG-1.1", isDirectory: true)
+            .standardizedFileURL
+        let images = w3cRoot.appendingPathComponent("images", isDirectory: true)
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+             width="190" height="190" viewBox="0 0 190 190">
+          <defs>
+            <color-profile name="changeColor" xlink:href="changeColor.ICM"/>
+          </defs>
+          <image color-profile="changeColor" x="0" y="0" width="190" height="190"
+                 xlink:href="colorprof.png"/>
+        </svg>
+        """
+        let options = SVGParserOptions.localFiles(at: images)
+        var doc = try SVGParser(options: options).parse(
+            data: Data(svg.utf8),
+            options: options,
+            sourceURL: nil
+        )
+        doc.intrinsicSize = CGSize(width: 190, height: 190)
+        let image = try SVGRasterizer.rasterize(doc, pixelSize: CGSize(width: 190, height: 190), scale: 1)
+
+        // changeColor.ICM maps the muted encoded red cell to pure red.
+        let red = sample(image, x: 20, y: 20)
+        #expect(red.r > 240 && red.g < 20 && red.b < 20, "red=\(red)")
+        let green = sample(image, x: 95, y: 20)
+        #expect(green.g > 240 && green.r < 20 && green.b < 20, "green=\(green)")
+        let blue = sample(image, x: 160, y: 20)
+        #expect(blue.b > 240 && blue.r < 20 && blue.g < 20, "blue=\(blue)")
+    }
+
+    @Test @MainActor func colorProf01fMatchesW3CReference() throws {
+        let w3cRoot = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .appendingPathComponent("../SVGConformanceTests/Resources/W3C-SVG-1.1", isDirectory: true)
+            .standardizedFileURL
+        let diff = try W3CReferenceDiff.diff(testId: "color-prof-01-f", w3cResourcesRoot: w3cRoot)
+        // Draft watermark + system font for labels; color grids must match.
+        #expect(diff.mismatchedFraction < 0.08, "max=\(diff.maxChannelDelta) frac=\(diff.mismatchedFraction)")
+    }
+
     private func sample(_ image: CGImage, x: Int, y: Int) -> (r: Int, g: Int, b: Int) {
         var pixel = [UInt8](repeating: 0, count: 4)
         guard let ctx = CGContext(

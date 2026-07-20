@@ -131,12 +131,13 @@ public struct SwiftUICanvasRenderer {
                 }
                 context.opacity = savedOpacity
 
-            case .drawImage(let imageData, let viewport, let preserveAspectRatio, let opacity):
+            case .drawImage(let imageData, let viewport, let preserveAspectRatio, let opacity, let iccProfileData):
                 drawImage(
                     imageData,
                     viewport: viewport,
                     preserveAspectRatio: preserveAspectRatio,
                     opacity: opacity,
+                    iccProfileData: iccProfileData,
                     context: &context
                 )
             }
@@ -148,9 +149,10 @@ public struct SwiftUICanvasRenderer {
         viewport: CGRect,
         preserveAspectRatio: SVGPreserveAspectRatio,
         opacity: CGFloat,
+        iccProfileData: Data?,
         context: inout GraphicsContext
     ) {
-        guard let cgImage = SVGImageDecoder.cgImage(from: data) else { return }
+        guard let cgImage = SVGImageDecoder.cgImage(from: data, iccProfileData: iccProfileData) else { return }
         let intrinsic = CGSize(width: cgImage.width, height: cgImage.height)
         guard intrinsic.width > 0, intrinsic.height > 0 else { return }
 

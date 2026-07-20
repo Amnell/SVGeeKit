@@ -46,14 +46,14 @@ references them; do not duplicate their step-by-step content here.
 
 ## Current snapshot (baseline for this plan)
 
-*Last measured: 2026-07-20 (post `masking-path-14-f`). Re-run tests to refresh.*
+*Last measured: 2026-07-20 (post `color-prof-01-f` promote). Re-run tests to refresh.*
 
 ### Conformance suite (535 W3C tests)
 
 | Status | Count | Meaning |
 | --- | ---: | --- |
-| `passed` | 220 | Verified baseline in `Tests/__Snapshots__/` |
-| `partialBaseline` | 82 | Renders; auto-tracked, needs human verification |
+| `passed` | 221 | Verified baseline in `Tests/__Snapshots__/` |
+| `partialBaseline` | 81 | Renders; auto-tracked, needs human verification |
 | `skipped` | 233 | Feature family or test explicitly out of scope |
 
 ### By feature tag (in-profile chapters)
@@ -68,7 +68,7 @@ references them; do not duplicate their step-by-step content here.
 | `styling` | 18 | 15 | 0 | 3 | Tier 1 ✓ |
 | `struct` | 72 | 30 | 16 | 26 | Tier 1 |
 | `render` | 8 | 8 | 0 | 0 | Tier 1 ✓ |
-| `color` | 6 | 5 | 1 | 0 | Tier 1 |
+| `color` | 6 | 6 | 0 | 0 | Tier 1 ✓ |
 | `masking` | 19 | 15 | 0 | 4 | Tier 1 → Tier 2 |
 | `text` | 64 | 4 | 0 | 60 | Tier 2 |
 | `fonts` | 17 | 0 | 0 | 17 | Tier 2 (inline only) |
@@ -84,7 +84,7 @@ references them; do not duplicate their step-by-step content here.
 | Phase | Focus | Status |
 | --- | --- | --- |
 | 0 | [Security model](security-model.md) — lock external refs | **Complete** (Steps 0–9) |
-| 1 | [Roadmap §1](roadmap.md#phase-1--core-static-rendering) — core geometry & paint | Nearly done (`color` 5/6; `struct` still open) |
+| 1 | [Roadmap §1](roadmap.md#phase-1--core-static-rendering) — core geometry & paint | Core exit met; `struct` 1e still open |
 | 2 | [Roadmap §2](roadmap.md#phase-2--masking--clipping) — `clipPath` / `mask` | Nearly done (15/15 non-skipped; 4 remaining skips) |
 | 3 | [Roadmap §3](roadmap.md#phase-3--text) — system-font text | Not started |
 | 4 | [Roadmap §4](roadmap.md#phase-4--structure--reuse) — `symbol`, `marker` | Not started |
@@ -94,13 +94,13 @@ references them; do not duplicate their step-by-step content here.
 
 ### Recent milestones
 
+- **2026-07-20:** Promoted `color-prof-01-f` — ICC `<color-profile>` on raster `<image>`
+  (`color` chapter **6/6** verified; Phase 1 core ≥90% exit met).
 - **2026-07-20:** Masking sweep — promoted `masking-path-04-b` … `08-b`, `10-b`, `11-b`,
   `13-f`, `14-f` (plus earlier `01-b`…`03-b`, `05-f`, `06-b`, `07-b`). Chapter at
   **15 passed / 0 partial / 4 skipped** (goal 15+ met among runnable tests).
 - **2026-07-20:** Promoted `struct-image-12-b`, `struct-image-19-f` — image sizing /
   aspect (`struct` 30 passed / 16 partial).
-- **2026-07-20:** Promoted `color-prop-04-t`, `color-prop-05-t` (`color` 5 passed /
-  1 partial — only `color-prof-01-f` left).
 - **2026-07-20:** Promoted `struct-use-04-b` / `01-t` / `05-b` — external `<use>` under
   `.localFiles`, linked CSS, computed values across document boundaries.
 ## How to use this plan

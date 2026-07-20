@@ -19,6 +19,8 @@ public struct SVGDocument: Equatable, Sendable {
     public var externalPaintServers: [String: [String: SVGPaintServer]]
     public var clipPaths: [String: SVGClipPath]
     public var masks: [String: SVGMask]
+    /// ICC profiles from `<color-profile name="…">`, keyed by profile name (and id when present).
+    public var colorProfiles: [String: SVGColorProfile]
     /// CSS `<font-face>` family → font id bindings.
     public var fontFaces: [SVGFontFace]
     /// SVG `<font id="…">` tables keyed by id.
@@ -41,6 +43,7 @@ public struct SVGDocument: Equatable, Sendable {
         externalPaintServers: [String: [String: SVGPaintServer]] = [:],
         clipPaths: [String: SVGClipPath] = [:],
         masks: [String: SVGMask] = [:],
+        colorProfiles: [String: SVGColorProfile] = [:],
         fontFaces: [SVGFontFace] = [],
         fonts: [String: SVGFontDefinition] = [:],
         definitions: [String: SVGElement] = [:],
@@ -57,6 +60,7 @@ public struct SVGDocument: Equatable, Sendable {
         self.externalPaintServers = externalPaintServers
         self.clipPaths = clipPaths
         self.masks = masks
+        self.colorProfiles = colorProfiles
         self.fontFaces = fontFaces
         self.fonts = fonts
         self.definitions = definitions

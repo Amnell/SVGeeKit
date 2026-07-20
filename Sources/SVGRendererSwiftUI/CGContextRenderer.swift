@@ -118,12 +118,13 @@ struct CGContextRenderer {
                 ctx.endTransparencyLayer()
                 ctx.restoreGState()
 
-            case .drawImage(let imageData, let viewport, let preserveAspectRatio, let opacity):
+            case .drawImage(let imageData, let viewport, let preserveAspectRatio, let opacity, let iccProfileData):
                 drawImage(
                     imageData,
                     viewport: viewport,
                     preserveAspectRatio: preserveAspectRatio,
                     opacity: opacity,
+                    iccProfileData: iccProfileData,
                     gfx: gfx,
                     in: ctx
                 )
@@ -138,10 +139,11 @@ struct CGContextRenderer {
         viewport: CGRect,
         preserveAspectRatio: SVGPreserveAspectRatio,
         opacity: CGFloat,
+        iccProfileData: Data?,
         gfx: GfxState,
         in ctx: CGContext
     ) {
-        guard let cgImage = SVGImageDecoder.cgImage(from: data) else { return }
+        guard let cgImage = SVGImageDecoder.cgImage(from: data, iccProfileData: iccProfileData) else { return }
         let intrinsic = CGSize(width: cgImage.width, height: cgImage.height)
         guard intrinsic.width > 0, intrinsic.height > 0 else { return }
 
