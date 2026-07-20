@@ -1389,16 +1389,15 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         beginAnimatableShape(.use(use), definitionID: attributes["id"])
     }
 
+    private static let fontPresentationAttributeNames: Set<String> = [
+        "font-family", "font-size", "font-weight", "font-style", "text-anchor"
+    ]
+
     private func presentationAttributeKeys(from attributes: [String: String]) -> Set<String> {
-        let paintNames: Set<String> = [
-            "fill", "fill-opacity", "fill-rule", "stroke", "stroke-opacity", "stroke-width",
-            "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-dasharray",
-            "stroke-dashoffset", "opacity", "color", "visibility", "display", "clip-path", "mask"
-        ]
-        let fontNames: Set<String> = [
-            "font-family", "font-size", "font-weight", "font-style", "text-anchor"
-        ]
-        var keys = Set(attributes.keys.filter { paintNames.contains($0) || fontNames.contains($0) })
+        var keys = Set(attributes.keys.filter {
+            CSSStylesheet.paintPresentationAttributes.contains($0)
+                || Self.fontPresentationAttributeNames.contains($0)
+        })
         if let style = attributes["style"] {
             for pair in style.split(separator: ";") {
                 let parts = pair.split(separator: ":", maxSplits: 1).map {
@@ -1543,7 +1542,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
 
         // 1) Presentation attributes (specificity 0, never !important; XML names are case-sensitive).
         let presentationDeclarations = attributes
-            .filter { $0.key != "style" }
+            .filter { CSSStylesheet.paintPresentationAttributes.contains($0.key) }
             .map { CSSDeclaration(name: $0.key, value: $0.value, important: false) }
         applyAuthoredDeclarations(presentationDeclarations, priority: 0)
 
