@@ -148,6 +148,20 @@ Follow [styling-rollout.md](../styling-rollout.md):
 - [ ] Promote high-value partial baselines (batch by test family)
 - [x] Skip `struct-dom-*` — DOM API out of scope
 
+### 1f. Rendering (`render`)
+
+| Target | Baseline | Goal | Status |
+| --- | ---: | ---: | --- |
+| `render` passed | 8 | 8 | `[x]` verified |
+| `render` partial | 0 | 0 | `[x]` |
+
+- [x] Implicit paint order (document order)
+- [x] Group opacity — isolated compositing via `groupLayer` (`render-groups-01-b`, 2026-07-20)
+- [x] `opacity` not inherited to children (SVG §14.5); per-element vs group opacity distinct
+
+**`render` chapter:** all 8 non-skipped W3C tests pass with verified baselines
+(completed 2026-07-20).
+
 **Phase 1 exit criteria:** Core tags (`shapes`, `paths`, `coords`, `painting`, `pservers`,
 `styling`, `render`, `color`) at ≥90% passed among non-skipped tests; remaining gaps
 documented in [static-profile.md](static-profile.md).
@@ -166,8 +180,9 @@ documented in [static-profile.md](static-profile.md).
 
 - [x] `clipPath` definitions and `clip-path` attribute (partial)
 - [x] `mask` definitions and `mask` attribute (partial)
+- [x] Group vs element opacity (`masking-opacity-01-b` re-approved, 2026-07-20)
 - [ ] Remove `masking` from `skipTags` in `overrides.json` incrementally
-- [ ] `masking-path-*`, `masking-mask-*`, `masking-opacity-*` — verify running overrides
+- [ ] `masking-path-*`, `masking-mask-*` — verify running overrides
 - [ ] `maskUnits`, `maskContentUnits`, luminance vs alpha
 - [ ] Text + clip-path integration (see Phase 3)
 
@@ -237,8 +252,8 @@ or have a documented unsupported sub-feature.
 
 | Target | Baseline | Goal | Status |
 | --- | ---: | ---: | --- |
-| `partialBaseline` total | 97 | ≤30 | `[ ]` |
-| `passed` total | 204 | 280+ | `[ ]` |
+| `partialBaseline` total | 96 | ≤30 | `[ ]` |
+| `passed` total | 205 | 280+ | `[ ]` |
 
 ### Process (repeat per tag)
 
@@ -254,12 +269,13 @@ or have a documented unsupported sub-feature.
 2. `animate` (60 partial) — **low priority** (out of production scope; only promote if needed for regression)
 3. ~~`styling`~~ — **complete** (15/15 passed, 0 partial; promoted 2026-07-20)
 4. ~~`pservers`~~ — **complete** (33/33 passed, 2026-07-14)
-5. `color` (2 partial)
-6. `render` (1 partial)
+5. ~~`render`~~ — **complete** (8/8 passed, 0 partial; promoted 2026-07-20)
+6. `color` (2 partial)
 
 `shapes` — **complete and verified** (30/30 passed, 0 partial; promoted 2026-07-14).
 `pservers` — **complete and verified** (33/33 passed, 0 partial; promoted 2026-07-14).
 `styling` — **complete and verified** (15/15 passed, 0 partial; promoted 2026-07-20).
+`render` — **complete and verified** (8/8 passed, 0 partial; promoted 2026-07-20).
 
 **Exit criteria:** No `partialBaseline` with `diffMaxChannel: 0` in Tier-1 tags unless
 explicitly marked "known gap" in [static-profile.md](static-profile.md).

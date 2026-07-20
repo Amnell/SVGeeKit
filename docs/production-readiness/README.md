@@ -48,8 +48,8 @@ references them; do not duplicate their step-by-step content here.
 
 | Status | Count | Meaning |
 | --- | ---: | --- |
-| `passed` | 204 | Verified baseline in `Tests/__Snapshots__/` |
-| `partialBaseline` | 97 | Renders; auto-tracked, needs human verification |
+| `passed` | 205 | Verified baseline in `Tests/__Snapshots__/` |
+| `partialBaseline` | 96 | Renders; auto-tracked, needs human verification |
 | `skipped` | 234 | Feature family or test explicitly out of scope |
 
 ### By feature tag (in-profile chapters)
@@ -63,7 +63,7 @@ references them; do not duplicate their step-by-step content here.
 | `pservers` | 33 | 33 | 0 | 0 | Tier 1 ✓ |
 | `styling` | 18 | 15 | 0 | 3 | Tier 1 ✓ |
 | `struct` | 72 | 25 | 29 | 18 | Tier 1 |
-| `render` | 8 | 7 | 1 | 0 | Tier 1 |
+| `render` | 8 | 8 | 0 | 0 | Tier 1 ✓ |
 | `color` | 6 | 4 | 2 | 0 | Tier 1 |
 | `masking` | 19 | 6 | 0 | 13 | Tier 1 → Tier 2 |
 | `text` | 64 | 4 | 0 | 60 | Tier 2 |

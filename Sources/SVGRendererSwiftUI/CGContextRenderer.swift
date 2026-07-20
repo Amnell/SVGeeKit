@@ -107,10 +107,14 @@ struct CGContextRenderer {
                 ctx.restoreGState()
 
             case .groupLayer(let opacity, let commands):
+                // Composite the isolated layer at `opacity` using the graphics-state
+                // alpha saved when the transparency layer begins (see Apple TN2101).
                 ctx.saveGState()
-                ctx.beginTransparencyLayer(auxiliaryInfo: nil)
-                execute(commands, in: ctx, gfx: &gfx)
                 ctx.setAlpha(gfx.alpha * opacity)
+                ctx.beginTransparencyLayer(auxiliaryInfo: nil)
+                var innerGfx = gfx
+                innerGfx.alpha = 1
+                execute(commands, in: ctx, gfx: &innerGfx)
                 ctx.endTransparencyLayer()
                 ctx.restoreGState()
 

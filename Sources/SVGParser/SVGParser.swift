@@ -1519,6 +1519,9 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         parser: XMLParser
     ) -> SVGPaintProperties {
         var p = inherited
+        // SVG 1.1 §14.5: 'opacity' is not inherited. Group opacity is stored on
+        // `SVGGroup.opacity` and applied via `groupLayer` at render time.
+        p.opacity = 1
         var authored: [String: (value: String, important: Bool, priority: Int)] = [:]
 
         func applyAuthoredDeclarations(_ declarations: [CSSDeclaration], priority: Int) {

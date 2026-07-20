@@ -1244,6 +1244,10 @@ struct SVGParserTests {
             Issue.record("expected first group"); return
         }
         #expect(g1.opacity == 0.5)
+        guard case .rect(let rect) = g1.children.first else {
+            Issue.record("expected rect in group"); return
+        }
+        #expect(rect.paint.opacity == 1, "group opacity must not inherit to children")
         guard case .group(let g2) = doc.root.children.last else {
             Issue.record("expected second group"); return
         }

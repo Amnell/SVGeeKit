@@ -2539,10 +2539,10 @@
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/render-groups-01-b\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/render-groups-01-b\/baseline.png",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/render-groups-01-b\/baseline.png",
     "diffMaxChannel" : 0,
     "mismatchedFraction" : 0,
-    "status" : "partialBaseline",
+    "status" : "passed",
     "tag" : "render",
     "testId" : "render-groups-01-b"
   },
@@ -2595,15 +2595,6 @@
     "testId" : "script-specify-02-f"
   },
   {
-    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-circle-01\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-circle-01\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
-    "tag" : "shapes",
-    "testId" : "shapes-circle-01"
-  },
-  {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-circle-01-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-circle-01-t\/baseline.png",
     "diffMaxChannel" : 0,
@@ -2611,6 +2602,15 @@
     "status" : "passed",
     "tag" : "shapes",
     "testId" : "shapes-circle-01-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-circle-01\/actual.png",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-circle-01\/baseline.png",
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
+    "status" : "passed",
+    "tag" : "shapes",
+    "testId" : "shapes-circle-01"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-circle-02-t\/actual.png",
@@ -2622,15 +2622,6 @@
     "testId" : "shapes-circle-02-t"
   },
   {
-    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-ellipse-01\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-ellipse-01\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
-    "tag" : "shapes",
-    "testId" : "shapes-ellipse-01"
-  },
-  {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-ellipse-01-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-ellipse-01-t\/baseline.png",
     "diffMaxChannel" : 0,
@@ -2638,6 +2629,15 @@
     "status" : "passed",
     "tag" : "shapes",
     "testId" : "shapes-ellipse-01-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-ellipse-01\/actual.png",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-ellipse-01\/baseline.png",
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
+    "status" : "passed",
+    "tag" : "shapes",
+    "testId" : "shapes-ellipse-01"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-ellipse-02-t\/actual.png",
@@ -2685,15 +2685,6 @@
     "testId" : "shapes-intro-02-f"
   },
   {
-    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-line-01\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-line-01\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
-    "tag" : "shapes",
-    "testId" : "shapes-line-01"
-  },
-  {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-line-01-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-line-01-t\/baseline.png",
     "diffMaxChannel" : 0,
@@ -2701,6 +2692,15 @@
     "status" : "passed",
     "tag" : "shapes",
     "testId" : "shapes-line-01-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-line-01\/actual.png",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-line-01\/baseline.png",
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
+    "status" : "passed",
+    "tag" : "shapes",
+    "testId" : "shapes-line-01"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-line-02-f\/actual.png",
@@ -2721,15 +2721,6 @@
     "testId" : "shapes-path-01"
   },
   {
-    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-polygon-01\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-polygon-01\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
-    "tag" : "shapes",
-    "testId" : "shapes-polygon-01"
-  },
-  {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-polygon-01-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-polygon-01-t\/baseline.png",
     "diffMaxChannel" : 0,
@@ -2737,6 +2728,15 @@
     "status" : "passed",
     "tag" : "shapes",
     "testId" : "shapes-polygon-01-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-polygon-01\/actual.png",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-polygon-01\/baseline.png",
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
+    "status" : "passed",
+    "tag" : "shapes",
+    "testId" : "shapes-polygon-01"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-polygon-02-t\/actual.png",
@@ -2757,15 +2757,6 @@
     "testId" : "shapes-polygon-03-t"
   },
   {
-    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-polyline-01\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-polyline-01\/baseline.png",
-    "diffMaxChannel" : 0,
-    "mismatchedFraction" : 0,
-    "status" : "passed",
-    "tag" : "shapes",
-    "testId" : "shapes-polyline-01"
-  },
-  {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-polyline-01-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-polyline-01-t\/baseline.png",
     "diffMaxChannel" : 0,
@@ -2773,6 +2764,15 @@
     "status" : "passed",
     "tag" : "shapes",
     "testId" : "shapes-polyline-01-t"
+  },
+  {
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-polyline-01\/actual.png",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/shapes-polyline-01\/baseline.png",
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
+    "status" : "passed",
+    "tag" : "shapes",
+    "testId" : "shapes-polyline-01"
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/shapes-polyline-02-t\/actual.png",
@@ -3545,7 +3545,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/styling-css-10-f\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/styling-css-10-f\/baseline.png",
-    "detail" : "promoted from partial baseline",
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "passed",
     "tag" : "styling",
     "testId" : "styling-css-10-f"
