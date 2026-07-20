@@ -410,13 +410,19 @@ public enum SVGRenderTree {
 
         painted.append(.pushState)
         painted.append(.clipToPath(CGPath(rect: viewport, transform: nil), evenOdd: false))
-        // Map viewBox → viewport local, then translate to `viewport.origin`.
-        // `a.concatenating(b)` applies `a` then `b` (CTM *= a; CTM *= b).
-        let fit = SVGPreserveAspectRatio.viewBoxTransform(
-            viewBox: contentViewBox,
-            viewportSize: viewport.size,
-            preserveAspectRatio: image.preserveAspectRatio
-        ).concatenating(CGAffineTransform(translationX: viewport.minX, y: viewport.minY))
+        // No `viewBox`: SVG 1.1 embeds 1:1 into the `<image>` viewport (ignore
+        // preserveAspectRatio); clip reveals e.g. a quarter-circle when content
+        // is larger than width/height (`struct-image-18-f`).
+        let fit: CGAffineTransform
+        if document.viewBox != nil {
+            fit = SVGPreserveAspectRatio.viewBoxTransform(
+                viewBox: contentViewBox,
+                viewportSize: viewport.size,
+                preserveAspectRatio: image.preserveAspectRatio
+            ).concatenating(CGAffineTransform(translationX: viewport.minX, y: viewport.minY))
+        } else {
+            fit = CGAffineTransform(translationX: viewport.minX, y: viewport.minY)
+        }
         painted.append(.concatenate(SVGTransform(fit)))
         lower(group: document.root, ctx: nestedCtx, into: &painted)
         painted.append(.popState)

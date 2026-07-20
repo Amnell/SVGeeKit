@@ -490,7 +490,7 @@ struct CSSStylesheet {
         var result: [CSSDeclaration] = []
         for pair in body.split(separator: ";", omittingEmptySubsequences: false) {
             let parts = pair.split(separator: ":", maxSplits: 1)
-                .map { $0.trimmingCharacters(in: .whitespaces) }
+                .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
             guard parts.count == 2 else { continue }
             guard let declaration = parseProperty(namePart: parts[0], valuePart: parts[1]) else { continue }
             result.append(declaration)
@@ -503,20 +503,20 @@ struct CSSStylesheet {
     }
 
     private static func parseProperty(namePart: String, valuePart: String) -> CSSDeclaration? {
-        let trimmedValue = valuePart.trimmingCharacters(in: .whitespaces)
+        let trimmedValue = valuePart.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedValue.isEmpty else { return nil }
-        let lowerName = namePart.trimmingCharacters(in: .whitespaces).lowercased()
+        let lowerName = namePart.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
         guard !lowerName.isEmpty else { return nil }
 
         var value = trimmedValue
         var important = false
         if let range = value.range(of: "!important", options: [.caseInsensitive, .backwards]) {
-            let suffix = value[range.upperBound...].trimmingCharacters(in: .whitespaces)
+            let suffix = value[range.upperBound...].trimmingCharacters(in: .whitespacesAndNewlines)
             guard suffix.isEmpty else {
                 return CSSDeclaration(name: lowerName, value: trimmedValue, important: false)
             }
             important = true
-            value = value[..<range.lowerBound].trimmingCharacters(in: .whitespaces)
+            value = value[..<range.lowerBound].trimmingCharacters(in: .whitespacesAndNewlines)
         }
         guard !value.isEmpty else { return nil }
         return CSSDeclaration(name: lowerName, value: value, important: important)

@@ -41,6 +41,7 @@ public struct SVGConditionalProcessingContext: Equatable, Sendable {
         "http://www.w3.org/TR/SVG11/feature#Shape",
         "http://www.w3.org/TR/SVG11/feature#Text",
         "http://www.w3.org/TR/SVG11/feature#Animation",
+        "http://www.w3.org/TR/SVG11/feature#ConditionalProcessing",
     ]
 }
 

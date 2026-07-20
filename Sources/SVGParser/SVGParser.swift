@@ -333,6 +333,27 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         return true
     }
 
+    /// Skip elements whose conditional-processing attributes fail — including
+    /// entire subtrees when a parent fails (`struct-cond-overview-04-f`).
+    /// `<switch>` children are still collected and evaluated in `finalizeSwitch`.
+    private func shouldSkipForConditionalProcessing(
+        elementName: String,
+        attributes: [String: String]
+    ) -> Bool {
+        if elementName == "switch" { return false }
+        if !switchStack.isEmpty { return false }
+        let hasTest =
+            attributes["requiredFeatures"] != nil
+            || attributes["requiredExtensions"] != nil
+            || attributes["requiredFormats"] != nil
+            || attributes["systemLanguage"] != nil
+        guard hasTest else { return false }
+        return !SVGConditionalProcessing.evaluate(
+            attributes: attributes,
+            context: conditionalContext
+        )
+    }
+
     private func endParsingElement() {
         xmlNestingDepth -= 1
         if skipSubtreeDepth > 0 {
@@ -571,6 +592,11 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         attributes attributeDict: [String: String] = [:]
     ) {
         guard beginParsingElement(parser) else { return }
+
+        if shouldSkipForConditionalProcessing(elementName: elementName, attributes: attributeDict) {
+            skipSubtreeDepth = 1
+            return
+        }
 
         let inheritedPaint = paintStack.last ?? SVGPaintProperties()
         let mergedPaint = mergePaint(
@@ -1712,7 +1738,9 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         if let style = attributes["style"] {
             var inlineStyleDeclarations: [CSSDeclaration] = []
             for pair in style.split(separator: ";") {
-                let parts = pair.split(separator: ":", maxSplits: 1).map { $0.trimmingCharacters(in: .whitespaces) }
+                let parts = pair.split(separator: ":", maxSplits: 1).map {
+                    $0.trimmingCharacters(in: .whitespacesAndNewlines)
+                }
                 guard parts.count == 2,
                       let declaration = CSSStylesheet.parseInlineDeclaration(namePart: parts[0], valuePart: parts[1])
                 else { continue }

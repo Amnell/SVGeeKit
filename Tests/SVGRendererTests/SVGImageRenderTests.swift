@@ -198,6 +198,15 @@ struct SVGImageRenderTests {
         #expect(diff.mismatchedFraction < 0.08, "max=\(diff.maxChannelDelta) frac=\(diff.mismatchedFraction)")
     }
 
+    @Test @MainActor func structImage18fMatchesW3CReference() throws {
+        let w3cRoot = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .appendingPathComponent("../SVGConformanceTests/Resources/W3C-SVG-1.1", isDirectory: true)
+            .standardizedFileURL
+        let diff = try W3CReferenceDiff.diff(testId: "struct-image-18-f", w3cResourcesRoot: w3cRoot)
+        #expect(diff.mismatchedFraction < 0.05, "max=\(diff.maxChannelDelta) frac=\(diff.mismatchedFraction)")
+    }
+
     private func sample(_ image: CGImage, x: Int, y: Int) -> (r: Int, g: Int, b: Int) {
         var pixel = [UInt8](repeating: 0, count: 4)
         guard let ctx = CGContext(

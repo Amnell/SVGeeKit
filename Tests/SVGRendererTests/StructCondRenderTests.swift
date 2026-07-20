@@ -114,6 +114,21 @@ import SVGRendererSwiftUI
         #expect(joined.contains("English (US)") == false)
     }
 
+    @Test func structCondOverview04SuppressesChildWhenParentFails() throws {
+        let image = try render("struct-cond-overview-04-f")
+        // Pass criteria: no red (except draft watermark). Green rect remains.
+        let body = samplePixel(image, x: 50, y: 50)
+        #expect(body.g > 100 && body.r < 80, "expected green, got \(body)")
+        var redBody = 0
+        for y in 25..<120 {
+            for x in 0..<120 {
+                let p = samplePixel(image, x: x, y: y)
+                if p.r > 200 && p.g < 80 && p.b < 80 { redBody += 1 }
+            }
+        }
+        #expect(redBody == 0, "red body pixels=\(redBody)")
+    }
+
     private func samplePixel(_ image: CGImage, x: Int, y: Int) -> (r: Int, g: Int, b: Int) {
         var pixel = [UInt8](repeating: 0, count: 4)
         let colorSpace = CGColorSpaceCreateDeviceRGB()

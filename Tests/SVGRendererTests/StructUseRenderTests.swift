@@ -509,6 +509,22 @@ import SVGRendererSwiftUI
         #expect(samplePixel(image, x: 350, y: 170).b > 150)
     }
 
+    @Test func structUse10fRectsHaveDarkGreenStroke() throws {
+        let svgURL = Self.w3cRoot.appendingPathComponent("svg/struct-use-10-f.svg")
+        var doc = try SVGConformanceFixtureParsing.parse(
+            data: Data(contentsOf: svgURL),
+            svgURL: svgURL
+        )
+        doc.intrinsicSize = CGSize(width: 480, height: 360)
+        let image = try SVGRasterizer.rasterize(doc, pixelSize: CGSize(width: 480, height: 360), scale: 1)
+
+        // Third rect edge must be darkgreen, not red (CSS stroke on multiline rules).
+        let thirdEdge = samplePixel(image, x: 340, y: 150)
+        #expect(thirdEdge.r < 80 && thirdEdge.g > 80, "thirdEdge=\(thirdEdge)")
+        let thirdCenter = samplePixel(image, x: 390, y: 150)
+        #expect(thirdCenter.g > 100 && thirdCenter.r < 80, "thirdCenter=\(thirdCenter)")
+    }
+
     private func samplePixel(_ image: CGImage, x: Int, y: Int) -> (r: Int, g: Int, b: Int) {
         var pixel = [UInt8](repeating: 0, count: 4)
         let colorSpace = CGColorSpaceCreateDeviceRGB()
@@ -525,3 +541,4 @@ import SVGRendererSwiftUI
         return (Int(pixel[0]), Int(pixel[1]), Int(pixel[2]))
     }
 }
+
