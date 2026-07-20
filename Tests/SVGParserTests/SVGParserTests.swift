@@ -1275,6 +1275,30 @@ struct SVGParserTests {
         #expect(u.origin == CGPoint(x: 10, y: 10))
     }
 
+    @Test func textInClipPathIsRegistered() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200">
+          <defs>
+            <clipPath id="clip">
+              <text x="10" y="50" font-size="40">Clip</text>
+            </clipPath>
+          </defs>
+          <rect x="0" y="0" width="200" height="200" fill="blue" clip-path="url(#clip)"/>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard let clip = doc.clipPaths["clip"] else {
+            Issue.record("expected clipPath"); return
+        }
+        #expect(clip.children.count == 1)
+        guard case .text(let t) = clip.children[0] else {
+            Issue.record("expected text in clipPath"); return
+        }
+        #expect(t.origin == CGPoint(x: 10, y: 50))
+        #expect(t.font.size == 40)
+        #expect(t.runs.first?.string == "Clip")
+    }
+
     @Test func symbolInDefsRegistersChildrenAndNestedUse() throws {
         let svg = """
         <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100">

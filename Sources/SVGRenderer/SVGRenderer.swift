@@ -770,7 +770,17 @@ public enum SVGRenderTree {
             var tx = transform.concatenating(pg.transform.matrix)
             if let obb = obbTransform { tx = tx.isIdentity ? obb : tx.concatenating(obb) }
             return p.copy(using: &tx) ?? p
-        case .line, .text, .image:
+        case .text(let t):
+            guard t.paint.visibility == .visible else { return CGMutablePath() }
+            guard let path = TextLayout.glyphPath(
+                text: t,
+                fontFaces: ctx.fontFaces,
+                fonts: ctx.fonts
+            ) else { return CGMutablePath() }
+            var tx = transform.concatenating(t.transform.matrix)
+            if let obb = obbTransform { tx = tx.isIdentity ? obb : tx.concatenating(obb) }
+            return path.copy(using: &tx) ?? path
+        case .line, .image:
             return CGMutablePath()
         }
     }

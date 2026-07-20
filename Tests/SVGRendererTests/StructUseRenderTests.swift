@@ -308,6 +308,69 @@ import SVGRendererSwiftUI
         #expect(outside.g < 20)
     }
 
+    @Test func textInClipPathAppliesGeometry() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+          <defs>
+            <clipPath id="clip">
+              <text x="10" y="70" font-size="60">X</text>
+            </clipPath>
+          </defs>
+          <rect x="0" y="0" width="100" height="100" fill="lime" clip-path="url(#clip)"/>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .text(let clipText) = doc.clipPaths["clip"]?.children.first else {
+            Issue.record("expected text clip child"); return
+        }
+        #expect(TextLayout.glyphPath(text: clipText, fontFaces: doc.fontFaces, fonts: doc.fonts)?.isEmpty == false)
+        let commands = SVGRenderTree.lower(doc)
+        #expect(commands.contains { if case .clipToPath(let path, _) = $0 { return !path.isEmpty }; return false })
+
+        var paintedDoc = doc
+        paintedDoc.intrinsicSize = CGSize(width: 100, height: 100)
+        let image = try SVGRasterizer.rasterize(paintedDoc, pixelSize: CGSize(width: 100, height: 100), scale: 1)
+
+        var greenCount = 0
+        for y in 0..<100 {
+            for x in 0..<100 {
+                if samplePixel(image, x: x, y: y).g > 200 { greenCount += 1 }
+            }
+        }
+        #expect(greenCount > 20, "green pixels: \(greenCount)")
+        let inside = samplePixel(image, x: 29, y: 48)
+        let outside = samplePixel(image, x: 90, y: 10)
+        #expect(inside.g > 200)
+        #expect(outside.g < 20)
+    }
+
+    @Test func maskingPath04BClipsImageToText() throws {
+        let svgURL = Self.w3cRoot.appendingPathComponent("svg/masking-path-04-b.svg")
+        var doc = try SVGConformanceFixtureParsing.parse(
+            data: Data(contentsOf: svgURL),
+            svgURL: svgURL
+        )
+        doc.intrinsicSize = CGSize(width: 480, height: 360)
+        let image = try SVGRasterizer.rasterize(doc, pixelSize: CGSize(width: 480, height: 360), scale: 1)
+
+        // Top image is unclipped — pattern visible across the row.
+        let top = samplePixel(image, x: 240, y: 80)
+        #expect(top.b > 80)
+
+        // Bottom image is clipped to "Clip Test" — pattern visible somewhere in the text band.
+        var maxBlueInClipBand = 0
+        for y in 200..<310 {
+            for x in 50..<400 {
+                maxBlueInClipBand = max(maxBlueInClipBand, samplePixel(image, x: x, y: y).b)
+            }
+        }
+        #expect(maxBlueInClipBand > 80, "maxBlueInClipBand=\(maxBlueInClipBand)")
+
+        // Outside the clip region on the bottom row stays background.
+        let outsideClip = samplePixel(image, x: 30, y: 190)
+        #expect(outsideClip.r < 40 && outsideClip.g < 40 && outsideClip.b < 40)
+    }
+
     private func samplePixel(_ image: CGImage, x: Int, y: Int) -> (r: Int, g: Int, b: Int) {
         var pixel = [UInt8](repeating: 0, count: 4)
         let colorSpace = CGColorSpaceCreateDeviceRGB()
