@@ -168,9 +168,54 @@ enum AttributeParsers {
         }
     }
 
-    /// Full SVG 1.1 named-color table (X11 / CSS color keywords).
+    /// Full SVG 1.1 named-color table (X11 / CSS color keywords) plus the 28
+    /// CSS2 system-color keywords (SVG 1.1 §4.2). System colors are mapped to
+    /// platform-neutral fallbacks; exact values are UA-defined and the W3C test
+    /// pass criteria only requires legible, UI-resembling colors — not a pixel match.
     static let namedColors: [String: SVGColor] = {
         let rgb: [(String, Int, Int, Int)] = [
+            // CSS2 system colors
+            ("activeborder",       212, 208, 200),
+            ("activecaption",       10,  36, 106),
+            ("appworkspace",       128, 128, 128),
+            ("background",         58,  110, 165),
+            ("buttonface",         212, 208, 200),
+            ("buttonhighlight",    255, 255, 255),
+            ("buttonshadow",       128, 128, 128),
+            ("buttontext",           0,   0,   0),
+            ("captiontext",        255, 255, 255),
+            ("graytext",           128, 128, 128),
+            ("greytext",           128, 128, 128),
+            ("highlight",           10,  36, 106),
+            ("highlighttext",      255, 255, 255),
+            ("inactiveborder",     212, 208, 200),
+            ("inactivecaption",    128, 128, 128),
+            ("inactivecaptiontext",212, 208, 200),
+            ("infobackground",     255, 255, 225),
+            ("infotext",             0,   0,   0),
+            ("menu",               212, 208, 200),
+            ("menutext",             0,   0,   0),
+            ("scrollbar",          212, 208, 200),
+            ("threeddarkshadow",    64,  64,  64),
+            ("threedface",         212, 208, 200),
+            ("threedhighlight",    255, 255, 255),
+            ("threedlightshadow",  212, 208, 200),
+            ("threedshadow",       128, 128, 128),
+            ("window",             255, 255, 255),
+            ("windowframe",          0,   0,   0),
+            ("windowtext",           0,   0,   0),
+        ]
+        var table: [String: SVGColor] = [:]
+        table.reserveCapacity(rgb.count)
+        for (name, r, g, b) in rgb {
+            table[name] = SVGColor(
+                red: CGFloat(r) / 255,
+                green: CGFloat(g) / 255,
+                blue: CGFloat(b) / 255
+            )
+        }
+
+        let x11rgb: [(String, Int, Int, Int)] = [
             ("aliceblue", 240, 248, 255),
             ("antiquewhite", 250, 235, 215),
             ("aqua", 0, 255, 255),
@@ -319,9 +364,7 @@ enum AttributeParsers {
             ("yellow", 255, 255, 0),
             ("yellowgreen", 154, 205, 50)
         ]
-        var table: [String: SVGColor] = [:]
-        table.reserveCapacity(rgb.count)
-        for (name, r, g, b) in rgb {
+        for (name, r, g, b) in x11rgb {
             table[name] = SVGColor(
                 red: CGFloat(r) / 255,
                 green: CGFloat(g) / 255,
