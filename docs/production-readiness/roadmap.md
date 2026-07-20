@@ -115,8 +115,9 @@ mutation, out of production scope.
 
 | Target | Baseline | Goal | Status |
 | --- | ---: | ---: | --- |
-| `styling` passed | 8 | 18 | `[~]` |
-| `styling` partial | 10 | 0 | `[~]` |
+| `styling` passed | 14 | 15 | `[~]` |
+| `styling` partial | 1 | 0 | `[~]` |
+| `styling` skipped | 3 | 3 | `[x]` keep skipped |
 
 Follow [styling-rollout.md](../styling-rollout.md):
 
@@ -124,8 +125,10 @@ Follow [styling-rollout.md](../styling-rollout.md):
 - [x] Inline `style`
 - [x] `<style>` class and type selectors (core)
 - [x] Inheritance (`styling-inherit-01-b` promoted)
-- [ ] Presentation edge cases (`styling-pres-02-f` … `05-f`)
-- [ ] Promote 10 partial baselines after verification
+- [x] Presentation cascade vs style/stylesheet (`styling-pres-03-f` … `05-f`)
+- [x] `!important`, `@import` (localFiles), case-insensitive CSS (`styling-css-08-f` … `10-f`, `styling-elem-01-b`)
+- [ ] Promote remaining partial: `styling-css-10-f`
+- [x] Skip: `styling-pres-02-f` (script), `styling-css-05-b` (`:lang`/text), `styling-css-06-b` (dynamic pseudo-classes)
 
 ### 1e. Document structure (`struct`)
 
