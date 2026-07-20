@@ -54,7 +54,16 @@ enum SVGUseExpansion {
       p.paint = mergedInstancePaint(p.paint, use: use, explicitPresentation: explicit)
       return .path(p)
     case .text(var t):
+      let oldFont = t.font
+      let oldPaint = t.paint
       t.paint = mergedInstancePaint(t.paint, use: use, explicitPresentation: explicit)
+      t.font = mergedInstanceFont(t.font, use: use, explicitPresentation: explicit)
+      t.runs = t.runs.map { run in
+        var updated = run
+        if run.font == oldFont { updated.font = t.font }
+        if run.paint == oldPaint { updated.paint = t.paint }
+        return updated
+      }
       return .text(t)
     case .use:
       return element
@@ -68,10 +77,41 @@ enum SVGUseExpansion {
     switch element {
     case .rect(let r): return r.explicitPresentation
     case .circle(let c): return c.explicitPresentation
+    case .ellipse(let e): return e.explicitPresentation
+    case .line(let l): return l.explicitPresentation
+    case .polyline(let p): return p.explicitPresentation
+    case .polygon(let p): return p.explicitPresentation
     case .path(let p): return p.explicitPresentation
     case .text(let t): return t.explicitPresentation
-    case .group, .svg, .ellipse, .line, .polyline, .polygon, .use, .image:
+    case .group, .svg, .use, .image:
       return []
+    }
+  }
+
+  private static let fontPresentationKeys: Set<String> = [
+    "font-family", "font-size", "font-weight", "font-style", "text-anchor",
+  ]
+
+  private static func mergedInstanceFont(
+    _ referenced: SVGFont,
+    use: SVGUse,
+    explicitPresentation: Set<String>
+  ) -> SVGFont {
+    var font = referenced
+    for key in fontPresentationKeys where !explicitPresentation.contains(key) {
+      applyFontKey(key, from: use.font, into: &font)
+    }
+    return font
+  }
+
+  private static func applyFontKey(_ key: String, from source: SVGFont, into font: inout SVGFont) {
+    switch key {
+    case "font-family": font.family = source.family
+    case "font-size": font.size = source.size
+    case "font-weight": font.weight = source.weight
+    case "font-style": font.style = source.style
+    case "text-anchor": font.anchor = source.anchor
+    default: break
     }
   }
 

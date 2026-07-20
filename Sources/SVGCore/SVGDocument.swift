@@ -244,9 +244,13 @@ public enum SVGElement: Equatable, Sendable {
 /// Instance of a definition via `<use xlink:href="#id" …>`.
 public struct SVGUse: Equatable, Sendable {
     public var href: String
+    /// Original `xlink:href` / `href` value (internal `#id` or external `file.svg#id`).
+    public var sourceHref: String
     public var origin: CGPoint
     public var size: CGSize?
     public var paint: SVGPaintProperties
+    /// Computed font on the `<use>` element (for shadow-tree text instancing).
+    public var font: SVGFont
     /// Presentation attribute names specified on the `<use>` element itself.
     public var explicitPresentation: Set<String>
     public var transform: SVGTransform
@@ -254,17 +258,21 @@ public struct SVGUse: Equatable, Sendable {
 
     public init(
         href: String,
+        sourceHref: String? = nil,
         origin: CGPoint = .zero,
         size: CGSize? = nil,
         paint: SVGPaintProperties = .init(),
+        font: SVGFont = SVGFont(),
         explicitPresentation: Set<String> = [],
         transform: SVGTransform = .identity,
         animations: [SVGTimedAnimation] = []
     ) {
         self.href = href
+        self.sourceHref = sourceHref ?? "#\(href)"
         self.origin = origin
         self.size = size
         self.paint = paint
+        self.font = font
         self.explicitPresentation = explicitPresentation
         self.transform = transform
         self.animations = animations
@@ -368,19 +376,23 @@ public struct SVGEllipse: Equatable, Sendable {
     public var paint: SVGPaintProperties
     public var transform: SVGTransform
     public var animations: [SVGTimedAnimation]
+    /// Presentation property names specified on the `<ellipse>` element itself.
+    public var explicitPresentation: Set<String>
 
     public init(
         center: CGPoint,
         radii: CGSize,
         paint: SVGPaintProperties = .init(),
         transform: SVGTransform = .identity,
-        animations: [SVGTimedAnimation] = []
+        animations: [SVGTimedAnimation] = [],
+        explicitPresentation: Set<String> = []
     ) {
         self.center = center
         self.radii = radii
         self.paint = paint
         self.transform = transform
         self.animations = animations
+        self.explicitPresentation = explicitPresentation
     }
 }
 
@@ -390,19 +402,23 @@ public struct SVGLine: Equatable, Sendable {
     public var paint: SVGPaintProperties
     public var transform: SVGTransform
     public var animations: [SVGTimedAnimation]
+    /// Presentation property names specified on the `<line>` element itself.
+    public var explicitPresentation: Set<String>
 
     public init(
         start: CGPoint,
         end: CGPoint,
         paint: SVGPaintProperties = .init(),
         transform: SVGTransform = .identity,
-        animations: [SVGTimedAnimation] = []
+        animations: [SVGTimedAnimation] = [],
+        explicitPresentation: Set<String> = []
     ) {
         self.start = start
         self.end = end
         self.paint = paint
         self.transform = transform
         self.animations = animations
+        self.explicitPresentation = explicitPresentation
     }
 }
 
@@ -411,17 +427,21 @@ public struct SVGPolyline: Equatable, Sendable {
     public var paint: SVGPaintProperties
     public var transform: SVGTransform
     public var animations: [SVGTimedAnimation]
+    /// Presentation property names specified on the `<polyline>` element itself.
+    public var explicitPresentation: Set<String>
 
     public init(
         points: [CGPoint],
         paint: SVGPaintProperties = .init(),
         transform: SVGTransform = .identity,
-        animations: [SVGTimedAnimation] = []
+        animations: [SVGTimedAnimation] = [],
+        explicitPresentation: Set<String> = []
     ) {
         self.points = points
         self.paint = paint
         self.transform = transform
         self.animations = animations
+        self.explicitPresentation = explicitPresentation
     }
 }
 
@@ -430,17 +450,21 @@ public struct SVGPolygon: Equatable, Sendable {
     public var paint: SVGPaintProperties
     public var transform: SVGTransform
     public var animations: [SVGTimedAnimation]
+    /// Presentation property names specified on the `<polygon>` element itself.
+    public var explicitPresentation: Set<String>
 
     public init(
         points: [CGPoint],
         paint: SVGPaintProperties = .init(),
         transform: SVGTransform = .identity,
-        animations: [SVGTimedAnimation] = []
+        animations: [SVGTimedAnimation] = [],
+        explicitPresentation: Set<String> = []
     ) {
         self.points = points
         self.paint = paint
         self.transform = transform
         self.animations = animations
+        self.explicitPresentation = explicitPresentation
     }
 }
 

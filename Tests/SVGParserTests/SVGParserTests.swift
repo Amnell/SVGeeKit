@@ -1113,6 +1113,77 @@ struct SVGParserTests {
         #expect(doc.root.children.count == 2)
     }
 
+    @Test func parsesExternalUseReference() throws {
+        let repoRoot = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+        let svgURL = repoRoot
+            .appendingPathComponent("Tests/SVGConformanceTests/Resources/W3C-SVG-1.1/svg/struct-use-04-b.svg")
+        let data = try Data(contentsOf: svgURL)
+        let doc = try SVGConformanceFixtureParsing.parse(data: data, svgURL: svgURL)
+
+        #expect(doc.definitions["alpha"] != nil)
+        #expect(doc.definitions["beta"] != nil)
+        #expect(doc.definitions["gamma"] != nil)
+        #expect(doc.definitions["delta"] != nil)
+        #expect(doc.definitions["testContent"] != nil)
+
+        guard case .group(let body) = doc.root.children.first(where: {
+            if case .group(let g) = $0 { return g.id == "test-body-content" }
+            return false
+        }) else {
+            Issue.record("expected test-body-content group"); return
+        }
+        guard case .group(let extContent) = body.children.first(where: {
+            if case .group(let g) = $0 { return g.id == "ExtContent" }
+            return false
+        }) else {
+            Issue.record("expected ExtContent group"); return
+        }
+        #expect(extContent.children.count == 5)
+        for child in extContent.children {
+            guard case .use(let u) = child else {
+                Issue.record("expected use children"); return
+            }
+            #expect(doc.definitions[u.href] != nil)
+            #expect(u.sourceHref.contains("svgRef4.svg"))
+        }
+        guard case .use(let overlay) = extContent.children.last else {
+            Issue.record("expected overlay use"); return
+        }
+        #expect(overlay.href == "testContent")
+        #expect(overlay.origin == CGPoint(x: -5, y: 5))
+        #expect(overlay.paint.fillOpacity == 0.5)
+    }
+
+    @Test func preloadsLinkedCSSFromXMLStylesheetPI() throws {
+        let repoRoot = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+        let svgURL = repoRoot
+            .appendingPathComponent("Tests/SVGConformanceTests/Resources/W3C-SVG-1.1/images/svgRef4.svg")
+        let data = try Data(contentsOf: svgURL)
+        let doc = try SVGConformanceFixtureParsing.parse(data: data, svgURL: svgURL)
+
+        guard case .rect(let rect) = doc.definitions["alpha"] else {
+            Issue.record("expected alpha rect"); return
+        }
+        if case .color(let c) = rect.paint.fill {
+            #expect(c.red > 0.9 && c.blue > 0.9 && c.green < 0.1)
+        } else {
+            Issue.record("expected fuchsia fill from linked stylesheet")
+        }
+        if case .color(let stroke) = rect.paint.stroke {
+            #expect(stroke.red < 0.1 && stroke.green < 0.1 && stroke.blue < 0.1)
+        } else {
+            Issue.record("expected black stroke from inline stylesheet")
+        }
+        #expect(rect.explicitPresentation.contains("stroke"))
+        #expect(rect.explicitPresentation.contains("stroke-width"))
+    }
+
     @Test func parsesInternalUseReference() throws {
         let svg = """
         <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100">

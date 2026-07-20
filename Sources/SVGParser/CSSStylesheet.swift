@@ -583,5 +583,37 @@ enum CSSStylesheetCollector {
             stylesheet.append(css: buffer, importCSS: importCSS)
             styleTextBuffer = nil
         }
+
+        func parser(
+            _ parser: XMLParser,
+            foundProcessingInstructionWithTarget target: String,
+            data: String?
+        ) {
+            guard target == "xml-stylesheet", let data else { return }
+            guard Self.isCSSStylesheetPI(data) else { return }
+            guard let href = Self.hrefFromStylesheetPI(data) else { return }
+            guard let css = importCSS?(href) else { return }
+            stylesheet.append(css: css, importCSS: importCSS)
+        }
+
+        private static func isCSSStylesheetPI(_ data: String) -> Bool {
+            guard let typeRange = data.range(of: "type=") else { return true }
+            let afterType = data[typeRange.upperBound...]
+            guard let quote = afterType.first, quote == "\"" || quote == "'" else { return true }
+            let valueStart = afterType.index(afterType.startIndex, offsetBy: 1)
+            guard let quoteEnd = afterType[valueStart...].firstIndex(of: quote) else { return true }
+            let typeValue = afterType[valueStart..<quoteEnd].trimmingCharacters(in: .whitespacesAndNewlines)
+            return typeValue.isEmpty || typeValue.lowercased() == "text/css"
+        }
+
+        private static func hrefFromStylesheetPI(_ data: String) -> String? {
+            guard let hrefRange = data.range(of: "href=") else { return nil }
+            let afterHref = data[hrefRange.upperBound...].trimmingCharacters(in: .whitespaces)
+            guard let quote = afterHref.first, quote == "\"" || quote == "'" else { return nil }
+            let valueStart = afterHref.index(afterHref.startIndex, offsetBy: 1)
+            guard let quoteEnd = afterHref[valueStart...].firstIndex(of: quote) else { return nil }
+            let href = String(afterHref[valueStart..<quoteEnd]).trimmingCharacters(in: .whitespacesAndNewlines)
+            return href.isEmpty ? nil : href
+        }
     }
 }

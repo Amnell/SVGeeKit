@@ -140,7 +140,7 @@ enum SVGReferencedImageResolver {
             guard isSVGFileURL(fileURL) else { return nil }
             let standardized = fileURL.standardizedFileURL
             guard !isBlockedReference(standardized, context: context) else { return nil }
-            return ExternalSVGImageCache.document(
+            return ExternalSVGDocumentLoader.document(
                 at: standardized,
                 parseBaseURL: standardized.deletingLastPathComponent(),
                 parserOptions: parserOptions,
@@ -192,58 +192,3 @@ enum SVGReferencedImageResolver {
     }
 }
 
-// MARK: - External SVG image cache
-
-/// Parsed SVG documents referenced by `<image href="…svg">`, keyed by resolved file URL.
-private enum ExternalSVGImageCache {
-    private static let cache = Cache()
-
-    static func document(
-        at fileURL: URL,
-        parseBaseURL: URL,
-        parserOptions: SVGParserOptions,
-        parseContext: SVGReferencedImageResolveContext
-    ) -> SVGDocument? {
-        cache.document(
-            at: fileURL,
-            parseBaseURL: parseBaseURL,
-            parserOptions: parserOptions,
-            parseContext: parseContext
-        )
-    }
-
-    private final class Cache: @unchecked Sendable {
-        private var storage: [URL: SVGDocument] = [:]
-        private let lock = NSLock()
-
-        func document(
-            at fileURL: URL,
-            parseBaseURL: URL,
-            parserOptions: SVGParserOptions,
-            parseContext: SVGReferencedImageResolveContext
-        ) -> SVGDocument? {
-            let key = fileURL.standardizedFileURL
-            lock.lock()
-            if let cached = storage[key] {
-                lock.unlock()
-                return cached
-            }
-            lock.unlock()
-
-            guard let data = try? Data(contentsOf: key),
-                  let extDoc = try? SVGParser(options: parserOptions).parse(
-                    data: data,
-                    options: .localFiles(at: parseBaseURL),
-                    sourceURL: key,
-                    referencedImageContext: parseContext
-                  ) else {
-                return nil
-            }
-
-            lock.lock()
-            storage[key] = extDoc
-            lock.unlock()
-            return extDoc
-        }
-    }
-}

@@ -7,11 +7,63 @@ import SVGParser
 import SVGRenderer
 import SVGRendererSwiftUI
 
-@Suite struct StructUseRenderTests {
+@Suite @MainActor struct StructUseRenderTests {
     private static let repoRoot = URL(fileURLWithPath: #filePath)
         .deletingLastPathComponent()
         .deletingLastPathComponent()
         .deletingLastPathComponent()
+
+    private static let w3cRoot = repoRoot
+        .appendingPathComponent("Tests/SVGConformanceTests/Resources/W3C-SVG-1.1", isDirectory: true)
+        .standardizedFileURL
+
+    private func diffAgainstW3C(testId: String) throws -> SVGSnapshotDiffer.DiffResult {
+        try W3CReferenceDiff.diff(testId: testId, w3cResourcesRoot: Self.w3cRoot)
+    }
+
+    @Test func structUse01TMatchesW3CReference() throws {
+        let diff = try diffAgainstW3C(testId: "struct-use-01-t")
+        #expect(diff.mismatchedFraction < 0.05, "mismatchedFraction=\(diff.mismatchedFraction)")
+    }
+
+    @Test func structUse04BShowsExternalShapes() throws {
+        let svgURL = Self.w3cRoot.appendingPathComponent("svg/struct-use-04-b.svg")
+        let data = try Data(contentsOf: svgURL)
+        var doc = try SVGConformanceFixtureParsing.parse(data: data, svgURL: svgURL)
+        doc.intrinsicSize = doc.intrinsicSize ?? doc.viewBox?.size
+        #expect(doc.definitions["alpha"] != nil)
+
+        let image = try SVGRasterizer.rasterize(doc, pixelSize: CGSize(width: 480, height: 360), scale: 1)
+        let refURL = Self.w3cRoot.appendingPathComponent("png/struct-use-04-b.png")
+        guard let ref = SVGSnapshotDiffer.loadPNG(refURL) else {
+            Issue.record("missing W3C reference"); return
+        }
+
+        // svgRef4.css paints rect#alpha fuchsia with a 1px black stroke from inline CSS.
+        let alpha = samplePixel(image, x: 160, y: 110)
+        #expect(alpha.r > 200 && alpha.b > 200 && alpha.g < 40)
+        let alphaRef = samplePixel(ref, x: 160, y: 110)
+        #expect(abs(alpha.r - alphaRef.r) <= 5)
+        #expect(abs(alpha.b - alphaRef.b) <= 5)
+
+        // Left edge of rect#alpha (x=100): stroke band should match reference, not flat fill.
+        let strokeEdge = samplePixel(image, x: 99, y: 110)
+        let strokeRef = samplePixel(ref, x: 99, y: 110)
+        #expect(abs(strokeEdge.r - strokeRef.r) <= 5)
+        #expect(abs(strokeEdge.g - strokeRef.g) <= 5)
+        #expect(abs(strokeEdge.b - strokeRef.b) <= 5)
+
+        // Semi-transparent duplicate offset by (-5, 5) — half-intensity fuchsia.
+        let duplicateOnly = samplePixel(image, x: 97, y: 60)
+        #expect(duplicateOnly.r > 100 && duplicateOnly.r < 180)
+        #expect(duplicateOnly.b > 100 && duplicateOnly.b < 180)
+        #expect(duplicateOnly.g < 20)
+    }
+
+    @Test func structUse04BMatchesW3CReference() throws {
+        let diff = try diffAgainstW3C(testId: "struct-use-04-b")
+        #expect(diff.mismatchedFraction < 0.05, "mismatchedFraction=\(diff.mismatchedFraction)")
+    }
 
     @Test func structUse03ShowsMatchingDiamonds() throws {
         let svgURL = Self.repoRoot

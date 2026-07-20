@@ -176,12 +176,21 @@ public struct SVGParser {
             parserOptions: resolvedOptions,
             warnings: &warnings
         )
+        var definitions = delegate.definitions
+        SVGExternalUseResolver.resolve(
+            definitions: &definitions,
+            root: document.root,
+            context: resolveContext,
+            policy: resolvedOptions.resourcePolicy,
+            parserOptions: resolvedOptions,
+            warnings: &warnings
+        )
         document.paintServers = delegate.paintServers
         document.clipPaths = delegate.clipPaths
         document.masks = delegate.masks
         document.fonts = delegate.fonts
         document.fontFaces = delegate.fontFaces
-        document.definitions = delegate.definitions
+        document.definitions = definitions
         document.scriptMetadata = delegate.scriptMetadata
         document.scriptMetadata.elementIndex = SVGDocument.buildElementIndex(root: document.root)
         document.animationMetadata = delegate.animationMetadata
@@ -341,6 +350,8 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
     private var groupStack: [SVGGroup] = []
     /// Inherited paint properties for cascading down the tree.
     private var paintStack: [SVGPaintProperties] = [SVGPaintProperties()]
+    /// Paint property names set by presentation attributes, CSS, or inline `style` on the current element.
+    private var specifiedPaintKeysStack: [Set<String>] = [[]]
     /// Inherited font / text-anchor properties (cascade through <g> and <text>).
     private var fontStack: [SVGFont] = [SVGFont()]
     /// Partially-built <text> elements. Character data is appended to the top
@@ -555,13 +566,15 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         guard beginParsingElement(parser) else { return }
 
         let inheritedPaint = paintStack.last ?? SVGPaintProperties()
-        let elementPaint = mergePaint(
+        let mergedPaint = mergePaint(
             into: inheritedPaint,
             elementName: elementName,
             from: attributeDict,
             parser: parser
         )
-        paintStack.append(elementPaint)
+        paintStack.append(mergedPaint.paint)
+        specifiedPaintKeysStack.append(mergedPaint.specifiedKeys)
+        let elementPaint = mergedPaint.paint
 
         let inheritedFont = fontStack.last ?? SVGFont()
         let elementFont = mergeFont(into: inheritedFont, from: attributeDict)
@@ -592,12 +605,14 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
                 visibility: elementPaint.visibility,
                 clipPathRef: clipRef,
                 maskRef: maskR,
-                explicitPresentation: presentationAttributeKeys(from: attributeDict)
+                explicitPresentation: elementExplicitPresentation(from: attributeDict)
             ))
             captureEventHandlers(elementName: elementName, attributes: attributeDict)
         case "use":
             beginSwitchChildIfNeeded(attributes: attributeDict)
-            handleUse(attributes: attributeDict, paint: elementPaint, parser: parser)
+            handleUse(
+                attributes: attributeDict, paint: elementPaint, font: elementFont, parser: parser
+            )
         case "image":
             beginSwitchChildIfNeeded(attributes: attributeDict)
             handleImage(attributes: attributeDict, paint: elementPaint, parser: parser)
@@ -728,6 +743,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         defer { endParsingElement() }
 
         paintStack.removeLast()
+        specifiedPaintKeysStack.removeLast()
         fontStack.removeLast()
 
         switch elementName {
@@ -1033,7 +1049,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             cornerRadii: radii,
             paint: paint,
             transform: transform(from: attributes, parser: parser) ?? .identity,
-            explicitPresentation: presentationAttributeKeys(from: attributes)
+            explicitPresentation: elementExplicitPresentation(from: attributes)
         )
         registerDefinition(id: attributes["id"], element: .rect(rect))
         beginAnimatableShape(.rect(rect), definitionID: attributes["id"])
@@ -1048,7 +1064,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             radius: r,
             paint: paint,
             transform: transform(from: attributes, parser: parser) ?? .identity,
-            explicitPresentation: presentationAttributeKeys(from: attributes)
+            explicitPresentation: elementExplicitPresentation(from: attributes)
         )
         registerDefinition(id: attributes["id"], element: .circle(circle))
         beginAnimatableShape(.circle(circle), definitionID: attributes["id"])
@@ -1063,7 +1079,8 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             center: CGPoint(x: cx, y: cy),
             radii: CGSize(width: rx, height: ry),
             paint: paint,
-            transform: transform(from: attributes, parser: parser) ?? .identity
+            transform: transform(from: attributes, parser: parser) ?? .identity,
+            explicitPresentation: elementExplicitPresentation(from: attributes)
         )
         registerDefinition(id: attributes["id"], element: .ellipse(ellipse))
         beginAnimatableShape(.ellipse(ellipse), definitionID: attributes["id"])
@@ -1078,7 +1095,8 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             start: CGPoint(x: x1, y: y1),
             end: CGPoint(x: x2, y: y2),
             paint: paint,
-            transform: transform(from: attributes, parser: parser) ?? .identity
+            transform: transform(from: attributes, parser: parser) ?? .identity,
+            explicitPresentation: elementExplicitPresentation(from: attributes)
         )
         registerDefinition(id: attributes["id"], element: .line(line))
         beginAnimatableShape(.line(line), definitionID: attributes["id"])
@@ -1089,7 +1107,8 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         let polyline = SVGPolyline(
             points: pts,
             paint: paint,
-            transform: transform(from: attributes, parser: parser) ?? .identity
+            transform: transform(from: attributes, parser: parser) ?? .identity,
+            explicitPresentation: elementExplicitPresentation(from: attributes)
         )
         registerDefinition(id: attributes["id"], element: .polyline(polyline))
         beginAnimatableShape(.polyline(polyline), definitionID: attributes["id"])
@@ -1100,7 +1119,8 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         let polygon = SVGPolygon(
             points: pts,
             paint: paint,
-            transform: transform(from: attributes, parser: parser) ?? .identity
+            transform: transform(from: attributes, parser: parser) ?? .identity,
+            explicitPresentation: elementExplicitPresentation(from: attributes)
         )
         registerDefinition(id: attributes["id"], element: .polygon(polygon))
         beginAnimatableShape(.polygon(polygon), definitionID: attributes["id"])
@@ -1116,7 +1136,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         let path = SVGPath(
             commands: parsed.commands,
             paint: paint,
-            explicitPresentation: presentationAttributeKeys(from: attributes),
+            explicitPresentation: elementExplicitPresentation(from: attributes),
             transform: transform(from: attributes, parser: parser) ?? .identity
         )
         registerDefinition(id: attributes["id"], element: .path(path))
@@ -1138,7 +1158,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             font: font,
             paint: paint,
             transform: transform(from: attributes, parser: parser) ?? .identity,
-            explicitPresentation: presentationAttributeKeys(from: attributes)
+            explicitPresentation: elementExplicitPresentation(from: attributes)
         )
         textStack.append(text)
         tspanStyleStack = [(font, paint)]
@@ -1215,7 +1235,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             elementName: "tspan",
             from: attributes,
             parser: parser
-        )
+        ).paint
         var run = SVGTextRun(string: leadingWhitespace, font: runFont, paint: runPaint)
         applyTspanPositionAttributes(attributes, to: &run)
         if run.preserveSpace == false {
@@ -1368,9 +1388,10 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
     private func handleUse(
         attributes: [String: String],
         paint: SVGPaintProperties,
+        font: SVGFont,
         parser: XMLParser
     ) {
-        guard let href = parseFragmentRef(attributes) else { return }
+        guard let href = parseUseHref(attributes) else { return }
         let x = attributes["x"].map { resolveLength($0, axis: .x) } ?? 0
         let y = attributes["y"].map { resolveLength($0, axis: .y) } ?? 0
         let size: CGSize? = {
@@ -1378,11 +1399,13 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             return CGSize(width: resolveLength(w, axis: .x), height: resolveLength(h, axis: .y))
         }()
         let use = SVGUse(
-            href: href,
+            href: href.fragmentID,
+            sourceHref: href.sourceHref,
             origin: CGPoint(x: x, y: y),
             size: size,
             paint: paint,
-            explicitPresentation: presentationAttributeKeys(from: attributes),
+            font: font,
+            explicitPresentation: elementExplicitPresentation(from: attributes),
             transform: transform(from: attributes, parser: parser) ?? .identity
         )
         registerDefinition(id: attributes["id"], element: .use(use))
@@ -1392,6 +1415,11 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
     private static let fontPresentationAttributeNames: Set<String> = [
         "font-family", "font-size", "font-weight", "font-style", "text-anchor"
     ]
+
+    private func elementExplicitPresentation(from attributes: [String: String]) -> Set<String> {
+        presentationAttributeKeys(from: attributes)
+            .union(specifiedPaintKeysStack.last ?? [])
+    }
 
     private func presentationAttributeKeys(from attributes: [String: String]) -> Set<String> {
         var keys = Set(attributes.keys.filter {
@@ -1410,13 +1438,29 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         return keys
     }
 
-    /// Internal `#id` fragment from `xlink:href` / `href` (phase 1).
-    private func parseFragmentRef(_ attributes: [String: String]) -> String? {
+    private struct ParsedUseHref: Equatable {
+        let fragmentID: String
+        let sourceHref: String
+    }
+
+    /// Fragment id from `xlink:href` / `href` (same-document `#id` or external `file.svg#id`).
+    private func parseUseHref(_ attributes: [String: String]) -> ParsedUseHref? {
         guard let raw = attributes["xlink:href"] ?? attributes["href"] else { return nil }
         let trimmed = raw.trimmingCharacters(in: .whitespaces)
-        guard trimmed.hasPrefix("#") else { return nil }
-        let id = String(trimmed.dropFirst())
-        return id.isEmpty ? nil : id
+        switch SVGHrefResolver.classify(href: trimmed, policy: options.resourcePolicy) {
+        case .fragment(let id):
+            return ParsedUseHref(fragmentID: id, sourceHref: trimmed)
+        case .localFile(let url):
+            guard let id = url.fragment, !id.isEmpty else { return nil }
+            return ParsedUseHref(fragmentID: id, sourceHref: trimmed)
+        case .dataURI:
+            guard let hash = trimmed.firstIndex(of: "#") else { return nil }
+            let id = String(trimmed[trimmed.index(after: hash)...])
+            guard !id.isEmpty else { return nil }
+            return ParsedUseHref(fragmentID: id, sourceHref: trimmed)
+        case .rejected:
+            return nil
+        }
     }
 
     private func beginSwitchChildIfNeeded(attributes: [String: String]) {
@@ -1517,7 +1561,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         elementName: String,
         from attributes: [String: String],
         parser: XMLParser
-    ) -> SVGPaintProperties {
+    ) -> (paint: SVGPaintProperties, specifiedKeys: Set<String>) {
         var p = inherited
         // SVG 1.1 §14.5: 'opacity' is not inherited. Group opacity is stored on
         // `SVGGroup.opacity` and applied via `groupLayer` at render time.
@@ -1578,7 +1622,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         }
 
         flushAuthoredDeclarations()
-        return p
+        return (p, Set(authored.keys))
     }
 
     private func shouldApplyAuthoredDeclaration(
