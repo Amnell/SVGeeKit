@@ -141,15 +141,20 @@ public struct SVGClipPath: Equatable, Sendable {
     public var units: Units
     public var transform: SVGTransform
     public var children: [SVGElement]
+    /// Optional `clip-path` on the `<clipPath>` itself — the children's
+    /// silhouette is intersected with this referenced clip (SVG 1.1 §14.3.5).
+    public var clipPathRef: String?
 
     public init(
         units: Units = .userSpaceOnUse,
         transform: SVGTransform = .identity,
-        children: [SVGElement] = []
+        children: [SVGElement] = [],
+        clipPathRef: String? = nil
     ) {
         self.units = units
         self.transform = transform
         self.children = children
+        self.clipPathRef = clipPathRef
     }
 }
 

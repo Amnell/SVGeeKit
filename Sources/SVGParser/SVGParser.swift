@@ -489,6 +489,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         var id: String?
         var units: SVGClipPath.Units = .userSpaceOnUse
         var transform: SVGTransform = .identity
+        var clipPathRef: String?
         var children: [SVGElement] = []
     }
 
@@ -2024,6 +2025,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         if let t = transform(from: attributes, parser: parser) {
             partial.transform = t
         }
+        partial.clipPathRef = parseClipPathRef(attributes)
         clipPathStack.append(partial)
     }
 
@@ -2032,7 +2034,8 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         let clipPath = SVGClipPath(
             units: partial.units,
             transform: partial.transform,
-            children: partial.children
+            children: partial.children,
+            clipPathRef: partial.clipPathRef
         )
         clipPaths[id] = clipPath
     }

@@ -240,26 +240,11 @@ public enum SVGRenderTree {
         into commands: inout [SVGRenderCommand]
     ) -> Bool {
         guard let clipDef = ctx.clipPaths[ref] else { return true }
-        let path = lowerToClipPath(clipDef, bbox: bbox, ctx: ctx)
+        let path = lowerToClipPath(clipDef, bbox: bbox, ctx: ctx, clipChain: [ref])
         guard !path.isEmpty else { return false }
-        commands.append(.clipToPath(path, evenOdd: clipPathUsesEvenOdd(clipDef.children)))
+        // Silhouettes are normalized to winding via boolean ops.
+        commands.append(.clipToPath(path, evenOdd: false))
         return true
-    }
-
-    /// Resolve `clip-rule` for a `<clipPath>`'s children. SVG default is nonzero.
-    /// When siblings disagree, keep nonzero — mixed overlapping rules need a
-    /// mask-style union that we don't model yet; W3C tests use one rule per clipPath.
-    private static func clipPathUsesEvenOdd(_ children: [SVGElement]) -> Bool {
-        var sawEvenOdd = false
-        var sawNonzero = false
-        for child in children {
-            guard let paint = paintProperties(of: child) else { continue }
-            switch paint.clipRule {
-            case .evenodd: sawEvenOdd = true
-            case .nonzero: sawNonzero = true
-            }
-        }
-        return sawEvenOdd && !sawNonzero
     }
 
     private static func paintProperties(of element: SVGElement) -> SVGPaintProperties? {
@@ -681,25 +666,172 @@ public enum SVGRenderTree {
         }
     }
 
-    /// Build a `CGPath` from all shape children of a `<clipPath>` definition.
-    /// When `clipPathUnits="objectBoundingBox"` and a `bbox` is supplied, the
-    /// clip coordinates (in [0,1] space) are mapped to that bounding box.
-    private static func lowerToClipPath(_ clipDef: SVGClipPath, bbox: CGRect?, ctx: Context) -> CGPath {
+    /// Build a winding-normalized clip silhouette from a `<clipPath>` definition.
+    /// Children are OR'd; a child's `clip-path` is applied before the OR
+    /// (SVG 1.1 §14.3.5). A `clip-path` on the `<clipPath>` itself intersects
+    /// the combined result.
+    private static func lowerToClipPath(
+        _ clipDef: SVGClipPath,
+        bbox: CGRect?,
+        ctx: Context,
+        clipChain: Set<String>
+    ) -> CGPath {
         let obbTransform: CGAffineTransform? = (clipDef.units == .objectBoundingBox)
             ? bbox.map { b in
                 CGAffineTransform(translationX: b.minX, y: b.minY)
                     .scaledBy(x: b.width, y: b.height)
               }
             : nil
-        let combined = CGMutablePath()
+
+        var combined: CGPath?
         for element in clipDef.children {
-            combined.addPath(
-                clipPathGeometry(for: element, transform: .identity, obbTransform: obbTransform, ctx: ctx, chain: [])
+            let sil = clipElementSilhouette(
+                element,
+                transform: .identity,
+                obbTransform: obbTransform,
+                ctx: ctx,
+                useChain: [],
+                clipChain: clipChain,
+                bbox: bbox
             )
+            guard !sil.isEmpty else { continue }
+            if let current = combined {
+                combined = current.union(sil, using: .winding)
+            } else {
+                combined = sil
+            }
         }
-        return combined
+
+        var path = combined ?? CGMutablePath()
+        if clipDef.transform.matrix != .identity {
+            var t = clipDef.transform.matrix
+            path = path.copy(using: &t) ?? path
+        }
+
+        if let ref = clipDef.clipPathRef,
+           !clipChain.contains(ref),
+           let nestedDef = ctx.clipPaths[ref] {
+            var chain = clipChain
+            chain.insert(ref)
+            let nested = lowerToClipPath(nestedDef, bbox: bbox, ctx: ctx, clipChain: chain)
+            if nested.isEmpty { return CGMutablePath() }
+            path = path.intersection(nested, using: .winding)
+        }
+        return path
     }
 
+    /// Silhouette of one clipPath child: geometry filled with its `clip-rule`,
+    /// then intersected with any `clip-path` on that child.
+    private static func clipElementSilhouette(
+        _ element: SVGElement,
+        transform: CGAffineTransform,
+        obbTransform: CGAffineTransform?,
+        ctx: Context,
+        useChain: Set<String>,
+        clipChain: Set<String>,
+        bbox: CGRect?
+    ) -> CGPath {
+        switch element {
+        case .use(let u):
+            guard u.paint.visibility == .visible else { return CGMutablePath() }
+            guard !useChain.contains(u.href) else { return CGMutablePath() }
+            var expansionChain = useChain
+            expansionChain.insert(u.href)
+            guard let (resolved, placement) = expandUse(
+                u, definitions: ctx.definitions, chain: &expansionChain
+            ) else {
+                return CGMutablePath()
+            }
+            var sil = clipElementSilhouette(
+                resolved,
+                transform: transform.concatenating(placement),
+                obbTransform: obbTransform,
+                ctx: ctx,
+                useChain: expansionChain,
+                clipChain: clipChain,
+                bbox: bbox
+            )
+            if let ref = u.paint.clipPathRef {
+                sil = intersectSilhouette(sil, withClipRef: ref, bbox: bbox, ctx: ctx, clipChain: clipChain)
+            }
+            return sil
+
+        case .group(let g):
+            guard g.visibility == .visible else { return CGMutablePath() }
+            var gtx = transform
+            if g.transform.matrix != .identity {
+                gtx = gtx.concatenating(g.transform.matrix)
+            }
+            var combined: CGPath?
+            for child in g.children {
+                let sil = clipElementSilhouette(
+                    child,
+                    transform: gtx,
+                    obbTransform: obbTransform,
+                    ctx: ctx,
+                    useChain: useChain,
+                    clipChain: clipChain,
+                    bbox: bbox
+                )
+                guard !sil.isEmpty else { continue }
+                if let current = combined {
+                    combined = current.union(sil, using: .winding)
+                } else {
+                    combined = sil
+                }
+            }
+            var path = combined ?? CGMutablePath()
+            if let ref = g.clipPathRef {
+                path = intersectSilhouette(path, withClipRef: ref, bbox: bbox, ctx: ctx, clipChain: clipChain)
+            }
+            return path
+
+        default:
+            let raw = clipPathGeometry(
+                for: element,
+                transform: transform,
+                obbTransform: obbTransform,
+                ctx: ctx,
+                chain: useChain
+            )
+            guard !raw.isEmpty else { return raw }
+            let evenOdd = paintProperties(of: element)?.clipRule == .evenodd
+            var sil = normalizeClipSilhouette(raw, evenOdd: evenOdd)
+            if let ref = paintProperties(of: element)?.clipPathRef {
+                sil = intersectSilhouette(sil, withClipRef: ref, bbox: bbox, ctx: ctx, clipChain: clipChain)
+            }
+            return sil
+        }
+    }
+
+    private static func intersectSilhouette(
+        _ path: CGPath,
+        withClipRef ref: String,
+        bbox: CGRect?,
+        ctx: Context,
+        clipChain: Set<String>
+    ) -> CGPath {
+        guard !path.isEmpty else { return path }
+        guard !clipChain.contains(ref), let nestedDef = ctx.clipPaths[ref] else {
+            return path
+        }
+        var chain = clipChain
+        chain.insert(ref)
+        let nested = lowerToClipPath(nestedDef, bbox: bbox, ctx: ctx, clipChain: chain)
+        if nested.isEmpty { return CGMutablePath() }
+        return path.intersection(nested, using: .winding)
+    }
+
+    /// Convert a path under `clip-rule` into an equivalent winding silhouette.
+    private static func normalizeClipSilhouette(_ path: CGPath, evenOdd: Bool) -> CGPath {
+        guard evenOdd, !path.isEmpty else { return path }
+        let bounds = path.boundingBoxOfPath
+        guard !bounds.isNull, bounds.width > 0, bounds.height > 0 else { return path }
+        let pad = CGPath(rect: bounds.insetBy(dx: -1, dy: -1), transform: nil)
+        return pad.intersection(path, using: .evenOdd)
+    }
+
+    /// Raw clip geometry for a leaf shape (no nested `clip-path` / clip-rule normalize).
     private static func clipPathGeometry(
         for element: SVGElement,
         transform: CGAffineTransform,

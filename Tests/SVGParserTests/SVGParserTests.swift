@@ -1096,6 +1096,23 @@ struct SVGParserTests {
         #expect(nonz.paint.clipRule == .nonzero)
     }
 
+    @Test func parsesClipPathRefOnClipPathElement() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100">
+          <defs>
+            <clipPath id="outer"><circle cx="50" cy="50" r="40"/></clipPath>
+            <clipPath id="inner" clip-path="url(#outer)">
+              <rect width="100" height="100"/>
+            </clipPath>
+          </defs>
+          <rect width="100" height="100" fill="blue" clip-path="url(#inner)"/>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        #expect(doc.clipPaths["inner"]?.clipPathRef == "outer")
+        #expect(doc.clipPaths["outer"]?.clipPathRef == nil)
+    }
+
     @Test func defsChildrenAreNotInRenderTree() throws {
         let svg = """
         <svg xmlns="http://www.w3.org/2000/svg" width="480" height="360">

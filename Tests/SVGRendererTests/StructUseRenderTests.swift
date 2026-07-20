@@ -389,13 +389,6 @@ import SVGRendererSwiftUI
         """
         var doc = try SVGParser().parse(string: svg)
         doc.intrinsicSize = CGSize(width: 100, height: 100)
-        let commands = SVGRenderTree.lower(doc)
-        let evenOddClips = commands.compactMap { cmd -> Bool? in
-            if case .clipToPath(_, let evenOdd) = cmd { return evenOdd }
-            return nil
-        }
-        #expect(evenOddClips.contains(true))
-        #expect(evenOddClips.contains(false))
         let image = try SVGRasterizer.rasterize(doc, pixelSize: CGSize(width: 100, height: 100), scale: 1)
 
         // Find a pixel that evenodd punches out but nonzero fills (y offset +50).
@@ -414,6 +407,56 @@ import SVGRendererSwiftUI
         #expect(foundHole)
     }
 
+    @Test func nestedClipPathOnChildIntersectsBeforeUnion() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200">
+          <defs>
+            <circle id="c1" cx="80" cy="80" r="40"/>
+            <circle id="c2" cx="120" cy="120" r="40"/>
+            <path id="p1" d="M10 10l80 0 0 80 -80 0ZM40 40l30 0 0 30 -30 0Z" clip-rule="evenodd"/>
+            <clipPath id="clipCircle1"><use xlink:href="#c1"/></clipPath>
+            <clipPath id="clipInClip">
+              <use xlink:href="#c2" clip-path="url(#clipCircle1)"/>
+              <use xlink:href="#p1"/>
+            </clipPath>
+          </defs>
+          <rect width="200" height="200" fill="blue" clip-path="url(#clipInClip)"/>
+        </svg>
+        """
+        var doc = try SVGParser().parse(string: svg)
+        doc.intrinsicSize = CGSize(width: 200, height: 200)
+        let image = try SVGRasterizer.rasterize(doc, pixelSize: CGSize(width: 200, height: 200), scale: 1)
+
+        let hole = samplePixel(image, x: 55, y: 55)
+        #expect(hole.b < 40, "hole=\(hole)")
+        let outer = samplePixel(image, x: 20, y: 20)
+        #expect(outer.b > 200, "outer=\(outer)")
+        let lens = samplePixel(image, x: 100, y: 100)
+        #expect(lens.b > 200, "lens=\(lens)")
+    }
+
+    @Test func clipPathOnClipPathIntersectsResult() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200">
+          <defs>
+            <circle id="c1" cx="80" cy="80" r="50"/>
+            <rect id="r1" x="10" y="10" width="120" height="120"/>
+            <clipPath id="clipCircle"><use xlink:href="#c1"/></clipPath>
+            <clipPath id="clipOnClip" clip-path="url(#clipCircle)">
+              <use xlink:href="#r1"/>
+            </clipPath>
+          </defs>
+          <rect width="200" height="200" fill="blue" clip-path="url(#clipOnClip)"/>
+        </svg>
+        """
+        var doc = try SVGParser().parse(string: svg)
+        doc.intrinsicSize = CGSize(width: 200, height: 200)
+        let image = try SVGRasterizer.rasterize(doc, pixelSize: CGSize(width: 200, height: 200), scale: 1)
+
+        #expect(samplePixel(image, x: 80, y: 80).b > 200)
+        #expect(samplePixel(image, x: 20, y: 20).b < 40)
+    }
+
     @Test func maskingPath05FEvenOddHasHoleAndNonzeroIsSolid() throws {
         let svgURL = Self.w3cRoot.appendingPathComponent("svg/masking-path-05-f.svg")
         var doc = try SVGConformanceFixtureParsing.parse(
@@ -423,8 +466,6 @@ import SVGRendererSwiftUI
         doc.intrinsicSize = CGSize(width: 480, height: 360)
         let image = try SVGRasterizer.rasterize(doc, pixelSize: CGSize(width: 480, height: 360), scale: 1)
 
-        // Pass criteria: evenodd overlap is a hole; nonzero overlap is filled.
-        // Paths share the same shape with a +130 y offset (40→170).
         var foundHole = false
         for y in 40..<120 {
             for x in 180..<260 {
@@ -439,11 +480,33 @@ import SVGRendererSwiftUI
         }
         #expect(foundHole)
 
-        // Outside the clip shapes, the large red/blue rects must not show.
         let outsideTop = samplePixel(image, x: 80, y: 80)
         #expect(outsideTop.r < 40)
         let outsideBottom = samplePixel(image, x: 80, y: 210)
         #expect(outsideBottom.b < 40)
+    }
+
+    @Test func maskingPath07BHasNoRedAndShowsBlueClips() throws {
+        let svgURL = Self.w3cRoot.appendingPathComponent("svg/masking-path-07-b.svg")
+        var doc = try SVGConformanceFixtureParsing.parse(
+            data: Data(contentsOf: svgURL),
+            svgURL: svgURL
+        )
+        doc.intrinsicSize = CGSize(width: 480, height: 360)
+        let image = try SVGRasterizer.rasterize(doc, pixelSize: CGSize(width: 480, height: 360), scale: 1)
+
+        var maxRedOnly = 0
+        for y in 70..<280 {
+            for x in 20..<460 {
+                let p = samplePixel(image, x: x, y: y)
+                if p.r > 200 && p.g < 80 && p.b < 80 {
+                    maxRedOnly = max(maxRedOnly, p.r)
+                }
+            }
+        }
+        #expect(maxRedOnly == 0, "unexpected red max=\(maxRedOnly)")
+        #expect(samplePixel(image, x: 50, y: 100).b > 150)
+        #expect(samplePixel(image, x: 350, y: 170).b > 150)
     }
 
     private func samplePixel(_ image: CGImage, x: Int, y: Int) -> (r: Int, g: Int, b: Int) {
