@@ -1024,7 +1024,9 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             href: trimmed,
             preserveAspectRatio: preserveAspectRatio,
             paint: paint,
-            transform: transform(from: attributes, parser: parser) ?? .identity
+            transform: transform(from: attributes, parser: parser) ?? .identity,
+            overflow: parseOverflow(attributes["overflow"]),
+            clip: attributes["clip"].flatMap { AttributeParsers.cssClip($0) } ?? .auto
         )
         registerDefinition(id: attributes["id"], element: .image(image))
         appendChild(.image(image))

@@ -2395,6 +2395,24 @@ struct SVGParserScriptTests {
         #expect(doc.resolveURL(img.href)?.lastPathComponent == "photo.png")
     }
 
+    @Test func parsesImageOverflowAndCSSClip() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+             width="100" height="100">
+          <image x="0" y="0" width="200" height="120" overflow="hidden"
+                 clip="rect(10,10,10,10)" xlink:href="photo.png"/>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .image(let img) = doc.root.children.first else {
+            Issue.record("expected image"); return
+        }
+        #expect(img.overflow == .hidden)
+        #expect(img.clip == .rect(top: 10, right: 10, bottom: 10, left: 10))
+        let viewport = CGRect(origin: img.origin, size: img.size)
+        #expect(img.clip.resolvedRect(in: viewport) == CGRect(x: 10, y: 10, width: 180, height: 100))
+    }
+
     @Test func parsesReferencedSVGDocumentForImageHref() throws {
         let w3cRoot = URL(fileURLWithPath: #filePath)
             .deletingLastPathComponent()

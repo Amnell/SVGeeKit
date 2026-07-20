@@ -349,9 +349,16 @@ public enum SVGRenderTree {
             preserveAspectRatio: image.preserveAspectRatio,
             paint: image.paint,
             transform: image.transform,
+            cssClipRect: cssClipRect(for: image, viewport: viewport),
             ctx: ctx,
             into: &commands
         )
+    }
+
+    /// CSS2 `clip` rectangle in user space when `overflow` is not `visible`.
+    private static func cssClipRect(for image: SVGImage, viewport: CGRect) -> CGRect? {
+        guard image.overflow != .visible else { return nil }
+        return image.clip.resolvedRect(in: viewport)
     }
 
     private static func lowerSVGImageContent(
@@ -388,8 +395,9 @@ public enum SVGRenderTree {
             parsingLimits: document.parsingLimits
         )
 
+        let cssClip = cssClipRect(for: image, viewport: viewport)
         var painted: [SVGRenderCommand] = []
-        let hasClip = image.paint.clipPathRef != nil
+        let hasClip = image.paint.clipPathRef != nil || cssClip != nil
         let needsState = hasClip || image.transform.matrix != .identity || image.paint.opacity < 1
         if needsState { painted.append(.pushState) }
         if image.transform.matrix != .identity {
@@ -398,18 +406,22 @@ public enum SVGRenderTree {
         if let clipRef = image.paint.clipPathRef {
             guard appendClipPath(clipRef, bbox: viewport, ctx: ctx, into: &painted) else { return }
         }
+        if let cssClip {
+            painted.append(.clipToPath(CGPath(rect: cssClip, transform: nil), evenOdd: false))
+        }
         if image.paint.opacity < 1 {
             painted.append(.beginOpacityLayer(image.paint.opacity))
         }
 
         painted.append(.pushState)
         painted.append(.clipToPath(CGPath(rect: viewport, transform: nil), evenOdd: false))
-        let fit = CGAffineTransform(translationX: viewport.minX, y: viewport.minY)
-            .concatenating(SVGPreserveAspectRatio.viewBoxTransform(
-                viewBox: contentViewBox,
-                viewportSize: viewport.size,
-                preserveAspectRatio: image.preserveAspectRatio
-            ))
+        // Map viewBox → viewport local, then translate to `viewport.origin`.
+        // `a.concatenating(b)` applies `a` then `b` (CTM *= a; CTM *= b).
+        let fit = SVGPreserveAspectRatio.viewBoxTransform(
+            viewBox: contentViewBox,
+            viewportSize: viewport.size,
+            preserveAspectRatio: image.preserveAspectRatio
+        ).concatenating(CGAffineTransform(translationX: viewport.minX, y: viewport.minY))
         painted.append(.concatenate(SVGTransform(fit)))
         lower(group: document.root, ctx: nestedCtx, into: &painted)
         painted.append(.popState)
@@ -429,6 +441,7 @@ public enum SVGRenderTree {
         preserveAspectRatio: SVGPreserveAspectRatio,
         paint: SVGPaintProperties,
         transform: SVGTransform,
+        cssClipRect: CGRect? = nil,
         ctx: Context,
         into commands: inout [SVGRenderCommand]
     ) {
@@ -437,7 +450,7 @@ public enum SVGRenderTree {
             : viewport
 
         var painted: [SVGRenderCommand] = []
-        let hasClip = paint.clipPathRef != nil
+        let hasClip = paint.clipPathRef != nil || cssClipRect != nil
         let needsState = hasClip || transform.matrix != .identity || paint.opacity < 1
         if needsState { painted.append(.pushState) }
         if transform.matrix != .identity {
@@ -445,6 +458,9 @@ public enum SVGRenderTree {
         }
         if let clipRef = paint.clipPathRef {
             guard appendClipPath(clipRef, bbox: bbox, ctx: ctx, into: &painted) else { return }
+        }
+        if let cssClipRect {
+            painted.append(.clipToPath(CGPath(rect: cssClipRect, transform: nil), evenOdd: false))
         }
         if paint.opacity < 1 {
             painted.append(.beginOpacityLayer(paint.opacity))

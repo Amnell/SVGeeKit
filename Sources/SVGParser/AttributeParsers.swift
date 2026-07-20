@@ -44,6 +44,16 @@ enum AttributeParsers {
         return CGRect(x: nums[0], y: nums[1], width: nums[2], height: nums[3])
     }
 
+    /// CSS2 `clip` property: `auto` or `rect(top, right, bottom, left)`.
+    static func cssClip(_ s: String) -> SVGCSSClip? {
+        let trimmed = s.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        if trimmed == "auto" { return .auto }
+        guard trimmed.hasPrefix("rect("), trimmed.hasSuffix(")") else { return nil }
+        let inner = String(trimmed.dropFirst(5).dropLast())
+        guard let nums = numberList(inner), nums.count == 4 else { return nil }
+        return .rect(top: nums[0], right: nums[1], bottom: nums[2], left: nums[3])
+    }
+
     static func preserveAspectRatio(_ s: String) -> SVGPreserveAspectRatio? {
         let parts = s.trimmingCharacters(in: .whitespacesAndNewlines)
             .split(whereSeparator: { $0.isWhitespace })

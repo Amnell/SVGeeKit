@@ -56,12 +56,13 @@ enum SVGImageDecoder {
         viewport: CGRect,
         preserveAspectRatio: SVGPreserveAspectRatio
     ) -> CGAffineTransform {
-        CGAffineTransform(translationX: viewport.minX, y: viewport.minY)
-            .concatenating(SVGPreserveAspectRatio.viewBoxTransform(
-                viewBox: CGRect(origin: .zero, size: intrinsicSize),
-                viewportSize: viewport.size,
-                preserveAspectRatio: preserveAspectRatio
-            ))
+        // `a.concatenating(b)` applies `a` then `b`. Scale/align into local
+        // viewport space first, then translate to `viewport.origin`.
+        SVGPreserveAspectRatio.viewBoxTransform(
+            viewBox: CGRect(origin: .zero, size: intrinsicSize),
+            viewportSize: viewport.size,
+            preserveAspectRatio: preserveAspectRatio
+        ).concatenating(CGAffineTransform(translationX: viewport.minX, y: viewport.minY))
     }
 }
 

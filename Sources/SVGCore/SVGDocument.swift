@@ -199,6 +199,29 @@ public enum SVGOverflow: String, Equatable, Sendable {
     case visible
 }
 
+/// CSS2 `clip` property (SVG 1.1 §14.3.3). Applies when `overflow` is not `visible`.
+/// `rect(top, right, bottom, left)` values are **offsets from each side** of the
+/// element box (CSS2), matching the W3C SVG 1.1 test suite.
+public enum SVGCSSClip: Equatable, Sendable {
+    case auto
+    case rect(top: CGFloat, right: CGFloat, bottom: CGFloat, left: CGFloat)
+
+    /// Clip rectangle in the same coordinate space as `viewport`, or `nil` for
+    /// no additional restriction beyond the viewport itself (`auto`).
+    public func resolvedRect(in viewport: CGRect) -> CGRect? {
+        switch self {
+        case .auto:
+            return nil
+        case .rect(let top, let right, let bottom, let left):
+            let x = viewport.minX + left
+            let y = viewport.minY + top
+            let w = max(0, viewport.width - left - right)
+            let h = max(0, viewport.height - top - bottom)
+            return CGRect(x: x, y: y, width: w, height: h)
+        }
+    }
+}
+
 /// A nested `<svg>` viewport. Establishes a new coordinate system and,
 /// when `overflow` is `hidden`, clips content to the viewport bounds.
 public struct SVGSVGElement: Equatable, Sendable {

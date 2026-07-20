@@ -13,6 +13,10 @@ public struct SVGImage: Equatable, Sendable {
     public var preserveAspectRatio: SVGPreserveAspectRatio
     public var paint: SVGPaintProperties
     public var transform: SVGTransform
+    /// SVG UA stylesheet default for `<image>` is `hidden`.
+    public var overflow: SVGOverflow
+    /// CSS2 `clip`; only takes effect when `overflow` is not `visible`.
+    public var clip: SVGCSSClip
 
     public init(
         id: String? = nil,
@@ -22,7 +26,9 @@ public struct SVGImage: Equatable, Sendable {
         referencedDocument: SVGDocument? = nil,
         preserveAspectRatio: SVGPreserveAspectRatio = .default,
         paint: SVGPaintProperties = .init(),
-        transform: SVGTransform = .identity
+        transform: SVGTransform = .identity,
+        overflow: SVGOverflow = .hidden,
+        clip: SVGCSSClip = .auto
     ) {
         self.id = id
         self.origin = origin
@@ -32,5 +38,7 @@ public struct SVGImage: Equatable, Sendable {
         self.preserveAspectRatio = preserveAspectRatio
         self.paint = paint
         self.transform = transform
+        self.overflow = overflow
+        self.clip = clip
     }
 }

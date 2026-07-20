@@ -37,6 +37,9 @@ struct SVGImageRenderTests {
         #expect(diff.matches)
         #expect(raster.width == 20)
         #expect(raster.height == 20)
+        // Offset placement must land inside the image viewport (fit-transform order).
+        #expect(sample(raster, x: 10, y: 10).r > 100)
+        #expect(sample(raster, x: 1, y: 1).r < 40)
     }
 
     @Test func lowersImageToDrawCommand() throws {
@@ -88,5 +91,82 @@ struct SVGImageRenderTests {
             return false
         }.count
         #expect(fillCount > 0)
+    }
+
+    @Test func cssClipInsetsRasterImageViewport() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="40" height="40">
+          <image x="0" y="0" width="40" height="40" overflow="hidden" clip="rect(10,10,10,10)"
+                 xlink:href="\(Self.redPixelPNG)" preserveAspectRatio="none"/>
+        </svg>
+        """
+        var doc = try SVGParser().parse(string: svg)
+        doc.intrinsicSize = CGSize(width: 40, height: 40)
+        let image = try SVGRasterizer.rasterize(doc, pixelSize: CGSize(width: 40, height: 40), scale: 1)
+
+        let center = sample(image, x: 20, y: 20)
+        let margin = sample(image, x: 5, y: 5)
+        #expect(center.r > 100, "center=\(center)")
+        #expect(margin.r < 40, "margin=\(margin)")
+        #expect(sample(image, x: 35, y: 35).r < 40)
+    }
+
+    @Test func maskingPath06BClipsImagesInsideRedGuides() throws {
+        let w3cRoot = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .appendingPathComponent("../SVGConformanceTests/Resources/W3C-SVG-1.1", isDirectory: true)
+            .standardizedFileURL
+        let svgURL = w3cRoot.appendingPathComponent("svg/masking-path-06-b.svg")
+        var doc = try SVGConformanceFixtureParsing.parse(
+            data: Data(contentsOf: svgURL),
+            svgURL: svgURL
+        )
+        doc.intrinsicSize = CGSize(width: 480, height: 360)
+        let image = try SVGRasterizer.rasterize(doc, pixelSize: CGSize(width: 480, height: 360), scale: 1)
+
+        func collectImages(_ elements: [SVGElement]) -> [SVGImage] {
+            var out: [SVGImage] = []
+            for e in elements {
+                switch e {
+                case .image(let i): out.append(i)
+                case .group(let g): out.append(contentsOf: collectImages(g.children))
+                case .svg(let s): out.append(contentsOf: collectImages(s.children))
+                default: break
+                }
+            }
+            return out
+        }
+        let allImages = collectImages(doc.root.children)
+        #expect(allImages.count == 2)
+        #expect(allImages[0].clip == .rect(top: 10, right: 10, bottom: 10, left: 10))
+        #expect(allImages[1].referencedDocument != nil)
+
+        // Raster image: content inside red guide, not in the 10px margin to the blue frame.
+        let plantInside = sample(image, x: 135, y: 105)
+        #expect(plantInside.r > 20 || plantInside.g > 20 || plantInside.b > 20, "plant=\(plantInside)")
+        let plantMargin = sample(image, x: 38, y: 48)
+        #expect(plantMargin.r < 40 && plantMargin.g < 40 && plantMargin.b < 40)
+
+        // SVG image: gold quadrant of SVGImageTest maps into the clipped region.
+        let svgContent = sample(image, x: 300, y: 210)
+        #expect(svgContent.r > 150 || svgContent.b > 150, "svgContent=\(svgContent)")
+        let svgMargin = sample(image, x: 248, y: 183)
+        #expect(svgMargin.r < 40 && svgMargin.g < 40 && svgMargin.b < 40)
+    }
+
+    private func sample(_ image: CGImage, x: Int, y: Int) -> (r: Int, g: Int, b: Int) {
+        var pixel = [UInt8](repeating: 0, count: 4)
+        guard let ctx = CGContext(
+            data: &pixel, width: 1, height: 1, bitsPerComponent: 8, bytesPerRow: 4,
+            space: CGColorSpaceCreateDeviceRGB(),
+            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+        ) else { return (0, 0, 0) }
+        ctx.draw(image, in: CGRect(
+            x: -CGFloat(x),
+            y: -CGFloat(image.height - 1 - y),
+            width: CGFloat(image.width),
+            height: CGFloat(image.height)
+        ))
+        return (Int(pixel[0]), Int(pixel[1]), Int(pixel[2]))
     }
 }
