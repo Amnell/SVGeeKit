@@ -59,6 +59,35 @@ struct MaskingPathRenderTests {
         #expect(checker.r < 40 && checker.g < 40 && checker.b < 40)
     }
 
+    @Test func maskingPath14FHasNoRedAndTwoBlackSquares() throws {
+        let image = try render(testId: "masking-path-14-f")
+        #expect(!imageHasStrongRed(image))
+        // Left nested svg: black 200×200 clipped to (0,0)-(50,50).
+        #expect(samplePixel(image, x: 25, y: 25).r < 40)
+        #expect(samplePixel(image, x: 25, y: 25).g < 40)
+        #expect(samplePixel(image, x: 25, y: 25).b < 40)
+        // Right nested svg: black 50×50 overlay at origin of x=200 svg.
+        #expect(samplePixel(image, x: 225, y: 25).r < 40)
+        #expect(samplePixel(image, x: 225, y: 25).g < 40)
+        #expect(samplePixel(image, x: 225, y: 25).b < 40)
+    }
+
+    @Test func clipPathInsideClippedGroupDoesNotInheritAncestorClip() throws {
+        // Minimal reproduction of masking-path-14-f left cell.
+        let image = try rasterize("""
+        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80">
+          <clipPath id="ancestor"><rect x="40" y="40" width="40" height="40"/></clipPath>
+          <g clip-path="url(#ancestor)">
+            <clipPath id="nested"><rect x="0" y="0" width="40" height="40"/></clipPath>
+          </g>
+          <rect width="40" height="40" fill="red"/>
+          <rect width="80" height="80" fill="black" clip-path="url(#nested)"/>
+        </svg>
+        """)
+        #expect(samplePixel(image, x: 20, y: 20).r < 40)
+        #expect(!imageHasStrongRed(image))
+    }
+
     @Test func emptyClipPathSuppressesElement() throws {
         let image = try rasterize("""
         <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40">

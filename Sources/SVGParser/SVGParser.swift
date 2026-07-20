@@ -1573,6 +1573,12 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         // SVG 1.1 §14.5: 'opacity' is not inherited. Group opacity is stored on
         // `SVGGroup.opacity` and applied via `groupLayer` at render time.
         p.opacity = 1
+        // SVG 1.1 §14.3.5: a `clipPath` and its children do not inherit clipping
+        // paths from ancestors of the `clipPath` element. Explicit `clip-path` on
+        // the `clipPath` itself is re-applied below via authored declarations.
+        if elementName == "clipPath" {
+            p.clipPathRef = nil
+        }
         var authored: [String: (value: String, important: Bool, priority: Int)] = [:]
 
         func applyAuthoredDeclarations(_ declarations: [CSSDeclaration], priority: Int) {

@@ -1113,6 +1113,27 @@ struct SVGParserTests {
         #expect(doc.clipPaths["outer"]?.clipPathRef == nil)
     }
 
+    @Test func clipPathDoesNotInheritClipPathFromAncestors() throws {
+        // SVG 1.1 §14.3.5 / masking-path-14-f: clipPath children must not pick up
+        // clip-path from ancestors of the clipPath element.
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200">
+          <clipPath id="ancestor"><rect x="50" y="50" width="50" height="50"/></clipPath>
+          <g clip-path="url(#ancestor)">
+            <clipPath id="nested">
+              <rect x="0" y="0" width="50" height="50"/>
+            </clipPath>
+          </g>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        #expect(doc.clipPaths["nested"]?.clipPathRef == nil)
+        guard case .rect(let child) = doc.clipPaths["nested"]?.children.first else {
+            Issue.record("expected rect child in nested clipPath"); return
+        }
+        #expect(child.paint.clipPathRef == nil)
+    }
+
     @Test func defsChildrenAreNotInRenderTree() throws {
         let svg = """
         <svg xmlns="http://www.w3.org/2000/svg" width="480" height="360">

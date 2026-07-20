@@ -188,6 +188,7 @@ documented in [static-profile.md](static-profile.md).
 - [x] Clip construction edge cases (`masking-path-08-b`: empty / hidden / display / invalid URL / paint attrs)
 - [x] Mask construction edge cases (`masking-path-10-b`: empty / hidden / display / invalid URL / paint attrs)
 - [x] Text in mask punches luminance holes (`masking-path-11-b`)
+- [x] clipPath does not inherit ancestor clip-path (`masking-path-14-f`)
 - [ ] Remove `masking` from `skipTags` in `overrides.json` incrementally
 - [ ] `masking-path-*`, `masking-mask-*` — verify running overrides
 - [ ] `maskUnits`, `maskContentUnits`, luminance vs alpha
