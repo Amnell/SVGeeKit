@@ -1730,14 +1730,17 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/masking-path-10-b\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/masking-path-10-b\/baseline.png",
-    "detail" : "promoted from partial baseline",
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "passed",
     "tag" : "masking",
     "testId" : "masking-path-10-b"
   },
   {
-    "detail" : "feature family not yet supported by SVGeeKit",
-    "status" : "skipped",
+    "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/masking-path-11-b\/actual.png",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/masking-path-11-b\/baseline.png",
+    "detail" : "promoted from partial baseline",
+    "status" : "passed",
     "tag" : "masking",
     "testId" : "masking-path-11-b"
   },

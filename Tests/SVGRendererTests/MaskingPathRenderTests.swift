@@ -35,6 +35,30 @@ struct MaskingPathRenderTests {
         assertNineLimeCells(image)
     }
 
+    @Test func maskingPath11BShowsBlueCircleWithTransparentABC() throws {
+        let image = try render(testId: "masking-path-11-b")
+
+        // Blue circle body (away from letter strokes).
+        let blue = samplePixel(image, x: 240, y: 150)
+        #expect(blue.b > 200 && blue.r < 80 && blue.g < 80, "expected blue circle, got \(blue)")
+
+        // Letter cutouts reveal the checkerboard (not solid blue).
+        var nonBlueInLetters = 0
+        for y in 170..<205 {
+            for x in 210..<270 {
+                let p = samplePixel(image, x: x, y: y)
+                if !(p.b > 200 && p.r < 80 && p.g < 80) {
+                    nonBlueInLetters += 1
+                }
+            }
+        }
+        #expect(nonBlueInLetters > 200, "expected ABC holes through blue mask, nonBlue=\(nonBlueInLetters)")
+
+        // Checkerboard still visible outside the circle.
+        let checker = samplePixel(image, x: 150, y: 100)
+        #expect(checker.r < 40 && checker.g < 40 && checker.b < 40)
+    }
+
     @Test func emptyClipPathSuppressesElement() throws {
         let image = try rasterize("""
         <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40">
