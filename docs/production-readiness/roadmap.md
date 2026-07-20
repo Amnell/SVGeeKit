@@ -91,7 +91,7 @@ mutation, out of production scope.
 - [x] `display="none"` in mask / clipPath children (`painting-control-05-f`)
 - [x] Gradient `color-interpolation` sRGB + linearRGB (`painting-render-01-b`)
 - [ ] `<marker>` — moved to [Phase 4](#phase-4--structure--reuse) (8 tests; required for 24+ passed)
-- [ ] Skip / document: `color-interpolation` compositing (`painting-render-02-b`)
+- [x] Skip / document: `color-interpolation` compositing (`painting-render-02-b` skipped in overrides)
 
 ### 1c. Paint servers (`pservers`)
 
@@ -137,9 +137,9 @@ Follow [styling-rollout.md](../styling-rollout.md):
 
 | Target | Baseline | Goal | Status |
 | --- | ---: | ---: | --- |
-| `struct` passed | 28 | 45+ | `[~]` |
-| `struct` partial | 26 | ≤10 | `[~]` |
-| `struct` skipped (DOM) | 18 | 18 | `[x]` keep skipped |
+| `struct` passed | 30 | 45+ | `[~]` |
+| `struct` partial | 16 | ≤10 | `[~]` |
+| `struct` skipped | 26 | 26 | `[x]` keep DOM / onclick skipped |
 
 - [x] `g`, `defs`, `use` (same-document `#id` refs; ids outside `<defs>` indexed for `<use>`)
 - [x] External `<use xlink:href="file.svg#id">` under `.localFiles` (rejected in `.production`;
@@ -147,9 +147,11 @@ Follow [styling-rollout.md](../styling-rollout.md):
 - [x] `<?xml-stylesheet href="…css">` pre-scan for linked author CSS (required by `svgRef4.svg` in `struct-use-04-b`)
 - [x] CSS/stylesheet-specified presentation preserved through `<use>` shadow tree (stroke on external shapes)
 - [x] `<switch>` conditional processing
-- [x] `<image>` element (production policy gates external refs; `.localFiles` for fixtures)
-- [ ] `symbol` instancing polish
-- [~] Promote high-value partial baselines (batch by test family; promoted `struct-use-01-t`, `struct-use-05-b` on 2026-07-20; `struct-use-06-b`/`07-b` skipped — onclick/interaction)
+- [x] `<image>` element (production policy gates external refs; `.localFiles` for fixtures;
+  promoted `struct-image-12-b`, `struct-image-19-f`, 2026-07-20)
+- [ ] `symbol` instancing polish (`struct-symbol-01-b` still partial)
+- [~] Promote high-value partial baselines (16 remain: `struct-cond-*`, `struct-frag-*`,
+  `struct-group-03-t`, image/use leftovers; `struct-use-06-b`/`07-b` skipped — onclick)
 - [x] Skip `struct-dom-*` — DOM API out of scope
 
 ### 1f. Rendering (`render`)
@@ -166,10 +168,23 @@ Follow [styling-rollout.md](../styling-rollout.md):
 **`render` chapter:** all 8 non-skipped W3C tests pass with verified baselines
 (completed 2026-07-20).
 
+### 1g. Color
+
+| Target | Baseline | Goal | Status |
+| --- | ---: | ---: | --- |
+| `color` passed | 5 | 6 | `[~]` |
+| `color` partial | 1 | 0 | `[~]` |
+
+- [x] Promoted: `color-prop-01-b` … `05-t` (2026-07-20)
+- [ ] `color-prof-01-f` — ICC / color profile (last partial)
+
 **Phase 1 exit criteria:** Core tags (`shapes`, `paths`, `coords`, `painting`, `pservers`,
 `styling`, `render`, `color`) at ≥90% passed among non-skipped tests; remaining gaps
 documented in [static-profile.md](static-profile.md).
 
+**Current:** all listed tags are 100% except `color` (5/6 = 83%) — blocked on
+`color-prof-01-f`. `struct` remains below goal but is tracked under 1e (not in the
+core ≥90% set).
 ---
 
 ## Phase 2 — Masking & clipping
@@ -180,23 +195,32 @@ documented in [static-profile.md](static-profile.md).
 
 | Target | Baseline | Goal | Status |
 | --- | ---: | ---: | --- |
-| `masking` passed | 6 | 15+ | `[~]` |
+| `masking` passed | 15 | 15+ | `[x]` goal met |
+| `masking` partial | 0 | 0 | `[x]` |
+| `masking` skipped | 4 | document or enable | `[~]` |
 
-- [x] `clipPath` definitions and `clip-path` attribute (partial)
-- [x] `mask` definitions and `mask` attribute (partial)
+- [x] `clipPath` definitions and `clip-path` attribute
+- [x] `mask` definitions and `mask` attribute
 - [x] Group vs element opacity (`masking-opacity-01-b` re-approved, 2026-07-20)
+- [x] Enabled + promoted core suite (`masking-mask-01-b`, `02-f`; `masking-path-01-b` …
+  `08-b`, `10-b`, `11-b`, `13-f`, `14-f`)
 - [x] Clip construction edge cases (`masking-path-08-b`: empty / hidden / display / invalid URL / paint attrs)
 - [x] Mask construction edge cases (`masking-path-10-b`: empty / hidden / display / invalid URL / paint attrs)
 - [x] Text in mask punches luminance holes (`masking-path-11-b`)
+- [x] Nested clipPath / mask interaction (`masking-path-13-f`)
 - [x] clipPath does not inherit ancestor clip-path (`masking-path-14-f`)
-- [ ] Remove `masking` from `skipTags` in `overrides.json` incrementally
-- [ ] `masking-path-*`, `masking-mask-*` — verify running overrides
-- [ ] `maskUnits`, `maskContentUnits`, luminance vs alpha
-- [ ] Text + clip-path integration (see Phase 3)
+- [~] Remove `masking` from `skipTags` once remaining tests are enabled or explicitly skipped
+  with reasons (still in `skipTags` with per-test `"run": true`)
+- [ ] Remaining skips to enable or document:
+  - `masking-intro-01-f` — clip vs mask geometry (stroke ignored by clip, used by mask)
+  - `masking-path-09-b` — clip-path must not affect bounding-box computation
+  - `masking-path-12-f` — presentation properties inherit into `clipPath` children
+  - `masking-filter-01-f` — `filter` on `mask` (defer with Phase 6 / keep skipped)
+- [ ] Text + clip-path integration for production text (see Phase 3)
 
 **Exit criteria:** All non-filter `masking-*` tests that don't require script either pass
-or have a documented unsupported sub-feature.
-
+or have a documented unsupported sub-feature. **15/15 runnable pass;** 3 non-filter
+skips + 1 filter skip remain.
 ---
 
 ## Phase 3 — Text
@@ -260,8 +284,8 @@ or have a documented unsupported sub-feature.
 
 | Target | Baseline | Goal | Status |
 | --- | ---: | ---: | --- |
-| `partialBaseline` total | 93 | ≤30 | `[ ]` |
-| `passed` total | 208 | 280+ | `[ ]` |
+| `partialBaseline` total | 82 | ≤30 | `[ ]` |
+| `passed` total | 220 | 280+ | `[ ]` |
 
 ### Process (repeat per tag)
 
@@ -274,17 +298,18 @@ or have a documented unsupported sub-feature.
 ### Priority order
 
 1. `animate` (60 partial) — **low priority** (out of production scope; only promote if needed for regression)
-2. `struct` (26 partial) — highest in-profile count
+2. `struct` (16 partial) — highest in-profile count
 3. ~~`styling`~~ — **complete** (15/15 passed, 0 partial; promoted 2026-07-20)
 4. ~~`pservers`~~ — **complete** (33/33 passed, 2026-07-14)
 5. ~~`render`~~ — **complete** (8/8 passed, 0 partial; promoted 2026-07-20)
-6. `color` (2 partial)
+6. ~~`masking`~~ — **complete among runnable** (15/15 passed, 0 partial; 2026-07-20)
+7. `color` (1 partial — `color-prof-01-f`)
 
 `shapes` — **complete and verified** (30/30 passed, 0 partial; promoted 2026-07-14).
 `pservers` — **complete and verified** (33/33 passed, 0 partial; promoted 2026-07-14).
 `styling` — **complete and verified** (15/15 passed, 0 partial; promoted 2026-07-20).
 `render` — **complete and verified** (8/8 passed, 0 partial; promoted 2026-07-20).
-
+`masking` — **15/15 runnable verified** (4 skips remain; see Phase 2).
 **Exit criteria:** No `partialBaseline` with `diffMaxChannel: 0` in Tier-1 tags unless
 explicitly marked "known gap" in [static-profile.md](static-profile.md).
 
@@ -324,15 +349,15 @@ Do not implement for production. Keep `skipTags` entries in `overrides.json`.
 ```
 Phase 0  Security lockdown                    [x] complete
    ↓
-Phase 1  Struct partials + painting markers (Phase 4)            ← current
+Phase 1  Close color-prof-01-f; drain struct partials   ← current
    ↓
-Phase 2  Masking complete
+Phase 2  Finish remaining masking skips (intro/09/12)
    ↓
 Phase 3  Text (system fonts)
    ↓
 Phase 4  Markers + symbol polish
    ↓
-Phase 5  Verification sweep
+Phase 5  Verification sweep (struct + leftover partials)
    ↓
 Ship     shipping-checklist.md
    ↓

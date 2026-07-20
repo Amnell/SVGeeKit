@@ -31,8 +31,8 @@ Update this document when features land. Tag matching W3C chapters in
 | `use` | **`href="#id"` / `xlink:href="#id"` only** — same document |
 | `linearGradient`, `radialGradient`, `stop` | Paint servers in `defs` |
 | `pattern` | Tiled paint; fragment refs only |
-| `clipPath` | Clipping |
-| `mask` | Alpha / luminance masking |
+| `clipPath` | Clipping — W3C `masking` runnable suite largely verified (15/15) |
+| `mask` | Alpha / luminance masking — same; see roadmap Phase 2 for remaining skips |
 | `image` | **`data:` URIs and app-supplied bytes only** |
 | `text`, `tspan` | System fonts; see [font-rollout-plan.md](../font-rollout-plan.md) |
 | `style` | Author stylesheet (`type="text/css"`) |
@@ -107,7 +107,7 @@ Update this document when features land. Tag matching W3C chapters in
 | Inline `style="..."` | Supported |
 | `<style>` class selectors (`.foo`) | Supported |
 | `<style>` type selectors (`rect { }`) | Supported |
-| Specificity / inheritance per SVG 1.1 cascade | In progress — [styling-rollout.md](../styling-rollout.md) |
+| Specificity / inheritance per SVG 1.1 cascade | Supported — W3C `styling` chapter verified (15/15) |
 | CSS `filter:` property | Out of scope for v1 |
 | `@font-face` in CSS | Out of scope for v1 |
 
