@@ -137,15 +137,19 @@ Follow [styling-rollout.md](../styling-rollout.md):
 
 | Target | Baseline | Goal | Status |
 | --- | ---: | ---: | --- |
-| `struct` passed | 25 | 45+ | `[~]` |
-| `struct` partial | 29 | ≤10 | `[~]` |
+| `struct` passed | 26 | 45+ | `[~]` |
+| `struct` partial | 28 | ≤10 | `[~]` |
 | `struct` skipped (DOM) | 18 | 18 | `[x]` keep skipped |
 
-- [x] `g`, `defs`, `use` (fragment refs; ids outside `<defs>` indexed for `<use>`)
+- [x] `g`, `defs`, `use` (same-document `#id` refs; ids outside `<defs>` indexed for `<use>`)
+- [x] External `<use xlink:href="file.svg#id">` under `.localFiles` (rejected in `.production`;
+  `SVGExternalUseResolver` + shared `ExternalSVGDocumentLoader`; promoted `struct-use-04-b`, 2026-07-20)
+- [x] `<?xml-stylesheet href="…css">` pre-scan for linked author CSS (required by `svgRef4.svg` in `struct-use-04-b`)
+- [x] CSS/stylesheet-specified presentation preserved through `<use>` shadow tree (stroke on external shapes)
 - [x] `<switch>` conditional processing
 - [x] `<image>` element (production policy gates external refs; `.localFiles` for fixtures)
 - [ ] `symbol` instancing polish
-- [ ] Promote high-value partial baselines (batch by test family)
+- [ ] Promote high-value partial baselines (batch by test family; next: `struct-use-01-t`, `struct-use-05-b`)
 - [x] Skip `struct-dom-*` — DOM API out of scope
 
 ### 1f. Rendering (`render`)
@@ -252,8 +256,8 @@ or have a documented unsupported sub-feature.
 
 | Target | Baseline | Goal | Status |
 | --- | ---: | ---: | --- |
-| `partialBaseline` total | 96 | ≤30 | `[ ]` |
-| `passed` total | 205 | 280+ | `[ ]` |
+| `partialBaseline` total | 95 | ≤30 | `[ ]` |
+| `passed` total | 206 | 280+ | `[ ]` |
 
 ### Process (repeat per tag)
 
@@ -265,7 +269,7 @@ or have a documented unsupported sub-feature.
 
 ### Priority order
 
-1. `struct` (29 partial) — highest count
+1. `struct` (28 partial) — highest count
 2. `animate` (60 partial) — **low priority** (out of production scope; only promote if needed for regression)
 3. ~~`styling`~~ — **complete** (15/15 passed, 0 partial; promoted 2026-07-20)
 4. ~~`pservers`~~ — **complete** (33/33 passed, 2026-07-14)

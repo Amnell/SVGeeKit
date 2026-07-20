@@ -2,8 +2,12 @@
 
 SVGeeKit v1 targets **self-contained static SVG 1.1** for iOS 17+ / macOS 14+: shapes,
 paths, gradients, patterns, transforms, CSS styling, clipping, masking, text with system
-fonts, and fragment-based reuse — with **no scripting, animation, external resources, or
-network I/O** in the production API.
+fonts, and fragment-based `<use>` — with **no scripting, animation, external resources, or
+network I/O** in the production API (`.production` / `.restricted` policy).
+
+External file references — including `<use xlink:href="other.svg#id">`, `<image href="…">`,
+and linked CSS — resolve only under explicit `.localFiles(at:)` (conformance corpus, Viewer,
+benchmarks). Production parse rejects them with warnings.
 
 This folder is the living plan for getting there. Update checkboxes and status tables as
 work lands. Re-run `swift test` to refresh conformance numbers in
@@ -48,8 +52,8 @@ references them; do not duplicate their step-by-step content here.
 
 | Status | Count | Meaning |
 | --- | ---: | --- |
-| `passed` | 205 | Verified baseline in `Tests/__Snapshots__/` |
-| `partialBaseline` | 96 | Renders; auto-tracked, needs human verification |
+| `passed` | 206 | Verified baseline in `Tests/__Snapshots__/` |
+| `partialBaseline` | 95 | Renders; auto-tracked, needs human verification |
 | `skipped` | 234 | Feature family or test explicitly out of scope |
 
 ### By feature tag (in-profile chapters)
@@ -62,7 +66,7 @@ references them; do not duplicate their step-by-step content here.
 | `painting` | 31 | 22 | 0 | 9 | Tier 1 |
 | `pservers` | 33 | 33 | 0 | 0 | Tier 1 ✓ |
 | `styling` | 18 | 15 | 0 | 3 | Tier 1 ✓ |
-| `struct` | 72 | 25 | 29 | 18 | Tier 1 |
+| `struct` | 72 | 26 | 28 | 18 | Tier 1 |
 | `render` | 8 | 8 | 0 | 0 | Tier 1 ✓ |
 | `color` | 6 | 4 | 2 | 0 | Tier 1 |
 | `masking` | 19 | 6 | 0 | 13 | Tier 1 → Tier 2 |
@@ -87,6 +91,12 @@ references them; do not duplicate their step-by-step content here.
 | 5 | [Roadmap §5](roadmap.md#phase-5--baseline-verification-sweep) — promote verified partials | Not started |
 | 6 | [Filters plan](filters-plan.md) — optional blur/shadow subset | Deferred |
 | Ship | [Shipping checklist](shipping-checklist.md) | Not started |
+
+### Recent milestones
+
+- **2026-07-20:** Promoted `struct-use-04-b` — external `<use href="file.svg#id">` under
+  `.localFiles`, linked CSS via `<?xml-stylesheet?>`, CSS-specified stroke through use
+  shadow tree (`struct` 26 passed / 28 partial).
 
 ## How to use this plan
 
