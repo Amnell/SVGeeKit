@@ -186,6 +186,7 @@ documented in [static-profile.md](static-profile.md).
 - [x] `mask` definitions and `mask` attribute (partial)
 - [x] Group vs element opacity (`masking-opacity-01-b` re-approved, 2026-07-20)
 - [x] Clip construction edge cases (`masking-path-08-b`: empty / hidden / display / invalid URL / paint attrs)
+- [x] Mask construction edge cases (`masking-path-10-b`: empty / hidden / display / invalid URL / paint attrs)
 - [ ] Remove `masking` from `skipTags` in `overrides.json` incrementally
 - [ ] `masking-path-*`, `masking-mask-*` — verify running overrides
 - [ ] `maskUnits`, `maskContentUnits`, luminance vs alpha
