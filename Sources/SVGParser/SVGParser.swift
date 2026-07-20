@@ -1700,6 +1700,10 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             if let ref = parseClipPathRef(["clip-path": value]) {
                 p.clipPathRef = ref
             }
+        case "clip-rule":
+            if let rule = SVGFillRule(rawValue: value.trimmingCharacters(in: .whitespaces)) {
+                p.clipRule = rule
+            }
         case "mask":
             if let ref = parseMaskRef(["mask": value]) {
                 p.maskRef = ref

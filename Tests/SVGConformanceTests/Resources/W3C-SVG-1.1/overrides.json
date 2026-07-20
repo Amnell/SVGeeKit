@@ -68,6 +68,7 @@
     "masking-path-02-b": { "run": true },
     "masking-path-03-b": { "run": true },
     "masking-path-04-b": { "run": true },
+    "masking-path-05-f": { "run": true },
     "text-path-basic-01": { "run": true },
     "text-align-01-b": { "run": true },
     "text-font-mini-01": { "run": true },

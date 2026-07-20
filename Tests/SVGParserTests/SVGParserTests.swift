@@ -1071,6 +1071,31 @@ struct SVGParserTests {
         #expect(g.clipPathRef == "clip2")
     }
 
+    @Test func parsesClipRuleOnClipPathChildren() throws {
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200">
+          <defs>
+            <clipPath id="even">
+              <path clip-rule="evenodd" d="M0,0h10v10z"/>
+            </clipPath>
+            <clipPath id="nonz">
+              <path clip-rule="nonzero" d="M0,0h10v10z"/>
+            </clipPath>
+          </defs>
+          <rect width="100" height="100" fill="red" clip-path="url(#even)"/>
+        </svg>
+        """
+        let doc = try SVGParser().parse(string: svg)
+        guard case .path(let even) = doc.clipPaths["even"]?.children.first else {
+            Issue.record("expected evenodd path"); return
+        }
+        #expect(even.paint.clipRule == .evenodd)
+        guard case .path(let nonz) = doc.clipPaths["nonz"]?.children.first else {
+            Issue.record("expected nonzero path"); return
+        }
+        #expect(nonz.paint.clipRule == .nonzero)
+    }
+
     @Test func defsChildrenAreNotInRenderTree() throws {
         let svg = """
         <svg xmlns="http://www.w3.org/2000/svg" width="480" height="360">

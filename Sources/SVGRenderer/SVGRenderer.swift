@@ -242,8 +242,40 @@ public enum SVGRenderTree {
         guard let clipDef = ctx.clipPaths[ref] else { return true }
         let path = lowerToClipPath(clipDef, bbox: bbox, ctx: ctx)
         guard !path.isEmpty else { return false }
-        commands.append(.clipToPath(path, evenOdd: false))
+        commands.append(.clipToPath(path, evenOdd: clipPathUsesEvenOdd(clipDef.children)))
         return true
+    }
+
+    /// Resolve `clip-rule` for a `<clipPath>`'s children. SVG default is nonzero.
+    /// When siblings disagree, keep nonzero — mixed overlapping rules need a
+    /// mask-style union that we don't model yet; W3C tests use one rule per clipPath.
+    private static func clipPathUsesEvenOdd(_ children: [SVGElement]) -> Bool {
+        var sawEvenOdd = false
+        var sawNonzero = false
+        for child in children {
+            guard let paint = paintProperties(of: child) else { continue }
+            switch paint.clipRule {
+            case .evenodd: sawEvenOdd = true
+            case .nonzero: sawNonzero = true
+            }
+        }
+        return sawEvenOdd && !sawNonzero
+    }
+
+    private static func paintProperties(of element: SVGElement) -> SVGPaintProperties? {
+        switch element {
+        case .rect(let r): return r.paint
+        case .circle(let c): return c.paint
+        case .ellipse(let e): return e.paint
+        case .line(let l): return l.paint
+        case .polyline(let p): return p.paint
+        case .polygon(let p): return p.paint
+        case .path(let p): return p.paint
+        case .text(let t): return t.paint
+        case .use(let u): return u.paint
+        case .image(let i): return i.paint
+        case .group, .svg: return nil
+        }
     }
 
     /// Resolve the mask region rectangle in user space, or `nil` for no clip.

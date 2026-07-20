@@ -94,7 +94,7 @@ struct CSSStylesheet {
     static let paintPresentationAttributes: Set<String> = [
         "fill", "fill-opacity", "fill-rule", "stroke", "stroke-opacity", "stroke-width",
         "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-dasharray",
-        "stroke-dashoffset", "opacity", "color", "visibility", "display", "clip-path", "mask",
+        "stroke-dashoffset", "opacity", "color", "visibility", "display", "clip-path", "clip-rule", "mask",
         "stop-color", "stop-opacity",
     ]
 

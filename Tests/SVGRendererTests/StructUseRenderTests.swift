@@ -371,6 +371,81 @@ import SVGRendererSwiftUI
         #expect(outsideClip.r < 40 && outsideClip.g < 40 && outsideClip.b < 40)
     }
 
+    @Test func clipRuleEvenOddPunchesHoleInSelfOverlappingPath() throws {
+        // Same self-overlapping path shape as masking-path-05-f.
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+          <defs>
+            <clipPath id="eo">
+              <path clip-rule="evenodd" d="M40,10l10,0 0,30 10,0 0,-10 -30,0 0,-10 40,0 0,30 -30,0 0,-40z"/>
+            </clipPath>
+            <clipPath id="nz">
+              <path clip-rule="nonzero" d="M40,60l10,0 0,30 10,0 0,-10 -30,0 0,-10 40,0 0,30 -30,0 0,-40z"/>
+            </clipPath>
+          </defs>
+          <rect width="100" height="50" fill="red" clip-path="url(#eo)"/>
+          <rect y="50" width="100" height="50" fill="blue" clip-path="url(#nz)"/>
+        </svg>
+        """
+        var doc = try SVGParser().parse(string: svg)
+        doc.intrinsicSize = CGSize(width: 100, height: 100)
+        let commands = SVGRenderTree.lower(doc)
+        let evenOddClips = commands.compactMap { cmd -> Bool? in
+            if case .clipToPath(_, let evenOdd) = cmd { return evenOdd }
+            return nil
+        }
+        #expect(evenOddClips.contains(true))
+        #expect(evenOddClips.contains(false))
+        let image = try SVGRasterizer.rasterize(doc, pixelSize: CGSize(width: 100, height: 100), scale: 1)
+
+        // Find a pixel that evenodd punches out but nonzero fills (y offset +50).
+        var foundHole = false
+        for y in 10..<50 {
+            for x in 30..<70 {
+                let top = samplePixel(image, x: x, y: y)
+                let bottom = samplePixel(image, x: x, y: y + 50)
+                if top.r < 40 && bottom.b > 200 {
+                    foundHole = true
+                    break
+                }
+            }
+            if foundHole { break }
+        }
+        #expect(foundHole)
+    }
+
+    @Test func maskingPath05FEvenOddHasHoleAndNonzeroIsSolid() throws {
+        let svgURL = Self.w3cRoot.appendingPathComponent("svg/masking-path-05-f.svg")
+        var doc = try SVGConformanceFixtureParsing.parse(
+            data: Data(contentsOf: svgURL),
+            svgURL: svgURL
+        )
+        doc.intrinsicSize = CGSize(width: 480, height: 360)
+        let image = try SVGRasterizer.rasterize(doc, pixelSize: CGSize(width: 480, height: 360), scale: 1)
+
+        // Pass criteria: evenodd overlap is a hole; nonzero overlap is filled.
+        // Paths share the same shape with a +130 y offset (40→170).
+        var foundHole = false
+        for y in 40..<120 {
+            for x in 180..<260 {
+                let top = samplePixel(image, x: x, y: y)
+                let bottom = samplePixel(image, x: x, y: y + 130)
+                if top.r < 40 && bottom.b > 200 {
+                    foundHole = true
+                    break
+                }
+            }
+            if foundHole { break }
+        }
+        #expect(foundHole)
+
+        // Outside the clip shapes, the large red/blue rects must not show.
+        let outsideTop = samplePixel(image, x: 80, y: 80)
+        #expect(outsideTop.r < 40)
+        let outsideBottom = samplePixel(image, x: 80, y: 210)
+        #expect(outsideBottom.b < 40)
+    }
+
     private func samplePixel(_ image: CGImage, x: Int, y: Int) -> (r: Int, g: Int, b: Int) {
         var pixel = [UInt8](repeating: 0, count: 4)
         let colorSpace = CGColorSpaceCreateDeviceRGB()

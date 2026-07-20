@@ -75,6 +75,8 @@ public struct SVGPaintProperties: Equatable, Sendable {
     /// Inherited presentation attribute for `<stop>` defaults on gradient elements.
     public var stopOpacity: CGFloat
     public var visibility: SVGVisibility
+    /// Fill rule used when this geometry contributes to a `<clipPath>` (SVG `clip-rule`).
+    public var clipRule: SVGFillRule
     public var clipPathRef: String?
     public var maskRef: String?
 
@@ -95,6 +97,7 @@ public struct SVGPaintProperties: Equatable, Sendable {
         stopColor: SVGColor = .black,
         stopOpacity: CGFloat = 1,
         visibility: SVGVisibility = .visible,
+        clipRule: SVGFillRule = .nonzero,
         clipPathRef: String? = nil,
         maskRef: String? = nil
     ) {
@@ -114,6 +117,7 @@ public struct SVGPaintProperties: Equatable, Sendable {
         self.stopColor = stopColor
         self.stopOpacity = stopOpacity
         self.visibility = visibility
+        self.clipRule = clipRule
         self.clipPathRef = clipPathRef
         self.maskRef = maskRef
     }

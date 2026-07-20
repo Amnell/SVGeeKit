@@ -148,7 +148,7 @@ enum SVGUseExpansion {
   private static let inheritedPresentationKeys = [
     "fill-opacity", "fill-rule", "stroke", "stroke-opacity", "stroke-width",
     "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-dasharray",
-    "stroke-dashoffset", "opacity", "color", "visibility", "display", "clip-path", "mask",
+    "stroke-dashoffset", "opacity", "color", "visibility", "display", "clip-path", "clip-rule", "mask",
   ]
 
   private static func applyPresentationKey(
@@ -172,6 +172,7 @@ enum SVGUseExpansion {
     case "visibility": paint.visibility = source.visibility
     case "display": paint.visibility = source.visibility
     case "clip-path": paint.clipPathRef = source.clipPathRef
+    case "clip-rule": paint.clipRule = source.clipRule
     case "mask": paint.maskRef = source.maskRef
     default: break
     }
