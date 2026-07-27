@@ -129,6 +129,15 @@ import SVGRendererSwiftUI
         #expect(redBody == 0, "red body pixels=\(redBody)")
     }
 
+    @Test func structCondOverview03EmptyAttributesDoNotCoverBlueRects() throws {
+        let image = try render("struct-cond-overview-03-f")
+        // Pass criteria: three blue boxes visible (empty required* / systemLanguage = false).
+        for y in [50, 170, 290] {
+            let p = samplePixel(image, x: 50, y: y)
+            #expect(p.b > 150 && p.r < 80 && p.g < 80, "expected blue at y=\(y), got \(p)")
+        }
+    }
+
     private func samplePixel(_ image: CGImage, x: Int, y: Int) -> (r: Int, g: Int, b: Int) {
         var pixel = [UInt8](repeating: 0, count: 4)
         let colorSpace = CGColorSpaceCreateDeviceRGB()

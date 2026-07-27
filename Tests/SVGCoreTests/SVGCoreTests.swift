@@ -46,6 +46,37 @@ struct SVGCoreTests {
         )
     }
 
+    @Test func emptyConditionalAttributesEvaluateFalse() {
+        let context = SVGConditionalProcessingContext(preferredLanguages: ["en-US"])
+        #expect(
+            SVGConditionalProcessing.evaluate(
+                attributes: ["requiredFeatures": ""],
+                context: context
+            ) == false
+        )
+        #expect(
+            SVGConditionalProcessing.evaluate(
+                attributes: ["requiredExtensions": ""],
+                context: context
+            ) == false
+        )
+        #expect(
+            SVGConditionalProcessing.evaluate(
+                attributes: ["requiredFormats": "   "],
+                context: context
+            ) == false
+        )
+        #expect(
+            SVGConditionalProcessing.evaluateSystemLanguage("", preferredLanguages: ["en-US"]) == false
+        )
+        #expect(
+            SVGConditionalProcessing.evaluate(
+                attributes: [:],
+                context: context
+            )
+        )
+    }
+
     @Test func viewBoxTransformMeetAlignsAndScalesUniformly() {
         let viewBox = CGRect(x: 0, y: 0, width: 30, height: 40)
         let viewport = CGSize(width: 50, height: 30)

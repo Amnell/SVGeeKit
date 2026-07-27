@@ -2929,10 +2929,10 @@
   },
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-cond-overview-03-f\/actual.png",
-    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__PartialSnapshots__\/struct-cond-overview-03-f\/baseline.png",
+    "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-cond-overview-03-f\/baseline.png",
     "diffMaxChannel" : 0,
     "mismatchedFraction" : 0,
-    "status" : "partialBaseline",
+    "status" : "passed",
     "tag" : "struct",
     "testId" : "struct-cond-overview-03-f"
   },
@@ -3209,7 +3209,8 @@
   {
     "actualPath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__SnapshotResults__\/struct-image-07-t\/actual.png",
     "baselinePath" : "\/Users\/amnell\/code\/own\/SVGeeKit\/Tests\/__Snapshots__\/struct-image-07-t\/baseline.png",
-    "detail" : "promoted from partial baseline",
+    "diffMaxChannel" : 0,
+    "mismatchedFraction" : 0,
     "status" : "passed",
     "tag" : "struct",
     "testId" : "struct-image-07-t"

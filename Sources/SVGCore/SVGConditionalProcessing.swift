@@ -71,15 +71,17 @@ public enum SVGConditionalProcessing {
         return true
     }
 
+    /// SVG 1.1 §5.8.1 — empty / whitespace-only required lists evaluate to false.
     private static func evaluateRequiredList(_ raw: String, supported: Set<String>) -> Bool {
         let items = raw.split(whereSeparator: { $0.isWhitespace || $0 == "," })
             .map { String($0).trimmingCharacters(in: .whitespacesAndNewlines) }
             .filter { !$0.isEmpty }
-        guard !items.isEmpty else { return true }
+        guard !items.isEmpty else { return false }
         return items.allSatisfy { supported.contains($0) }
     }
 
     /// SVG 1.1 §5.8.2 — `systemLanguage` is a comma-separated list of RFC 3066 tags.
+    /// An empty / whitespace-only value evaluates to false (`struct-cond-overview-03-f`).
     public static func evaluateSystemLanguage(
         _ raw: String,
         preferredLanguages: [String]
@@ -87,7 +89,7 @@ public enum SVGConditionalProcessing {
         let candidates = raw.split(separator: ",")
             .map { normalizeLanguageTag(String($0)) }
             .filter { !$0.isEmpty }
-        guard !candidates.isEmpty else { return true }
+        guard !candidates.isEmpty else { return false }
         guard !preferredLanguages.isEmpty else { return false }
 
         for userLanguage in preferredLanguages {
