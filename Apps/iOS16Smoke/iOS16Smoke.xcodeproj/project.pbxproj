@@ -1,0 +1,314 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 70;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		24A160000000000000000041 /* iOS16SmokeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24A160000000000000000040 /* iOS16SmokeApp.swift */; };
+		24A160000000000000000043 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24A160000000000000000042 /* RootView.swift */; };
+		24A160000000000000000045 /* Fixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24A160000000000000000044 /* Fixtures.swift */; };
+		24A160000000000000000047 /* SmokeViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24A160000000000000000046 /* SmokeViews.swift */; };
+		24A160000000000000000049 /* ExampleGalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24A160000000000000000048 /* ExampleGalleryView.swift */; };
+		24A160000000000000000054 /* SVGKit in Frameworks */ = {isa = PBXBuildFile; productRef = 24A160000000000000000051 /* SVGKit */; };
+		24A160000000000000000055 /* SVGAnimation in Frameworks */ = {isa = PBXBuildFile; productRef = 24A160000000000000000052 /* SVGAnimation */; };
+		24A160000000000000000056 /* SVGScript in Frameworks */ = {isa = PBXBuildFile; productRef = 24A160000000000000000053 /* SVGScript */; };
+		24A160000000000000000061 /* Examples in Resources */ = {isa = PBXBuildFile; fileRef = 24A160000000000000000060 /* Examples */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		24A160000000000000000003 /* iOS16Smoke.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iOS16Smoke.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		24A160000000000000000040 /* iOS16SmokeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOS16SmokeApp.swift; sourceTree = "<group>"; };
+		24A160000000000000000042 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		24A160000000000000000044 /* Fixtures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fixtures.swift; sourceTree = "<group>"; };
+		24A160000000000000000046 /* SmokeViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmokeViews.swift; sourceTree = "<group>"; };
+		24A160000000000000000048 /* ExampleGalleryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleGalleryView.swift; sourceTree = "<group>"; };
+		24A160000000000000000060 /* Examples */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Examples; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		24A160000000000000000021 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				24A160000000000000000054 /* SVGKit in Frameworks */,
+				24A160000000000000000055 /* SVGAnimation in Frameworks */,
+				24A160000000000000000056 /* SVGScript in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		24A160000000000000000010 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				24A160000000000000000003 /* iOS16Smoke.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		24A160000000000000000011 /* iOS16Smoke */ = {
+			isa = PBXGroup;
+			children = (
+				24A160000000000000000060 /* Examples */,
+				24A160000000000000000040 /* iOS16SmokeApp.swift */,
+				24A160000000000000000042 /* RootView.swift */,
+				24A160000000000000000044 /* Fixtures.swift */,
+				24A160000000000000000046 /* SmokeViews.swift */,
+				24A160000000000000000048 /* ExampleGalleryView.swift */,
+			);
+			path = iOS16Smoke;
+			sourceTree = "<group>";
+		};
+		24A160000000000000000013 = {
+			isa = PBXGroup;
+			children = (
+				24A160000000000000000011 /* iOS16Smoke */,
+				24A160000000000000000010 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		24A160000000000000000002 /* iOS16Smoke */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 24A160000000000000000031 /* Build configuration list for PBXNativeTarget "iOS16Smoke" */;
+			buildPhases = (
+				24A160000000000000000020 /* Sources */,
+				24A160000000000000000021 /* Frameworks */,
+				24A160000000000000000022 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = iOS16Smoke;
+			packageProductDependencies = (
+				24A160000000000000000051 /* SVGKit */,
+				24A160000000000000000052 /* SVGAnimation */,
+				24A160000000000000000053 /* SVGScript */,
+			);
+			productName = iOS16Smoke;
+			productReference = 24A160000000000000000003 /* iOS16Smoke.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		24A160000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					24A160000000000000000002 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+				};
+			};
+			buildConfigurationList = 24A160000000000000000030 /* Build configuration list for PBXProject "iOS16Smoke" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 24A160000000000000000013;
+			packageReferences = (
+				24A160000000000000000050 /* XCLocalSwiftPackageReference "../.." */,
+			);
+			productRefGroup = 24A160000000000000000010 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				24A160000000000000000002 /* iOS16Smoke */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		24A160000000000000000022 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				24A160000000000000000061 /* Examples in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		24A160000000000000000020 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				24A160000000000000000041 /* iOS16SmokeApp.swift in Sources */,
+				24A160000000000000000043 /* RootView.swift in Sources */,
+				24A160000000000000000045 /* Fixtures.swift in Sources */,
+				24A160000000000000000047 /* SmokeViews.swift in Sources */,
+				24A160000000000000000049 /* ExampleGalleryView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		24A160000000000000000032 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		24A160000000000000000033 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		24A160000000000000000034 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "SVGeeKit iOS 16";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.svgeekit.iOS16Smoke;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		24A160000000000000000035 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "SVGeeKit iOS 16";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.svgeekit.iOS16Smoke;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		24A160000000000000000030 /* Build configuration list for PBXProject "iOS16Smoke" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				24A160000000000000000032 /* Debug */,
+				24A160000000000000000033 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		24A160000000000000000031 /* Build configuration list for PBXNativeTarget "iOS16Smoke" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				24A160000000000000000034 /* Debug */,
+				24A160000000000000000035 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		24A160000000000000000050 /* XCLocalSwiftPackageReference "../.." */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../..;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		24A160000000000000000051 /* SVGKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 24A160000000000000000050 /* XCLocalSwiftPackageReference "../.." */;
+			productName = SVGKit;
+		};
+		24A160000000000000000052 /* SVGAnimation */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 24A160000000000000000050 /* XCLocalSwiftPackageReference "../.." */;
+			productName = SVGAnimation;
+		};
+		24A160000000000000000053 /* SVGScript */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 24A160000000000000000050 /* XCLocalSwiftPackageReference "../.." */;
+			productName = SVGScript;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 24A160000000000000000001 /* Project object */;
+}

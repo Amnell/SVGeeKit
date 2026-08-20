@@ -6,7 +6,7 @@ SVGeeKit remains **static by default**. Optional declarative SMIL lives in the *
 
 1. **`SVGParser`** captures `<animate>`, `<set>`, `<animateTransform>`, and `<animateMotion>` as metadata on parent elements — it does not run the timeline.
 2. **`SVGAnimationEngine.sample(document:at:)`** applies animated attribute values at time `t` via **`SVGElementMutation`**, then the existing **`SVGRenderTree.lower`** path renders the sampled model.
-3. **`SVGAnimationImageView`** (SwiftUI) drives live playback with `TimelineView`; no `SVGScript` dependency.
+3. **`SVGAnimationImageView`** (SwiftUI, iOS 17+) drives live playback with `TimelineView`; no `SVGScript` dependency. On iOS 16, sample with `SVGAnimationEngine` and render through `SVGImageView`.
 
 ## Scope
 

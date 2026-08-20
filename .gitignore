@@ -3,10 +3,16 @@
 .swiftpm/
 Packages/
 *.xcodeproj
+!Apps/iOS16Smoke/iOS16Smoke.xcodeproj/
+!Apps/iOS16Smoke/iOS16Smoke.xcodeproj/**
 .vscode/
 .idea/
 xcuserdata/
 DerivedData/
+
+# Local iOS 16 smoke-app fixtures (see Examples/README.md)
+Apps/iOS16Smoke/iOS16Smoke/Examples/*
+!Apps/iOS16Smoke/iOS16Smoke/Examples/README.md
 
 # Snapshot diffs (kept ephemeral; baselines ARE committed)
 Tests/__SnapshotResults__/

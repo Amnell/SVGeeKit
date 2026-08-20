@@ -1,6 +1,6 @@
 # Script support rollout
 
-SVGeeKit remains **static by default**. Optional scripting lives in the **`SVGScript`** product (JavaScriptCore on Apple platforms).
+SVGeeKit remains **static by default**. Optional scripting lives in the **`SVGScript`** product (JavaScriptCore on Apple platforms). The Observation-based runtime (`SVGScriptDocument`, `SVGScriptImageView`) is **iOS 17+** / macOS 14+; it is unavailable on iOS 16.
 
 ## Architecture
 

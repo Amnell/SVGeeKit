@@ -99,7 +99,7 @@ Check items off as they land. Link PRs or issues inline if helpful.
 
 - [ ] Version tagged (SemVer `0.x` → `1.0.0` when checklist complete)
 - [ ] CHANGELOG entry: supported profile, breaking security changes, known gaps
-- [ ] SPM minimum platforms documented (iOS 17+, macOS 14+)
+- [ ] SPM minimum platforms documented (iOS 16+ / macOS 14+; `SVGScript` and `SVGAnimationImageView` are iOS 17+)
 - [ ] Known limitations section: filters, textPath, external fonts, animation, script
 
 ---

@@ -11,6 +11,7 @@ public enum SVGScriptError: Error, Equatable {
 }
 
 /// Mutable SVG document with an ECMAScript runtime (JavaScriptCore).
+@available(iOS 17, *)
 @MainActor
 @Observable
 public final class SVGScriptDocument {
@@ -73,6 +74,7 @@ public final class SVGScriptDocument {
   }
 }
 
+@available(iOS 17, *)
 @MainActor
 final class SVGScriptRuntime {
   private weak var owner: SVGScriptDocument?
@@ -122,11 +124,13 @@ final class SVGScriptRuntime {
   }
 }
 
+@available(iOS 17, *)
 @MainActor
 @objc protocol SVGScriptDOMDocumentJSExport: JSExport {
   func getElementById(_ id: String) -> SVGScriptDOMElement?
 }
 
+@available(iOS 17, *)
 @MainActor
 final class SVGScriptDOMDocument: NSObject, SVGScriptDOMDocumentJSExport {
   private weak var owner: SVGScriptDocument?
@@ -142,12 +146,14 @@ final class SVGScriptDOMDocument: NSObject, SVGScriptDOMDocumentJSExport {
   }
 }
 
+@available(iOS 17, *)
 @MainActor
 @objc protocol SVGScriptDOMElementJSExport: JSExport {
   func setAttribute(_ name: String, _ value: String)
   var ownerDocument: SVGScriptDOMDocument? { get }
 }
 
+@available(iOS 17, *)
 @MainActor
 final class SVGScriptDOMElement: NSObject, SVGScriptDOMElementJSExport {
   private weak var owner: SVGScriptDocument?
@@ -168,11 +174,13 @@ final class SVGScriptDOMElement: NSObject, SVGScriptDOMElementJSExport {
   }
 }
 
+@available(iOS 17, *)
 @MainActor
 @objc protocol SVGScriptDOMEventJSExport: JSExport {
   var target: SVGScriptDOMElement? { get }
 }
 
+@available(iOS 17, *)
 @MainActor
 final class SVGScriptDOMEvent: NSObject, SVGScriptDOMEventJSExport {
   let target: SVGScriptDOMElement?
