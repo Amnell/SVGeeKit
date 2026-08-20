@@ -71,7 +71,7 @@ Check items off as they land. Link PRs or issues inline if helpful.
 - [ ] README links to [production-readiness/](README.md)
 - [ ] [static-profile.md](static-profile.md) published as integrator contract
 - [ ] Migration note: external href removal breaking change
-- [ ] License filed (README says TBD)
+- [x] License filed (MIT; see [LICENSE](../../LICENSE))
 - [ ] AGENTS.md table includes production readiness link
 
 ---
