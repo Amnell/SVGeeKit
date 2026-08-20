@@ -1,7 +1,7 @@
 import Foundation
 import Darwin
 import CoreGraphics
-import SVGKit
+import SVGeeKit
 import SVGConformance
 
 @main

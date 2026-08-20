@@ -1,4 +1,4 @@
-import SVGKit
+import SVGeeKit
 import SwiftUI
 
 struct ExampleFile: Identifiable {

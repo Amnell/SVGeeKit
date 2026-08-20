@@ -4,7 +4,7 @@ import UniformTypeIdentifiers
 import SVGAnimation
 import SVGConformance
 import SVGCore
-import SVGKit
+import SVGeeKit
 import SVGParser
 import SVGRendererSwiftUI
 

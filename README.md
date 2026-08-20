@@ -1,15 +1,106 @@
 # SVGeeKit
 
-A Swift package for rendering **static SVG** on iOS 16+ / macOS 14+, built incrementally against the W3C SVG 1.1 Second Edition test suite.
+> **Early-stage summer hobby project.** The API and feature set are still moving. That said, it already covers a large portion of the [W3C SVG 1.1 Second Edition](https://www.w3.org/TR/SVG11/) test suite — shapes, paths, gradients, patterns, clipping, masking, and more — and is built to grow one spec feature at a time.
 
-> Static SVG renderer for iOS 16+ / macOS 14+. Optional `SVGScript` and `SVGAnimationImageView` require iOS 17+. See the [production readiness plan](docs/production-readiness/README.md) for the supported feature profile and roadmap.
+A Swift package for rendering **static SVG** on iOS 16+ / macOS 14+. Optional `SVGScript` and `SVGAnimationImageView` require iOS 17+. See the [production readiness plan](docs/production-readiness/README.md) for the supported feature profile, conformance numbers, and roadmap.
+
+## Installation (Swift Package Manager)
+
+**Xcode:** File → Add Package Dependencies… → `https://github.com/Amnell/SVGeeKit.git`. Add the `SVGeeKit` library to your app target. Add `SVGAnimation` and/or `SVGScript` only if you need those opt-in products.
+
+**`Package.swift`:**
+
+```swift
+dependencies: [
+    .package(url: "https://github.com/Amnell/SVGeeKit.git", branch: "main")
+]
+```
+
+Then link the product you need on the target:
+
+```swift
+.target(
+    name: "MyApp",
+    dependencies: [
+        .product(name: "SVGeeKit", package: "SVGeeKit")
+    ]
+)
+```
+
+The package, product, and module are all **SVGeeKit**. `import SVGeeKit` re-exports the static parse/render surface (`SVGCore`, `SVGParser`, `SVGRenderer`, `SVGRendererSwiftUI`). Types keep the `SVG` prefix (`SVGImageView`, `SVGParser`, `SVGRenderedImage`). Scripting and SMIL are separate products and are **not** pulled in by `SVGeeKit`.
+
+| Use case | SPM product(s) | Import | Notes |
+| --- | --- | --- | --- |
+| SwiftUI `SVGImageView` (data, document, or URL) | `SVGeeKit` | `import SVGeeKit` · `import SwiftUI` | Default path. View never throws. |
+| Bitmap → SwiftUI `Image` / `UIImage` / `NSImage` | `SVGeeKit` | `import SVGeeKit` · `import SwiftUI` | `SVGRenderedImage` |
+| Parse only (no UI) | `SVGeeKit` | `import SVGeeKit` | Or link `SVGParser` and `import SVGParser` + `import SVGCore` |
+| Live SMIL (`SVGAnimationImageView`) | `SVGeeKit` + `SVGAnimation` | `import SVGeeKit` · `import SVGAnimation` | iOS 17+ / macOS 14+ |
+| SMIL sampling on iOS 16 | `SVGeeKit` + `SVGAnimation` | `import SVGeeKit` · `import SVGAnimation` | `SVGAnimationEngine.sample` + `SVGImageView` |
+| ECMAScript / `onclick` | `SVGeeKit` + `SVGScript` | `import SVGeeKit` · `import SVGScript` | iOS 17+; JavaScriptCore; not for untrusted production SVG |
+| W3C fixtures / snapshot harness | `SVGConformance` | `import SVGConformance` | Tests and the Viewer app — not an app dependency |
+
+Most apps only need **`SVGeeKit`**. Do not add `SVGScript` or `SVGAnimation` unless you explicitly want those capabilities.
+
+**Static SwiftUI (product `SVGeeKit`):**
+
+```swift
+import SVGeeKit
+import SwiftUI
+
+SVGImageView(svgData: data, contentMode: .fit)
+```
+
+**Bitmap for `Image` (product `SVGeeKit`):**
+
+```swift
+import SVGeeKit
+import SwiftUI
+
+let rendered = try await SVGRenderedImage(url: iconURL, size: CGSize(width: 48, height: 48))
+Image(rendered)
+```
+
+**SMIL on iOS 17+ (products `SVGeeKit` + `SVGAnimation`):**
+
+```swift
+import SVGeeKit
+import SVGAnimation
+import SwiftUI
+
+if #available(iOS 17, *) {
+    try SVGAnimationImageView(data: data)
+}
+```
+
+**SMIL sampling on iOS 16 (same products):**
+
+```swift
+import SVGeeKit
+import SVGAnimation
+import SwiftUI
+
+let sampled = SVGAnimationEngine.sample(document: document, at: time)
+SVGImageView(document: sampled, contentMode: .fit)
+```
+
+**Scripting (products `SVGeeKit` + `SVGScript`, iOS 17+):**
+
+```swift
+import SVGeeKit
+import SVGScript
+import SwiftUI
+
+if #available(iOS 17, *) {
+    try SVGScriptImageView(data: data)
+}
+```
 
 ## Quick start
 
 **SwiftUI (untrusted bytes — view never throws):**
 
 ```swift
-import SVGKit
+import SVGeeKit
 import SwiftUI
 
 struct ContentView: View {
@@ -30,10 +121,44 @@ On parse failure the canvas is empty. To surface errors to parent state:
 SVGImageView(svgData: svgData, parseError: $parseError)
 ```
 
-**Explicit parse (recommended for network assets):**
+**From a URL or `URLRequest` (view never throws):**
 
 ```swift
-import SVGKit
+SVGImageView(url: URL(string: "https://example.com/icon.svg"))
+    .frame(width: 48, height: 48)
+
+var request = URLRequest(url: assetURL)
+request.setValue("Bearer …", forHTTPHeaderField: "Authorization")
+SVGImageView(urlRequest: request, parseError: $parseError)
+```
+
+The view fetches the SVG document, then parses it with `SVGParser()` (production policy). Referenced `href`s inside that document are still not loaded from the network. On load or parse failure the canvas is empty.
+
+**Bitmap for `Image` / `UIImage` / `NSImage`:**
+
+```swift
+let rendered = try await SVGRenderedImage(
+    url: iconURL,
+    size: CGSize(width: 48, height: 48),
+    scale: displayScale
+)
+Image(rendered)
+    .resizable()
+    .aspectRatio(contentMode: .fit)
+
+#if os(iOS)
+Image(uiImage: rendered.uiImage)
+#endif
+```
+
+`size` is the output bitmap in points (`nil` uses the SVG's width/height or `viewBox`). This type is named `SVGRenderedImage` because `SVGImage` is already the SVG `<image>` element.
+
+Parsed documents and rasters are cached in `SVGRenderedImageCache.shared` (keyed by content hash and output size, not URL) so the same icon at 24pt and 48pt stays two bitmaps, and a changed remote file is redrawn after URLSession returns new bytes. Pass `cache: nil` to opt out. HTTP caching of the SVG bytes is still `URLSession`'s job.
+
+**Explicit parse (recommended when you need warnings or custom caching):**
+
+```swift
+import SVGeeKit
 import SwiftUI
 
 struct ContentView: View {
@@ -71,7 +196,7 @@ struct ContentView: View {
 | --- | --- | --- |
 | `SVGParser.parse(…)` | Yes — hard failures only | `throw SVGParseError` (malformed XML, missing root, …) |
 | `SVGParser.parseWithReport(…)` | Same | Document + `SVGParseReport.warnings` for soft issues (rejected `href`, limits, …) |
-| `SVGImageView` | **No** | Empty canvas on parse failure |
+| `SVGImageView` | **No** | Empty canvas on parse or load failure |
 
 Production means **no traps** on user data (`fatalError`, force-unwrap) — not “never throw.” Use `try`/`catch` at the parser boundary; let `SVGImageView(svgData:)` absorb failures in SwiftUI.
 
@@ -83,7 +208,7 @@ Pipeline: bytes → `SVGParser` → `SVGCore` model → `SVGRenderTree.lower` �
 
 See [docs/architecture.md](docs/architecture.md) for the module contract.
 
-`SVGKit` re-exports `SVGCore`, `SVGParser`, `SVGRenderer`, and `SVGRendererSwiftUI` only. Scripting (`SVGScript`) and live SMIL (`SVGAnimationImageView`) are separate products and require iOS 17+; `SVGAnimationEngine` is available on iOS 16+.
+`SVGeeKit` re-exports `SVGCore`, `SVGParser`, `SVGRenderer`, and `SVGRendererSwiftUI` only. Scripting (`SVGScript`) and live SMIL (`SVGAnimationImageView`) are separate products and require iOS 17+; `SVGAnimationEngine` is available on iOS 16+.
 
 ## Testing
 

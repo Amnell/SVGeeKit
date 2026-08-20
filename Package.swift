@@ -8,7 +8,7 @@ let package = Package(
         .macOS(.v14)
     ],
     products: [
-        .library(name: "SVGKit", targets: ["SVGKit"]),
+        .library(name: "SVGeeKit", targets: ["SVGeeKit"]),
         .library(name: "SVGCore", targets: ["SVGCore"]),
         .library(name: "SVGParser", targets: ["SVGParser"]),
         .library(name: "SVGRenderer", targets: ["SVGRenderer"]),
@@ -35,21 +35,21 @@ let package = Package(
             dependencies: ["SVGCore", "SVGParser", "SVGRenderer", "SVGRendererSwiftUI"]
         ),
         .target(
-            name: "SVGKit",
+            name: "SVGeeKit",
             dependencies: ["SVGCore", "SVGParser", "SVGRenderer", "SVGRendererSwiftUI"]
         ),
         .target(
             name: "SVGConformance",
-            dependencies: ["SVGKit", "SVGAnimation"]
+            dependencies: ["SVGeeKit", "SVGAnimation"]
         ),
         .executableTarget(
             name: "Viewer",
-            dependencies: ["SVGKit", "SVGConformance", "SVGScript", "SVGAnimation"],
+            dependencies: ["SVGeeKit", "SVGConformance", "SVGScript", "SVGAnimation"],
             path: "Apps/Viewer"
         ),
         .executableTarget(
             name: "Benchmarks",
-            dependencies: ["SVGKit", "SVGConformance"],
+            dependencies: ["SVGeeKit", "SVGConformance"],
             path: "Apps/Benchmarks"
         ),
         .testTarget(name: "SVGCoreTests", dependencies: ["SVGCore"]),

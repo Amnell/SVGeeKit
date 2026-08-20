@@ -4,7 +4,7 @@ SVGeeKit is a Swift package for iOS 16+ / macOS 14+ that **parses and renders st
 
 ## Ground rules
 
-1. **Static by default; scripting and animation are opt-in.** The core library parses and renders static SVG (`SVGKit`) on iOS 16+ / macOS 14+. Optional `SVGScript` adds JavaScriptCore-backed event handlers and DOM attribute mutation (iOS 17+). Optional `SVGAnimation` adds declarative SMIL (`<animate>`, `<set>`, …); `SVGAnimationEngine` is available on iOS 16+, while `SVGAnimationImageView` requires iOS 17+. Hit-testing beyond scripting and pointer events without scripts remain out of scope.
+1. **Static by default; scripting and animation are opt-in.** The core library parses and renders static SVG (`SVGeeKit`) on iOS 16+ / macOS 14+. Optional `SVGScript` adds JavaScriptCore-backed event handlers and DOM attribute mutation (iOS 17+). Optional `SVGAnimation` adds declarative SMIL (`<animate>`, `<set>`, …); `SVGAnimationEngine` is available on iOS 16+, while `SVGAnimationImageView` requires iOS 17+. Hit-testing beyond scripting and pointer events without scripts remain out of scope.
 2. **Parser and renderer are strictly separated.**
    - `SVGCore` defines pure value-type model data — no I/O, no rendering, no `SwiftUI`.
    - `SVGParser` only writes model values; it never touches a renderer.
@@ -96,7 +96,7 @@ Sources/
   SVGParser/            # XMLParser-based reader → SVGCore
   SVGRenderer/          # backend-neutral protocol + render-tree lowering
   SVGRendererSwiftUI/   # SwiftUI Canvas backend + Core Graphics rasterizer
-  SVGKit/               # umbrella re-export (public API)
+  SVGeeKit/               # umbrella re-export (public API)
   SVGConformance/       # test-support: suite index, snapshot diff, report
 Tests/
   SVGCoreTests/, SVGParserTests/, SVGConformanceTests/
