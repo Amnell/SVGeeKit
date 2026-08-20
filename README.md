@@ -249,6 +249,15 @@ resource fetch in the production API. **Security Phase 0 is complete** (resource
 
 Coding agents and human contributors should both read [AGENTS.md](AGENTS.md) and the recipe in [docs/adding-a-feature.md](docs/adding-a-feature.md) before touching code. The library is designed to be extended one SVG feature at a time without breaking previously-passing snapshots.
 
+## Releasing
+
+No compile step — Swift Package Manager versions this package from **git tags**. Release notes are generated on the GitHub Release (PRs and commits since the previous tag).
+
+1. On `main`, run **Actions → Cut release → Run workflow** and enter a semver (e.g. `0.1.0`). That tags `v0.1.0` and publishes the GitHub Release.
+2. If you tag locally (`git tag v0.1.0 && git push origin v0.1.0`), **Publish release** creates the GitHub Release for that tag.
+
+After the first tag, consumers can pin with `.package(url: "https://github.com/Amnell/SVGeeKit.git", from: "0.1.0")`.
+
 ## License
 
 TBD.
