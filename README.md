@@ -30,7 +30,20 @@ On parse failure the canvas is empty. To surface errors to parent state:
 SVGImageView(svgData: svgData, parseError: $parseError)
 ```
 
-**Explicit parse (recommended for network assets):**
+**From a URL or `URLRequest` (view never throws):**
+
+```swift
+SVGImageView(url: URL(string: "https://example.com/icon.svg"))
+    .frame(width: 48, height: 48)
+
+var request = URLRequest(url: assetURL)
+request.setValue("Bearer …", forHTTPHeaderField: "Authorization")
+SVGImageView(urlRequest: request, parseError: $parseError)
+```
+
+The view fetches the SVG document, then parses it with `SVGParser()` (production policy). Referenced `href`s inside that document are still not loaded from the network. On load or parse failure the canvas is empty.
+
+**Explicit parse (recommended when you need warnings or custom caching):**
 
 ```swift
 import SVGKit
@@ -71,7 +84,7 @@ struct ContentView: View {
 | --- | --- | --- |
 | `SVGParser.parse(…)` | Yes — hard failures only | `throw SVGParseError` (malformed XML, missing root, …) |
 | `SVGParser.parseWithReport(…)` | Same | Document + `SVGParseReport.warnings` for soft issues (rejected `href`, limits, …) |
-| `SVGImageView` | **No** | Empty canvas on parse failure |
+| `SVGImageView` | **No** | Empty canvas on parse or load failure |
 
 Production means **no traps** on user data (`fatalError`, force-unwrap) — not “never throw.” Use `try`/`catch` at the parser boundary; let `SVGImageView(svgData:)` absorb failures in SwiftUI.
 

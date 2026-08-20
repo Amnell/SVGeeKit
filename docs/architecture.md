@@ -43,7 +43,7 @@
 ### `SVGRendererSwiftUI`
 - Depends on `SVGCore` + `SVGRenderer`.
 - Two surfaces:
-  - `SVGImageView: View` — public SwiftUI view; uses `SwiftUICanvasRenderer` for live `Canvas` rendering.
+  - `SVGImageView: View` — public SwiftUI view; uses `SwiftUICanvasRenderer` for live `Canvas` rendering. Accepts a parsed document, SVG bytes, or a `URL` / `URLRequest` for the document itself (in-document network `href`s remain gated by `SVGResourcePolicy`).
   - `SVGRasterizer.rasterize(_:pixelSize:scale:)` — returns `CGImage` via `CGContextRenderer` + `SVGGradientDrawing`. Used by the conformance harness.
 - `SwiftUICanvasRenderer` translates each `SVGRenderCommand` to `GraphicsContext` calls.
 - `CGContextRenderer` mirrors the same command stream for snapshot output; gradients use sRGB stop interpolation with independent alpha (matching W3C reference PNGs).

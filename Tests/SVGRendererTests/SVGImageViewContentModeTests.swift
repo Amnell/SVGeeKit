@@ -122,6 +122,17 @@ import SVGRendererSwiftUI
     }
 
     @MainActor
+    @Test func urlInitNeverThrowsOnNilURL() {
+        _ = SVGImageView(url: nil, contentMode: .fit)
+    }
+
+    @MainActor
+    @Test func urlRequestInitNeverThrows() {
+        let request = URLRequest(url: URL(string: "https://example.com/icon.svg")!)
+        _ = SVGImageView(urlRequest: request, contentMode: .fit)
+    }
+
+    @MainActor
     private func rasterize(
         svgData: Data,
         contentMode: SVGImageContentMode,

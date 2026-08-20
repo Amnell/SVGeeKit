@@ -87,12 +87,18 @@ public struct SVGImageView: View {
     contentMode: SVGImageContentMode = .fit,
     parseError: Binding<Error?>
   )
+
+  /// Fetch the SVG document from `url` / `urlRequest` (not in-document `href`s).
+  /// Empty canvas while loading and on failure. `parseError` also receives load errors.
+  public init(url: URL?, parser: SVGParser = SVGParser(), session: URLSession = .shared, …)
+  public init(urlRequest: URLRequest, parser: SVGParser = SVGParser(), session: URLSession = .shared, …)
 }
 ```
 
 Implementation sketch: `init(svgData:…)` runs `try? parser.parse(data:)` (or `do/catch`);
 on failure, `commands = []`, `intrinsicSize = nil` → `Canvas` draws nothing. Parent can
-log via `parseError` binding or by parsing separately with `try`.
+log via `parseError` binding or by parsing separately with `try`. URL initializers fetch
+with `URLSession` in a `.task`, then parse with the supplied parser (production by default).
 
 ### App integration patterns
 
@@ -108,6 +114,7 @@ do {
 
 // Fire-and-forget in SwiftUI (view never throws)
 SVGImageView(svgData: bytes)
+SVGImageView(url: iconURL)
 
 // Conformance / tests — same throwing parser
 let result = try SVGParser(options: .localFiles(at: base)).parse(data: data)
