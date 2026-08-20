@@ -274,6 +274,14 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
     private var xmlNestingDepth = 0
     /// When > 0, elements are ignored until the subtree closes.
     private var skipSubtreeDepth = 0
+    /// When > 0, parse the subtree for definitions / ids but omit it from the
+    /// render tree (failed conditional processing — `struct-cond-overview-04-f`
+    /// / `05-f`). Mirrors `<defs>` omission so `<use>` can still resolve targets.
+    private var conditionalOmitDepth = 0
+    /// `conditionalOmitDepth` value at the element that failed its own tests.
+    /// That element is not a valid `<use>` target (`struct-cond-overview-02-f`);
+    /// its descendants still are (`struct-cond-overview-05-f`).
+    private var conditionalOmitRootDepth: Int?
     private var warnedElementCount = false
     private var warnedNestingDepth = false
     private var warnedDefinitionLimit = false
@@ -333,10 +341,11 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         return true
     }
 
-    /// Skip elements whose conditional-processing attributes fail — including
-    /// entire subtrees when a parent fails (`struct-cond-overview-04-f`).
-    /// `<switch>` children are still collected and evaluated in `finalizeSwitch`.
-    private func shouldSkipForConditionalProcessing(
+    /// Whether conditional-processing attributes on this element fail.
+    /// Failed elements (and their descendants) are omitted from the render tree
+    /// but still parsed so `<use>` can reference them (`struct-cond-overview-05-f`).
+    /// `<switch>` children are collected and evaluated in `finalizeSwitch`.
+    private func shouldOmitForConditionalProcessing(
         elementName: String,
         attributes: [String: String]
     ) -> Bool {
@@ -595,9 +604,14 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
     ) {
         guard beginParsingElement(parser) else { return }
 
-        if shouldSkipForConditionalProcessing(elementName: elementName, attributes: attributeDict) {
-            skipSubtreeDepth = 1
-            return
+        if conditionalOmitDepth > 0 {
+            conditionalOmitDepth += 1
+        } else if shouldOmitForConditionalProcessing(
+            elementName: elementName,
+            attributes: attributeDict
+        ) {
+            conditionalOmitDepth = 1
+            conditionalOmitRootDepth = 1
         }
 
         let inheritedPaint = paintStack.last ?? SVGPaintProperties()
@@ -628,7 +642,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             svgNestingDepth += 1
         case "g", "symbol":
             beginSwitchChildIfNeeded(attributes: attributeDict)
-            if defsDepth > 0 { definitionContainerDepth += 1 }
+            if defsDepth > 0 || conditionalOmitDepth > 0 { definitionContainerDepth += 1 }
             let transform = transform(from: attributeDict, parser: parser) ?? .identity
             let clipRef = parseClipPathRef(attributeDict)
             let maskR = parseMaskRef(attributeDict)
@@ -778,7 +792,15 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             endParsingElement()
             return
         }
-        defer { endParsingElement() }
+        defer {
+            endParsingElement()
+            if conditionalOmitDepth > 0 {
+                if conditionalOmitDepth == conditionalOmitRootDepth {
+                    conditionalOmitRootDepth = nil
+                }
+                conditionalOmitDepth -= 1
+            }
+        }
 
         paintStack.removeLast()
         specifiedPaintKeysStack.removeLast()
@@ -802,10 +824,10 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             guard var finished = groupStack.popLast() else { return }
             finished.animations = groupAnimationStack.popLast() ?? []
             registerDefinition(id: finished.id, element: .group(finished))
-            if defsDepth == 0 {
+            if defsDepth == 0 && conditionalOmitDepth == 0 {
                 appendChild(.group(finished))
             }
-            if defsDepth > 0 { definitionContainerDepth -= 1 }
+            if defsDepth > 0 || conditionalOmitDepth > 0 { definitionContainerDepth -= 1 }
         case "rect", "circle", "ellipse", "line", "polyline", "polygon", "path", "use":
             finalizeAnimatableShape()
         case "script":
@@ -1496,7 +1518,7 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
         pendingAnimatable = nil
         var element = pending.element
         element.setAnimations(pending.animations)
-        if let id = pending.definitionID, !id.isEmpty {
+        if let id = pending.definitionID, !id.isEmpty, !isConditionalOmitRoot {
             storeDefinition(id: id, element: element)
         }
         appendChild(element)
@@ -1531,9 +1553,18 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
 
     /// Index an element by `id` so `<use href="#id">` can resolve it anywhere in
     /// the document, not only under `<defs>` (SVG 1.1 §5.4 / §5.6.2).
+    /// Elements that themselves fail conditional processing are omitted from the
+    /// index so `<use>` does not instantiate them (`struct-cond-overview-02-f`).
     private func registerDefinition(id: String?, element: SVGElement) {
         guard let id, !id.isEmpty else { return }
+        if isConditionalOmitRoot {
+            return
+        }
         storeDefinition(id: id, element: element)
+    }
+
+    private var isConditionalOmitRoot: Bool {
+        conditionalOmitDepth > 0 && conditionalOmitDepth == conditionalOmitRootDepth
     }
 
     private func handleUse(
@@ -1671,6 +1702,9 @@ final class SAXDelegate: NSObject, XMLParserDelegate {
             clipPathStack[clipPathStack.count - 1].children.append(element)
         } else if !maskStack.isEmpty {
             maskStack[maskStack.count - 1].children.append(element)
+        } else if conditionalOmitDepth > 0, definitionContainerDepth == 0 {
+            // Bare element under a failed conditional — keep definition only.
+            return
         } else if !groupStack.isEmpty, defsDepth == 0 || definitionContainerDepth > 0 {
             groupStack[groupStack.count - 1].children.append(element)
         } else if defsDepth > 0 {

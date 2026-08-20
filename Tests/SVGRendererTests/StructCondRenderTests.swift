@@ -138,6 +138,26 @@ import SVGRendererSwiftUI
         }
     }
 
+    @Test func structCondOverview05UseResolvesTargetsUnderFailedParent() throws {
+        let image = try render("struct-cond-overview-05-f")
+        // Pass criteria: no red except draft watermark. <use> covers red with default-black rects.
+        for y in [50, 170, 290] {
+            let left = samplePixel(image, x: 50, y: y)
+            #expect(left.r < 40 && left.g < 40 && left.b < 40, "left should stay empty, got \(left) at y=\(y)")
+            let right = samplePixel(image, x: 250, y: y)
+            #expect(right.r < 80, "expected no red under use at y=\(y), got \(right)")
+        }
+    }
+
+    @Test func structCondOverview02UseOfFailedElementDoesNotCoverBlue() throws {
+        let image = try render("struct-cond-overview-02-f")
+        // Pass criteria: six blue boxes — direct failed rects and their <use> must not paint.
+        for (x, y) in [(50, 50), (250, 50), (50, 170), (250, 170), (50, 290), (250, 290)] {
+            let p = samplePixel(image, x: x, y: y)
+            #expect(p.b > 150 && p.r < 80 && p.g < 80, "expected blue at (\(x),\(y)), got \(p)")
+        }
+    }
+
     private func samplePixel(_ image: CGImage, x: Int, y: Int) -> (r: Int, g: Int, b: Int) {
         var pixel = [UInt8](repeating: 0, count: 4)
         let colorSpace = CGColorSpaceCreateDeviceRGB()
