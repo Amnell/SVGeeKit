@@ -266,4 +266,6 @@ After the first tag, consumers can pin with `.package(url: "https://github.com/A
 
 ## License
 
-TBD.
+SVGeeKit is released under the [MIT License](LICENSE).
+
+The vendored W3C SVG 1.1 test fixtures under `Tests/SVGConformanceTests/Resources/W3C-SVG-1.1/` remain under the [W3C Software and Document License](https://www.w3.org/Consortium/Legal/2015/copyright-software-and-document).
