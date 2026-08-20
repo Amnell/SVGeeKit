@@ -112,7 +112,7 @@ swift test
 ```
 
 - Every previously-passing snapshot must still pass with no `APPROVE_SNAPSHOTS=1`.
-- The auto-generated [docs/conformance/conformance-report.json](conformance/conformance-report.json) shows status per test.
+- The auto-generated [docs/conformance/conformance-report.json](conformance/conformance-report.json) shows status per test. Refresh the [coverage gallery](conformance/README.md) with `swift run CoverageReport`.
 
 ## Anti-patterns
 

@@ -94,6 +94,12 @@ See [docs/architecture.md](docs/architecture.md) for the module contract.
 
 The runner emits `docs/conformance/conformance-report.json` for every test run.
 
+Browse the [W3C coverage gallery](docs/conformance/README.md) (SVGeeKit render vs. W3C reference PNG, one page per chapter). After a full conformance run:
+
+```sh
+swift run CoverageReport
+```
+
 ## Benchmarks
 
 A standalone executable times the parse / lower / rasterize phases on either the vendored W3C corpus or any SVG files you point it at:
