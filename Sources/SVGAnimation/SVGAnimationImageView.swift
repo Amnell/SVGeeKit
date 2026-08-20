@@ -4,6 +4,7 @@ import SVGParser
 import SVGRendererSwiftUI
 
 /// SwiftUI view that plays declarative SMIL animations via timeline sampling.
+@available(iOS 17, *)
 @MainActor
 public struct SVGAnimationImageView: View {
     private let document: SVGDocument
@@ -86,7 +87,7 @@ public struct SVGAnimationImageView: View {
         }
         .padding(.horizontal, 8)
         .padding(.vertical, 6)
-        .background(Color(nsColor: .controlBackgroundColor), in: RoundedRectangle(cornerRadius: 6))
+        .background(controlBackground, in: RoundedRectangle(cornerRadius: 6))
         .overlay(RoundedRectangle(cornerRadius: 6).stroke(.separator))
         .onChange(of: scrubTime) { _, _ in
             if !isPlaying {
@@ -115,6 +116,14 @@ public struct SVGAnimationImageView: View {
                 isPlaying = false
             }
         }
+    }
+
+    private var controlBackground: Color {
+        #if os(macOS)
+        Color(nsColor: .controlBackgroundColor)
+        #else
+        Color(uiColor: .secondarySystemBackground)
+        #endif
     }
 
     private func playbackTime(at date: Date) -> Double {

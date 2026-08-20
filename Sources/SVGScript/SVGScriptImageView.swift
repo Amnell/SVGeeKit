@@ -6,6 +6,7 @@ import SVGRenderer
 import SVGRendererSwiftUI
 
 /// SwiftUI view that renders a scriptable SVG and forwards pointer clicks to ECMAScript handlers.
+@available(iOS 17, *)
 public struct SVGScriptImageView: View {
 
   @State private var scriptDocument: SVGScriptDocument

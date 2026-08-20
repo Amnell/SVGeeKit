@@ -1,6 +1,6 @@
 # Production readiness plan
 
-SVGeeKit v1 targets **self-contained static SVG 1.1** for iOS 17+ / macOS 14+: shapes,
+SVGeeKit v1 targets **self-contained static SVG 1.1** for iOS 16+ / macOS 14+: shapes,
 paths, gradients, patterns, transforms, CSS styling, clipping, masking, text with system
 fonts, and fragment-based `<use>` — with **no scripting, animation, external resources, or
 network I/O** in the production API (`.production` / `.restricted` policy).

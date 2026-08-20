@@ -1,8 +1,8 @@
 # SVGeeKit
 
-A Swift package for rendering **static SVG** on iOS 17+ / macOS 14+, built incrementally against the W3C SVG 1.1 Second Edition test suite.
+A Swift package for rendering **static SVG** on iOS 16+ / macOS 14+, built incrementally against the W3C SVG 1.1 Second Edition test suite.
 
-> Static SVG renderer for iOS 17+ / macOS 14+. See the [production readiness plan](docs/production-readiness/README.md) for the supported feature profile and roadmap.
+> Static SVG renderer for iOS 16+ / macOS 14+. Optional `SVGScript` and `SVGAnimationImageView` require iOS 17+. See the [production readiness plan](docs/production-readiness/README.md) for the supported feature profile and roadmap.
 
 ## Quick start
 
@@ -45,7 +45,7 @@ struct ContentView: View {
             if let document {
                 SVGImageView(document: document, contentMode: .fit)
             } else {
-                ContentUnavailableView("Invalid SVG", systemImage: "exclamationmark.triangle")
+                Text("Invalid SVG")
             }
         }
         .task {
@@ -83,13 +83,14 @@ Pipeline: bytes → `SVGParser` → `SVGCore` model → `SVGRenderTree.lower` �
 
 See [docs/architecture.md](docs/architecture.md) for the module contract.
 
-`SVGKit` re-exports `SVGCore`, `SVGParser`, `SVGRenderer`, and `SVGRendererSwiftUI` only. Scripting (`SVGScript`) and SMIL (`SVGAnimation`) are separate products for conformance tooling — not linked by default.
+`SVGKit` re-exports `SVGCore`, `SVGParser`, `SVGRenderer`, and `SVGRendererSwiftUI` only. Scripting (`SVGScript`) and live SMIL (`SVGAnimationImageView`) are separate products and require iOS 17+; `SVGAnimationEngine` is available on iOS 16+.
 
 ## Testing
 
 - Unit tests: `swift test --filter SVGCoreTests`, `swift test --filter SVGParserTests`.
 - Conformance suite: `swift test --filter ConformanceSuite` — parses each W3C-shaped test under `Tests/SVGConformanceTests/Resources/W3C-SVG-1.1/svg/`, rasterizes it, and diffs against the approved baseline in `Tests/__Snapshots__/`.
 - Approve new / changed baselines: `APPROVE_SNAPSHOTS=1 swift test`.
+- iOS 16 device/simulator check: open `Apps/iOS16Smoke/iOS16Smoke.xcodeproj` (see [Apps/iOS16Smoke/README.md](Apps/iOS16Smoke/README.md)).
 
 The runner emits `docs/conformance/conformance-report.json` for every test run.
 

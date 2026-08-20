@@ -36,6 +36,7 @@ struct SVGScriptTests {
     #expect(doc.scriptMetadata.elementIndex["testPassed"] != nil)
   }
 
+  @available(iOS 17, *)
   @Test func scriptHandle01bAfterClick() throws {
     let url = try w3cURL("script-handle-01-b")
     let data = try Data(contentsOf: url)
@@ -73,6 +74,7 @@ struct SVGScriptTests {
     #expect(image.height == 360)
   }
 
+  @available(iOS 17, *)
   @Test func scriptSpecify01fDoesNotRunBogusOnload() throws {
     let url = try w3cURL("script-specify-01-f")
     let data = try Data(contentsOf: url)
