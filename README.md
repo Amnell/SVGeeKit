@@ -1,8 +1,8 @@
 # SVGeeKit
 
-A Swift package for rendering **static SVG** on iOS 16+ / macOS 14+, built incrementally against the W3C SVG 1.1 Second Edition test suite.
+> **Early-stage summer hobby project.** The API and feature set are still moving. That said, it already covers a large portion of the [W3C SVG 1.1 Second Edition](https://www.w3.org/TR/SVG11/) test suite — shapes, paths, gradients, patterns, clipping, masking, and more — and is built to grow one spec feature at a time.
 
-> Static SVG renderer for iOS 16+ / macOS 14+. Optional `SVGScript` and `SVGAnimationImageView` require iOS 17+. See the [production readiness plan](docs/production-readiness/README.md) for the supported feature profile and roadmap.
+A Swift package for rendering **static SVG** on iOS 16+ / macOS 14+. Optional `SVGScript` and `SVGAnimationImageView` require iOS 17+. See the [production readiness plan](docs/production-readiness/README.md) for the supported feature profile, conformance numbers, and roadmap.
 
 ## Installation (Swift Package Manager)
 
