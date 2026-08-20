@@ -43,6 +43,27 @@ SVGImageView(urlRequest: request, parseError: $parseError)
 
 The view fetches the SVG document, then parses it with `SVGParser()` (production policy). Referenced `href`s inside that document are still not loaded from the network. On load or parse failure the canvas is empty.
 
+**Bitmap for `Image` / `UIImage` / `NSImage`:**
+
+```swift
+let rendered = try await SVGRenderedImage(
+    url: iconURL,
+    size: CGSize(width: 48, height: 48),
+    scale: displayScale
+)
+Image(rendered)
+    .resizable()
+    .aspectRatio(contentMode: .fit)
+
+#if os(iOS)
+Image(uiImage: rendered.uiImage)
+#endif
+```
+
+`size` is the output bitmap in points (`nil` uses the SVG's width/height or `viewBox`). This type is named `SVGRenderedImage` because `SVGImage` is already the SVG `<image>` element.
+
+Parsed documents and rasters are cached in `SVGRenderedImageCache.shared` (keyed by content hash and output size, not URL) so the same icon at 24pt and 48pt stays two bitmaps, and a changed remote file is redrawn after URLSession returns new bytes. Pass `cache: nil` to opt out. HTTP caching of the SVG bytes is still `URLSession`'s job.
+
 **Explicit parse (recommended when you need warnings or custom caching):**
 
 ```swift
