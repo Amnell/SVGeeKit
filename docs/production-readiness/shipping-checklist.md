@@ -50,7 +50,7 @@ Check items off as they land. Link PRs or issues inline if helpful.
 
 - [ ] External URI rejection tested
 - [ ] Parse limits tested (oversized doc, deep nesting, huge path)
-- [ ] No script execution in default `SVGKit` product
+- [ ] No script execution in default `SVGeeKit` product
 - [ ] `foreignObject` cannot embed HTML into render tree
 - [ ] Fuzz or corpus test: hostile SVG never traps; malformed input `throws` or yields empty view
 
@@ -89,8 +89,8 @@ Check items off as they land. Link PRs or issues inline if helpful.
 
 ## 7. Optional modules (explicitly separate)
 
-- [ ] `SVGScript` not a dependency of `SVGKit`
-- [ ] `SVGAnimation` not a dependency of `SVGKit`
+- [ ] `SVGScript` not a dependency of `SVGeeKit`
+- [ ] `SVGAnimation` not a dependency of `SVGeeKit`
 - [ ] README states optional modules are conformance / tooling only
 
 ---

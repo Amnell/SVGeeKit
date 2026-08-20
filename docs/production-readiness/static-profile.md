@@ -136,7 +136,7 @@ See [security-model.md](security-model.md) for the full resilience model.
 
 | SwiftPM product | v1 production |
 | --- | --- |
-| `SVGKit` | **Required** — parse + render static SVG |
+| `SVGeeKit` | **Required** — parse + render static SVG |
 | `SVGScript` | Optional; not part of static profile |
 | `SVGAnimation` | Optional; not part of static profile |
 

@@ -12,7 +12,7 @@
 		24A160000000000000000045 /* Fixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24A160000000000000000044 /* Fixtures.swift */; };
 		24A160000000000000000047 /* SmokeViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24A160000000000000000046 /* SmokeViews.swift */; };
 		24A160000000000000000049 /* ExampleGalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24A160000000000000000048 /* ExampleGalleryView.swift */; };
-		24A160000000000000000054 /* SVGKit in Frameworks */ = {isa = PBXBuildFile; productRef = 24A160000000000000000051 /* SVGKit */; };
+		24A160000000000000000054 /* SVGeeKit in Frameworks */ = {isa = PBXBuildFile; productRef = 24A160000000000000000051 /* SVGeeKit */; };
 		24A160000000000000000055 /* SVGAnimation in Frameworks */ = {isa = PBXBuildFile; productRef = 24A160000000000000000052 /* SVGAnimation */; };
 		24A160000000000000000056 /* SVGScript in Frameworks */ = {isa = PBXBuildFile; productRef = 24A160000000000000000053 /* SVGScript */; };
 		24A160000000000000000061 /* Examples in Resources */ = {isa = PBXBuildFile; fileRef = 24A160000000000000000060 /* Examples */; };
@@ -33,7 +33,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				24A160000000000000000054 /* SVGKit in Frameworks */,
+				24A160000000000000000054 /* SVGeeKit in Frameworks */,
 				24A160000000000000000055 /* SVGAnimation in Frameworks */,
 				24A160000000000000000056 /* SVGScript in Frameworks */,
 			);
@@ -88,7 +88,7 @@
 			);
 			name = iOS16Smoke;
 			packageProductDependencies = (
-				24A160000000000000000051 /* SVGKit */,
+				24A160000000000000000051 /* SVGeeKit */,
 				24A160000000000000000052 /* SVGAnimation */,
 				24A160000000000000000053 /* SVGScript */,
 			);
@@ -293,10 +293,10 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		24A160000000000000000051 /* SVGKit */ = {
+		24A160000000000000000051 /* SVGeeKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 24A160000000000000000050 /* XCLocalSwiftPackageReference "../.." */;
-			productName = SVGKit;
+			productName = SVGeeKit;
 		};
 		24A160000000000000000052 /* SVGAnimation */ = {
 			isa = XCSwiftPackageProductDependency;

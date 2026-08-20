@@ -49,11 +49,11 @@
 - `SwiftUICanvasRenderer` translates each `SVGRenderCommand` to `GraphicsContext` calls.
 - `CGContextRenderer` mirrors the same command stream for snapshot output; gradients use sRGB stop interpolation with independent alpha (matching W3C reference PNGs).
 
-### `SVGKit`
+### `SVGeeKit`
 - Umbrella that re-exports everything an app needs.
 
 ### `SVGConformance`
-- Depends on `SVGKit`. Used by tests *and* by the Viewer app (Phase 2).
+- Depends on `SVGeeKit`. Used by tests *and* by the Viewer app (Phase 2).
 - `SVGTestSuiteIndex` enumerates the vendored W3C test directory; tags via filename prefix + `overrides.json`.
 - `SVGSnapshotDiffer` does premultiplied-RGBA pixel diffing with tolerance.
 - `SVGConformanceRunner` performs `parse → rasterize → diff` and emits a `SVGConformanceRecord` per test.

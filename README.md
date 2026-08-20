@@ -6,7 +6,7 @@ A Swift package for rendering **static SVG** on iOS 16+ / macOS 14+. Optional `S
 
 ## Installation (Swift Package Manager)
 
-**Xcode:** File → Add Package Dependencies… → `https://github.com/Amnell/SVGeeKit.git`. Add the `SVGKit` library to your app target. Add `SVGAnimation` and/or `SVGScript` only if you need those opt-in products.
+**Xcode:** File → Add Package Dependencies… → `https://github.com/Amnell/SVGeeKit.git`. Add the `SVGeeKit` library to your app target. Add `SVGAnimation` and/or `SVGScript` only if you need those opt-in products.
 
 **`Package.swift`:**
 
@@ -22,48 +22,48 @@ Then link the product you need on the target:
 .target(
     name: "MyApp",
     dependencies: [
-        .product(name: "SVGKit", package: "SVGeeKit")
+        .product(name: "SVGeeKit", package: "SVGeeKit")
     ]
 )
 ```
 
-The package name is **SVGeeKit**; the app-facing library is **`SVGKit`**. `import SVGKit` re-exports the static parse/render surface (`SVGCore`, `SVGParser`, `SVGRenderer`, `SVGRendererSwiftUI`). Scripting and SMIL are separate products and are **not** pulled in by `SVGKit`.
+The package, product, and module are all **SVGeeKit**. `import SVGeeKit` re-exports the static parse/render surface (`SVGCore`, `SVGParser`, `SVGRenderer`, `SVGRendererSwiftUI`). Types keep the `SVG` prefix (`SVGImageView`, `SVGParser`, `SVGRenderedImage`). Scripting and SMIL are separate products and are **not** pulled in by `SVGeeKit`.
 
 | Use case | SPM product(s) | Import | Notes |
 | --- | --- | --- | --- |
-| SwiftUI `SVGImageView` (data, document, or URL) | `SVGKit` | `import SVGKit` · `import SwiftUI` | Default path. View never throws. |
-| Bitmap → SwiftUI `Image` / `UIImage` / `NSImage` | `SVGKit` | `import SVGKit` · `import SwiftUI` | `SVGRenderedImage` |
-| Parse only (no UI) | `SVGKit` | `import SVGKit` | Or link `SVGParser` and `import SVGParser` + `import SVGCore` |
-| Live SMIL (`SVGAnimationImageView`) | `SVGKit` + `SVGAnimation` | `import SVGKit` · `import SVGAnimation` | iOS 17+ / macOS 14+ |
-| SMIL sampling on iOS 16 | `SVGKit` + `SVGAnimation` | `import SVGKit` · `import SVGAnimation` | `SVGAnimationEngine.sample` + `SVGImageView` |
-| ECMAScript / `onclick` | `SVGKit` + `SVGScript` | `import SVGKit` · `import SVGScript` | iOS 17+; JavaScriptCore; not for untrusted production SVG |
+| SwiftUI `SVGImageView` (data, document, or URL) | `SVGeeKit` | `import SVGeeKit` · `import SwiftUI` | Default path. View never throws. |
+| Bitmap → SwiftUI `Image` / `UIImage` / `NSImage` | `SVGeeKit` | `import SVGeeKit` · `import SwiftUI` | `SVGRenderedImage` |
+| Parse only (no UI) | `SVGeeKit` | `import SVGeeKit` | Or link `SVGParser` and `import SVGParser` + `import SVGCore` |
+| Live SMIL (`SVGAnimationImageView`) | `SVGeeKit` + `SVGAnimation` | `import SVGeeKit` · `import SVGAnimation` | iOS 17+ / macOS 14+ |
+| SMIL sampling on iOS 16 | `SVGeeKit` + `SVGAnimation` | `import SVGeeKit` · `import SVGAnimation` | `SVGAnimationEngine.sample` + `SVGImageView` |
+| ECMAScript / `onclick` | `SVGeeKit` + `SVGScript` | `import SVGeeKit` · `import SVGScript` | iOS 17+; JavaScriptCore; not for untrusted production SVG |
 | W3C fixtures / snapshot harness | `SVGConformance` | `import SVGConformance` | Tests and the Viewer app — not an app dependency |
 
-Most apps only need **`SVGKit`**. Do not add `SVGScript` or `SVGAnimation` unless you explicitly want those capabilities.
+Most apps only need **`SVGeeKit`**. Do not add `SVGScript` or `SVGAnimation` unless you explicitly want those capabilities.
 
-**Static SwiftUI (product `SVGKit`):**
+**Static SwiftUI (product `SVGeeKit`):**
 
 ```swift
-import SVGKit
+import SVGeeKit
 import SwiftUI
 
 SVGImageView(svgData: data, contentMode: .fit)
 ```
 
-**Bitmap for `Image` (product `SVGKit`):**
+**Bitmap for `Image` (product `SVGeeKit`):**
 
 ```swift
-import SVGKit
+import SVGeeKit
 import SwiftUI
 
 let rendered = try await SVGRenderedImage(url: iconURL, size: CGSize(width: 48, height: 48))
 Image(rendered)
 ```
 
-**SMIL on iOS 17+ (products `SVGKit` + `SVGAnimation`):**
+**SMIL on iOS 17+ (products `SVGeeKit` + `SVGAnimation`):**
 
 ```swift
-import SVGKit
+import SVGeeKit
 import SVGAnimation
 import SwiftUI
 
@@ -75,7 +75,7 @@ if #available(iOS 17, *) {
 **SMIL sampling on iOS 16 (same products):**
 
 ```swift
-import SVGKit
+import SVGeeKit
 import SVGAnimation
 import SwiftUI
 
@@ -83,10 +83,10 @@ let sampled = SVGAnimationEngine.sample(document: document, at: time)
 SVGImageView(document: sampled, contentMode: .fit)
 ```
 
-**Scripting (products `SVGKit` + `SVGScript`, iOS 17+):**
+**Scripting (products `SVGeeKit` + `SVGScript`, iOS 17+):**
 
 ```swift
-import SVGKit
+import SVGeeKit
 import SVGScript
 import SwiftUI
 
@@ -100,7 +100,7 @@ if #available(iOS 17, *) {
 **SwiftUI (untrusted bytes — view never throws):**
 
 ```swift
-import SVGKit
+import SVGeeKit
 import SwiftUI
 
 struct ContentView: View {
@@ -158,7 +158,7 @@ Parsed documents and rasters are cached in `SVGRenderedImageCache.shared` (keyed
 **Explicit parse (recommended when you need warnings or custom caching):**
 
 ```swift
-import SVGKit
+import SVGeeKit
 import SwiftUI
 
 struct ContentView: View {
@@ -208,7 +208,7 @@ Pipeline: bytes → `SVGParser` → `SVGCore` model → `SVGRenderTree.lower` �
 
 See [docs/architecture.md](docs/architecture.md) for the module contract.
 
-`SVGKit` re-exports `SVGCore`, `SVGParser`, `SVGRenderer`, and `SVGRendererSwiftUI` only. Scripting (`SVGScript`) and live SMIL (`SVGAnimationImageView`) are separate products and require iOS 17+; `SVGAnimationEngine` is available on iOS 16+.
+`SVGeeKit` re-exports `SVGCore`, `SVGParser`, `SVGRenderer`, and `SVGRendererSwiftUI` only. Scripting (`SVGScript`) and live SMIL (`SVGAnimationImageView`) are separate products and require iOS 17+; `SVGAnimationEngine` is available on iOS 16+.
 
 ## Testing
 

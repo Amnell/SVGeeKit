@@ -47,10 +47,10 @@ Update conformance targets after `swift test` regenerates
 
 - [x] `SVGHrefResolverTests`, `SVGParsingLimitsTests`
 - [x] README documents parser-throws / view-never-throws contract
-- [x] `SVGScript` / `SVGAnimation` not linked from `SVGKit` by default
+- [x] `SVGScript` / `SVGAnimation` not linked from `SVGeeKit` by default
 
 **Exit criteria:** Untrusted SVG bytes cannot trigger filesystem or network I/O through
-`SVGKit` alone. **Met.**
+`SVGeeKit` alone. **Met.**
 
 ---
 

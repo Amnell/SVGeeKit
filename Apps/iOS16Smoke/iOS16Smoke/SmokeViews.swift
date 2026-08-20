@@ -1,5 +1,5 @@
 import SVGAnimation
-import SVGKit
+import SVGeeKit
 import SVGScript
 import SwiftUI
 import UIKit

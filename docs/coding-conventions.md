@@ -8,5 +8,5 @@
 - **Errors.** Library code throws typed errors (`SVGParseError`, `SVGSnapshotDiffer.DiffError`). Errors carry source location when available.
 - **No dependencies.** SVGeeKit's runtime targets have no external SwiftPM dependencies. Test infrastructure stays in-tree (no SnapshotTesting library; we own the diff).
 - **MainActor boundaries.** `SVGImageView` is a SwiftUI view (already main-actor-isolated). `SVGRasterizer` runs on any executor. Everything else should run anywhere.
-- **Imports.** Each target's imports are minimal — never re-export through dependencies, except `SVGKit` which explicitly `@_exported import`s the public surface.
+- **Imports.** Each target's imports are minimal — never re-export through dependencies, except `SVGeeKit` which explicitly `@_exported import`s the public surface.
 - **File layout.** One concept per file. New SVG elements go into `SVGCore/Elements/<Element>.swift` once that directory exists (early-stage files all live at `Sources/SVGCore/` root).

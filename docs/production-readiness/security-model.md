@@ -311,7 +311,7 @@ additional throw sites. Malformed documents still throw so callers can branch.
 | SSRF / arbitrary file read via `href` | Reject non-fragment external URIs |
 | XXE / billion-laughs entity expansion | `XMLParser` with no external entities; size limits |
 | Path bombs (huge `d` attributes) | Configurable parse limits |
-| Script execution | Never execute `<script>` in production `SVGKit` |
+| Script execution | Never execute `<script>` in production `SVGeeKit` |
 | `foreignObject` HTML injection | Element ignored |
 | Decompression bombs in embedded `data:` images | Size cap before decode |
 | Cyclic `<image href="…svg">` graphs | Cycle detection (exists today; keep in `.localFiles` only) |
@@ -419,7 +419,7 @@ Integrators inspect `result.report.warnings` after a successful `try`. For Swift
 - [x] Add `SVGParsingLimits` on `SVGParserOptions`
 - [x] `SVGParseReport` on every successful `parse(…)` via `parseWithReport`
 - [x] Audit `SVGParser` for implicit `URL(string:relativeTo:)` resolution paths
-- [x] Ensure `SVGScript` / `SVGAnimation` are not linked by default from `SVGKit`
+- [x] Ensure `SVGScript` / `SVGAnimation` are not linked by default from `SVGeeKit`
 - [x] Fuzz / corpus test: random bytes → no trap; malformed → `throws` or empty view
 
 ## Conformance impact

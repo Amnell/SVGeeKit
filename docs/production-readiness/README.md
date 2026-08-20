@@ -121,4 +121,4 @@ references them; do not duplicate their step-by-step content here.
 - [x] [Security model](security-model.md) enforced in parser (no silent external fetch)
 - [ ] In-profile W3C chapters at target pass rates in [roadmap.md](roadmap.md)
 - [ ] [Shipping checklist](shipping-checklist.md) complete
-- [ ] `SVGScript` / `SVGAnimation` remain optional modules, not required for `SVGKit`
+- [ ] `SVGScript` / `SVGAnimation` remain optional modules, not required for `SVGeeKit`

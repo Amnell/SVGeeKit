@@ -325,7 +325,7 @@ Remaining force-unwraps are internal invariants (e.g. `tspanStyleStack.last!` af
 push) or framework bridging (`CTLineGetGlyphRuns` cast), not direct indexing of
 user-controlled strings.
 
-`SVGKit` does **not** link `SVGScript` or `SVGAnimation`; those remain separate products.
+`SVGeeKit` does **not** link `SVGScript` or `SVGAnimation`; those remain separate products.
 
 ### Tests
 
