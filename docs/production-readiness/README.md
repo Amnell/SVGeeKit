@@ -11,7 +11,9 @@ benchmarks). Production parse rejects them with warnings.
 
 This folder is the living plan for getting there. Update checkboxes and status tables as
 work lands. Re-run `swift test` to refresh conformance numbers in
-[conformance-report.json](../conformance/conformance-report.json).
+[conformance-report.json](../conformance/conformance-report.json). Browse renders vs. W3C
+references in the [coverage gallery](../conformance/README.md) (`swift run CoverageReport`
+to regenerate).
 
 ## Documents
 

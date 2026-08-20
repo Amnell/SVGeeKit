@@ -52,6 +52,11 @@ let package = Package(
             dependencies: ["SVGeeKit", "SVGConformance"],
             path: "Apps/Benchmarks"
         ),
+        .executableTarget(
+            name: "CoverageReport",
+            dependencies: ["SVGConformance"],
+            path: "Apps/CoverageReport"
+        ),
         .testTarget(name: "SVGCoreTests", dependencies: ["SVGCore"]),
         .testTarget(name: "SVGParserTests", dependencies: ["SVGParser", "SVGRendererSwiftUI", "SVGConformance"]),
         .testTarget(
