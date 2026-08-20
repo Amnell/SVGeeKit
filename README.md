@@ -4,6 +4,97 @@ A Swift package for rendering **static SVG** on iOS 16+ / macOS 14+, built incre
 
 > Static SVG renderer for iOS 16+ / macOS 14+. Optional `SVGScript` and `SVGAnimationImageView` require iOS 17+. See the [production readiness plan](docs/production-readiness/README.md) for the supported feature profile and roadmap.
 
+## Installation (Swift Package Manager)
+
+**Xcode:** File → Add Package Dependencies… → `https://github.com/Amnell/SVGeeKit.git`. Add the `SVGKit` library to your app target. Add `SVGAnimation` and/or `SVGScript` only if you need those opt-in products.
+
+**`Package.swift`:**
+
+```swift
+dependencies: [
+    .package(url: "https://github.com/Amnell/SVGeeKit.git", branch: "main")
+]
+```
+
+Then link the product you need on the target:
+
+```swift
+.target(
+    name: "MyApp",
+    dependencies: [
+        .product(name: "SVGKit", package: "SVGeeKit")
+    ]
+)
+```
+
+The package name is **SVGeeKit**; the app-facing library is **`SVGKit`**. `import SVGKit` re-exports the static parse/render surface (`SVGCore`, `SVGParser`, `SVGRenderer`, `SVGRendererSwiftUI`). Scripting and SMIL are separate products and are **not** pulled in by `SVGKit`.
+
+| Use case | SPM product(s) | Import | Notes |
+| --- | --- | --- | --- |
+| SwiftUI `SVGImageView` (data, document, or URL) | `SVGKit` | `import SVGKit` · `import SwiftUI` | Default path. View never throws. |
+| Bitmap → SwiftUI `Image` / `UIImage` / `NSImage` | `SVGKit` | `import SVGKit` · `import SwiftUI` | `SVGRenderedImage` |
+| Parse only (no UI) | `SVGKit` | `import SVGKit` | Or link `SVGParser` and `import SVGParser` + `import SVGCore` |
+| Live SMIL (`SVGAnimationImageView`) | `SVGKit` + `SVGAnimation` | `import SVGKit` · `import SVGAnimation` | iOS 17+ / macOS 14+ |
+| SMIL sampling on iOS 16 | `SVGKit` + `SVGAnimation` | `import SVGKit` · `import SVGAnimation` | `SVGAnimationEngine.sample` + `SVGImageView` |
+| ECMAScript / `onclick` | `SVGKit` + `SVGScript` | `import SVGKit` · `import SVGScript` | iOS 17+; JavaScriptCore; not for untrusted production SVG |
+| W3C fixtures / snapshot harness | `SVGConformance` | `import SVGConformance` | Tests and the Viewer app — not an app dependency |
+
+Most apps only need **`SVGKit`**. Do not add `SVGScript` or `SVGAnimation` unless you explicitly want those capabilities.
+
+**Static SwiftUI (product `SVGKit`):**
+
+```swift
+import SVGKit
+import SwiftUI
+
+SVGImageView(svgData: data, contentMode: .fit)
+```
+
+**Bitmap for `Image` (product `SVGKit`):**
+
+```swift
+import SVGKit
+import SwiftUI
+
+let rendered = try await SVGRenderedImage(url: iconURL, size: CGSize(width: 48, height: 48))
+Image(rendered)
+```
+
+**SMIL on iOS 17+ (products `SVGKit` + `SVGAnimation`):**
+
+```swift
+import SVGKit
+import SVGAnimation
+import SwiftUI
+
+if #available(iOS 17, *) {
+    try SVGAnimationImageView(data: data)
+}
+```
+
+**SMIL sampling on iOS 16 (same products):**
+
+```swift
+import SVGKit
+import SVGAnimation
+import SwiftUI
+
+let sampled = SVGAnimationEngine.sample(document: document, at: time)
+SVGImageView(document: sampled, contentMode: .fit)
+```
+
+**Scripting (products `SVGKit` + `SVGScript`, iOS 17+):**
+
+```swift
+import SVGKit
+import SVGScript
+import SwiftUI
+
+if #available(iOS 17, *) {
+    try SVGScriptImageView(data: data)
+}
+```
+
 ## Quick start
 
 **SwiftUI (untrusted bytes — view never throws):**
