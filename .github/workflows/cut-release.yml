@@ -1,0 +1,67 @@
+# Cut a version tag and GitHub Release with auto-generated notes.
+# Tag pushes from this workflow do not start other workflows (GITHUB_TOKEN), so
+# the release is created here. publish-release.yml covers tags pushed by hand.
+name: Cut release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Semver to release (e.g. 0.1.0 or v0.1.0)"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  cut:
+    name: Release v${{ inputs.version }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Normalize version
+        id: semver
+        env:
+          RAW: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          VERSION="${RAW#v}"
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.-]+)?$ ]]; then
+            echo "Invalid semver: '$RAW' (expected 0.1.0)"
+            exit 1
+          fi
+          TAG="v${VERSION}"
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "Tag $TAG already exists"
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ steps.semver.outputs.tag }}
+          VERSION: ${{ steps.semver.outputs.version }}
+        run: |
+          set -euo pipefail
+          ARGS=(
+            "$TAG"
+            --title "SVGeeKit ${VERSION}"
+            --generate-notes
+            --target "${GITHUB_SHA}"
+          )
+          if [[ "$VERSION" == *-* ]]; then
+            ARGS+=(--prerelease)
+          fi
+          gh release create "${ARGS[@]}"
